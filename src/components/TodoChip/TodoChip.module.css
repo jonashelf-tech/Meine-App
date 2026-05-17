@@ -1,0 +1,201 @@
+.chip {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 44px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  position: relative;
+  transition: background 0.15s, opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chip:hover {
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.chip:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Stripe ─────────────────────────────────────────────── */
+.stripe {
+  width: 3px;
+  flex-shrink: 0;
+  background: var(--chip-color, #00CFFF);
+  align-self: stretch;
+}
+
+/* ─── Expand button ──────────────────────────────────────── */
+.expandBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  gap: 1px;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+
+.expandBtn:hover {
+  color: var(--text);
+}
+
+.expandCount {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.55rem;
+  line-height: 1;
+}
+
+.expandArrow {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.expandBtn.float {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+}
+
+/* ─── Body ───────────────────────────────────────────────── */
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 6px;
+  cursor: pointer;
+  min-width: 0;
+  user-select: none;
+}
+
+/* ─── Text ───────────────────────────────────────────────── */
+.text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--text);
+  word-break: break-word;
+  transition: opacity 0.2s;
+}
+
+.textDone {
+  text-decoration: line-through;
+  opacity: 0.45;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ─── Done state ─────────────────────────────────────────── */
+.done {
+  opacity: 0.6;
+}
+
+/* ─── Meta row ───────────────────────────────────────────── */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.metaDate {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.6rem;
+  color: var(--cyan);
+  opacity: 0.8;
+}
+
+.metaCat {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  color: var(--purple);
+  opacity: 0.85;
+}
+
+/* ─── Sub-items ──────────────────────────────────────────── */
+.subList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.subItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 2px 0;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.subItem:active {
+  opacity: 0.7;
+}
+
+.subDone .subText {
+  text-decoration: line-through;
+  opacity: 0.45;
+}
+
+.subCheck {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.subText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+/* ─── Remove button ──────────────────────────────────────── */
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: var(--pink);
+  opacity: 0.4;
+  transition: opacity 0.15s;
+  padding: 0;
+}
+
+.removeBtn:hover {
+  opacity: 1;
+}
+
+/* ─── Drag handle wrapper ────────────────────────────────── */
+.dragHandleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  flex-shrink: 0;
+}

@@ -1,0 +1,24 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  width: 30px;
+}
+
+.block {
+  display: block;
+  width: 8px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+.pulse {
+  animation: pulse 1.2s ease-in-out infinite;
+}

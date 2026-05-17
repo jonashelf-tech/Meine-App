@@ -1,0 +1,244 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+/* ─── Info ───────────────────────────────────────────────── */
+.info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.infoNum {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--cyan);
+  line-height: 1;
+}
+
+.infoLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* ─── Controls ───────────────────────────────────────────── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ctrlGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ctrlLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.select:focus {
+  border-color: var(--cyan);
+}
+
+/* ─── Stepper ────────────────────────────────────────────── */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.stepBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 5px 10px;
+  font-family: 'Outfit', sans-serif;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stepBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.stepBtn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.stepNum {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cyan);
+  min-width: 28px;
+  text-align: center;
+  padding: 5px 2px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ─── Build button ───────────────────────────────────────── */
+.buildBtn {
+  background: rgba(0, 207, 255, 0.1);
+  border: 1px solid rgba(0, 207, 255, 0.3);
+  border-radius: var(--r-sm);
+  color: var(--cyan);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.buildBtn:hover {
+  background: rgba(0, 207, 255, 0.18);
+  border-color: var(--cyan);
+}
+
+.buildBtn:active {
+  transform: scale(0.97);
+}
+
+/* ─── Proposal ───────────────────────────────────────────── */
+.proposal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.proposalList {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.proposalItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.proposalItem:last-child {
+  border-bottom: none;
+}
+
+.proposalStripe {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.proposalTime {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  color: var(--cyan);
+  min-width: 38px;
+}
+
+.proposalText {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.proposalDur {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.noItems {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  padding: 16px 12px;
+  font-style: italic;
+}
+
+/* ─── Proposal actions ───────────────────────────────────── */
+.proposalActions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.acceptBtn {
+  flex: 1;
+  background: rgba(0, 255, 148, 0.1);
+  border: 1px solid rgba(0, 255, 148, 0.3);
+  border-radius: var(--r-sm);
+  color: var(--green);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 9px;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acceptBtn:hover {
+  background: rgba(0, 255, 148, 0.18);
+  border-color: var(--green);
+}
+
+.discardBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  padding: 9px 14px;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.discardBtn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text);
+}

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import styles from './App.module.css'
+import TabHeute from './features/calendar/TabHeute/TabHeute'
 
 // Feature-Tabs (werden schrittweise gefüllt)
-// import TabHeute from './features/calendar/TabHeute'
 // import TabTodos from './features/todos/TabTodos'
 // import TabKalender from './features/calendar/TabKalender'
 // import TabTools from './features/tools/TabTools'
@@ -22,11 +22,15 @@ export default function App() {
   return (
     <div className={styles.app}>
       <div className={styles.content}>
-        <div className={styles.placeholder}>
-          <span className={styles.tabIcon}>{TABS[tab].icon}</span>
-          <p>{TABS[tab].label}</p>
-          <small>Migration läuft…</small>
-        </div>
+        {tab === 0 ? (
+          <TabHeute />
+        ) : (
+          <div className={styles.placeholder}>
+            <span className={styles.tabIcon}>{TABS[tab].icon}</span>
+            <p>{TABS[tab].label}</p>
+            <small>In Arbeit…</small>
+          </div>
+        )}
       </div>
 
       <nav className={styles.tabBar}>

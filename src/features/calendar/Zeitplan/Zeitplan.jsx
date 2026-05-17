@@ -1,0 +1,225 @@
+import { useState, useCallback } from 'react'
+import TodoChip from '../../../components/TodoChip/TodoChip'
+import { sk, skLabel, slotPx, getDurationKeys, ALL_SLOT_KEYS } from '../../../utils'
+import s from './Zeitplan.module.css'
+
+// ─── RemoveDialog ─────────────────────────────────────────
+function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
+  return (
+    <div className={s.dialogOverlay} onClick={onClose}>
+      <div className={s.dialog} onClick={e => e.stopPropagation()}>
+        <p className={s.dialogTitle}>"{slotText}"</p>
+        <button className={s.dialogBtn} onClick={onBack}>
+          ↩ Zurück auf Liste
+        </button>
+        <button className={[s.dialogBtn, s.dialogBtnDelete].join(' ')} onClick={onDelete}>
+          Löschen
+        </button>
+        <button className={s.dialogBtnCancel} onClick={onClose}>
+          Abbrechen
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── SlotBlock ────────────────────────────────────────────
+function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove }) {
+  const fakeTodo = todo ?? {
+    id: null,
+    text: slot.text || '',
+    color: slot.color || '#00CFFF',
+    priority: slot.priority ?? 3,
+    done: slot.done ?? false,
+    subItems: [],
+    date: null,
+    time: null,
+    category: null,
+    duration: slot.duration || 30,
+  }
+
+  return (
+    <TodoChip
+      todo={fakeTodo}
+      naturalHeight={height}
+      onToggleDone={onToggleDone}
+      onEdit={onEdit}
+      onRemove={onRemove}
+    />
+  )
+}
+
+// ─── Zeitplan ─────────────────────────────────────────────
+export default function Zeitplan({
+  slots = {},          // { slotKey: { text, color, duration, done, todoId, locked } }
+  todos = [],          // full todo list for lookup
+  visibleStart = 8,
+  visibleEnd = 20,
+  onSetSlot,           // (slotKey, slotData | null) => void
+  onToggleSlotDone,    // (slotKey) => void
+  onEditTodo,          // (todoId) => void
+  onRemoveSlot,        // (slotKey, mode: 'back'|'delete') => void
+  onVisibleStartChange,
+  onVisibleEndChange,
+}) {
+  const [hideEmpty, setHideEmpty]     = useState(false)
+  const [removeDialog, setRemoveDialog] = useState(null) // { slotKey, slotText }
+
+  const openRemove = useCallback((slotKey, slotText) => {
+    setRemoveDialog({ slotKey, slotText })
+  }, [])
+
+  const closeRemove = useCallback(() => setRemoveDialog(null), [])
+
+  // Build list of hours in range
+  const hours = []
+  for (let h = visibleStart; h < visibleEnd; h++) hours.push(h)
+
+  // Determine which slots are "consumed" by a previous multi-slot block
+  const consumedKeys = new Set()
+  for (const key of ALL_SLOT_KEYS) {
+    const slot = slots[key]
+    if (!slot) continue
+    const dur = slot.duration || 30
+    if (dur <= 30) continue
+    const spanned = getDurationKeys(key, dur)
+    for (let i = 1; i < spanned.length; i++) {
+      consumedKeys.add(spanned[i])
+    }
+  }
+
+  // Row render
+  const renderHour = (h) => {
+    const topKey = sk(h, false)
+    const botKey = sk(h, true)
+
+    const topSlot    = slots[topKey]
+    const botSlot    = slots[botKey]
+    const topConsumed = consumedKeys.has(topKey)
+    const botConsumed = consumedKeys.has(botKey)
+
+    // hide empty logic
+    const topEmpty = !topSlot && !topConsumed
+    const botEmpty = !botSlot && !botConsumed
+    if (hideEmpty && topEmpty && botEmpty) return null
+
+    const topHeight = topSlot ? slotPx(topSlot.duration || 30) : 40
+    const botHeight = botSlot ? slotPx(botSlot.duration || 30) : 40
+
+    const renderSlot = (slotKey, slot, consumed, height) => {
+      if (consumed) return <div key={slotKey} className={s.consumed} />
+
+      const linkedTodo = slot?.todoId
+        ? todos.find(t => t.id === slot.todoId) || null
+        : null
+
+      return (
+        <div
+          key={slotKey}
+          className={[s.slot, slot ? s.slotFilled : s.slotEmpty].join(' ')}
+          style={{ height: height + 'px' }}
+          onPointerUp={!slot ? undefined : undefined}
+        >
+          {slot ? (
+            <SlotBlock
+              slotKey={slotKey}
+              slot={slot}
+              todo={linkedTodo}
+              height={height}
+              onToggleDone={() => onToggleSlotDone?.(slotKey)}
+              onEdit={() => linkedTodo
+                ? onEditTodo?.(linkedTodo.id)
+                : onEditTodo?.(slotKey)
+              }
+              onRemove={() => openRemove(slotKey, slot.text)}
+            />
+          ) : (
+            <div className={s.emptySlot}>
+              <span className={s.emptyTime}>{skLabel(slotKey)}</span>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    return (
+      <div key={h} className={s.hourRow}>
+        {/* Hour label spans both sub-slots */}
+        <div className={s.hourLabel}>
+          <span className={s.hourNum}>{String(h).padStart(2, '0')}</span>
+        </div>
+
+        {/* Two sub-slots */}
+        <div className={s.subSlots}>
+          {renderSlot(topKey, topSlot, topConsumed, topHeight)}
+          {!topConsumed || botConsumed ? (
+            renderSlot(botKey, botSlot, botConsumed, botHeight)
+          ) : null}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={s.zeitplan}>
+      {/* Controls */}
+      <div className={s.controls}>
+        <div className={s.shiftBtns}>
+          <button
+            className={s.ctrlBtn}
+            onClick={() => onVisibleStartChange?.(Math.max(0, visibleStart - 1))}
+            aria-label="30min früher"
+          >
+            ◀
+          </button>
+          <span className={s.visRange}>
+            {String(visibleStart).padStart(2,'0')}–{String(visibleEnd).padStart(2,'0')}
+          </span>
+          <button
+            className={s.ctrlBtn}
+            onClick={() => onVisibleStartChange?.(Math.min(visibleEnd - 2, visibleStart + 1))}
+            aria-label="30min später"
+          >
+            ▶
+          </button>
+        </div>
+
+        <select
+          className={s.startSelect}
+          value={visibleStart}
+          onChange={e => onVisibleStartChange?.(Number(e.target.value))}
+          aria-label="Startzeit"
+        >
+          {Array.from({ length: 9 }, (_, i) => i + 6).map(h => (
+            <option key={h} value={h}>
+              {String(h).padStart(2, '0')}:00
+            </option>
+          ))}
+        </select>
+
+        <button
+          className={[s.ctrlBtn, hideEmpty ? s.ctrlBtnActive : ''].join(' ')}
+          onClick={() => setHideEmpty(v => !v)}
+        >
+          Leere {hideEmpty ? 'zeigen' : 'ausblenden'}
+        </button>
+      </div>
+
+      {/* Grid */}
+      <div className={s.grid}>
+        {hours.map(renderHour)}
+      </div>
+
+      {/* Remove dialog */}
+      {removeDialog && (
+        <RemoveDialog
+          slotKey={removeDialog.slotKey}
+          slotText={removeDialog.slotText}
+          onBack={() => { onRemoveSlot?.(removeDialog.slotKey, 'back'); closeRemove() }}
+          onDelete={() => { onRemoveSlot?.(removeDialog.slotKey, 'delete'); closeRemove() }}
+          onClose={closeRemove}
+        />
+      )}
+    </div>
+  )
+}
