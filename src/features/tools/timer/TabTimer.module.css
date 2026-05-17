@@ -1,0 +1,511 @@
+/* ─── Page ─────────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+/* ─── Header ───────────────────────────────────────────────── */
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 4px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.cycles {
+  background: rgba(255, 45, 120, 0.15);
+  color: #FF2D78;
+  border-radius: 50px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+}
+
+/* ─── Confirm Overlay & Modal ──────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px 20px 20px;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modalTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modalBody {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.todoConfirmText {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.modalBtns {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.confirmBtn {
+  flex: 1;
+  padding: 10px;
+  background: rgba(0, 207, 255, 0.12);
+  border: 1.5px solid rgba(0, 207, 255, 0.35);
+  color: var(--cyan);
+  border-radius: var(--r-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.discardBtn {
+  flex: 1;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  border-radius: var(--r-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Active Todo Banner ───────────────────────────────────── */
+.activeTodoBanner {
+  background: rgba(0, 207, 255, 0.06);
+  border-left: 3px solid var(--ft-color, var(--cyan));
+  padding: 8px 12px;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.bannerStripe {
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--ft-color, var(--cyan));
+  flex-shrink: 0;
+  display: none; /* border-left on parent handles it */
+}
+
+.bannerText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Ring ─────────────────────────────────────────────────── */
+.ringOuter {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.ringWrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  transition: box-shadow 0.4s ease;
+}
+
+.ring {
+  width: 200px;
+  height: 200px;
+  display: block;
+}
+
+.ringCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.timeDisplay {
+  font-family: 'Orbitron', monospace;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.phaseLbl {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  line-height: 1;
+}
+
+.doneLbl {
+  font-size: 1.8rem;
+  color: #00FF94;
+  line-height: 1;
+}
+
+/* ─── Controls ─────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.stopBtn {
+  background: rgba(255, 45, 120, 0.12);
+  border: 1.5px solid rgba(255, 45, 120, 0.4);
+  color: #FF2D78;
+  border-radius: 50px;
+  padding: 10px 28px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.stopBtn:active {
+  background: rgba(255, 45, 120, 0.2);
+}
+
+.startBtn {
+  background: rgba(0, 207, 255, 0.1);
+  border: 1.5px solid rgba(0, 207, 255, 0.3);
+  color: var(--cyan);
+  border-radius: 50px;
+  padding: 10px 28px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.startBtn:active {
+  background: rgba(0, 207, 255, 0.18);
+}
+
+.resetBtn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  border-radius: 50px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.resetBtn:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Config Card ──────────────────────────────────────────── */
+.configCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modeRow {
+  display: flex;
+  gap: 8px;
+}
+
+.modeBtn {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modeBtnActive {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 207, 255, 0.08);
+}
+
+/* ─── Pills ────────────────────────────────────────────────── */
+.pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 7px 14px;
+  border-radius: 50px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pill:hover {
+  border-color: rgba(0, 207, 255, 0.4);
+  color: var(--cyan);
+}
+
+.pill:active,
+.pillActive {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 207, 255, 0.1);
+}
+
+/* ─── Manual row ───────────────────────────────────────────── */
+.manualRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.manualInput {
+  width: 70px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.manualInput::-webkit-inner-spin-button,
+.manualInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.manualInput:focus {
+  border-color: rgba(0, 207, 255, 0.4);
+}
+
+/* ─── Launch button ────────────────────────────────────────── */
+.launchBtn {
+  width: 100%;
+  background: rgba(0, 207, 255, 0.12);
+  border: 1.5px solid rgba(0, 207, 255, 0.35);
+  color: var(--cyan);
+  border-radius: var(--r-sm);
+  padding: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.launchBtn:hover {
+  background: rgba(0, 207, 255, 0.18);
+}
+
+.launchBtn:active {
+  background: rgba(0, 207, 255, 0.22);
+}
+
+.launchBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Pomodoro rows ────────────────────────────────────────── */
+.pomRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cfgLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ─── Todo Section ─────────────────────────────────────────── */
+.todoSection {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.todoToggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 8px 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  gap: 8px;
+}
+
+.todoToggle span:first-child {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todoList {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.todoItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  text-align: left;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.todoItem:last-child {
+  border-bottom: none;
+}
+
+.todoItem:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.todoItemActive {
+  background: rgba(0, 207, 255, 0.07);
+}
+
+.todoStripe {
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--ft-color, var(--cyan));
+  flex-shrink: 0;
+}
+
+.todoText {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todoEmpty {
+  padding: 10px 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-align: center;
+}

@@ -1,0 +1,288 @@
+/* ─── Page ───────────────────────────────────────────────── */
+.page {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100%;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.resetBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5em;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s, background 0.15s;
+}
+
+.resetBtn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* ─── Title ──────────────────────────────────────────────── */
+.titleBlock {
+  margin-bottom: 4px;
+}
+
+.eyebrow {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+}
+
+.title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.title em {
+  color: var(--cyan);
+  font-style: normal;
+}
+
+/* ─── Inputs ─────────────────────────────────────────────── */
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.inputBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inputLabel {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+.inputBox input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.inputBox input:focus {
+  border-color: var(--cyan);
+}
+
+.inputBox input[type='time'] {
+  color-scheme: dark;
+}
+
+/* Remove number input spinners */
+.inputBox input[type='number']::-webkit-inner-spin-button,
+.inputBox input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+.inputBox input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* ─── Total ──────────────────────────────────────────────── */
+.total {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.totalVal {
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+/* ─── Section label ──────────────────────────────────────── */
+.secLabel {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  margin-bottom: -8px;
+}
+
+/* ─── Zutaten ────────────────────────────────────────────── */
+.zutaten {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.col {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.colHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.colSub {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.rowLabel {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.rowVal {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.rowUnit {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-left: 2px;
+}
+
+/* ─── Zeitplan ───────────────────────────────────────────── */
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: var(--r);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.step:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.stepEnd {
+  cursor: default;
+  background: rgba(0, 207, 255, 0.06);
+}
+
+.stepEnd:hover {
+  background: rgba(0, 207, 255, 0.06);
+}
+
+.stepTime {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cyan);
+  min-width: 60px;
+}
+
+.stepEnd .stepTime {
+  color: var(--green);
+}
+
+.stepTitle {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.84rem;
+  color: var(--text);
+}
+
+.stepCheck {
+  font-size: 0.9rem;
+  color: var(--green);
+  width: 20px;
+  text-align: center;
+}
+
+.stepDone .stepTitle {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ─── Hint ───────────────────────────────────────────────── */
+.hint {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: -8px;
+}

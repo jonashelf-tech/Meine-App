@@ -8,6 +8,18 @@ const VIEWS = [
   { id: 'mine', label: 'Meine Tools' },
 ]
 
+// Map tool id → tab number
+const TOOL_TAB = {
+  rad:          null, // handled separately (goes to Heute + sets modus)
+  timer:        5,
+  rezepte:      6,
+  pizza:        7,
+  elvi:         8,
+  gewicht:      9,
+  gamification: 10,
+  geburtstage:  4,
+}
+
 export default function TabTools() {
   const [view, setView] = useState('all')
   const { activeTools, toggleTool, setCurrentTab, setHeuteModus } = useAppStore()
@@ -18,9 +30,9 @@ export default function TabTools() {
       setCurrentTab(0)
       return
     }
-    if (tool.id === 'geburtstage') {
-      setCurrentTab(4)
-      return
+    const tab = TOOL_TAB[tool.id]
+    if (tab != null) {
+      setCurrentTab(tab)
     }
   }
 
@@ -28,8 +40,6 @@ export default function TabTools() {
     const isActive = activeTools.includes(tool.id)
     if (!isActive) {
       toggleTool(tool.id)
-    } else if (tool.standalone || !tool.integrated) {
-      openTool(tool)
     } else {
       openTool(tool)
     }

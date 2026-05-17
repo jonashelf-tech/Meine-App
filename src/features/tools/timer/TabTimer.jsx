@@ -1,0 +1,570 @@
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { useAppStore } from '../../../store'
+import s from './TabTimer.module.css'
+
+// ─── Presets ───────────────────────────────────────────────
+const NORMAL_PRESETS = [15, 25, 45, 60]
+const POM_WORK       = [15, 20, 25, 30, 45, 50]
+const POM_BREAK      = [3, 5, 10, 15]
+
+// ─── localStorage keys ─────────────────────────────────────
+const LS_START   = 'adhs_timer_startTs'
+const LS_TOTAL   = 'adhs_timer_totalSecs'
+const LS_RUNNING = 'adhs_timer_running'
+
+// ─── Audio helpers ─────────────────────────────────────────
+const playDone = () => {
+  try { if (navigator.vibrate) navigator.vibrate([150, 80, 150, 80, 300]) } catch (e) {}
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    ;[[0, 660], [300, 880], [600, 1100]].forEach(([delay, freq]) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain()
+      osc.connect(gain); gain.connect(ctx.destination)
+      osc.frequency.value = freq; osc.type = 'sine'
+      gain.gain.setValueAtTime(0, ctx.currentTime + delay / 1000)
+      gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + delay / 1000 + 0.05)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay / 1000 + 0.5)
+      osc.start(ctx.currentTime + delay / 1000)
+      osc.stop(ctx.currentTime + delay / 1000 + 0.5)
+    })
+  } catch (e) {}
+}
+
+const playBreakStart = () => {
+  try { if (navigator.vibrate) navigator.vibrate([80, 50, 80]) } catch (e) {}
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const osc = ctx.createOscillator(), gain = ctx.createGain()
+    osc.connect(gain); gain.connect(ctx.destination)
+    osc.frequency.value = 528; osc.type = 'sine'
+    gain.gain.setValueAtTime(0.15, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6)
+    osc.start(); osc.stop(ctx.currentTime + 0.6)
+  } catch (e) {}
+}
+
+// ─── Component ─────────────────────────────────────────────
+export default function TabTimer({ onBack }) {
+  const { todos, setTodos } = useAppStore()
+
+  // Config state
+  const [timerMode,  setTimerMode]  = useState('normal')  // "normal" | "pomodoro"
+  const [pomWork,    setPomWork]    = useState(25)
+  const [pomBreak,   setPomBreak]   = useState(3)
+
+  // Runtime state
+  const [pomPhase,   setPomPhase]   = useState('work')    // "work" | "break"
+  const [pomCycles,  setPomCycles]  = useState(0)
+  const [remaining,  setRemaining]  = useState(0)
+  const [selected,   setSelected]   = useState(null)      // minutes selected / timer set
+  const [isRunning,  setIsRunning]  = useState(false)
+  const [done,       setDone]       = useState(false)
+  const [manualMin,  setManualMin]  = useState('')
+
+  // Todo picker
+  const [focusTodoId,    setFocusTodoId]    = useState(null)
+  const [showTodoPicker, setShowTodoPicker] = useState(false)
+
+  // Confirm dialogs
+  const [confirmStop, setConfirmStop] = useState(false)
+  const [confirmDone, setConfirmDone] = useState(false)
+
+  // Refs (stale-closure prevention)
+  const rafRef        = useRef(null)
+  const startTsRef    = useRef(null)
+  const totalSecsRef  = useRef(0)
+  const pomBreakRef   = useRef(3)
+  const timerModeRef  = useRef('normal')
+  const phaseRef      = useRef('work')
+  const cyclesRef     = useRef(0)
+
+  // Keep refs in sync with state
+  useEffect(() => { pomBreakRef.current   = pomBreak   }, [pomBreak])
+  useEffect(() => { timerModeRef.current  = timerMode  }, [timerMode])
+
+  // ─── Derived ─────────────────────────────────────────────
+  const idle       = !isRunning && !done && selected === null
+  const mins       = Math.floor(remaining / 60)
+  const secs       = remaining % 60
+  const totalSecs  = totalSecsRef.current || (selected ? selected * 60 : 0)
+  const pct        = totalSecs > 0 ? Math.max(0, Math.min(1, remaining / totalSecs)) : 1
+
+  const openTodos  = todos.filter(t => !t.done)
+  const focusTodo  = focusTodoId ? todos.find(t => t.id === focusTodoId) : null
+
+  const ringColor  = done
+    ? '#00FF94'
+    : pomPhase === 'break'
+      ? '#00FF94'
+      : isRunning
+        ? 'var(--cyan)'
+        : 'rgba(255,255,255,0.1)'
+
+  const ringGlow   = isRunning && !done
+    ? pomPhase === 'break'
+      ? '0 0 32px rgba(0,255,148,0.4)'
+      : '0 0 32px rgba(0,207,255,0.3)'
+    : 'none'
+
+  // ─── Tick ────────────────────────────────────────────────
+  const tick = useCallback(() => {
+    const ts    = startTsRef.current
+    const total = totalSecsRef.current
+    if (!ts) return
+
+    const elapsed = Math.floor((Date.now() - ts) / 1000)
+    const rem     = Math.max(0, total - elapsed)
+    setRemaining(rem)
+
+    if (rem === 0) {
+      setIsRunning(false)
+      localStorage.removeItem(LS_RUNNING)
+      localStorage.removeItem(LS_START)
+      localStorage.removeItem(LS_TOTAL)
+
+      if (timerModeRef.current === 'pomodoro') {
+        const wasWork = phaseRef.current === 'work'
+        if (wasWork) {
+          playBreakStart()
+          phaseRef.current = 'break'
+          setPomPhase('break')
+          const bSecs       = pomBreakRef.current * 60
+          const now         = Date.now()
+          startTsRef.current  = now
+          totalSecsRef.current = bSecs
+          localStorage.setItem(LS_START,   String(now))
+          localStorage.setItem(LS_TOTAL,   String(bSecs))
+          localStorage.setItem(LS_RUNNING, '1')
+          setRemaining(bSecs)
+          setDone(false)
+          setIsRunning(true)
+          rafRef.current = setTimeout(tick, 500)
+        } else {
+          playDone()
+          const nc = cyclesRef.current + 1
+          cyclesRef.current = nc
+          setPomCycles(nc)
+          phaseRef.current = 'work'
+          setPomPhase('work')
+          setDone(true)
+        }
+      } else {
+        playDone()
+        setDone(true)
+      }
+      return
+    }
+
+    rafRef.current = setTimeout(tick, 500)
+  }, []) // no deps — reads refs only
+
+  // ─── Restore from localStorage on mount ──────────────────
+  useEffect(() => {
+    const savedStart   = localStorage.getItem(LS_START)
+    const savedTotal   = localStorage.getItem(LS_TOTAL)
+    const savedRunning = localStorage.getItem(LS_RUNNING)
+
+    if (savedStart && savedTotal && savedRunning === '1') {
+      const start = parseInt(savedStart, 10)
+      const total = parseInt(savedTotal, 10)
+      const elapsed = Math.floor((Date.now() - start) / 1000)
+      const rem     = Math.max(0, total - elapsed)
+
+      startTsRef.current   = start
+      totalSecsRef.current = total
+      setRemaining(rem)
+      setSelected(Math.ceil(total / 60))
+
+      if (rem > 0) {
+        setIsRunning(true)
+        rafRef.current = setTimeout(tick, 500)
+      } else {
+        // Finished while tab was gone
+        setDone(true)
+        playDone()
+        localStorage.removeItem(LS_RUNNING)
+        localStorage.removeItem(LS_START)
+        localStorage.removeItem(LS_TOTAL)
+      }
+    }
+
+    return () => {
+      if (rafRef.current) clearTimeout(rafRef.current)
+    }
+  }, [tick])
+
+  // ─── Actions ─────────────────────────────────────────────
+  const startTimer = (secs) => {
+    if (rafRef.current) clearTimeout(rafRef.current)
+    const now            = Date.now()
+    startTsRef.current   = now
+    totalSecsRef.current = secs
+    setRemaining(secs)
+    setDone(false)
+    setIsRunning(true)
+    setShowTodoPicker(false)
+    localStorage.setItem(LS_START,   String(now))
+    localStorage.setItem(LS_TOTAL,   String(secs))
+    localStorage.setItem(LS_RUNNING, '1')
+    rafRef.current = setTimeout(tick, 500)
+  }
+
+  const handleNormalStart = (mins) => {
+    setSelected(mins)
+    phaseRef.current  = 'work'
+    cyclesRef.current = 0
+    setPomPhase('work')
+    setPomCycles(0)
+    startTimer(mins * 60)
+  }
+
+  const handlePomStart = () => {
+    setSelected(pomWork)
+    phaseRef.current  = 'work'
+    cyclesRef.current = 0
+    setPomPhase('work')
+    setPomCycles(0)
+    startTimer(pomWork * 60)
+  }
+
+  const stop = () => {
+    setConfirmStop(true)
+  }
+
+  const doStop = () => {
+    if (rafRef.current) clearTimeout(rafRef.current)
+    startTsRef.current   = null
+    totalSecsRef.current = 0
+    setIsRunning(false)
+    setSelected(null)
+    setRemaining(0)
+    setDone(false)
+    phaseRef.current  = 'work'
+    cyclesRef.current = 0
+    setPomPhase('work')
+    setPomCycles(0)
+    setConfirmStop(false)
+    localStorage.removeItem(LS_RUNNING)
+    localStorage.removeItem(LS_START)
+    localStorage.removeItem(LS_TOTAL)
+  }
+
+  const resume = () => {
+    if (!selected) return
+    const secs = remaining > 0 ? remaining : selected * 60
+    startTimer(secs)
+  }
+
+  const again = () => {
+    if (!selected) return
+    setDone(false)
+    phaseRef.current  = 'work'
+    cyclesRef.current = 0
+    setPomPhase('work')
+    setPomCycles(0)
+    startTimer(selected * 60)
+  }
+
+  const reset = () => {
+    if (rafRef.current) clearTimeout(rafRef.current)
+    startTsRef.current   = null
+    totalSecsRef.current = 0
+    setIsRunning(false)
+    setSelected(null)
+    setRemaining(0)
+    setDone(false)
+    phaseRef.current  = 'work'
+    cyclesRef.current = 0
+    setPomPhase('work')
+    setPomCycles(0)
+    localStorage.removeItem(LS_RUNNING)
+    localStorage.removeItem(LS_START)
+    localStorage.removeItem(LS_TOTAL)
+  }
+
+  // When timer finishes and a focusTodo is set, show mark-done dialog
+  useEffect(() => {
+    if (done && focusTodoId && timerMode === 'normal') {
+      setConfirmDone(true)
+    }
+  }, [done, focusTodoId, timerMode])
+
+  const markTodoDone = () => {
+    setTodos(prev => prev.map(t => t.id === focusTodoId ? { ...t, done: true } : t))
+    setFocusTodoId(null)
+    setConfirmDone(false)
+  }
+
+  const dismissConfirmDone = () => {
+    setConfirmDone(false)
+  }
+
+  // ─── Ring circumference ──────────────────────────────────
+  const R   = 86
+  const C   = 2 * Math.PI * R
+
+  return (
+    <div className={s.page}>
+
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div className={s.header}>
+        <button className={s.back} onClick={onBack}>← Tools</button>
+        <span className={s.title}>Fokus-Timer</span>
+        {pomCycles > 0 && (
+          <span className={s.cycles}>🍅×{pomCycles}</span>
+        )}
+      </div>
+
+      {/* ── Confirm: Stop ──────────────────────────────────── */}
+      {confirmStop && (
+        <div className={s.overlay} onClick={() => setConfirmStop(false)}>
+          <div className={s.modal} onClick={e => e.stopPropagation()}>
+            <div className={s.modalTitle}>Timer stoppen?</div>
+            <div className={s.modalBody}>Der aktuelle Fortschritt geht verloren.</div>
+            <div className={s.modalBtns}>
+              <button className={s.discardBtn} onClick={() => setConfirmStop(false)}>Weiter</button>
+              <button className={s.confirmBtn} onClick={doStop}>Stoppen</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Confirm: Mark todo done ─────────────────────────── */}
+      {confirmDone && focusTodo && (
+        <div className={s.overlay} onClick={dismissConfirmDone}>
+          <div className={s.modal} onClick={e => e.stopPropagation()}>
+            <div className={s.modalTitle}>Super gemacht!</div>
+            <div className={s.modalBody}>
+              <span className={s.todoConfirmText}>{focusTodo.text}</span>
+              <br />als erledigt markieren?
+            </div>
+            <div className={s.modalBtns}>
+              <button className={s.discardBtn} onClick={dismissConfirmDone}>Nicht jetzt</button>
+              <button className={s.confirmBtn} onClick={markTodoDone}>Erledigt ✓</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Active Todo Banner ──────────────────────────────── */}
+      {isRunning && focusTodo && (
+        <div
+          className={s.activeTodoBanner}
+          style={{ '--ft-color': focusTodo.color || 'var(--cyan)' }}
+        >
+          <div className={s.bannerStripe} />
+          <span className={s.bannerText}>{focusTodo.text}</span>
+        </div>
+      )}
+
+      {/* ── Timer Ring ─────────────────────────────────────── */}
+      <div className={s.ringOuter}>
+        <div
+          className={s.ringWrap}
+          style={{ boxShadow: ringGlow }}
+        >
+          <svg className={s.ring} viewBox="0 0 200 200">
+            <circle
+              cx="100" cy="100" r={R}
+              fill="none"
+              stroke="rgba(255,255,255,0.04)"
+              strokeWidth="8"
+            />
+            <circle
+              cx="100" cy="100" r={R}
+              fill="none"
+              stroke={ringColor}
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={C}
+              strokeDashoffset={C * (1 - pct)}
+              transform="rotate(-90 100 100)"
+              style={{ transition: 'stroke-dashoffset 0.4s linear' }}
+            />
+          </svg>
+          <div className={s.ringCenter}>
+            <span className={s.timeDisplay}>
+              {String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
+            </span>
+            {pomPhase === 'break' && (
+              <span className={s.phaseLbl}>Pause</span>
+            )}
+            {pomPhase === 'work' && isRunning && (
+              <span className={s.phaseLbl}>Fokus</span>
+            )}
+            {done && <span className={s.doneLbl}>✓</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Controls ───────────────────────────────────────── */}
+      <div className={s.controls}>
+        {isRunning ? (
+          <button className={s.stopBtn} onClick={stop}>■ Stop</button>
+        ) : (
+          <>
+            {selected && !done && (
+              <button className={s.startBtn} onClick={resume}>▶ Weiter</button>
+            )}
+            {done && (
+              <button className={s.startBtn} onClick={again}>↺ Nochmal</button>
+            )}
+            {(selected !== null || done) && (
+              <button className={s.resetBtn} onClick={reset}>✕</button>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ── Config Card — idle only ─────────────────────────── */}
+      {idle && (
+        <div className={s.configCard}>
+
+          {/* Mode toggle */}
+          <div className={s.modeRow}>
+            <button
+              className={[s.modeBtn, timerMode === 'normal' ? s.modeBtnActive : ''].join(' ')}
+              onClick={() => setTimerMode('normal')}
+            >
+              ⏱ Timer
+            </button>
+            <button
+              className={[s.modeBtn, timerMode === 'pomodoro' ? s.modeBtnActive : ''].join(' ')}
+              onClick={() => setTimerMode('pomodoro')}
+            >
+              🍅 Pomodoro
+            </button>
+          </div>
+
+          {/* ── Normal mode ── */}
+          {timerMode === 'normal' && (
+            <>
+              <div className={s.pills}>
+                {NORMAL_PRESETS.map(m => (
+                  <button
+                    key={m}
+                    className={s.pill}
+                    onClick={() => handleNormalStart(m)}
+                  >
+                    {m} min
+                  </button>
+                ))}
+              </div>
+
+              <div className={s.manualRow}>
+                <input
+                  className={s.manualInput}
+                  type="number"
+                  min="1"
+                  max="180"
+                  placeholder="Min"
+                  value={manualMin}
+                  onChange={e => setManualMin(e.target.value)}
+                />
+                <button
+                  className={s.launchBtn}
+                  style={{ flex: 1 }}
+                  disabled={!manualMin || parseInt(manualMin, 10) < 1}
+                  onClick={() => {
+                    const m = parseInt(manualMin, 10)
+                    if (m > 0) { handleNormalStart(m); setManualMin('') }
+                  }}
+                >
+                  ▶ Starten
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* ── Pomodoro mode ── */}
+          {timerMode === 'pomodoro' && (
+            <>
+              <div className={s.pomRow}>
+                <span className={s.cfgLabel}>Fokus</span>
+                <div className={s.pills}>
+                  {POM_WORK.map(m => (
+                    <button
+                      key={m}
+                      className={[s.pill, pomWork === m ? s.pillActive : ''].join(' ')}
+                      onClick={() => setPomWork(m)}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+                <span className={s.cfgLabel}>min</span>
+              </div>
+
+              <div className={s.pomRow}>
+                <span className={s.cfgLabel}>Pause</span>
+                <div className={s.pills}>
+                  {POM_BREAK.map(m => (
+                    <button
+                      key={m}
+                      className={[s.pill, pomBreak === m ? s.pillActive : ''].join(' ')}
+                      onClick={() => { setPomBreak(m); pomBreakRef.current = m }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+                <span className={s.cfgLabel}>min</span>
+              </div>
+
+              <button className={s.launchBtn} onClick={handlePomStart}>
+                🍅 Pomodoro starten — {pomWork}/{pomBreak} min
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── Todo Picker — idle only ─────────────────────────── */}
+      {idle && (
+        <div className={s.todoSection}>
+          <button
+            className={s.todoToggle}
+            onClick={() => setShowTodoPicker(p => !p)}
+          >
+            <span>{focusTodo ? focusTodo.text : 'Fokus-Todo wählen (optional)'}</span>
+            <span>{showTodoPicker ? '▴' : '▾'}</span>
+          </button>
+
+          {showTodoPicker && (
+            <div className={s.todoList}>
+              {/* "No todo" option */}
+              <button
+                className={s.todoItem}
+                onClick={() => { setFocusTodoId(null); setShowTodoPicker(false) }}
+                style={{ borderBottom: '1px solid var(--border)' }}
+              >
+                <div className={s.todoStripe} style={{ background: 'var(--text-dim)' }} />
+                <span className={s.todoText} style={{ color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                  — Ohne Todo
+                </span>
+              </button>
+
+              {openTodos.length === 0 ? (
+                <div className={s.todoEmpty}>Keine offenen Todos</div>
+              ) : (
+                openTodos.map(t => (
+                  <button
+                    key={t.id}
+                    className={[s.todoItem, focusTodoId === t.id ? s.todoItemActive : ''].join(' ')}
+                    onClick={() => { setFocusTodoId(t.id); setShowTodoPicker(false) }}
+                  >
+                    <div
+                      className={s.todoStripe}
+                      style={{ '--ft-color': t.color || 'var(--cyan)' }}
+                    />
+                    <span className={s.todoText}>{t.text}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}

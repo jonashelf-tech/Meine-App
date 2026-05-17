@@ -1,10 +1,16 @@
 import { useAppStore } from './store'
 import styles from './App.module.css'
-import TabHeute       from './features/calendar/TabHeute/TabHeute'
-import TabKalender    from './features/calendar/TabKalender/TabKalender'
-import TabTools       from './features/tools/TabTools/TabTools'
-import TabSettings    from './features/settings/TabSettings/TabSettings'
-import TabGeburtstage from './features/tools/geburtstage/TabGeburtstage'
+import TabHeute        from './features/calendar/TabHeute/TabHeute'
+import TabKalender     from './features/calendar/TabKalender/TabKalender'
+import TabTools        from './features/tools/TabTools/TabTools'
+import TabSettings     from './features/settings/TabSettings/TabSettings'
+import TabGeburtstage  from './features/tools/geburtstage/TabGeburtstage'
+import TabTimer        from './features/tools/timer/TabTimer'
+import TabRezepte      from './features/tools/rezepte/TabRezepte'
+import TabPizza        from './features/tools/pizza/TabPizza'
+import TabElvi         from './features/tools/elvi/TabElvi'
+import TabGewicht      from './features/tools/gewicht/TabGewicht'
+import TabGamification from './features/tools/gamification/TabGamification'
 
 const TABS = [
   { id: 0, label: 'Heute',    icon: '◈' },
@@ -13,17 +19,27 @@ const TABS = [
   { id: 3, label: 'Einstellungen', icon: '≡' },
 ]
 
+const TOOL_TABS = [4,5,6,7,8,9,10] // tabs that are tool sub-views (no nav bar active state)
+
 export default function App() {
   const { currentTab, setCurrentTab } = useAppStore()
+
+  const goBack = () => setCurrentTab(2)
 
   return (
     <div className={styles.app}>
       <div className={styles.content}>
-        {currentTab === 0 && <TabHeute />}
-        {currentTab === 1 && <TabKalender />}
-        {currentTab === 2 && <TabTools />}
-        {currentTab === 3 && <TabSettings />}
-        {currentTab === 4 && <TabGeburtstage />}
+        {currentTab === 0  && <TabHeute />}
+        {currentTab === 1  && <TabKalender />}
+        {currentTab === 2  && <TabTools />}
+        {currentTab === 3  && <TabSettings />}
+        {currentTab === 4  && <TabGeburtstage />}
+        {currentTab === 5  && <TabTimer        onBack={goBack} />}
+        {currentTab === 6  && <TabRezepte      onBack={goBack} />}
+        {currentTab === 7  && <TabPizza        onBack={goBack} />}
+        {currentTab === 8  && <TabElvi         onBack={goBack} />}
+        {currentTab === 9  && <TabGewicht      onBack={goBack} />}
+        {currentTab === 10 && <TabGamification onBack={goBack} />}
       </div>
       <nav className={styles.tabBar}>
         {TABS.map(t => (
