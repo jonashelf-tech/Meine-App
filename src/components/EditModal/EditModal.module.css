@@ -1,0 +1,302 @@
+/* ─── Overlay ────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ─── Modal box ──────────────────────────────────────────── */
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 1rem;
+  padding: 4px;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.closeBtn:hover {
+  color: var(--text);
+}
+
+/* ─── Fields ─────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 72px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.textarea:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(0, 207, 255, 0.15);
+}
+
+.input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: dark;
+}
+
+.input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(0, 207, 255, 0.15);
+}
+
+.select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.select:focus {
+  border-color: var(--cyan);
+}
+
+/* ─── Segment control (Prio) ─────────────────────────────── */
+.segmentControl {
+  display: flex;
+  gap: 6px;
+}
+
+.segBtn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 8px 4px;
+  text-align: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.segBtn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+}
+
+.segBtnActive {
+  background: rgba(0, 207, 255, 0.1);
+  border-color: rgba(0, 207, 255, 0.4);
+  color: var(--cyan);
+}
+
+/* ─── Color picker ───────────────────────────────────────── */
+.colorRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.colorCircle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.colorCircle:hover {
+  transform: scale(1.15);
+}
+
+.colorCircleActive {
+  border-color: #fff;
+  transform: scale(1.15);
+}
+
+/* ─── Sub items ──────────────────────────────────────────── */
+.subList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  padding: 6px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.subInput:focus {
+  border-color: var(--cyan);
+}
+
+.subRemoveBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  padding: 4px;
+  transition: color 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.subRemoveBtn:hover {
+  color: var(--pink);
+}
+
+.addSubBtn {
+  background: none;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  text-align: left;
+  transition: border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.addSubBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* ─── Actions ────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.saveBtn {
+  flex: 1;
+  background: rgba(0, 207, 255, 0.12);
+  border: 1px solid rgba(0, 207, 255, 0.35);
+  border-radius: var(--r-sm);
+  color: var(--cyan);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 11px 16px;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.saveBtn:hover {
+  background: rgba(0, 207, 255, 0.2);
+  border-color: var(--cyan);
+}
+
+.deleteBtn {
+  background: none;
+  border: 1px solid rgba(255, 45, 120, 0.25);
+  border-radius: var(--r-sm);
+  color: var(--pink);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  padding: 11px 16px;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.deleteBtn:hover {
+  background: rgba(255, 45, 120, 0.1);
+  border-color: var(--pink);
+}

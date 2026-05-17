@@ -115,7 +115,7 @@ export default function KiPlanSection({ todos = [], slots = {}, onAccept }) {
           <span className={s.stepNum}>{count}</span>
           <button
             className={s.stepBtn}
-            onClick={() => setCount(c => Math.min(20, c + 1))}
+            onClick={() => setCount(c => Math.min(10, c + 1))}
             aria-label="Mehr"
           >+</button>
         </div>

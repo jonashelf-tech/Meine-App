@@ -9,11 +9,10 @@ import TabHeute from './features/calendar/TabHeute/TabHeute'
 // import TabSettings from './features/settings/TabSettings'
 
 const TABS = [
-  { id: 0, label: 'Heute',      icon: '◈' },
-  { id: 1, label: 'Todos',      icon: '✓' },
-  { id: 2, label: 'Kalender',   icon: '⊞' },
-  { id: 3, label: 'Tools',      icon: '⚙' },
-  { id: 4, label: 'Einstellungen', icon: '≡' },
+  { id: 0, label: 'Heute',    icon: '◈' },
+  { id: 1, label: 'Kalender', icon: '⊞' },
+  { id: 2, label: 'Tools',    icon: '⚙' },
+  { id: 3, label: 'Einstellungen', icon: '≡' },
 ]
 
 export default function App() {

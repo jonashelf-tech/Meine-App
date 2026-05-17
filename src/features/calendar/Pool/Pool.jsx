@@ -4,18 +4,16 @@ import { isFaelligkeit } from '../../todos/Block'
 import s from './Pool.module.css'
 
 // ─── PoolChip ─────────────────────────────────────────────
-function PoolChip({ todo, onToggleDone, onEdit, onRemove, onDragStart }) {
-  const handleDragStart = useCallback((e) => {
+function PoolChip({ todo, onToggleDone, onEdit, onRemove, onDragStart, onSubItemToggle }) {
+  const handlePointerDown = useCallback((e) => {
     e.preventDefault()
-    onDragStart?.(todo.text, todo.color, (slotKey) => {
-      // dropCallback: called by parent when item is dropped on a slot
-    })
+    onDragStart?.(todo.text, todo.color, todo.id, todo.duration)
   }, [todo, onDragStart])
 
   const handle = (
     <span
       className={s.handle}
-      onPointerDown={handleDragStart}
+      onPointerDown={handlePointerDown}
       aria-label="Ziehen"
     >
       ⠿
@@ -29,6 +27,7 @@ function PoolChip({ todo, onToggleDone, onEdit, onRemove, onDragStart }) {
       onEdit={onEdit}
       onRemove={onRemove}
       dragHandle={handle}
+      onSubItemToggle={onSubItemToggle}
     />
   )
 }
@@ -41,6 +40,7 @@ export default function Pool({
   onEdit,
   onRemove,
   onDragStart,
+  onSubItemToggle,
 }) {
   const [fullscreen, setFullscreen] = useState(false)
 
@@ -75,6 +75,7 @@ export default function Pool({
       onEdit={() => onEdit?.(t.id)}
       onRemove={() => onRemove?.(t.id)}
       onDragStart={onDragStart}
+      onSubItemToggle={(idx) => onSubItemToggle?.(t.id, idx)}
     />
   )
 
@@ -98,7 +99,7 @@ export default function Pool({
         </summary>
         <div className={s.groupItems}>
           {pool1.length === 0
-            ? <p className={s.empty}>Nichts hier</p>
+            ? <p className={s.empty}>Alles verplant ✓</p>
             : pool1.map(renderChip)
           }
         </div>
@@ -111,7 +112,7 @@ export default function Pool({
         </summary>
         <div className={s.groupItems}>
           {pool2.length === 0
-            ? <p className={s.empty}>Nichts hier</p>
+            ? <p className={s.empty}>Kein weiteres Todo</p>
             : pool2.map(renderChip)
           }
         </div>

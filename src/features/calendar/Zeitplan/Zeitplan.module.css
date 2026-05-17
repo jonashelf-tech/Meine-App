@@ -147,6 +147,27 @@
   overflow: hidden;
 }
 
+/* ─── Drop zones ─────────────────────────────────────────── */
+.dropZone {
+  border: 1px dashed rgba(0, 207, 255, 0.3);
+  cursor: copy;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.dropZone:hover {
+  background: rgba(0, 207, 255, 0.05);
+  border-color: var(--cyan);
+}
+
+.dropHint {
+  margin-left: auto;
+  padding-right: 8px;
+  font-size: 1rem;
+  color: var(--cyan);
+  opacity: 0.6;
+  font-weight: 300;
+}
+
 /* ─── Remove Dialog ──────────────────────────────────────── */
 .dialogOverlay {
   position: fixed;

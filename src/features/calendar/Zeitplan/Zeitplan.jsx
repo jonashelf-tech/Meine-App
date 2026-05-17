@@ -24,7 +24,7 @@ function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
 }
 
 // ─── SlotBlock ────────────────────────────────────────────
-function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove }) {
+function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove, onSubItemToggle }) {
   const fakeTodo = todo ?? {
     id: null,
     text: slot.text || '',
@@ -45,25 +45,30 @@ function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove
       onToggleDone={onToggleDone}
       onEdit={onEdit}
       onRemove={onRemove}
+      onSubItemToggle={onSubItemToggle}
     />
   )
 }
 
 // ─── Zeitplan ─────────────────────────────────────────────
 export default function Zeitplan({
-  slots = {},          // { slotKey: { text, color, duration, done, todoId, locked } }
-  todos = [],          // full todo list for lookup
+  slots = {},
+  todos = [],
   visibleStart = 8,
   visibleEnd = 20,
-  onSetSlot,           // (slotKey, slotData | null) => void
-  onToggleSlotDone,    // (slotKey) => void
-  onEditTodo,          // (todoId) => void
-  onRemoveSlot,        // (slotKey, mode: 'back'|'delete') => void
+  onSetSlot,
+  onToggleSlotDone,
+  onEditTodo,
+  onRemoveSlot,
   onVisibleStartChange,
   onVisibleEndChange,
+  dragState,
+  onDrop,
+  onDragEnd,
+  onSubItemToggle,
 }) {
-  const [hideEmpty, setHideEmpty]     = useState(false)
-  const [removeDialog, setRemoveDialog] = useState(null) // { slotKey, slotText }
+  const [hideEmpty, setHideEmpty]       = useState(false)
+  const [removeDialog, setRemoveDialog] = useState(null)
 
   const openRemove = useCallback((slotKey, slotText) => {
     setRemoveDialog({ slotKey, slotText })
@@ -93,12 +98,11 @@ export default function Zeitplan({
     const topKey = sk(h, false)
     const botKey = sk(h, true)
 
-    const topSlot    = slots[topKey]
-    const botSlot    = slots[botKey]
+    const topSlot     = slots[topKey]
+    const botSlot     = slots[botKey]
     const topConsumed = consumedKeys.has(topKey)
     const botConsumed = consumedKeys.has(botKey)
 
-    // hide empty logic
     const topEmpty = !topSlot && !topConsumed
     const botEmpty = !botSlot && !botConsumed
     if (hideEmpty && topEmpty && botEmpty) return null
@@ -118,7 +122,6 @@ export default function Zeitplan({
           key={slotKey}
           className={[s.slot, slot ? s.slotFilled : s.slotEmpty].join(' ')}
           style={{ height: height + 'px' }}
-          onPointerUp={!slot ? undefined : undefined}
         >
           {slot ? (
             <SlotBlock
@@ -132,10 +135,18 @@ export default function Zeitplan({
                 : onEditTodo?.(slotKey)
               }
               onRemove={() => openRemove(slotKey, slot.text)}
+              onSubItemToggle={linkedTodo
+                ? (idx) => onSubItemToggle?.(linkedTodo.id, idx)
+                : undefined
+              }
             />
           ) : (
-            <div className={s.emptySlot}>
+            <div
+              className={[s.emptySlot, dragState ? s.dropZone : ''].join(' ')}
+              onPointerUp={() => dragState && onDrop?.(slotKey)}
+            >
               <span className={s.emptyTime}>{skLabel(slotKey)}</span>
+              {dragState && <span className={s.dropHint}>+</span>}
             </div>
           )}
         </div>
@@ -144,12 +155,10 @@ export default function Zeitplan({
 
     return (
       <div key={h} className={s.hourRow}>
-        {/* Hour label spans both sub-slots */}
         <div className={s.hourLabel}>
           <span className={s.hourNum}>{String(h).padStart(2, '0')}</span>
         </div>
 
-        {/* Two sub-slots */}
         <div className={s.subSlots}>
           {renderSlot(topKey, topSlot, topConsumed, topHeight)}
           {!topConsumed || botConsumed ? (
@@ -161,7 +170,10 @@ export default function Zeitplan({
   }
 
   return (
-    <div className={s.zeitplan}>
+    <div
+      className={s.zeitplan}
+      onPointerUp={() => { if (dragState) onDragEnd?.() }}
+    >
       {/* Controls */}
       <div className={s.controls}>
         <div className={s.shiftBtns}>
