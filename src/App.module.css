@@ -53,11 +53,24 @@
   color: rgba(255,255,255,0.3);
   transition: color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 
 .tabBtn:hover { color: rgba(255,255,255,0.55); }
 
 .tabBtn.active { color: var(--cyan); }
+
+.tabBtn.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background: var(--cyan);
+  border-radius: 0 0 2px 2px;
+}
 
 .tabIcon {
   font-size: 1.1rem;

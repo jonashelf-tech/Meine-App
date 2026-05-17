@@ -17,9 +17,10 @@ const MODI = [
 ]
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays } = useAppStore()
+  const { todos, setTodos, days, setDays, heuteModus, setHeuteModus } = useAppStore()
 
-  const [modus,       setModus]       = useState('manuell')
+  const modus    = heuteModus
+  const setModus = setHeuteModus
   const [visStart,    setVisStart]    = useState(8)
   const [visEnd]                      = useState(20)
   const [editingTodo, setEditingTodo] = useState(null)

@@ -1,12 +1,10 @@
-import { useState } from 'react'
+import { useAppStore } from './store'
 import styles from './App.module.css'
-import TabHeute from './features/calendar/TabHeute/TabHeute'
-
-// Feature-Tabs (werden schrittweise gefüllt)
-// import TabTodos from './features/todos/TabTodos'
-// import TabKalender from './features/calendar/TabKalender'
-// import TabTools from './features/tools/TabTools'
-// import TabSettings from './features/settings/TabSettings'
+import TabHeute       from './features/calendar/TabHeute/TabHeute'
+import TabKalender    from './features/calendar/TabKalender/TabKalender'
+import TabTools       from './features/tools/TabTools/TabTools'
+import TabSettings    from './features/settings/TabSettings/TabSettings'
+import TabGeburtstage from './features/tools/geburtstage/TabGeburtstage'
 
 const TABS = [
   { id: 0, label: 'Heute',    icon: '◈' },
@@ -16,28 +14,23 @@ const TABS = [
 ]
 
 export default function App() {
-  const [tab, setTab] = useState(0)
+  const { currentTab, setCurrentTab } = useAppStore()
 
   return (
     <div className={styles.app}>
       <div className={styles.content}>
-        {tab === 0 ? (
-          <TabHeute />
-        ) : (
-          <div className={styles.placeholder}>
-            <span className={styles.tabIcon}>{TABS[tab].icon}</span>
-            <p>{TABS[tab].label}</p>
-            <small>In Arbeit…</small>
-          </div>
-        )}
+        {currentTab === 0 && <TabHeute />}
+        {currentTab === 1 && <TabKalender />}
+        {currentTab === 2 && <TabTools />}
+        {currentTab === 3 && <TabSettings />}
+        {currentTab === 4 && <TabGeburtstage />}
       </div>
-
       <nav className={styles.tabBar}>
         {TABS.map(t => (
           <button
             key={t.id}
-            className={`${styles.tabBtn}${tab === t.id ? ' ' + styles.active : ''}`}
-            onClick={() => setTab(t.id)}
+            className={`${styles.tabBtn}${currentTab === t.id ? ' ' + styles.active : ''}`}
+            onClick={() => setCurrentTab(t.id)}
           >
             <span className={styles.tabIcon}>{t.icon}</span>
             <span className={styles.tabLabel}>{t.label}</span>

@@ -1,0 +1,242 @@
+.page {
+  padding-bottom: 32px;
+}
+
+.title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rowLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.toggle {
+  width: 44px;
+  height: 24px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.toggleOn {
+  background: rgba(0,207,255,0.3);
+  border-color: var(--cyan);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.toggleOn .toggleThumb {
+  transform: translateX(20px);
+  background: var(--cyan);
+}
+
+.keyWrap {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.keyInputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.keyInput {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', monospace;
+  font-size: 0.82rem;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.keyInput:focus { border-color: var(--cyan); }
+
+.keyToggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 0.15s;
+  color: var(--text);
+}
+
+.keyToggle:hover { border-color: var(--cyan); }
+
+.infoText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+/* ─── Segmented ─────────────────────────────────────────── */
+.segmented {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.seg {
+  flex: 1;
+  padding: 6px 8px;
+  background: none;
+  border: none;
+  border-radius: calc(var(--r-sm) - 2px);
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segActive {
+  background: var(--bg3);
+  color: var(--cyan);
+}
+
+/* ─── Accent ─────────────────────────────────────────────── */
+.accentRow {
+  display: flex;
+  gap: 10px;
+}
+
+.accentBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ac);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ac) 40%, transparent);
+}
+
+.accentBtn:hover { transform: scale(1.1); }
+
+.accentBtnActive {
+  border-color: #fff;
+  transform: scale(1.15);
+}
+
+/* ─── Data Buttons ──────────────────────────────────────── */
+.btnGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actionBtn {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.actionBtn:hover { border-color: var(--cyan); }
+
+.actionBtnDanger { color: var(--pink); }
+.actionBtnDanger:hover { border-color: var(--pink); }
+
+.actionBtnConfirm {
+  background: rgba(255,45,120,0.1);
+  border-color: var(--pink);
+}
+
+.hidden { display: none; }
+
+/* ─── Info ───────────────────────────────────────────────── */
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.infoRow:last-child { border-bottom: none; }
+
+.infoLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.infoValue {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.link {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--cyan);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.link:hover { opacity: 0.7; }

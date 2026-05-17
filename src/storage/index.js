@@ -33,6 +33,24 @@ export const SK = {
   shoppingStates: `${PREFIX}recipes_shopping_states`,
   selectedDishes: `${PREFIX}recipes_selected`,
   weight:         `${PREFIX}health_weight`,
+  activeTools:    `${PREFIX}app_active_tools`,
+  birthdays:      `${PREFIX}birthdays`,
+  accentColor:    `${PREFIX}app_accent`,
+}
+
+export const exportData = () => {
+  const data = {}
+  Object.values(SK).forEach(key => {
+    const val = localStorage.getItem(key)
+    if (val !== null) data[key] = val
+  })
+  return data
+}
+
+export const importData = (data) => {
+  Object.entries(data).forEach(([key, val]) => {
+    if (key.startsWith('adhs_')) localStorage.setItem(key, val)
+  })
 }
 
 // ─── Default module config ────────────────────────────────

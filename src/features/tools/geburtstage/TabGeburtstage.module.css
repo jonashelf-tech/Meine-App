@@ -1,0 +1,218 @@
+.page {
+  padding-bottom: 32px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fab {
+  width: 36px;
+  height: 36px;
+  background: var(--pink);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s, transform 0.15s;
+  box-shadow: 0 0 12px rgba(255,45,120,0.35);
+  font-family: 'Outfit', sans-serif;
+}
+
+.fab:hover { opacity: 0.85; transform: scale(1.05); }
+
+.form {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn 0.15s ease both;
+}
+
+.input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  padding: 10px 12px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.input:focus { border-color: var(--pink); }
+
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inputSmall {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.88rem;
+  padding: 10px 8px;
+  text-align: center;
+  width: 48px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.inputSmall:focus { border-color: var(--pink); }
+
+.dateSep {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: var(--text-dim);
+}
+
+.inputYear {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  padding: 10px 10px;
+  outline: none;
+  flex: 1;
+  transition: border-color 0.15s;
+}
+
+.inputYear:focus { border-color: var(--pink); }
+
+.addBtn {
+  background: var(--pink);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  box-shadow: 0 0 12px rgba(255,45,120,0.25);
+}
+
+.addBtn:hover { opacity: 0.85; }
+
+.sectionLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 12px 0 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  transition: border-color 0.15s;
+}
+
+.rowToday {
+  border-color: var(--pink);
+  box-shadow: 0 0 10px rgba(255,45,120,0.15);
+}
+
+.rowLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowName {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rowDate {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.rowRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.todayBadge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--pink);
+}
+
+.daysBadge {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cyan);
+  background: rgba(0,207,255,0.08);
+  border-radius: var(--r-sm);
+  padding: 3px 8px;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.removeBtn:hover { color: var(--pink); }
+
+.empty {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 40px 16px;
+  line-height: 1.6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

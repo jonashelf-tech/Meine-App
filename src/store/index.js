@@ -54,4 +54,32 @@ export const useAppStore = create((set, get) => ({
     set({ modules: next })
     sv(SK.modules, next)
   },
+
+  // ─── Navigation ────────────────────────────────────────
+  currentTab:  0,
+  setCurrentTab: (tab) => set({ currentTab: tab }),
+  heuteModus: 'manuell',
+  setHeuteModus: (modus) => set({ heuteModus: modus }),
+
+  // ─── Active Tools ──────────────────────────────────────
+  activeTools: lv(SK.activeTools, ['timer', 'rad']),
+  setActiveTools: (tools) => { set({ activeTools: tools }); sv(SK.activeTools, tools) },
+  toggleTool: (id) => {
+    const current = get().activeTools
+    const next = current.includes(id) ? current.filter(t => t !== id) : [...current, id]
+    set({ activeTools: next })
+    sv(SK.activeTools, next)
+  },
+
+  // ─── Birthdays ─────────────────────────────────────────
+  birthdays: lv(SK.birthdays, []),
+  setBirthdays: (bdays) => {
+    const next = typeof bdays === 'function' ? bdays(get().birthdays) : bdays
+    set({ birthdays: next })
+    sv(SK.birthdays, next)
+  },
+
+  // ─── Accent ────────────────────────────────────────────
+  accentColor: lv(SK.accentColor, 'cyan'),
+  setAccentColor: (color) => { set({ accentColor: color }); sv(SK.accentColor, color) },
 }))
