@@ -4,110 +4,185 @@
   gap: 0;
 }
 
-/* ─── Controls ───────────────────────────────────────────── */
+/* ── Controls ─────────────────────────────────────────── */
 .controls {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 4px;
-  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
-.shiftBtns {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.visRange {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.65rem;
-  color: var(--text-dim);
-  min-width: 52px;
-  text-align: center;
-}
-
-.ctrlBtn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text-dim);
-  cursor: pointer;
+.shiftBtn {
+  padding: 5px 10px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
-  padding: 4px 8px;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  white-space: nowrap;
+  font-size: 0.64rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.32);
+  cursor: pointer;
+  transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.ctrlBtn:hover {
-  background: rgba(255, 255, 255, 0.09);
-  color: var(--text);
-}
-
-.ctrlBtn:active {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.ctrlBtnActive {
+.shiftBtn:hover {
   border-color: var(--cyan);
   color: var(--cyan);
 }
 
-.dateLabel {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.65rem;
+.hideBtn {
+  padding: 4px 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.22);
+  cursor: pointer;
+  transition: all 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hideBtnOn {
+  border-color: var(--cyan);
   color: var(--cyan);
-  opacity: 0.7;
-  letter-spacing: 0.04em;
+  background: rgba(0,207,255,0.07);
 }
 
-/* ─── Grid ───────────────────────────────────────────────── */
-.grid {
+/* ── Expand rows ──────────────────────────────────────── */
+.expandRow {
   display: flex;
-  flex-direction: column;
+  gap: 4px;
+  margin: 3px 0;
 }
 
-.hourRow {
+.xBtn {
+  flex: 1;
+  padding: 5px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,0.06);
+  border-radius: 9px;
+  color: rgba(255,255,255,0.18);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.xBtnAdd:hover {
+  border-color: rgba(0,207,255,0.3);
+  color: rgba(0,207,255,0.5);
+}
+
+.xBtnRm {
+  border-color: rgba(255,45,120,0.1);
+  color: rgba(255,45,120,0.22);
+}
+
+.xBtnRm:hover {
+  border-color: rgba(255,45,120,0.4);
+  color: rgba(255,45,120,0.6);
+}
+
+/* ── Flat grid (v2.7-style) ───────────────────────────── */
+.slotsContainer {
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--r);
+  overflow: visible;
+  background: rgba(0,0,0,0.1);
+  margin-bottom: 4px;
+}
+
+.sgGrid {
   display: grid;
   grid-template-columns: 28px 1fr;
-  border-top: 1px solid var(--border);
-}
-
-.hourRow:last-child {
-  border-bottom: 1px solid var(--border);
-}
-
-/* ─── Hour label ─────────────────────────────────────────── */
-.hourLabel {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 4px;
-  grid-row: 1 / 3;
-}
-
-.hourNum {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: var(--text-dim);
-  line-height: 1;
-}
-
-/* ─── Sub-slots ──────────────────────────────────────────── */
-.subSlots {
-  display: flex;
-  flex-direction: column;
-}
-
-.slot {
-  position: relative;
-  min-height: 40px;
+  grid-auto-rows: auto;
   overflow: visible;
 }
 
+.sgLabel {
+  grid-column: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.32);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  user-select: none;
+}
+
+.sgLabelNow {
+  color: var(--cyan);
+  font-size: 0.56rem;
+}
+
+.sgHalf {
+  grid-column: 2;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  position: relative;
+  overflow: visible;
+  transition: background 0.12s;
+  min-height: 40px;
+}
+
+.sgHalfBot {
+  border-bottom: 1px dashed rgba(255,255,255,0.04);
+}
+
+.sgEmpty {
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  cursor: default;
+  background: rgba(255,255,255,0.008);
+  height: 40px;
+}
+
+.sgNow {
+  background: rgba(0,207,255,0.018);
+}
+
+.sgConsumed {
+  grid-column: 2;
+  height: 40px;
+  visibility: hidden;
+}
+
+.halfTime {
+  font-size: 0.42rem;
+  color: rgba(255,255,255,0.08);
+  font-family: 'Orbitron', monospace;
+  transition: color 0.12s;
+  user-select: none;
+}
+
+.sgEmpty:hover .halfTime {
+  color: rgba(255,255,255,0.22);
+}
+
+/* Drop hint */
+.dropHint {
+  margin-left: auto;
+  padding-right: 8px;
+  font-size: 1rem;
+  color: var(--cyan);
+  opacity: 0.6;
+  font-weight: 300;
+}
+
+/* ── Slot handle ──────────────────────────────────────── */
 .slotHandle {
   display: flex;
   align-items: center;
@@ -125,57 +200,6 @@
 
 .slotHandle:hover { opacity: 0.75; }
 .slotHandle:active { cursor: grabbing; }
-
-.slotFilled {
-  /* filled slot contains a TodoChip */
-}
-
-.slotEmpty {
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
-}
-
-.slotEmpty:last-child {
-  border-bottom: none;
-}
-
-.emptySlot {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding-left: 6px;
-}
-
-.emptyTime {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.1);
-}
-
-.consumed {
-  height: 0;
-  overflow: hidden;
-}
-
-/* ─── Drop zones ─────────────────────────────────────────── */
-.dropZone {
-  border: 1px dashed rgba(0, 207, 255, 0.3);
-  cursor: copy;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.dropZone:hover {
-  background: rgba(0, 207, 255, 0.05);
-  border-color: var(--cyan);
-}
-
-.dropHint {
-  margin-left: auto;
-  padding-right: 8px;
-  font-size: 1rem;
-  color: var(--cyan);
-  opacity: 0.6;
-  font-weight: 300;
-}
 
 /* ─── Remove Dialog ──────────────────────────────────────── */
 .dialogOverlay {

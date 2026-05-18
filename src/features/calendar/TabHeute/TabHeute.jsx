@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useAppStore } from '../../../store'
-import { todayKey, sk, parseHHMM } from '../../../utils'
+import { todayKey, sk, parseHHMM, ALL_SLOT_KEYS } from '../../../utils'
 import Zeitplan  from '../Zeitplan/Zeitplan'
 import Pool      from '../Pool/Pool'
 import EditModal from '../../../components/EditModal/EditModal'
@@ -10,7 +10,7 @@ export default function TabHeute() {
   const { todos, setTodos, days, setDays } = useAppStore()
 
   const [visStart,    setVisStart]    = useState(8)
-  const [visEnd]                      = useState(20)
+  const [visEnd,      setVisEnd]      = useState(20)
   const [editingTodo, setEditingTodo] = useState(null)
   const [dragState,   setDragState]   = useState(null)
 
@@ -73,6 +73,32 @@ export default function TabHeute() {
     } else {
       setTodaySlots(prev => ({ ...prev, [slotKey]: slotData }))
     }
+  }, [setTodaySlots])
+
+  // ─── Zeitplan expand/shrink ───────────────────────────────
+  const handleExpandUp   = useCallback(() => setVisStart(v => Math.max(0, v - 1)), [])
+  const handleExpandDown = useCallback(() => setVisEnd(v => Math.min(23, v + 1)), [])
+  const handleRemoveHour = useCallback((h) => {
+    if (h === visStart) setVisStart(v => Math.min(v + 1, visEnd - 1))
+    else if (h === visEnd) setVisEnd(v => Math.max(v - 1, visStart + 1))
+  }, [visStart, visEnd])
+
+  // ─── Shift all slots ±30min ───────────────────────────────
+  const handleShiftAll = useCallback((dir) => {
+    setTodaySlots(currentSlots => {
+      const keys = Object.keys(currentSlots).filter(k => !currentSlots[k]?.locked)
+      const sorted = [...keys].sort((a, b) => dir * (parseFloat(b) - parseFloat(a)))
+      const ns = { ...currentSlots }
+      sorted.forEach(k => {
+        let ni = ALL_SLOT_KEYS.indexOf(k) + dir
+        while (ni >= 0 && ni < ALL_SLOT_KEYS.length && ns[ALL_SLOT_KEYS[ni]]?.locked) ni += dir
+        if (ni >= 0 && ni < ALL_SLOT_KEYS.length && !ns[ALL_SLOT_KEYS[ni]]) {
+          ns[ALL_SLOT_KEYS[ni]] = ns[k]
+          delete ns[k]
+        }
+      })
+      return ns
+    })
   }, [setTodaySlots])
 
   // ─── Drag & drop ─────────────────────────────────────────
@@ -144,7 +170,10 @@ export default function TabHeute() {
         onToggleSlotDone={handleToggleSlotDone}
         onEditTodo={handleEdit}
         onRemoveSlot={handleRemoveSlot}
-        onVisibleStartChange={setVisStart}
+        onShiftAll={handleShiftAll}
+        onExpandUp={handleExpandUp}
+        onExpandDown={handleExpandDown}
+        onRemoveHour={handleRemoveHour}
         onSlotDragStart={handleSlotDragStart}
         dragState={dragState}
         onDrop={handleDropOnSlot}
