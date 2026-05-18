@@ -1,223 +1,318 @@
 import { useState, useRef, useEffect } from 'react'
 import s from './TabGewicht.module.css'
 
-const SK = "adhs_health_weight"
-const SK_TARGET = "adhs_weight_target"
+const SK      = 'adhs_health_weight'
+const SK_DASH = 'adhs_wdash'
 
-const loadEntries = () => { try { const r=localStorage.getItem(SK); return r?JSON.parse(r):[] } catch { return [] } }
+// ── Date helpers ─────────────────────────────────────────────
+const isoToday  = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
+const isoAddDays= (iso,n) => { const d=new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10) }
+const isoLabel  = (iso) => { const[,m,d]=iso.split('-'); return `${d}.${m}` }
+
+// ── Stats ─────────────────────────────────────────────────────
+function wAvg(entries, refDate, days) {
+  const dates = Array.from({length:days},(_,i)=>isoAddDays(refDate,-(days-1-i)))
+  const vals  = dates.map(d=>entries.find(e=>e.date===d)?.kg).filter(v=>v!=null)
+  return vals.length ? vals.reduce((a,v)=>a+v,0)/vals.length : null
+}
+function kcalAvg(entries, refDate, days) {
+  const dates = Array.from({length:days},(_,i)=>isoAddDays(refDate,-(days-1-i)))
+  const vals  = dates.map(d=>entries.find(e=>e.date===d)?.kcal).filter(v=>v!=null)
+  return vals.length ? vals.reduce((a,v)=>a+v,0)/vals.length : null
+}
+function estimatedMaintenance(entries, refDate, N) {
+  const avgCal   = kcalAvg(entries, refDate, N)
+  const trendNow = wAvg(entries, refDate, 7)
+  const trendPast= wAvg(entries, isoAddDays(refDate,-N), 7)
+  if (avgCal==null||trendNow==null||trendPast==null) return null
+  return Math.round(avgCal + ((trendPast-trendNow)*7000)/N)
+}
+function weeklyChangeTrend(entries, refDate) {
+  const now  = wAvg(entries, refDate, 7)
+  const past = wAvg(entries, isoAddDays(refDate,-7), 7)
+  return (now==null||past==null) ? null : +(now-past).toFixed(2)
+}
+
+// ── Storage ───────────────────────────────────────────────────
+const loadEntries = () => {
+  try {
+    const r = localStorage.getItem(SK)
+    if (!r) return []
+    return JSON.parse(r).map(e=>({
+      date: e.date,
+      kg:   e.kg   ?? e.weight ?? null,
+      kcal: e.kcal ?? null,
+    })).filter(e=>e.date&&e.kg!=null)
+  } catch { return [] }
+}
 const saveEntries = e => { try { localStorage.setItem(SK,JSON.stringify(e)) } catch {} }
 
+const DEFAULT_DASH = {
+  showCurrentWeight:true, showAvgWeight7:true, showAvgKcal7:true,
+  showWeekChangeTrend:true, showDiffFromTrend:true, showMaintenance:true,
+}
+const loadDash  = () => { try { const r=localStorage.getItem(SK_DASH); return r?JSON.parse(r):DEFAULT_DASH } catch { return DEFAULT_DASH } }
+const saveDash  = d => { try { localStorage.setItem(SK_DASH,JSON.stringify(d)) } catch {} }
+
+// ── Component ─────────────────────────────────────────────────
 export default function TabGewicht({ onBack }) {
-  const [entries, setEntries] = useState(() => loadEntries())
-  const [inputVal, setInputVal] = useState("")
-  const [inputNote, setInputNote] = useState("")
-  const [targetWeight, setTargetWeight] = useState(() => {
-    try { const r=localStorage.getItem(SK_TARGET); return r?JSON.parse(r):null } catch { return null }
-  })
-  const [targetInput, setTargetInput] = useState("")
-  const [showTargetInput, setShowTargetInput] = useState(false)
-  const canvasRef = useRef(null)
+  const today = isoToday()
+  const [entries,        setEntriesRaw]      = useState(loadEntries)
+  const [activeTab,      setActiveTab]        = useState('dashboard')
+  const [chartView,      setChartView]        = useState('weight')
+  const [inputDate,      setInputDate]        = useState(today)
+  const [inputKg,        setInputKg]          = useState('')
+  const [inputKcal,      setInputKcal]        = useState('')
+  const [dashSettings,   setDashSettingsRaw]  = useState(loadDash)
+  const [chartOpts,      setChartOpts]        = useState({show7:true,show14:true,show21:true})
+  const chartRef = useRef(null)
 
-  const addEntry = () => {
-    const w = parseFloat(inputVal.replace(",","."))
-    if(!w||w<20||w>300) return
-    const today = new Date().toISOString().slice(0,10)
-    const newEntry = {id:Date.now(),date:today,weight:w,note:inputNote.trim()}
-    const next = [newEntry,...entries].sort((a,b)=>b.date.localeCompare(a.date))
-    setEntries(next); saveEntries(next)
-    setInputVal(""); setInputNote("")
-  }
+  const setEntries     = e => { setEntriesRaw(e);      saveEntries(e) }
+  const setDashSettings= d => { setDashSettingsRaw(d); saveDash(d) }
 
-  const deleteEntry = id => {
-    const next = entries.filter(e=>e.id!==id)
-    setEntries(next); saveEntries(next)
-  }
-
-  const saveTarget = () => {
-    const t = parseFloat(targetInput.replace(",","."))
-    if(!t||t<20||t>300) return
-    setTargetWeight(t); localStorage.setItem(SK_TARGET,JSON.stringify(t))
-    setTargetInput(""); setShowTargetInput(false)
-  }
-
-  // Sorted oldest-first for chart
-  const sorted = [...entries].sort((a,b)=>a.date.localeCompare(b.date))
-  const latest = entries[0]?.weight
-
-  // 30-day trend
-  const now = Date.now()
-  const oldest30 = sorted.find(e=>(now-new Date(e.date))/(864e5)<=30)
-  const trend30 = (latest&&oldest30&&oldest30.id!==entries[0]?.id) ? (latest-oldest30.weight).toFixed(1) : null
-
+  // Pre-fill when date changes
   useEffect(() => {
-    const canvas = canvasRef.current
-    if(!canvas) return
-    const dpr = window.devicePixelRatio||1
-    const W = canvas.offsetWidth, H = canvas.offsetHeight
+    const ex = entries.find(e=>e.date===inputDate)
+    setInputKg  (ex?.kg   != null ? String(ex.kg)   : '')
+    setInputKcal(ex?.kcal != null ? String(ex.kcal) : '')
+  }, [inputDate, entries])
+
+  const submitEntry = () => {
+    const kg   = parseFloat(inputKg.replace(',','.'))
+    const kcal = parseInt(inputKcal) || null
+    if (!inputKg.trim()||isNaN(kg)||kg<20||kg>300) return
+    const rec  = { date:inputDate, kg:Math.round(kg*10)/10, kcal:kcal&&kcal>0?kcal:null }
+    const idx  = entries.findIndex(e=>e.date===inputDate)
+    setEntries(idx>=0 ? entries.map((e,i)=>i===idx?rec:e) : [...entries,rec].sort((a,b)=>a.date.localeCompare(b.date)))
+  }
+
+  const deleteEntry = date => setEntries(entries.filter(e=>e.date!==date))
+
+  // Dashboard stats
+  const sorted         = [...entries].sort((a,b)=>b.date.localeCompare(a.date))
+  const currentWeight  = sorted[0]?.kg ?? null
+  const avg7           = wAvg(entries, today, 7)
+  const avgKcal7       = kcalAvg(entries, today, 7)
+  const wChangeTrend   = weeklyChangeTrend(entries, today)
+  const diffFromTrend  = currentWeight!=null&&avg7!=null ? +(currentWeight-avg7).toFixed(2) : null
+  const maint7         = estimatedMaintenance(entries, today, 7)
+  const maint14        = estimatedMaintenance(entries, today, 14)
+  const maint21        = estimatedMaintenance(entries, today, 21)
+
+  const insight = (() => {
+    if (wChangeTrend==null) return 'Noch zu wenig Daten für einen Trend.'
+    if (diffFromTrend!=null&&Math.abs(diffFromTrend)>1.0) return `Tagesgewicht weicht ${diffFromTrend>0?'+':''}${diffFromTrend} kg vom Trend ab — vermutlich Schwankung.`
+    if (Math.abs(wChangeTrend)<0.1) return 'Gewicht ist stabil im Trend.'
+    if (wChangeTrend>0.1) return `Gewicht steigt im Trend (+${wChangeTrend} kg/Woche).`
+    return `Gewicht fällt im Trend (${wChangeTrend} kg/Woche).`
+  })()
+
+  const fmtKg    = v => v==null ? '—' : `${v.toFixed(1)} kg`
+  const fmtKcal  = v => v==null ? '—' : `${Math.round(v)} kcal`
+  const fmtDelta = v => { if(v==null)return'—'; return `${v>0?'+':''}${v.toFixed(2)} kg` }
+  const deltaClr = v => v==null?'var(--text-dim)':v>0?'var(--pink)':v<0?'#00FF94':'rgba(255,255,255,0.6)'
+
+  // Chart
+  useEffect(() => {
+    const canvas = chartRef.current
+    if (!canvas||activeTab!=='dashboard'||!entries.length) return
+    const dpr=window.devicePixelRatio||1
+    const W=canvas.offsetWidth, H=canvas.offsetHeight
     if(!W||!H) return
     canvas.width=W*dpr; canvas.height=H*dpr
-    const ctx = canvas.getContext("2d")
+    const ctx=canvas.getContext('2d')
     ctx.scale(dpr,dpr)
-
-    const chartData = sorted.slice(-30)
-    if(chartData.length < 2) {
-      ctx.fillStyle="#06070f"; ctx.fillRect(0,0,W,H)
-      ctx.fillStyle="rgba(255,255,255,0.2)"; ctx.font=`11px Outfit,sans-serif`; ctx.textAlign="center"
-      ctx.fillText("Mindestens 2 Einträge für Chart",W/2,H/2)
-      return
-    }
-
-    const PAD={l:40,r:12,t:16,b:28}
+    const winDays=30
+    const dates=Array.from({length:winDays},(_,i)=>isoAddDays(today,-(winDays-1-i)))
+    const PAD={t:12,r:8,b:28,l:44}
     const cw=W-PAD.l-PAD.r, ch=H-PAD.t-PAD.b
-    const weights=chartData.map(e=>e.weight)
-    const minW=Math.min(...weights,(targetWeight||Infinity))-2
-    const maxW=Math.max(...weights,(targetWeight||0))+2
+    const txI=i=>PAD.l+i*(cw/(winDays-1))
+    ctx.clearRect(0,0,W,H)
 
-    const tx=i=>PAD.l+(i/(chartData.length-1))*cw
-    const ty=w=>PAD.t+(1-(w-minW)/(maxW-minW))*ch
+    const drawGrid=()=>{ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;for(let i=0;i<=4;i++){const y=PAD.t+i*(ch/4);ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cw,y);ctx.stroke()}}
+    const drawYLabels=(mn,mx,fmt)=>{ctx.fillStyle='rgba(255,255,255,0.28)';ctx.font=`9px Outfit,sans-serif`;ctx.textAlign='right';for(let i=0;i<=4;i++){const v=mn+((mx-mn)*(4-i)/4);ctx.fillText(fmt(v),PAD.l-4,PAD.t+i*(ch/4)+3)}}
+    const ty=(v,mn,mx)=>PAD.t+ch-((v-mn)/(mx-mn))*ch
 
-    ctx.fillStyle="#06070f"; ctx.fillRect(0,0,W,H)
-
-    // Grid
-    ctx.strokeStyle="rgba(255,255,255,0.04)"; ctx.lineWidth=1
-    for(let i=0;i<=4;i++){
-      const y=PAD.t+i*(ch/4)
-      ctx.beginPath(); ctx.moveTo(PAD.l,y); ctx.lineTo(PAD.l+cw,y); ctx.stroke()
-      const val=maxW-i*(maxW-minW)/4
-      ctx.fillStyle="rgba(255,255,255,0.3)"; ctx.font=`9px Outfit,sans-serif`; ctx.textAlign="right"
-      ctx.fillText(val.toFixed(1),PAD.l-4,y+3)
+    if (chartView==='weight') {
+      const vals   = dates.map(d=>entries.find(e=>e.date===d)?.kg??null)
+      const trends = dates.map((_,i)=>wAvg(entries,dates[i],7))
+      const allV   = [...vals,...trends].filter(v=>v!=null)
+      if(!allV.length) return
+      const mn=Math.min(...allV)-0.5, mx=Math.max(...allV)+0.5
+      drawGrid(); drawYLabels(mn,mx,v=>v.toFixed(1))
+      ctx.strokeStyle='#00CFFF';ctx.lineWidth=1.5;ctx.setLineDash([]);let st=false;ctx.beginPath()
+      trends.forEach((v,i)=>{if(v==null)return;const x=txI(i),y=ty(v,mn,mx);if(!st){ctx.moveTo(x,y);st=true}else ctx.lineTo(x,y)})
+      ctx.stroke()
+      ctx.fillStyle='#00e5b8'
+      vals.forEach((v,i)=>{if(v==null)return;ctx.beginPath();ctx.arc(txI(i),ty(v,mn,mx),3,0,2*Math.PI);ctx.fill()})
+    } else if (chartView==='change') {
+      const changes=dates.map((_,i)=>{const n=wAvg(entries,dates[i],7);const p=wAvg(entries,isoAddDays(dates[i],-7),7);return(n!=null&&p!=null)?+(n-p).toFixed(2):null})
+      const allV=changes.filter(v=>v!=null)
+      if(!allV.length) return
+      const mx=Math.max(Math.abs(Math.min(...allV)),Math.abs(Math.max(...allV)),0.5), mn=-mx
+      drawGrid()
+      ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font=`9px Outfit,sans-serif`;ctx.textAlign='right';ctx.fillText('0',PAD.l-4,PAD.t+ch/2+3)
+      ctx.strokeStyle='var(--cyan)';ctx.lineWidth=2;ctx.setLineDash([]);let st=false;ctx.beginPath()
+      changes.forEach((v,i)=>{if(v==null)return;const x=txI(i),y=ty(v,mn,mx);if(!st){ctx.moveTo(x,y);st=true}else ctx.lineTo(x,y)})
+      ctx.stroke()
+    } else if (chartView==='calories') {
+      const vals=dates.map(d=>entries.find(e=>e.date===d)?.kcal??null)
+      const avgs=dates.map((_,i)=>kcalAvg(entries,dates[i],7))
+      const allV=[...vals,...avgs].filter(v=>v!=null)
+      if(!allV.length) return
+      const mn=0, mx=Math.max(...allV)*1.1
+      drawGrid(); drawYLabels(mn,mx,v=>Math.round(v))
+      ctx.strokeStyle='#ffb547';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);let st=false;ctx.beginPath()
+      avgs.forEach((v,i)=>{if(v==null)return;const x=txI(i),y=ty(v,mn,mx);if(!st){ctx.moveTo(x,y);st=true}else ctx.lineTo(x,y)})
+      ctx.stroke();ctx.setLineDash([])
+      ctx.fillStyle='#ff8c47'
+      vals.forEach((v,i)=>{if(v==null)return;ctx.beginPath();ctx.arc(txI(i),ty(v,mn,mx),3,0,2*Math.PI);ctx.fill()})
+    } else if (chartView==='maintenance') {
+      const m7s=dates.map(d=>estimatedMaintenance(entries,d,7))
+      const m14s=dates.map(d=>estimatedMaintenance(entries,d,14))
+      const m21s=dates.map(d=>estimatedMaintenance(entries,d,21))
+      const allV=[...(chartOpts.show7?m7s:[]),...(chartOpts.show14?m14s:[]),...(chartOpts.show21?m21s:[])].filter(v=>v!=null)
+      if(!allV.length) return
+      const mn=Math.min(...allV)-100, mx=Math.max(...allV)+100
+      drawGrid(); drawYLabels(mn,mx,v=>Math.round(v))
+      const drawLine=(data,color)=>{ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.setLineDash([]);let st=false;ctx.beginPath();data.forEach((v,i)=>{if(v==null)return;const x=txI(i),y=ty(v,mn,mx);if(!st){ctx.moveTo(x,y);st=true}else ctx.lineTo(x,y)});ctx.stroke()}
+      if(chartOpts.show7)drawLine(m7s,'#00e5b8')
+      if(chartOpts.show14)drawLine(m14s,'#00CFFF')
+      if(chartOpts.show21)drawLine(m21s,'#8e9eff')
     }
+    ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font=`9px Outfit,sans-serif`;ctx.textAlign='center'
+    dates.forEach((d,i)=>{if(i%7!==0&&i!==winDays-1)return;ctx.fillText(isoLabel(d),txI(i),H-5)})
+  }, [entries, chartView, chartOpts, activeTab])
 
-    // Target line
-    if(targetWeight&&targetWeight>=minW&&targetWeight<=maxW){
-      const ty_=ty(targetWeight)
-      ctx.strokeStyle="rgba(255,45,120,0.5)"; ctx.lineWidth=1; ctx.setLineDash([6,4])
-      ctx.beginPath(); ctx.moveTo(PAD.l,ty_); ctx.lineTo(PAD.l+cw,ty_); ctx.stroke()
-      ctx.setLineDash([])
-      ctx.fillStyle="rgba(255,45,120,0.8)"; ctx.font=`9px Outfit,sans-serif`; ctx.textAlign="left"
-      ctx.fillText(`Ziel ${targetWeight}`,PAD.l+4,ty_-3)
-    }
-
-    // Fill gradient
-    const grad=ctx.createLinearGradient(0,PAD.t,0,PAD.t+ch)
-    grad.addColorStop(0,"rgba(0,207,255,0.2)"); grad.addColorStop(1,"rgba(0,207,255,0)")
-    ctx.beginPath()
-    ctx.moveTo(tx(0),ty(chartData[0].weight))
-    chartData.forEach((e,i)=>ctx.lineTo(tx(i),ty(e.weight)))
-    ctx.lineTo(tx(chartData.length-1),PAD.t+ch)
-    ctx.lineTo(tx(0),PAD.t+ch)
-    ctx.closePath(); ctx.fillStyle=grad; ctx.fill()
-
-    // Line
-    ctx.beginPath(); ctx.strokeStyle="#00CFFF"; ctx.lineWidth=2; ctx.lineJoin="round"
-    chartData.forEach((e,i)=>i===0?ctx.moveTo(tx(i),ty(e.weight)):ctx.lineTo(tx(i),ty(e.weight)))
-    ctx.stroke()
-
-    // Points
-    chartData.forEach((e,i)=>{
-      const isLast=i===chartData.length-1
-      ctx.beginPath(); ctx.arc(tx(i),ty(e.weight),isLast?5:3,0,Math.PI*2)
-      ctx.fillStyle=isLast?"#00CFFF":"rgba(0,207,255,0.55)"; ctx.fill()
-    })
-
-    // X labels
-    const step=Math.ceil(chartData.length/5)
-    ctx.fillStyle="rgba(255,255,255,0.28)"; ctx.font=`9px Outfit,sans-serif`; ctx.textAlign="center"
-    chartData.forEach((e,i)=>{
-      if(i%step===0||i===chartData.length-1){
-        const [,mm,dd]=e.date.split("-")
-        ctx.fillText(`${dd}.${mm}`,tx(i),PAD.t+ch+14)
-      }
-    })
-  }, [entries, targetWeight])
+  const isEditing = !!entries.find(e=>e.date===inputDate)
 
   return (
     <div className={s.page}>
       <div className={s.header}>
         <button className={s.back} onClick={onBack}>← Tools</button>
-        <span className={s.title}>⚖ Gewicht</span>
-      </div>
-
-      <div className={s.addCard}>
-        <div className={s.addRow}>
-          <input className={s.weightInput} type="number" inputMode="decimal" step="0.1"
-            placeholder="kg" value={inputVal}
-            onChange={e=>setInputVal(e.target.value)}
-            onKeyDown={e=>e.key==="Enter"&&addEntry()}/>
-          <input className={s.noteInput} type="text" placeholder="Notiz (optional)"
-            value={inputNote}
-            onChange={e=>setInputNote(e.target.value)}
-            onKeyDown={e=>e.key==="Enter"&&addEntry()}/>
-          <button className={s.addBtn} onClick={addEntry}>+</button>
+        <div className={s.titleBlock}>
+          <div className={s.eyebrow}>Tracking</div>
+          <div className={s.title}>Gewicht<em>tracker</em></div>
         </div>
       </div>
 
-      {entries.length>0 && (
-        <div className={s.statsRow}>
-          <div className={s.statCard}>
-            <div className={s.statVal}>{latest?.toFixed(1)}</div>
-            <div className={s.statLbl}>Aktuell kg</div>
-          </div>
-          {trend30!==null && (
-            <div className={s.statCard}>
-              <div className={s.statVal} style={{color:parseFloat(trend30)<0?"#00FF94":"var(--pink)"}}>
-                {parseFloat(trend30)>0?"+":""}{trend30}
-              </div>
-              <div className={s.statLbl}>30 Tage</div>
-            </div>
-          )}
-          {targetWeight && (
-            <div className={s.statCard}>
-              <div className={s.statVal} style={{color:"var(--pink)"}}>{targetWeight?.toFixed(1)}</div>
-              <div className={s.statLbl}>Ziel kg</div>
-            </div>
-          )}
-          {targetWeight&&latest && (
-            <div className={s.statCard}>
-              <div className={s.statVal} style={{color:(latest-targetWeight)<=0?"#00FF94":"var(--cyan)"}}>
-                {(latest-targetWeight)>0?"+":""}{(latest-targetWeight).toFixed(1)}
-              </div>
-              <div className={s.statLbl}>zum Ziel</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className={s.targetRow}>
-        {showTargetInput ? (
-          <div className={s.targetInputRow}>
-            <input className={s.targetInput} type="number" inputMode="decimal" step="0.1"
-              placeholder="Zielgewicht kg" value={targetInput}
-              onChange={e=>setTargetInput(e.target.value)}
-              onKeyDown={e=>e.key==="Enter"&&saveTarget()} autoFocus/>
-            <button className={s.targetSaveBtn} onClick={saveTarget}>✓</button>
-            <button className={s.targetCancelBtn} onClick={()=>setShowTargetInput(false)}>✕</button>
-          </div>
-        ) : (
-          <button className={s.targetBtn} onClick={()=>setShowTargetInput(true)}>
-            {targetWeight?`🎯 Ziel: ${targetWeight} kg – ändern`:"🎯 Zielgewicht setzen"}
-          </button>
-        )}
-      </div>
-
-      {sorted.length>=2 && (
-        <div className={s.chartWrap}>
-          <canvas ref={canvasRef} style={{width:"100%",height:180,display:"block"}}/>
-        </div>
-      )}
-
-      <div className={s.entriesList}>
-        {entries.length===0 ? (
-          <div className={s.empty}>Noch keine Einträge.<br/>Trage dein erstes Gewicht ein.</div>
-        ) : entries.map(e => (
-          <div key={e.id} className={s.entryRow}>
-            <span className={s.entryDate}>{e.date.slice(5).replace("-",".")}</span>
-            <span className={s.entryWeight}>{e.weight.toFixed(1)}<span className={s.entryUnit}> kg</span></span>
-            {e.note&&<span className={s.entryNote}>{e.note}</span>}
-            <button className={s.entryDel} onClick={()=>deleteEntry(e.id)}>✕</button>
-          </div>
+      {/* Tab nav */}
+      <div className={s.tabs}>
+        {[['dashboard','Dashboard'],['verlauf','Verlauf'],['einstellungen','⚙']].map(([id,lb])=>(
+          <button key={id} className={[s.tab,activeTab===id?s.tabActive:''].join(' ')} onClick={()=>setActiveTab(id)}>{lb}</button>
         ))}
       </div>
+
+      {/* Quick input — immer sichtbar */}
+      <div className={s.inputCard}>
+        <div className={s.inputDateRow}>
+          <input type="date" className={s.dateInput} value={inputDate} onChange={e=>setInputDate(e.target.value)} />
+          {isEditing && <span className={s.editBadge}>bearbeiten</span>}
+        </div>
+        <div className={s.inputRow}>
+          <div className={s.inputField}>
+            <span className={s.inputUnit}>kg</span>
+            <input className={s.numInput} type="number" step="0.1" min="20" max="300"
+              placeholder="—" value={inputKg} onChange={e=>setInputKg(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&submitEntry()} />
+          </div>
+          <div className={s.inputField}>
+            <span className={s.inputUnit}>kcal</span>
+            <input className={s.numInput} type="number" step="10" min="0" max="20000"
+              placeholder="—" value={inputKcal} onChange={e=>setInputKcal(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&submitEntry()} />
+          </div>
+          <button className={s.saveBtn} onClick={submitEntry} disabled={!inputKg.trim()}>✓</button>
+        </div>
+      </div>
+
+      {/* ══ DASHBOARD ══ */}
+      {activeTab==='dashboard' && (
+        <div className={s.dashboard}>
+          <div className={s.kpiGrid}>
+            {dashSettings.showCurrentWeight && <div className={s.kpi}><div className={s.kpiVal}>{fmtKg(currentWeight)}</div><div className={s.kpiLbl}>Aktuell</div></div>}
+            {dashSettings.showAvgWeight7    && <div className={s.kpi}><div className={s.kpiVal}>{fmtKg(avg7!=null?+avg7.toFixed(1):null)}</div><div className={s.kpiLbl}>Ø 7 Tage</div></div>}
+            {dashSettings.showAvgKcal7      && <div className={s.kpi}><div className={s.kpiVal}>{fmtKcal(avgKcal7)}</div><div className={s.kpiLbl}>Ø Kcal 7T</div></div>}
+            {dashSettings.showWeekChangeTrend && <div className={s.kpi}><div className={s.kpiVal} style={{color:deltaClr(wChangeTrend)}}>{fmtDelta(wChangeTrend)}</div><div className={s.kpiLbl}>Trend/Wo.</div></div>}
+            {dashSettings.showDiffFromTrend && <div className={s.kpi}><div className={s.kpiVal} style={{color:deltaClr(diffFromTrend)}}>{fmtDelta(diffFromTrend)}</div><div className={s.kpiLbl}>vs. Trend</div></div>}
+          </div>
+
+          {dashSettings.showMaintenance && (maint7!=null||maint14!=null||maint21!=null) && (
+            <div className={s.maintCard}>
+              <div className={s.maintTitle}>Geschätzte Erhaltungskalorien</div>
+              {maint7  != null && <div className={s.maintRow}><span className={s.maintLbl}>7 Tage</span> <span className={s.maintVal}>{maint7}  kcal</span></div>}
+              {maint14 != null && <div className={s.maintRow}><span className={s.maintLbl}>14 Tage</span><span className={s.maintVal}>{maint14} kcal</span></div>}
+              {maint21 != null && <div className={s.maintRow}><span className={s.maintLbl}>21 Tage</span><span className={s.maintVal}>{maint21} kcal</span></div>}
+            </div>
+          )}
+
+          <div className={s.chartSection}>
+            <div className={s.chartTabs}>
+              {[['weight','Gewicht'],['change','Veränderung'],['calories','Kalorien'],['maintenance','Bedarf']].map(([id,lb])=>(
+                <button key={id} className={[s.chartTab,chartView===id?s.chartTabActive:''].join(' ')} onClick={()=>setChartView(id)}>{lb}</button>
+              ))}
+            </div>
+            {chartView==='maintenance' && (
+              <div className={s.chartLegend}>
+                {[['show7','7T','#00e5b8'],['show14','14T','#00CFFF'],['show21','21T','#8e9eff']].map(([k,lb,c])=>(
+                  <button key={k} className={[s.legendBtn,chartOpts[k]?s.legendBtnActive:''].join(' ')}
+                    style={chartOpts[k]?{borderColor:c,color:c}:{}}
+                    onClick={()=>setChartOpts(p=>({...p,[k]:!p[k]}))}>
+                    <span className={s.legendDot} style={{background:c}}/>{lb}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className={s.canvasWrap}>
+              {entries.length < 3
+                ? <div className={s.chartEmpty}>Mindestens 3 Einträge für Chart.</div>
+                : <canvas ref={chartRef} className={s.canvas} style={{width:'100%',height:165}} />
+              }
+            </div>
+          </div>
+
+          <div className={s.insight}>{insight}</div>
+        </div>
+      )}
+
+      {/* ══ VERLAUF ══ */}
+      {activeTab==='verlauf' && (
+        <div className={s.verlauf}>
+          {sorted.length===0
+            ? <div className={s.empty}>Noch keine Einträge.</div>
+            : sorted.map(e=>(
+              <div key={e.date} className={s.histRow}>
+                <div className={s.histDate}>{isoLabel(e.date)}</div>
+                <div className={s.histKg}>{e.kg} kg</div>
+                {e.kcal!=null && <div className={s.histKcal}>{e.kcal} kcal</div>}
+                <button className={s.histDel} onClick={()=>deleteEntry(e.date)}>✕</button>
+              </div>
+            ))
+          }
+        </div>
+      )}
+
+      {/* ══ EINSTELLUNGEN ══ */}
+      {activeTab==='einstellungen' && (
+        <div className={s.settings}>
+          <div className={s.settingsTitle}>Dashboard anpassen</div>
+          {[
+            {key:'showCurrentWeight',  label:'Aktuelles Gewicht'},
+            {key:'showAvgWeight7',     label:'7-Tage-Ø Gewicht'},
+            {key:'showAvgKcal7',       label:'7-Tage-Ø Kalorien'},
+            {key:'showWeekChangeTrend',label:'Wochenveränderung (Trend)'},
+            {key:'showDiffFromTrend',  label:'Differenz vs. Trend'},
+            {key:'showMaintenance',    label:'Bedarfskalorien-Tabelle'},
+          ].map(({key,label})=>(
+            <div key={key} className={s.toggleRow} onClick={()=>setDashSettings({...dashSettings,[key]:!dashSettings[key]})}>
+              <div className={[s.toggleTrack,dashSettings[key]?s.toggleOn:''].join(' ')}>
+                <div className={s.toggleThumb}/>
+              </div>
+              <span className={s.toggleLabel}>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

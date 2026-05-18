@@ -4,13 +4,13 @@ import { TOOL_REGISTRY } from '../toolRegistry'
 import s from './TabTools.module.css'
 
 const VIEWS = [
-  { id: 'all',  label: 'Alle Tools' },
   { id: 'mine', label: 'Meine Tools' },
+  { id: 'all',  label: 'Alle Tools' },
 ]
 
 // Map tool id → tab number
 const TOOL_TAB = {
-  rad:          null, // handled separately (goes to Heute + sets modus)
+  rad:          11,
   timer:        5,
   rezepte:      6,
   pizza:        7,
@@ -21,15 +21,10 @@ const TOOL_TAB = {
 }
 
 export default function TabTools() {
-  const [view, setView] = useState('all')
-  const { activeTools, toggleTool, setCurrentTab, setHeuteModus } = useAppStore()
+  const [view, setView] = useState('mine')
+  const { activeTools, toggleTool, setCurrentTab } = useAppStore()
 
   const openTool = (tool) => {
-    if (tool.id === 'rad') {
-      setHeuteModus('rad')
-      setCurrentTab(0)
-      return
-    }
     const tab = TOOL_TAB[tool.id]
     if (tab != null) {
       setCurrentTab(tab)
@@ -37,12 +32,7 @@ export default function TabTools() {
   }
 
   const handleCardClick = (tool) => {
-    const isActive = activeTools.includes(tool.id)
-    if (!isActive) {
-      toggleTool(tool.id)
-    } else {
-      openTool(tool)
-    }
+    openTool(tool)
   }
 
   const myTools = TOOL_REGISTRY.filter(t => activeTools.includes(t.id))

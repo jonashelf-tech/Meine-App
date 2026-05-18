@@ -44,18 +44,11 @@ export default function Pool({
 }) {
   const [fullscreen, setFullscreen] = useState(false)
 
-  // Compute placed sets
   const placedTexts = new Set(
-    Object.values(todaySlots)
-      .filter(Boolean)
-      .map(sl => sl.text)
-      .filter(Boolean)
+    Object.values(todaySlots).filter(Boolean).map(sl => sl.text).filter(Boolean)
   )
   const placedIds = new Set(
-    Object.values(todaySlots)
-      .filter(Boolean)
-      .map(sl => sl.todoId)
-      .filter(Boolean)
+    Object.values(todaySlots).filter(Boolean).map(sl => sl.todoId).filter(Boolean)
   )
 
   const isPlaced = (t) => placedIds.has(t.id) || placedTexts.has(t.text)
@@ -121,16 +114,8 @@ export default function Pool({
   )
 
   if (fullscreen) {
-    return (
-      <div className={s.overlay}>
-        {content}
-      </div>
-    )
+    return <div className={s.overlay}>{content}</div>
   }
 
-  return (
-    <div className={s.pool}>
-      {content}
-    </div>
-  )
+  return <div className={s.pool}>{content}</div>
 }

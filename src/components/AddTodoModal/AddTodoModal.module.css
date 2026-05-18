@@ -1,0 +1,274 @@
+/* ─── Overlay ─────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── Modal ───────────────────────────────────────────────── */
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r) var(--r) 0 0;
+  padding: 20px 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideInBottom 0.2s ease both;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 1rem;
+  padding: 4px;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.closeBtn:hover { color: var(--text); }
+
+/* ─── Text row ────────────────────────────────────────────── */
+.textRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.textInput {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.textInput:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(0, 207, 255, 0.15);
+}
+
+.autoBtn {
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 14px;
+  background: rgba(0, 207, 255, 0.1);
+  border: 1px solid rgba(0, 207, 255, 0.3);
+  border-radius: var(--r-sm);
+  color: var(--cyan);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.autoBtn:hover:not(:disabled) {
+  background: rgba(0, 207, 255, 0.18);
+  border-color: var(--cyan);
+}
+.autoBtn:disabled { opacity: 0.3; cursor: default; }
+
+/* ─── Row (label + control) ───────────────────────────────── */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rowLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 44px;
+  flex-shrink: 0;
+}
+
+/* ─── Prio segment ───────────────────────────────────────── */
+.segControl {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+
+.segBtn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 7px 4px;
+  text-align: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.segBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.segBtnActive {
+  background: rgba(0, 207, 255, 0.1);
+  border-color: rgba(0, 207, 255, 0.4);
+  color: var(--cyan);
+}
+
+/* ─── Duration presets ────────────────────────────────────── */
+.durRow {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.durBtn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.62rem;
+  padding: 5px 9px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.durBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.durBtnActive {
+  background: rgba(0, 207, 255, 0.1);
+  border-color: rgba(0, 207, 255, 0.4);
+  color: var(--cyan);
+}
+
+/* ─── More toggle ────────────────────────────────────────── */
+.moreToggle {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  padding: 2px 0;
+  text-align: left;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.moreToggle:hover { color: var(--text); }
+
+/* ─── More section ───────────────────────────────────────── */
+.moreSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+/* ─── Color picker ───────────────────────────────────────── */
+.colorRow {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.colorCircle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.colorCircle:hover { transform: scale(1.15); }
+.colorCircleActive { border-color: #fff; transform: scale(1.15); }
+
+/* ─── Field inputs ───────────────────────────────────────── */
+.fieldInput {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.fieldInput:focus { border-color: var(--cyan); }
+
+.fieldInputSm {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+}
+.fieldInputSm:focus { border-color: var(--cyan); }
+
+/* ─── Submit ──────────────────────────────────────────────── */
+.submitBtn {
+  background: rgba(0, 207, 255, 0.12);
+  border: 1px solid rgba(0, 207, 255, 0.35);
+  border-radius: var(--r-sm);
+  color: var(--cyan);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 12px 16px;
+  width: 100%;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: 4px;
+}
+.submitBtn:hover:not(:disabled) {
+  background: rgba(0, 207, 255, 0.2);
+  border-color: var(--cyan);
+}
+.submitBtn:disabled { opacity: 0.3; cursor: default; }

@@ -24,7 +24,7 @@ function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
 }
 
 // ─── SlotBlock ────────────────────────────────────────────
-function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove, onSubItemToggle }) {
+function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove, onSubItemToggle, onDragStart }) {
   const fakeTodo = todo ?? {
     id: null,
     text: slot.text || '',
@@ -38,6 +38,15 @@ function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove
     duration: slot.duration || 30,
   }
 
+  const handle = onDragStart ? (
+    <span
+      className={s.slotHandle}
+      onPointerDown={e => { e.preventDefault(); onDragStart() }}
+    >
+      ⠿
+    </span>
+  ) : null
+
   return (
     <TodoChip
       todo={fakeTodo}
@@ -46,6 +55,7 @@ function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove
       onEdit={onEdit}
       onRemove={onRemove}
       onSubItemToggle={onSubItemToggle}
+      dragHandle={handle}
     />
   )
 }
@@ -56,12 +66,14 @@ export default function Zeitplan({
   todos = [],
   visibleStart = 8,
   visibleEnd = 20,
+  dateLabel,
   onSetSlot,
   onToggleSlotDone,
   onEditTodo,
   onRemoveSlot,
   onVisibleStartChange,
   onVisibleEndChange,
+  onSlotDragStart,
   dragState,
   onDrop,
   onDragEnd,
@@ -92,6 +104,11 @@ export default function Zeitplan({
       consumedKeys.add(spanned[i])
     }
   }
+
+  // Format dateLabel for display
+  const dateLabelFmt = dateLabel
+    ? (() => { const [,mm,dd] = dateLabel.split('-'); return `${dd}.${mm}.` })()
+    : null
 
   // Row render
   const renderHour = (h) => {
@@ -139,6 +156,7 @@ export default function Zeitplan({
                 ? (idx) => onSubItemToggle?.(linkedTodo.id, idx)
                 : undefined
               }
+              onDragStart={onSlotDragStart ? () => onSlotDragStart(slotKey) : undefined}
             />
           ) : (
             <div
@@ -180,7 +198,7 @@ export default function Zeitplan({
           <button
             className={s.ctrlBtn}
             onClick={() => onVisibleStartChange?.(Math.max(0, visibleStart - 1))}
-            aria-label="30min früher"
+            aria-label="Eine Stunde früher"
           >
             ◀
           </button>
@@ -190,24 +208,13 @@ export default function Zeitplan({
           <button
             className={s.ctrlBtn}
             onClick={() => onVisibleStartChange?.(Math.min(visibleEnd - 2, visibleStart + 1))}
-            aria-label="30min später"
+            aria-label="Eine Stunde später"
           >
             ▶
           </button>
         </div>
 
-        <select
-          className={s.startSelect}
-          value={visibleStart}
-          onChange={e => onVisibleStartChange?.(Number(e.target.value))}
-          aria-label="Startzeit"
-        >
-          {Array.from({ length: 9 }, (_, i) => i + 6).map(h => (
-            <option key={h} value={h}>
-              {String(h).padStart(2, '0')}:00
-            </option>
-          ))}
-        </select>
+        {dateLabelFmt && <span className={s.dateLabel}>{dateLabelFmt}</span>}
 
         <button
           className={[s.ctrlBtn, hideEmpty ? s.ctrlBtnActive : ''].join(' ')}

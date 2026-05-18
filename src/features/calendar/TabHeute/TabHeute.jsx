@@ -1,26 +1,14 @@
 import { useState, useCallback } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, sk, parseHHMM } from '../../../utils'
-import { isTermin } from '../../todos/Block'
-import QuickAdd      from '../QuickAdd/QuickAdd'
-import Zeitplan      from '../Zeitplan/Zeitplan'
-import Pool          from '../Pool/Pool'
-import KiPlanSection from '../KiPlanSection/KiPlanSection'
-import EditModal     from '../../../components/EditModal/EditModal'
-import TabRad        from '../../tools/rad/TabRad'
+import Zeitplan  from '../Zeitplan/Zeitplan'
+import Pool      from '../Pool/Pool'
+import EditModal from '../../../components/EditModal/EditModal'
 import s from './TabHeute.module.css'
 
-const MODI = [
-  { id: 'manuell', label: 'Manuell' },
-  { id: 'ki',      label: '✨ KI' },
-  { id: 'rad',     label: '🎡 Rad' },
-]
-
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, heuteModus, setHeuteModus } = useAppStore()
+  const { todos, setTodos, days, setDays } = useAppStore()
 
-  const modus    = heuteModus
-  const setModus = setHeuteModus
   const [visStart,    setVisStart]    = useState(8)
   const [visEnd]                      = useState(20)
   const [editingTodo, setEditingTodo] = useState(null)
@@ -37,31 +25,6 @@ export default function TabHeute() {
       return { ...prev, [viewDate]: next }
     })
   }, [setDays, viewDate])
-
-  // ─── handleAdd ───────────────────────────────────────────
-  const handleAdd = useCallback((block) => {
-    if (isTermin(block) && block.time) {
-      const mins    = parseHHMM(block.time)
-      const hour    = Math.floor(mins / 60)
-      const half    = mins % 60 >= 30
-      const slotKey = sk(hour, half)
-
-      setTodaySlots(prev => ({
-        ...prev,
-        [slotKey]: {
-          text:     block.text,
-          todoId:   block.id,
-          color:    block.color,
-          duration: block.duration || 30,
-          done:     false,
-          locked:   false,
-        },
-      }))
-      setTodos(prev => [...prev, block])
-    } else {
-      setTodos(prev => [...prev, block])
-    }
-  }, [setTodaySlots, setTodos])
 
   // ─── Todo mutations ───────────────────────────────────────
   const handleToggleDone = useCallback((id) => {
@@ -120,28 +83,48 @@ export default function TabHeute() {
   }, [setTodaySlots])
 
   // ─── Drag & drop ─────────────────────────────────────────
-  const handleDragStart = useCallback((text, color, todoId, duration) => {
-    setDragState({ text, color, todoId, duration })
+  const handleDragStart = useCallback((text, color, todoId, duration, sourceSlotKey = null) => {
+    setDragState({ text, color, todoId, duration, sourceSlotKey })
   }, [])
 
   const handleDragEnd = useCallback(() => {
     setDragState(null)
   }, [])
 
-  const handleDropOnSlot = useCallback((slotKey) => {
+  // Called when user drags a slot block via its drag handle
+  const handleSlotDragStart = useCallback((slotKey) => {
+    const slot = todaySlots[slotKey]
+    if (!slot) return
+    handleDragStart(slot.text, slot.color, slot.todoId, slot.duration, slotKey)
+  }, [todaySlots, handleDragStart])
+
+  const handleDropOnSlot = useCallback((targetKey) => {
     if (!dragState) return
-    const existing = todaySlots[slotKey]
+    const existing = todaySlots[targetKey]
     if (existing) return
-    handleSetSlot(slotKey, {
+
+    const newSlot = {
       text:     dragState.text,
       todoId:   dragState.todoId || null,
       color:    dragState.color,
       duration: dragState.duration || 30,
       locked:   false,
       done:     false,
-    })
+    }
+
+    if (dragState.sourceSlotKey && dragState.sourceSlotKey !== targetKey) {
+      // Move: remove source, set target atomically
+      setTodaySlots(prev => {
+        const next = { ...prev }
+        delete next[dragState.sourceSlotKey]
+        next[targetKey] = newSlot
+        return next
+      })
+    } else {
+      handleSetSlot(targetKey, newSlot)
+    }
     setDragState(null)
-  }, [dragState, todaySlots, handleSetSlot])
+  }, [dragState, todaySlots, handleSetSlot, setTodaySlots])
 
   // ─── Edit modal ───────────────────────────────────────────
   const handleEdit = useCallback((id) => {
@@ -159,68 +142,34 @@ export default function TabHeute() {
     setEditingTodo(null)
   }, [setTodos])
 
-  // ─── KI-Plan accept ───────────────────────────────────────
-  const handleKiAccept = useCallback((plan) => {
-    setTodaySlots(prev => ({ ...prev, ...plan }))
-  }, [setTodaySlots])
-
   return (
     <div className={s.page}>
-      <QuickAdd onAdd={handleAdd} />
-
-      {/* Modus row */}
-      <div className={s.modusRow}>
-        {MODI.map(m => (
-          <button
-            key={m.id}
-            className={[s.modusBtn, modus === m.id ? s.modusBtnActive : ''].join(' ')}
-            onClick={() => setModus(m.id)}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
-
-      {modus === 'manuell' && (
-        <>
-          <Zeitplan
-            slots={todaySlots}
-            todos={todos}
-            visibleStart={visStart}
-            visibleEnd={visEnd}
-            onSetSlot={handleSetSlot}
-            onToggleSlotDone={handleToggleSlotDone}
-            onEditTodo={(id) => handleEdit(id)}
-            onRemoveSlot={handleRemoveSlot}
-            onVisibleStartChange={setVisStart}
-            dragState={dragState}
-            onDrop={handleDropOnSlot}
-            onDragEnd={handleDragEnd}
-            onSubItemToggle={(todoId, subIdx) => handleSubItemToggle(todoId, subIdx)}
-          />
-          <Pool
-            todos={todos}
-            todaySlots={todaySlots}
-            onToggleDone={handleToggleDone}
-            onEdit={(id) => handleEdit(id)}
-            onRemove={handleRemove}
-            onDragStart={(text, color, todoId, duration) => handleDragStart(text, color, todoId, duration)}
-            onSubItemToggle={(todoId, subIdx) => handleSubItemToggle(todoId, subIdx)}
-          />
-        </>
-      )}
-
-      {modus === 'ki' && (
-        <KiPlanSection
-          todos={todos}
-          slots={todaySlots}
-          onAccept={handleKiAccept}
-        />
-      )}
-
-      {modus === 'rad' && (
-        <TabRad todos={todos} />
-      )}
+      <Zeitplan
+        slots={todaySlots}
+        todos={todos}
+        visibleStart={visStart}
+        visibleEnd={visEnd}
+        dateLabel={viewDate}
+        onSetSlot={handleSetSlot}
+        onToggleSlotDone={handleToggleSlotDone}
+        onEditTodo={(id) => handleEdit(id)}
+        onRemoveSlot={handleRemoveSlot}
+        onVisibleStartChange={setVisStart}
+        onSlotDragStart={handleSlotDragStart}
+        dragState={dragState}
+        onDrop={handleDropOnSlot}
+        onDragEnd={handleDragEnd}
+        onSubItemToggle={(todoId, subIdx) => handleSubItemToggle(todoId, subIdx)}
+      />
+      <Pool
+        todos={todos}
+        todaySlots={todaySlots}
+        onToggleDone={handleToggleDone}
+        onEdit={(id) => handleEdit(id)}
+        onRemove={handleRemove}
+        onDragStart={(text, color, todoId, duration) => handleDragStart(text, color, todoId, duration)}
+        onSubItemToggle={(todoId, subIdx) => handleSubItemToggle(todoId, subIdx)}
+      />
 
       {editingTodo && (
         <EditModal

@@ -35,8 +35,8 @@
 .navRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .navBtn {
@@ -54,82 +54,127 @@
 .navBtn:hover { color: var(--cyan); border-color: var(--cyan); }
 
 .navLabel {
+  flex: 1;
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
+  text-align: center;
 }
 
-.todayBtn {
-  display: block;
-  margin: 0 auto 16px;
+.navTodayBtn {
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--cyan);
   font-family: 'Outfit', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  padding: 4px 12px;
+  padding: 5px 10px;
   cursor: pointer;
   letter-spacing: 0.04em;
   transition: border-color 0.15s, background 0.15s;
+  white-space: nowrap;
 }
 
-.todayBtn:hover { border-color: var(--cyan); background: rgba(0,207,255,0.06); }
+.navTodayBtn:hover { border-color: var(--cyan); background: rgba(0,207,255,0.06); }
 
-/* ─── Week View ─────────────────────────────────────────── */
-.weekRow {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  overflow-x: auto;
-}
-
-.dayCard {
+/* ─── Agenda (Week) View ─────────────────────────────────── */
+.agendaList {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+}
+
+.agendaDay {
+  width: 100%;
+  display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 8px 2px;
+  gap: 10px;
+  padding: 10px 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
-  min-width: 0;
-  width: 100%;
+  text-align: left;
   -webkit-tap-highlight-color: transparent;
 }
 
-.dayCard:hover { border-color: rgba(255,255,255,0.18); }
+.agendaDay:hover { border-color: rgba(255,255,255,0.15); }
 
-.dayCardToday {
+.agendaDayToday {
   border-color: var(--cyan);
-  box-shadow: 0 0 10px rgba(0,207,255,0.15);
+  box-shadow: 0 0 10px rgba(0,207,255,0.12);
 }
 
-.dayCardSelected {
-  background: rgba(0,207,255,0.07);
+.agendaDaySelected {
+  background: rgba(0,207,255,0.05);
 }
 
-.dayShort {
+.agendaLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 32px;
+  flex-shrink: 0;
+}
+
+.agendaDayName {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: var(--text-dim);
   text-transform: uppercase;
 }
 
-.dayNum {
+.agendaDayNum {
   font-family: 'Orbitron', monospace;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text);
+  line-height: 1.1;
 }
 
-.dayCardToday .dayNum { color: var(--cyan); }
+.agendaDayToday .agendaDayNum { color: var(--cyan); }
+
+.agendaRight {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.agendaEmpty {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.15);
+}
+
+.agendaPill {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--pill-color, var(--cyan));
+  background: rgba(0,207,255,0.1);
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.agendaMore {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  padding: 2px 4px;
+}
 
 /* ─── Month View ────────────────────────────────────────── */
 .monthGrid {
@@ -214,7 +259,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 14px;
-  margin-top: 8px;
+  margin-top: 4px;
   animation: fadeInUp 0.18s ease both;
 }
 

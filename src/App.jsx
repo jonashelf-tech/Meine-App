@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAppStore } from './store'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
@@ -11,6 +12,8 @@ import TabPizza        from './features/tools/pizza/TabPizza'
 import TabElvi         from './features/tools/elvi/TabElvi'
 import TabGewicht      from './features/tools/gewicht/TabGewicht'
 import TabGamification from './features/tools/gamification/TabGamification'
+import TabRad          from './features/tools/rad/TabRad'
+import AddTodoModal    from './components/AddTodoModal/AddTodoModal'
 
 const TABS = [
   { id: 0, label: 'Heute',    icon: '◈' },
@@ -19,10 +22,11 @@ const TABS = [
   { id: 3, label: 'Einstellungen', icon: '≡' },
 ]
 
-const TOOL_TABS = [4,5,6,7,8,9,10] // tabs that are tool sub-views (no nav bar active state)
+const TOOL_TABS = [4,5,6,7,8,9,10,11]
 
 export default function App() {
   const { currentTab, setCurrentTab } = useAppStore()
+  const [addOpen, setAddOpen] = useState(false)
 
   const goBack = () => setCurrentTab(2)
 
@@ -40,7 +44,19 @@ export default function App() {
         {currentTab === 8  && <TabElvi         onBack={goBack} />}
         {currentTab === 9  && <TabGewicht      onBack={goBack} />}
         {currentTab === 10 && <TabGamification onBack={goBack} />}
+        {currentTab === 11 && <TabRad          onBack={goBack} />}
       </div>
+
+      <button
+        className={styles.fab}
+        onClick={() => setAddOpen(true)}
+        aria-label="Todo hinzufügen"
+      >
+        +
+      </button>
+
+      {addOpen && <AddTodoModal onClose={() => setAddOpen(false)} />}
+
       <nav className={styles.tabBar}>
         {TABS.map(t => (
           <button

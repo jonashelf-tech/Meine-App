@@ -68,7 +68,7 @@ function DayDetail({ dateKey, days, todos, onNavigate }) {
       <div className={s.detailHeader}>
         <span className={s.detailDate}>{label}</span>
         <button className={s.detailOpenBtn} onClick={() => onNavigate(dateKey)}>
-          Heute öffnen →
+          Öffnen →
         </button>
       </div>
       {entries.length === 0 ? (
@@ -95,7 +95,7 @@ function DayDetail({ dateKey, days, todos, onNavigate }) {
 }
 
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], setCurrentTab, setHeuteModus } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], setCurrentTab } = useAppStore()
   const [view, setView] = useState('woche')
   const today = useMemo(() => {
     const d = new Date()
@@ -109,10 +109,11 @@ export default function TabKalender() {
   const [selectedDay, setSelectedDay] = useState(null)
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
+  const isCurrentWeek  = weekDays.some(d => toDateKey(d) === todayKey)
+  const isCurrentMonth = monthRef.year === today.getFullYear() && monthRef.month === today.getMonth()
 
-  const navigateToDay = (dateKey) => {
+  const navigateToDay = () => {
     setCurrentTab(0)
-    setHeuteModus('manuell')
   }
 
   const handleDayClick = (dateKey) => {
@@ -147,6 +148,7 @@ export default function TabKalender() {
         </button>
       </div>
 
+      {/* ─── WOCHENANSICHT (Agenda-Style) ─────────────────── */}
       {view === 'woche' && (
         <>
           <div className={s.navRow}>
@@ -156,29 +158,60 @@ export default function TabKalender() {
               {addDays(weekStart, 6).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}
             </span>
             <button className={s.navBtn} onClick={() => setWeekStart(d => addDays(d, 7))}>▶</button>
+            {!isCurrentWeek && (
+              <button className={s.navTodayBtn} onClick={() => setWeekStart(getMonday(today))}>
+                Heute
+              </button>
+            )}
           </div>
-          <button className={s.todayBtn} onClick={() => setWeekStart(getMonday(today))}>Heute</button>
 
-          <div className={s.weekRow}>
+          <div className={s.agendaList}>
             {weekDays.map(date => {
               const key = toDateKey(date)
               const isToday = key === todayKey
-              const dots = getDots(key, days, todos, birthdays, activeTools)
+              const isSelected = selectedDay === key
+              const daySlots = days[key] ?? {}
+              const slotEntries = Object.entries(daySlots)
+                .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+
               return (
                 <div key={key}>
                   <button
-                    className={[s.dayCard, isToday ? s.dayCardToday : '', selectedDay === key ? s.dayCardSelected : ''].join(' ')}
+                    className={[
+                      s.agendaDay,
+                      isToday    ? s.agendaDayToday    : '',
+                      isSelected ? s.agendaDaySelected : '',
+                    ].join(' ')}
                     onClick={() => handleDayClick(key)}
                   >
-                    <span className={s.dayShort}>{DAY_SHORT[date.getDay() === 0 ? 6 : date.getDay() - 1]}</span>
-                    <span className={s.dayNum}>{date.getDate()}</span>
-                    <div className={s.dotRow}>
-                      {dots.map((c, i) => (
-                        <span key={i} className={s.dot} style={{ background: `var(--${c})` }} />
-                      ))}
+                    <div className={s.agendaLeft}>
+                      <span className={s.agendaDayName}>
+                        {DAY_SHORT[date.getDay() === 0 ? 6 : date.getDay() - 1]}
+                      </span>
+                      <span className={s.agendaDayNum}>{date.getDate()}</span>
+                    </div>
+                    <div className={s.agendaRight}>
+                      {slotEntries.length === 0 ? (
+                        <span className={s.agendaEmpty}>–</span>
+                      ) : (
+                        <>
+                          {slotEntries.slice(0, 2).map(([k, slot]) => (
+                            <span
+                              key={k}
+                              className={s.agendaPill}
+                              style={{ '--pill-color': slot.color || 'var(--cyan)' }}
+                            >
+                              {slot.text}
+                            </span>
+                          ))}
+                          {slotEntries.length > 2 && (
+                            <span className={s.agendaMore}>+{slotEntries.length - 2}</span>
+                          )}
+                        </>
+                      )}
                     </div>
                   </button>
-                  {selectedDay === key && (
+                  {isSelected && (
                     <DayDetail
                       dateKey={key}
                       days={days}
@@ -193,6 +226,7 @@ export default function TabKalender() {
         </>
       )}
 
+      {/* ─── MONATSANSICHT ────────────────────────────────── */}
       {view === 'monat' && (
         <>
           <div className={s.navRow}>
@@ -215,13 +249,15 @@ export default function TabKalender() {
                 return { year: y, month: m }
               })}
             >▶</button>
+            {!isCurrentMonth && (
+              <button
+                className={s.navTodayBtn}
+                onClick={() => setMonthRef({ year: today.getFullYear(), month: today.getMonth() })}
+              >
+                Heute
+              </button>
+            )}
           </div>
-          <button
-            className={s.todayBtn}
-            onClick={() => setMonthRef({ year: today.getFullYear(), month: today.getMonth() })}
-          >
-            Heute
-          </button>
 
           <div className={s.monthGrid}>
             {DAY_SHORT.map(d => (

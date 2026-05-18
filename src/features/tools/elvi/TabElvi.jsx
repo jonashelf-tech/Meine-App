@@ -118,26 +118,32 @@ export default function TabElvi({ onBack }) {
     const PAD={l:32,r:12,t:12,b:24}
     const cw=W-PAD.l-PAD.r, ch=H-PAD.t-PAD.b
     const activeDoses=doses.filter(d=>d.active&&d.time)
+    const firstDoseH=activeDoses.length>0?Math.min(...activeDoses.map(d=>hhmmToH(d.time))):0
+    const winStart=Math.max(0,firstDoseH-0.5)
+    const winEnd=winStart+24
     const pts=[]
-    for(let t=0;t<=24;t+=0.1){
+    for(let t=winStart;t<=winEnd;t+=0.1){
       let total=0; activeDoses.forEach(d=>{total+=doseConc(t,hhmmToH(d.time),d.mg)})
       pts.push({t,total})
     }
     const maxC=Math.max(...pts.map(p=>p.total),1)
-    const tx=t=>PAD.l+(t/24)*cw
+    const tx=t=>PAD.l+((t-winStart)/24)*cw
     const ty=v=>PAD.t+(1-v/maxC)*ch
     ctx.fillStyle="#06070f"; ctx.fillRect(0,0,W,H)
     ctx.strokeStyle="rgba(255,255,255,0.04)"; ctx.lineWidth=1
     for(let i=0;i<=4;i++){const y=PAD.t+i*(ch/4);ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cw,y);ctx.stroke()}
-    for(let h=0;h<=24;h+=2){
-      const x=tx(h)
+    for(let i=0;i<=12;i++){
+      const t=winStart+i*2
+      const x=tx(t)
       ctx.strokeStyle="rgba(255,255,255,0.06)";ctx.lineWidth=1
       ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+ch);ctx.stroke()
       ctx.fillStyle="rgba(255,255,255,0.25)";ctx.font=`9px Outfit,sans-serif`;ctx.textAlign="center"
-      ctx.fillText(`${String(h).padStart(2,"0")}:00`,x,PAD.t+ch+14)
+      ctx.fillText(String(Math.floor(t%24)).padStart(2,"0"),x,PAD.t+ch+14)
     }
     activeDoses.forEach((d,i)=>{
-      const x=tx(hhmmToH(d.time))
+      const doseH=hhmmToH(d.time)
+      if(doseH<winStart||doseH>winEnd)return
+      const x=tx(doseH)
       ctx.strokeStyle=COLORS[i%4]+"66";ctx.lineWidth=1;ctx.setLineDash([4,3])
       ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+ch);ctx.stroke()
       ctx.setLineDash([])

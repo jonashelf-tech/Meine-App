@@ -1,138 +1,227 @@
-.container {
+.page {
+  padding: 16px;
+  padding-bottom: 80px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  min-height: 100%;
 }
 
-/* ─── Filter row ─────────────────────────────────────────── */
-.filterRow {
+/* ─── Header ──────────────────────────────────────────────── */
+.header {
   display: flex;
-  gap: 6px;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-.filterBtn {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
+.back {
+  background: none;
+  border: none;
   color: var(--text-dim);
-  cursor: pointer;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 7px 4px;
-  text-align: center;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  -webkit-tap-highlight-color: transparent;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.back:hover { color: var(--text); }
+
+.titleBlock { text-align: right; }
+
+.eyebrow {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
 }
 
-.filterBtn:hover {
-  background: rgba(255, 255, 255, 0.07);
+.title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: var(--text);
 }
+.title em { font-style: normal; color: var(--cyan); }
 
-.filterBtnActive {
-  background: rgba(0, 207, 255, 0.1);
-  border-color: rgba(0, 207, 255, 0.4);
-  color: var(--cyan);
-}
-
-/* ─── Spin button ────────────────────────────────────────── */
-.spinWrap {
+/* ─── Wheel ───────────────────────────────────────────────── */
+.wheelWrap {
+  position: relative;
   display: flex;
   justify-content: center;
+  align-items: center;
+  padding-top: 10px;
 }
 
-.spinBtn {
-  background: var(--cyan);
-  border: none;
+/* Pointer triangle at top-centre */
+.pointer {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left:  8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top:   14px solid var(--cyan);
+  z-index: 2;
+  filter: drop-shadow(0 0 4px rgba(0,207,255,0.6));
+}
+
+.canvas {
+  display: block;
+  border-radius: 50%;
+  /* subtle glow ring */
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 0 24px rgba(0,207,255,0.08);
+}
+
+/* ─── Result ──────────────────────────────────────────────── */
+.result {
+  background: var(--surface);
+  border: 1px solid var(--cyan);
   border-radius: var(--r);
-  color: #000;
-  cursor: pointer;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 14px 40px;
-  transition: opacity 0.15s, transform 0.1s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.spinBtn:hover {
-  opacity: 0.88;
-}
-
-.spinBtn:active {
-  transform: scale(0.96);
-}
-
-.spinBtn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-/* ─── List ───────────────────────────────────────────────── */
-.list {
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.empty {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  color: var(--text-dim);
+  gap: 4px;
   text-align: center;
-  padding: 40px 0;
+  box-shadow: 0 0 12px rgba(0,207,255,0.1);
 }
 
-.item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 12px 14px;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.3s;
-}
-
-.itemChosen {
-  background: rgba(0, 207, 255, 0.06);
-  border-color: var(--cyan);
-  box-shadow: 0 0 20px rgba(0, 207, 255, 0.18);
-  animation: pulse 0.6s ease;
-}
-
-@keyframes pulse {
-  0%   { box-shadow: 0 0 0   rgba(0, 207, 255, 0); }
-  50%  { box-shadow: 0 0 28px rgba(0, 207, 255, 0.45); }
-  100% { box-shadow: 0 0 20px rgba(0, 207, 255, 0.18); }
-}
-
-.stripe {
-  width: 3px;
-  height: 32px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.itemText {
-  flex: 1;
+.resultLabel {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.88rem;
-  color: var(--text);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+.resultText {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
   word-break: break-word;
 }
 
-.itemChosen .itemText {
-  color: var(--cyan);
-  font-weight: 600;
+.resultPlaceholder {
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  padding: 4px 0;
 }
 
-.prioBadge {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.58rem;
+/* ─── Spin button ─────────────────────────────────────────── */
+.spinBtn {
+  background: rgba(0,207,255,0.12);
+  border: 1.5px solid rgba(0,207,255,0.3);
+  border-radius: var(--r);
+  color: var(--cyan);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 13px 0;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.spinBtn:hover { background: rgba(0,207,255,0.2); border-color: rgba(0,207,255,0.5); }
+
+.spinBtnDisabled {
+  opacity: 0.38;
+  cursor: default;
+}
+.spinBtnDisabled:hover { background: rgba(0,207,255,0.12); border-color: rgba(0,207,255,0.3); }
+
+/* ─── Pool section ────────────────────────────────────────── */
+.poolSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.poolTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px;
+}
+
+.poolCount {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  color: var(--cyan);
+  background: rgba(0,207,255,0.1);
+  border: 1px solid rgba(0,207,255,0.2);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.poolList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.poolItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.poolItem:hover { border-color: rgba(255,255,255,0.15); }
+
+.poolItemActive {
+  border-color: rgba(0,207,255,0.2);
+  background: rgba(0,207,255,0.04);
+}
+
+.poolDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.poolText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.poolCheck {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
   color: var(--text-dim);
   flex-shrink: 0;
+}
+.poolItemActive .poolCheck { color: var(--cyan); }
+
+/* ─── Empty ───────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 24px 0;
+  line-height: 1.7;
 }
