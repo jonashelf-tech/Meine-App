@@ -4,7 +4,7 @@ import { isFaelligkeit } from '../../todos/Block'
 import s from './Pool.module.css'
 
 // ─── PoolChip ─────────────────────────────────────────────
-function PoolChip({ todo, onToggleDone, onEdit, onRemove, onDragStart, onSubItemToggle }) {
+function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart }) {
   const handlePointerDown = useCallback((e) => {
     e.preventDefault()
     onDragStart?.(todo.text, todo.color, todo.id, todo.duration)
@@ -26,8 +26,9 @@ function PoolChip({ todo, onToggleDone, onEdit, onRemove, onDragStart, onSubItem
       onToggleDone={onToggleDone}
       onEdit={onEdit}
       onRemove={onRemove}
+      todos={todos}
+      saveTodos={setTodos}
       dragHandle={handle}
-      onSubItemToggle={onSubItemToggle}
     />
   )
 }
@@ -35,12 +36,12 @@ function PoolChip({ todo, onToggleDone, onEdit, onRemove, onDragStart, onSubItem
 // ─── Pool ─────────────────────────────────────────────────
 export default function Pool({
   todos = [],
+  setTodos,
   todaySlots = {},
   onToggleDone,
   onEdit,
   onRemove,
   onDragStart,
-  onSubItemToggle,
 }) {
   const [fullscreen, setFullscreen] = useState(false)
 
@@ -64,11 +65,12 @@ export default function Pool({
     <PoolChip
       key={t.id}
       todo={t}
+      todos={todos}
+      setTodos={setTodos}
       onToggleDone={() => onToggleDone?.(t.id)}
       onEdit={() => onEdit?.(t.id)}
       onRemove={() => onRemove?.(t.id)}
       onDragStart={onDragStart}
-      onSubItemToggle={(idx) => onSubItemToggle?.(t.id, idx)}
     />
   )
 

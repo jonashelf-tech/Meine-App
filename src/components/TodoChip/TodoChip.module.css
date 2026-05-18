@@ -1,201 +1,335 @@
+/* ── Entrance animation ──────────────────────────────────── */
+@keyframes chipIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes doneFlash {
+  0%   { background: rgba(0, 255, 148, 0); }
+  30%  { background: rgba(0, 255, 148, 0.18); }
+  100% { background: rgba(0, 255, 148, 0); }
+}
+
+/* ── Outer wrapper ───────────────────────────────────────── */
+.rowWrap {
+  animation: chipIn 0.18s ease both;
+}
+
+/* ── Chip ────────────────────────────────────────────────── */
 .chip {
   display: flex;
-  flex-direction: row;
   align-items: stretch;
-  min-height: 38px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: var(--r);
   overflow: hidden;
-  position: relative;
-  transition: background 0.15s, opacity 0.15s;
+  transition: background 0.14s, border-color 0.14s;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
 .chip:hover {
-  background: rgba(255, 255, 255, 0.065);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .chip:active {
-  background: rgba(255, 255, 255, 0.08);
+  transform: scale(0.998);
 }
 
-/* ─── Stripe ─────────────────────────────────────────────── */
+/* Done state */
+.chipDone {
+  opacity: 0.5;
+}
+
+.chipDone .text {
+  text-decoration: line-through;
+}
+
+/* Flash on done */
+.doneFlash {
+  animation: doneFlash 0.65s ease;
+}
+
+/* ── Stripe ──────────────────────────────────────────────── */
 .stripe {
   width: 3px;
-  flex-shrink: 0;
-  background: var(--chip-color, #00CFFF);
+  min-width: 3px;
   align-self: stretch;
+  background: var(--chip-color, #00CFFF);
+  flex-shrink: 0;
 }
 
-/* ─── Expand button ──────────────────────────────────────── */
+/* ── Expand button ───────────────────────────────────────── */
 .expandBtn {
+  width: 34px;
+  min-width: 34px;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  flex-shrink: 0;
+  gap: 1px;
   background: none;
   border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   cursor: pointer;
-  color: var(--text-dim);
-  gap: 1px;
-  padding: 0 4px;
-  transition: color 0.15s;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.12s;
 }
 
 .expandBtn:hover {
-  color: var(--text);
+  background: rgba(0, 207, 255, 0.06);
+}
+
+.expandArr {
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1;
 }
 
 .expandCount {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.55rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.38rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.2);
   line-height: 1;
 }
 
-.expandArrow {
-  font-size: 0.6rem;
-  line-height: 1;
+.expandCountDone {
+  color: #00FF94;
 }
 
-.expandBtn.float {
-  position: absolute;
-  left: 3px;
-  top: 0;
-  height: 100%;
-  z-index: 1;
-}
-
-/* ─── Body ───────────────────────────────────────────────── */
+/* ── Body ────────────────────────────────────────────────── */
 .body {
   flex: 1;
+  padding: 8px 8px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 3px;
-  padding: 8px 6px;
+  overflow: hidden;
   cursor: pointer;
   min-width: 0;
-  user-select: none;
 }
 
-/* ─── Text ───────────────────────────────────────────────── */
+/* ── Text ────────────────────────────────────────────────── */
 .text {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.875rem;
-  line-height: 1.35;
-  color: var(--text);
-  word-break: break-word;
-  transition: opacity 0.2s;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
-.textDone {
-  text-decoration: line-through;
-  opacity: 0.45;
-}
-
-.empty {
-  color: var(--text-dim);
+.emptyText {
+  color: rgba(255, 255, 255, 0.25);
   font-style: italic;
 }
 
-/* ─── Done state ─────────────────────────────────────────── */
-.done {
-  opacity: 0.6;
+.quickBadge {
+  margin-left: 4px;
+  font-size: 0.72rem;
 }
 
-/* ─── Meta row ───────────────────────────────────────────── */
+/* ── Meta ────────────────────────────────────────────────── */
 .meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.2);
+  margin-top: 2px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.metaDate {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.6rem;
-  color: var(--cyan);
-  opacity: 0.8;
-}
-
-.metaCat {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.65rem;
-  color: var(--purple);
-  opacity: 0.85;
-}
-
-/* ─── Sub-items ──────────────────────────────────────────── */
-.subList {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-  padding-top: 4px;
-  border-top: 1px solid var(--border);
-}
-
-.subItem {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  padding: 2px 0;
-  transition: opacity 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.subItem:active {
-  opacity: 0.7;
-}
-
-.subDone .subText {
-  text-decoration: line-through;
-  opacity: 0.45;
-}
-
-.subCheck {
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  flex-shrink: 0;
-}
-
-.subText {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.8rem;
-  color: var(--text);
-}
-
-/* ─── Remove button ──────────────────────────────────────── */
+/* ── Remove button ───────────────────────────────────────── */
 .removeBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  flex-shrink: 0;
   background: none;
   border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.12);
+  font-size: 0.62rem;
   cursor: pointer;
-  font-size: 0.7rem;
-  color: var(--pink);
-  opacity: 0.4;
-  transition: opacity 0.15s;
-  padding: 0;
+  padding: 0 8px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  transition: color 0.12s, background 0.12s;
+  flex-shrink: 0;
+  min-width: 28px;
+  justify-content: center;
 }
 
 .removeBtn:hover {
-  opacity: 1;
+  color: var(--pink);
+  background: rgba(255, 45, 120, 0.07);
 }
 
-/* ─── Drag handle wrapper ────────────────────────────────── */
-.dragHandleWrapper {
+/* ── Sub-items wrap ──────────────────────────────────────── */
+.itemsWrap {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 2px solid var(--chip-color);
+  border-radius: 0 0 var(--r) var(--r);
+  background: rgba(18, 18, 32, 0.97);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+/* Header inside sub-items */
+.itemsHeader {
+  padding: 8px 12px 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Sub-item row ────────────────────────────────────────── */
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.itemRow:last-of-type {
+  border-bottom: none;
+}
+
+.itemRow:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.itemDone {
+  opacity: 0.4;
+}
+
+/* Checkbox */
+.itemCheck {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
+  font-size: 0.52rem;
+  color: #00FF94;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.itemCheckDone {
+  background: rgba(0, 255, 148, 0.1);
+  border-color: rgba(0, 255, 148, 0.45);
+}
+
+/* Text */
+.itemText {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.itemDone .itemText {
+  text-decoration: line-through;
+}
+
+/* Remove item */
+.itemRm {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.1);
+  font-size: 0.55rem;
+  cursor: pointer;
+  padding: 3px 5px;
+  flex-shrink: 0;
+  transition: color 0.12s;
+  line-height: 1;
+}
+
+.itemRm:hover {
+  color: var(--pink);
+}
+
+/* Drag handle */
+.itemDragHandle {
+  color: rgba(255, 255, 255, 0.22);
+  cursor: grab;
+  padding: 3px 5px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  line-height: 1;
+  touch-action: none;
+  user-select: none;
+}
+
+.itemDragHandle:active {
+  cursor: grabbing;
+}
+
+/* Drag-over highlight */
+.itemDragOver {
+  background: rgba(0, 207, 255, 0.06) !important;
+}
+
+/* ── Add row ─────────────────────────────────────────────── */
+.itemAddRow {
+  display: flex;
+  align-items: center;
+  padding: 0 8px 0 14px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.itemInput {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.76rem;
+  font-family: 'Outfit', sans-serif;
+  padding: 9px 6px 9px 0;
+  caret-color: var(--cyan);
+}
+
+.itemInput::placeholder {
+  color: rgba(255, 255, 255, 0.18);
+}
+
+.itemAddBtn {
+  background: none;
+  border: none;
+  color: rgba(0, 207, 255, 0.4);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 8px;
+  transition: color 0.12s;
+  line-height: 1;
+}
+
+.itemAddBtn:hover {
+  color: var(--cyan);
 }

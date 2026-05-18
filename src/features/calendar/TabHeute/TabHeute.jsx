@@ -29,22 +29,15 @@ export default function TabHeute() {
   // ─── Todo mutations ───────────────────────────────────────
   const handleToggleDone = useCallback((id) => {
     setTodos(prev =>
-      prev.map(t => t.id === id ? { ...t, done: !t.done, doneAt: !t.done ? new Date().toISOString() : null } : t)
+      prev.map(t => t.id === id
+        ? { ...t, done: !t.done, doneAt: !t.done ? new Date().toISOString() : null }
+        : t
+      )
     )
   }, [setTodos])
 
   const handleRemove = useCallback((id) => {
     setTodos(prev => prev.filter(t => t.id !== id))
-  }, [setTodos])
-
-  const handleSubItemToggle = useCallback((todoId, subIdx) => {
-    setTodos(prev => prev.map(t => {
-      if (t.id !== todoId) return t
-      const newSubs = t.subItems.map((si, i) =>
-        i === subIdx ? { ...si, done: !si.done } : si
-      )
-      return { ...t, subItems: newSubs }
-    }))
   }, [setTodos])
 
   // ─── Slot mutations ───────────────────────────────────────
@@ -87,11 +80,8 @@ export default function TabHeute() {
     setDragState({ text, color, todoId, duration, sourceSlotKey })
   }, [])
 
-  const handleDragEnd = useCallback(() => {
-    setDragState(null)
-  }, [])
+  const handleDragEnd = useCallback(() => setDragState(null), [])
 
-  // Called when user drags a slot block via its drag handle
   const handleSlotDragStart = useCallback((slotKey) => {
     const slot = todaySlots[slotKey]
     if (!slot) return
@@ -113,7 +103,6 @@ export default function TabHeute() {
     }
 
     if (dragState.sourceSlotKey && dragState.sourceSlotKey !== targetKey) {
-      // Move: remove source, set target atomically
       setTodaySlots(prev => {
         const next = { ...prev }
         delete next[dragState.sourceSlotKey]
@@ -147,28 +136,30 @@ export default function TabHeute() {
       <Zeitplan
         slots={todaySlots}
         todos={todos}
+        setTodos={setTodos}
         visibleStart={visStart}
         visibleEnd={visEnd}
         dateLabel={viewDate}
         onSetSlot={handleSetSlot}
         onToggleSlotDone={handleToggleSlotDone}
-        onEditTodo={(id) => handleEdit(id)}
+        onEditTodo={handleEdit}
         onRemoveSlot={handleRemoveSlot}
         onVisibleStartChange={setVisStart}
         onSlotDragStart={handleSlotDragStart}
         dragState={dragState}
         onDrop={handleDropOnSlot}
         onDragEnd={handleDragEnd}
-        onSubItemToggle={(todoId, subIdx) => handleSubItemToggle(todoId, subIdx)}
       />
       <Pool
         todos={todos}
+        setTodos={setTodos}
         todaySlots={todaySlots}
         onToggleDone={handleToggleDone}
-        onEdit={(id) => handleEdit(id)}
+        onEdit={handleEdit}
         onRemove={handleRemove}
-        onDragStart={(text, color, todoId, duration) => handleDragStart(text, color, todoId, duration)}
-        onSubItemToggle={(todoId, subIdx) => handleSubItemToggle(todoId, subIdx)}
+        onDragStart={(text, color, todoId, duration) =>
+          handleDragStart(text, color, todoId, duration)
+        }
       />
 
       {editingTodo && (

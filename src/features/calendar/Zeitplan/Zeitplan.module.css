@@ -105,7 +105,7 @@
 .slot {
   position: relative;
   min-height: 40px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .slotHandle {

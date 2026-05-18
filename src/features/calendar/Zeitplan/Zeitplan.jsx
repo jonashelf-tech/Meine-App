@@ -24,37 +24,53 @@ function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
 }
 
 // ─── SlotBlock ────────────────────────────────────────────
-function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove, onSubItemToggle, onDragStart }) {
-  const fakeTodo = todo ?? {
-    id: null,
-    text: slot.text || '',
-    color: slot.color || '#00CFFF',
-    priority: slot.priority ?? 3,
-    done: slot.done ?? false,
-    subItems: [],
-    date: null,
-    time: null,
-    category: null,
-    duration: slot.duration || 30,
+function SlotBlock({
+  slotKey, slot, todo, height,
+  todos, setTodos,
+  onToggleDone, onEdit, onRemove, onDragStart,
+}) {
+  // Always drive done-state from slot (not todo.done) so toggle works correctly
+  const displayTodo = {
+    ...(todo ?? {
+      id:       null,
+      text:     slot.text    || '',
+      color:    slot.color   || '#00CFFF',
+      priority: slot.priority ?? 3,
+      subItems: [],
+      date:     null,
+      time:     null,
+      category: null,
+      duration: slot.duration || 30,
+    }),
+    done: !!(slot.done),
+  }
+
+  const chipStyle = {
+    borderRadius: 4,
+    height:       height ? `${height}px` : '100%',
+    border:       'none',
+    margin:       0,
+    flexShrink:   0,
   }
 
   const handle = onDragStart ? (
     <span
       className={s.slotHandle}
       onPointerDown={e => { e.preventDefault(); onDragStart() }}
-    >
-      ⠿
-    </span>
+    >⠿</span>
   ) : null
 
   return (
     <TodoChip
-      todo={fakeTodo}
-      naturalHeight={height}
+      todo={displayTodo}
+      chipStyle={chipStyle}
+      floatExpand={true}
+      disableExpand={!todo}       // sub-items only for linked todos
+      todos={todos}
+      saveTodos={setTodos}
       onToggleDone={onToggleDone}
       onEdit={onEdit}
       onRemove={onRemove}
-      onSubItemToggle={onSubItemToggle}
       dragHandle={handle}
     />
   )
@@ -64,6 +80,7 @@ function SlotBlock({ slotKey, slot, todo, height, onToggleDone, onEdit, onRemove
 export default function Zeitplan({
   slots = {},
   todos = [],
+  setTodos,
   visibleStart = 8,
   visibleEnd = 20,
   dateLabel,
@@ -77,15 +94,11 @@ export default function Zeitplan({
   dragState,
   onDrop,
   onDragEnd,
-  onSubItemToggle,
 }) {
   const [hideEmpty, setHideEmpty]       = useState(false)
   const [removeDialog, setRemoveDialog] = useState(null)
 
-  const openRemove = useCallback((slotKey, slotText) => {
-    setRemoveDialog({ slotKey, slotText })
-  }, [])
-
+  const openRemove  = useCallback((slotKey, slotText) => setRemoveDialog({ slotKey, slotText }), [])
   const closeRemove = useCallback(() => setRemoveDialog(null), [])
 
   // Build list of hours in range
@@ -100,12 +113,10 @@ export default function Zeitplan({
     const dur = slot.duration || 30
     if (dur <= 30) continue
     const spanned = getDurationKeys(key, dur)
-    for (let i = 1; i < spanned.length; i++) {
-      consumedKeys.add(spanned[i])
-    }
+    for (let i = 1; i < spanned.length; i++) consumedKeys.add(spanned[i])
   }
 
-  // Format dateLabel for display
+  // Format dateLabel
   const dateLabelFmt = dateLabel
     ? (() => { const [,mm,dd] = dateLabel.split('-'); return `${dd}.${mm}.` })()
     : null
@@ -146,16 +157,14 @@ export default function Zeitplan({
               slot={slot}
               todo={linkedTodo}
               height={height}
+              todos={todos}
+              setTodos={setTodos}
               onToggleDone={() => onToggleSlotDone?.(slotKey)}
               onEdit={() => linkedTodo
                 ? onEditTodo?.(linkedTodo.id)
                 : onEditTodo?.(slotKey)
               }
               onRemove={() => openRemove(slotKey, slot.text)}
-              onSubItemToggle={linkedTodo
-                ? (idx) => onSubItemToggle?.(linkedTodo.id, idx)
-                : undefined
-              }
               onDragStart={onSlotDragStart ? () => onSlotDragStart(slotKey) : undefined}
             />
           ) : (
@@ -176,12 +185,12 @@ export default function Zeitplan({
         <div className={s.hourLabel}>
           <span className={s.hourNum}>{String(h).padStart(2, '0')}</span>
         </div>
-
         <div className={s.subSlots}>
           {renderSlot(topKey, topSlot, topConsumed, topHeight)}
-          {!topConsumed || botConsumed ? (
-            renderSlot(botKey, botSlot, botConsumed, botHeight)
-          ) : null}
+          {!topConsumed || botConsumed
+            ? renderSlot(botKey, botSlot, botConsumed, botHeight)
+            : null
+          }
         </div>
       </div>
     )
@@ -199,9 +208,7 @@ export default function Zeitplan({
             className={s.ctrlBtn}
             onClick={() => onVisibleStartChange?.(Math.max(0, visibleStart - 1))}
             aria-label="Eine Stunde früher"
-          >
-            ◀
-          </button>
+          >◀</button>
           <span className={s.visRange}>
             {String(visibleStart).padStart(2,'0')}–{String(visibleEnd).padStart(2,'0')}
           </span>
@@ -209,9 +216,7 @@ export default function Zeitplan({
             className={s.ctrlBtn}
             onClick={() => onVisibleStartChange?.(Math.min(visibleEnd - 2, visibleStart + 1))}
             aria-label="Eine Stunde später"
-          >
-            ▶
-          </button>
+          >▶</button>
         </div>
 
         {dateLabelFmt && <span className={s.dateLabel}>{dateLabelFmt}</span>}
