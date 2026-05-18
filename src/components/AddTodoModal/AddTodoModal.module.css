@@ -1,29 +1,35 @@
-/* ─── Overlay ─────────────────────────────────────────────── */
+/* ─── Overlay — zentriert ─────────────────────────────────── */
 .overlay {
   position: fixed;
   inset: 0;
   z-index: 400;
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding: 20px 16px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
 }
 
 /* ─── Modal ───────────────────────────────────────────────── */
 .modal {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: var(--r) var(--r) 0 0;
-  padding: 20px 16px;
+  border-radius: var(--r);
+  padding: 18px 16px;
   width: 100%;
   max-width: 480px;
-  max-height: 88vh;
+  max-height: calc(100dvh - 40px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  animation: slideInBottom 0.2s ease both;
+  gap: 11px;
+  animation: scaleIn 0.18s ease both;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.93) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* ─── Header ─────────────────────────────────────────────── */
@@ -31,13 +37,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 2px;
 }
 
 .title {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .closeBtn {
@@ -46,13 +55,43 @@
   cursor: pointer;
   color: var(--text-dim);
   font-size: 1rem;
-  padding: 4px;
+  padding: 4px 6px;
   transition: color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  line-height: 1;
 }
 .closeBtn:hover { color: var(--text); }
 
-/* ─── Text row ────────────────────────────────────────────── */
+/* ─── Type buttons ───────────────────────────────────────── */
+.typeRow {
+  display: flex;
+  gap: 6px;
+}
+
+.typeBtn {
+  flex: 1;
+  padding: 9px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.typeBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+
+.typeBtnActive {
+  background: color-mix(in srgb, var(--tc, var(--cyan)) 14%, transparent);
+  border-color: var(--tc, var(--cyan));
+  color: var(--tc, var(--cyan));
+}
+
+/* ─── Text + Auto row ────────────────────────────────────── */
 .textRow {
   display: flex;
   gap: 8px;
@@ -82,44 +121,44 @@
   flex-shrink: 0;
   height: 40px;
   padding: 0 14px;
-  background: rgba(0, 207, 255, 0.1);
-  border: 1px solid rgba(0, 207, 255, 0.3);
+  background: rgba(0, 207, 255, 0.08);
+  border: 1px solid rgba(0, 207, 255, 0.25);
   border-radius: var(--r-sm);
   color: var(--cyan);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   transition: background 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 .autoBtn:hover:not(:disabled) {
-  background: rgba(0, 207, 255, 0.18);
+  background: rgba(0, 207, 255, 0.16);
   border-color: var(--cyan);
 }
 .autoBtn:disabled { opacity: 0.3; cursor: default; }
 
-/* ─── Row (label + control) ───────────────────────────────── */
+/* ─── Generic row ────────────────────────────────────────── */
 .row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .rowLabel {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.68rem;
+  font-weight: 700;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  min-width: 44px;
+  min-width: 42px;
   flex-shrink: 0;
 }
 
-/* ─── Prio segment ───────────────────────────────────────── */
+/* ─── Segmented control (Prio + Routine-Takt) ────────────── */
 .segControl {
   display: flex;
   gap: 5px;
@@ -134,7 +173,7 @@
   color: var(--text-dim);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   font-weight: 600;
   padding: 7px 4px;
   text-align: center;
@@ -142,10 +181,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 .segBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+
 .segBtnActive {
-  background: rgba(0, 207, 255, 0.1);
-  border-color: rgba(0, 207, 255, 0.4);
-  color: var(--cyan);
+  background: color-mix(in srgb, var(--tc, var(--cyan)) 12%, transparent);
+  border-color: color-mix(in srgb, var(--tc, var(--cyan)) 60%, transparent);
+  color: var(--tc, var(--cyan));
 }
 
 /* ─── Duration presets ────────────────────────────────────── */
@@ -162,17 +202,111 @@
   color: var(--text-dim);
   cursor: pointer;
   font-family: 'Orbitron', sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   padding: 5px 9px;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 .durBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+
 .durBtnActive {
   background: rgba(0, 207, 255, 0.1);
   border-color: rgba(0, 207, 255, 0.4);
   color: var(--cyan);
 }
+
+.durInput {
+  width: 52px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 5px 8px;
+  outline: none;
+  text-align: center;
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.15s;
+}
+.durInput:focus { border-color: var(--cyan); }
+
+/* ─── Termin block (Datum + Uhrzeit prominent) ───────────── */
+.terminBlock {
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 45, 120, 0.05);
+  border: 1px solid rgba(255, 45, 120, 0.18);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+}
+
+.terminField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* ─── Blink animation (missing required fields) ──────────── */
+@keyframes blinkRequired {
+  0%,100% { border-color: rgba(255, 45, 120, 0.25); box-shadow: none; }
+  50%     { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255, 45, 120, 0.22); }
+}
+
+.blinkField {
+  animation: blinkRequired 0.38s ease 3;
+}
+
+/* ─── Routine: Weekday buttons ───────────────────────────── */
+.wdayRow {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.wdayBtn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.wdayBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+
+.wdayBtnActive {
+  background: rgba(191, 0, 255, 0.14);
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+/* ─── Select (Routine Uhrzeit) ───────────────────────────── */
+.fieldSelect {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 10px;
+  outline: none;
+  color-scheme: dark;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.fieldSelect:focus { border-color: var(--cyan); }
 
 /* ─── More toggle ────────────────────────────────────────── */
 .moreToggle {
@@ -181,7 +315,7 @@
   color: var(--text-dim);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   padding: 2px 0;
   text-align: left;
   transition: color 0.15s;
@@ -203,9 +337,10 @@
 /* ─── Color picker ───────────────────────────────────────── */
 .colorRow {
   display: flex;
-  gap: 7px;
+  gap: 6px;
   flex-wrap: wrap;
 }
+
 .colorCircle {
   width: 22px;
   height: 22px;
@@ -216,8 +351,8 @@
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
-.colorCircle:hover { transform: scale(1.15); }
-.colorCircleActive { border-color: #fff; transform: scale(1.15); }
+.colorCircle:hover { transform: scale(1.18); }
+.colorCircleActive { border-color: #fff; transform: scale(1.18); }
 
 /* ─── Field inputs ───────────────────────────────────────── */
 .fieldInput {
@@ -245,30 +380,30 @@
   font-size: 0.85rem;
   padding: 7px 10px;
   outline: none;
-  transition: border-color 0.15s;
   color-scheme: dark;
+  transition: border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  width: 100%;
 }
 .fieldInputSm:focus { border-color: var(--cyan); }
 
-/* ─── Submit ──────────────────────────────────────────────── */
+/* ─── Submit button ──────────────────────────────────────── */
 .submitBtn {
-  background: rgba(0, 207, 255, 0.12);
-  border: 1px solid rgba(0, 207, 255, 0.35);
+  background: color-mix(in srgb, var(--tc, var(--cyan)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tc, var(--cyan)) 50%, transparent);
   border-radius: var(--r-sm);
-  color: var(--cyan);
+  color: var(--tc, var(--cyan));
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
-  padding: 12px 16px;
+  padding: 13px 16px;
   width: 100%;
   transition: background 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 .submitBtn:hover:not(:disabled) {
-  background: rgba(0, 207, 255, 0.2);
-  border-color: var(--cyan);
+  background: color-mix(in srgb, var(--tc, var(--cyan)) 22%, transparent);
 }
 .submitBtn:disabled { opacity: 0.3; cursor: default; }
