@@ -5,8 +5,8 @@ export const TOOL_REGISTRY = [
     icon: '🎡',
     color: '#BF00FF',
     description: 'Zufälliges Todo auswählen',
-    standalone: false,
-    integrated: true,
+    standalone: true,
+    integrated: false,
   },
   {
     id: 'timer',

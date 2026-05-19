@@ -44,184 +44,294 @@
 }
 .title em { font-style: normal; color: var(--cyan); }
 
-/* ─── Wheel ───────────────────────────────────────────────── */
-.wheelWrap {
-  position: relative;
+/* ─── Filter ──────────────────────────────────────────────── */
+.radFilter {
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding-top: 10px;
+  gap: 7px;
+  flex-wrap: wrap;
 }
 
-/* Pointer triangle at top-centre */
-.pointer {
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left:  8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top:   14px solid var(--cyan);
-  z-index: 2;
-  filter: drop-shadow(0 0 4px rgba(0,207,255,0.6));
+.filterBtn {
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50px;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.filterBtnActive {
+  border-color: rgba(0,207,255,0.4);
+  color: var(--cyan);
+  background: rgba(0,207,255,0.08);
+}
+
+.segCount {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+/* ─── Manual input ────────────────────────────────────────── */
+.manualWrap {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--r);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manualRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.manInput {
+  flex: 1;
+  min-width: 120px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  padding: 8px 10px;
+  outline: none;
+}
+.manInput:focus { border-color: rgba(0,207,255,0.35); }
+
+.prioRow {
+  display: flex;
+  gap: 4px;
+}
+
+.prioBtn {
+  padding: 6px 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.prioBtnActive {
+  background: rgba(255,255,255,0.06);
+}
+
+.manAddBtn {
+  padding: 8px 12px;
+  background: rgba(0,207,255,0.1);
+  border: 1px solid rgba(0,207,255,0.3);
+  border-radius: var(--r-sm);
+  color: var(--cyan);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.manAddBtn:hover { background: rgba(0,207,255,0.18); }
+
+.manList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.manChip {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.manStripe {
+  width: 3px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.manText {
+  flex: 1;
+  padding: 7px 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.manRemove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 7px 10px;
+  font-size: 0.75rem;
+  transition: color 0.15s;
+}
+.manRemove:hover { color: var(--pink); }
+
+/* ─── Wheel ───────────────────────────────────────────────── */
+.wheelSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wheelRing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .canvas {
   display: block;
-  border-radius: 50%;
-  /* subtle glow ring */
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 0 24px rgba(0,207,255,0.08);
-}
-
-/* ─── Result ──────────────────────────────────────────────── */
-.result {
-  background: var(--surface);
-  border: 1px solid var(--cyan);
-  border-radius: var(--r);
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: center;
-  box-shadow: 0 0 12px rgba(0,207,255,0.1);
-}
-
-.resultLabel {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-dim);
-}
-
-.resultText {
-  font-family: 'Orbitron', monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.3;
-  word-break: break-word;
-}
-
-.resultPlaceholder {
-  text-align: center;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  padding: 4px 0;
+  position: relative;
+  z-index: 1;
+  border-radius: 14px;
 }
 
 /* ─── Spin button ─────────────────────────────────────────── */
 .spinBtn {
-  background: rgba(0,207,255,0.12);
-  border: 1.5px solid rgba(0,207,255,0.3);
-  border-radius: var(--r);
-  color: var(--cyan);
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 13px 0;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-.spinBtn:hover { background: rgba(0,207,255,0.2); border-color: rgba(0,207,255,0.5); }
-
-.spinBtnDisabled {
-  opacity: 0.38;
-  cursor: default;
-}
-.spinBtnDisabled:hover { background: rgba(0,207,255,0.12); border-color: rgba(0,207,255,0.3); }
-
-/* ─── Pool section ────────────────────────────────────────── */
-.poolSection {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.poolTitle {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 2px;
-}
-
-.poolCount {
+  display: block;
+  margin: 0 auto;
+  padding: 11px 38px;
   font-family: 'Orbitron', monospace;
-  font-size: 0.65rem;
-  color: var(--cyan);
-  background: rgba(0,207,255,0.1);
-  border: 1px solid rgba(0,207,255,0.2);
-  border-radius: 4px;
-  padding: 1px 5px;
-}
-
-.poolList {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.poolItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.12s, border-color 0.12s;
-  -webkit-tap-highlight-color: transparent;
-}
-.poolItem:hover { border-color: rgba(255,255,255,0.15); }
-
-.poolItemActive {
-  border-color: rgba(0,207,255,0.2);
-  background: rgba(0,207,255,0.04);
-}
-
-.poolDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.poolText {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
-  color: var(--text);
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.poolCheck {
-  font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
-  color: var(--text-dim);
-  flex-shrink: 0;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--cyan);
+  border: 1.5px solid rgba(0,207,255,0.38);
+  border-radius: 50px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.22s, box-shadow 0.22s;
+  box-shadow: 0 0 14px rgba(0,207,255,0.1);
 }
-.poolItemActive .poolCheck { color: var(--cyan); }
+.spinBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--cyan), var(--violet));
+  transform: translateX(-101%);
+  transition: transform 0.24s;
+  z-index: -1;
+}
+.spinBtn:hover:not(:disabled)::before { transform: translateX(0); }
+.spinBtn:hover:not(:disabled) { color: #fff; box-shadow: 0 0 30px rgba(0,207,255,0.5); }
+.spinBtn:disabled { opacity: 0.2; cursor: default; }
 
-/* ─── Empty ───────────────────────────────────────────────── */
-.empty {
+.spinBtnSpinning {
+  color: var(--pink);
+  border-color: rgba(255,45,120,0.5);
+  animation: pinkPulse 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes pinkPulse {
+  from { box-shadow: 0 0 8px rgba(255,45,120,0.2); }
+  to   { box-shadow: 0 0 30px rgba(255,45,120,0.7); }
+}
+
+/* ─── Winner card ─────────────────────────────────────────── */
+.winnerCard {
+  border: 1px solid rgba(255,45,120,0.35);
+  border-radius: var(--r);
+  padding: 18px;
   text-align: center;
-  color: var(--text-dim);
+  animation: winIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes winIn {
+  from { transform: scale(0.82) translateY(10px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.winnerEyebrow {
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: rgba(255,45,120,0.5);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.winnerText {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(0.88rem, 5vw, 1.2rem);
+  color: #fff;
+  font-weight: 900;
+  margin-bottom: 16px;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.winnerBtns {
+  display: flex;
+  gap: 9px;
+  justify-content: center;
+}
+
+.btnDone {
+  padding: 9px 26px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  padding: 24px 0;
-  line-height: 1.7;
+  font-size: 0.74rem;
+  font-weight: 800;
+  background: transparent;
+  border: 1.5px solid var(--cyan);
+  color: var(--cyan);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btnDone:hover { background: var(--cyan); color: #07070e; }
+
+.btnSkip {
+  padding: 9px 26px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.28);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btnSkip:hover { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.6); }
+
+/* ─── Confetti ────────────────────────────────────────────── */
+.confettiWrap {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.cp {
+  position: absolute;
+  top: -20px;
+  animation: cffall linear forwards;
+}
+
+@keyframes cffall {
+  to { transform: translateY(110vh) rotate(620deg); opacity: 0; }
 }
