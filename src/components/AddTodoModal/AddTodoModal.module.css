@@ -3,7 +3,9 @@
   position: fixed;
   inset: 0;
   z-index: 400;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,8 +15,8 @@
 
 /* ─── Modal ───────────────────────────────────────────────── */
 .modal {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: rgba(11, 11, 23, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--r);
   padding: 18px 16px;
   width: 100%;
@@ -25,6 +27,11 @@
   flex-direction: column;
   gap: 11px;
   animation: scaleIn 0.18s ease both;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.055),
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
 @keyframes scaleIn {
@@ -389,8 +396,12 @@
 
 /* ─── Submit button ──────────────────────────────────────── */
 .submitBtn {
-  background: color-mix(in srgb, var(--tc, var(--cyan)) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--tc, var(--cyan)) 50%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tc, var(--cyan)) 20%, transparent) 0%,
+    color-mix(in srgb, var(--tc, var(--cyan)) 10%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--tc, var(--cyan)) 55%, transparent);
   border-radius: var(--r-sm);
   color: var(--tc, var(--cyan));
   cursor: pointer;
@@ -399,11 +410,30 @@
   font-weight: 700;
   padding: 13px 16px;
   width: 100%;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
   -webkit-tap-highlight-color: transparent;
   margin-top: 2px;
+  box-shadow: 0 2px 16px color-mix(in srgb, var(--tc, var(--cyan)) 15%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+.submitBtn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.09) 50%, transparent 80%);
+  transform: translateX(-110%) skewX(-15deg);
+  transition: transform 0.55s ease;
+}
+.submitBtn:hover:not(:disabled)::after {
+  transform: translateX(200%) skewX(-15deg);
 }
 .submitBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--tc, var(--cyan)) 22%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tc, var(--cyan)) 28%, transparent) 0%,
+    color-mix(in srgb, var(--tc, var(--cyan)) 16%, transparent) 100%
+  );
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--tc, var(--cyan)) 28%, transparent);
 }
 .submitBtn:disabled { opacity: 0.3; cursor: default; }

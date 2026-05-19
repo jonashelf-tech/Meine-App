@@ -47,7 +47,7 @@
   flex-direction: column;
   gap: 4px;
   cursor: pointer;
-  transition: border-color 0.2s, opacity 0.2s, transform 0.15s;
+  transition: border-color 0.2s, opacity 0.2s, transform 0.15s, box-shadow 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -55,7 +55,10 @@
 
 .cardActive {
   border-color: var(--tool-color, var(--cyan));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--tool-color, var(--cyan)) 20%, transparent);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--tool-color, var(--cyan)) 28%, transparent),
+    0 4px 20px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .cardInactive {
