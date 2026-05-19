@@ -8,7 +8,7 @@ import ReminderSection  from '../../tools/reminder/ReminderSection'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools } = useAppStore()
 
   const [visStart, setVisStart] = useState(() => {
     try { return parseInt(localStorage.getItem('adhs_vis_start')) || 8 } catch { return 8 }
@@ -206,7 +206,7 @@ export default function TabHeute() {
           handleDragStart(text, color, todoId, duration)
         }
       />
-      <ReminderSection />
+      {activeTools.includes('reminder') && <ReminderSection />}
 
       {editingTodo && (
         <EditModal

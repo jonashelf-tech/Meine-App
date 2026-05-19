@@ -1,5 +1,5 @@
 .section {
-  margin: 0 12px 8px;
+  margin: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
@@ -99,19 +99,24 @@
   flex-shrink: 0;
 }
 
-.addBtn {
-  background: rgba(var(--c, 0, 207, 255), 0.1);
-  border: 1px solid color-mix(in srgb, var(--c, #00CFFF) 40%, transparent);
-  border-radius: 20px;
-  color: var(--c, var(--cyan));
+.addAllBtn {
+  width: 100%;
+  background: rgba(0, 207, 255, 0.08);
+  border: 1px solid rgba(0, 207, 255, 0.25);
+  border-radius: var(--r-sm);
+  color: var(--cyan);
   font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 7px 12px;
   cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
+  text-align: center;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.addAllBtn:hover {
+  background: rgba(0, 207, 255, 0.14);
 }
 
 .dismissBtn {

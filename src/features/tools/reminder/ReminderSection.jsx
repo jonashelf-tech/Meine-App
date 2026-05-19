@@ -27,53 +27,65 @@ export default function ReminderSection() {
     saveDismissed(next)
   }, [dismissed, today, todayDismissed])
 
-  const handleAdd = useCallback((item) => {
-    // Mark lastAdded
-    const nextItems = items.map(i => i.id === item.id ? { ...i, lastAdded: today } : i)
-    setItems(nextItems)
-    saveReminderItems(nextItems)
-
+  const addItem = useCallback((item, currentSlots) => {
     if (item.actionType === 'slot') {
-      // Find target slot key
       let slotKey
       if (item.time) {
         const mins = parseHHMM(item.time)
         slotKey = minutesToSk(mins)
       } else {
-        slotKey = ALL_SLOT_KEYS.find(k => !todaySlots[k]) ?? sk(9)
+        slotKey = ALL_SLOT_KEYS.find(k => !currentSlots[k]) ?? sk(9)
       }
-      // If target is taken, find next free
-      if (todaySlots[slotKey]) {
-        const free = ALL_SLOT_KEYS.find(k => !todaySlots[k])
+      if (currentSlots[slotKey]) {
+        const free = ALL_SLOT_KEYS.find(k => !currentSlots[k])
         if (free) slotKey = free
       }
-      setDays(prev => ({
-        ...prev,
-        [today]: {
-          ...(prev[today] ?? {}),
-          [slotKey]: { text: item.text, color: item.color, duration: 30, locked: false, done: false },
-        },
-      }))
+      return { type: 'slot', slotKey, data: { text: item.text, color: item.color, duration: 30, locked: false, done: false } }
     } else {
-      // Add as todo
-      const block = createBlock({
-        text:     item.text,
-        priority: 2,
-        color:    item.color,
-        category: 'Selfcare',
-      })
-      setTodos(prev => [...prev, block])
+      return { type: 'todo', block: createBlock({ text: item.text, priority: 2, color: item.color, category: 'Selfcare' }) }
+    }
+  }, [])
+
+  const handleAddAll = useCallback(() => {
+    // Mark all as lastAdded
+    const nextItems = items.map(i =>
+      dueItems.some(d => d.id === i.id) ? { ...i, lastAdded: today } : i
+    )
+    setItems(nextItems)
+    saveReminderItems(nextItems)
+
+    // Collect slot updates and todos
+    let slotsAccum = { ...todaySlots }
+    const newTodos = []
+
+    dueItems.forEach(item => {
+      const result = addItem(item, slotsAccum)
+      if (result.type === 'slot') {
+        slotsAccum = { ...slotsAccum, [result.slotKey]: result.data }
+      } else {
+        newTodos.push(result.block)
+      }
+    })
+
+    if (Object.keys(slotsAccum).length > Object.keys(todaySlots).length) {
+      setDays(prev => ({ ...prev, [today]: slotsAccum }))
+    }
+    if (newTodos.length > 0) {
+      setTodos(prev => [...prev, ...newTodos])
     }
 
-    dismiss(item.id)
-  }, [items, today, todaySlots, setDays, setTodos, dismiss])
+    // Dismiss all
+    const next = { ...dismissed, [today]: [...todayDismissed, ...dueItems.map(i => i.id)] }
+    setDismissed(next)
+    saveDismissed(next)
+  }, [items, dueItems, today, todaySlots, dismissed, todayDismissed, addItem, setDays, setTodos])
 
   if (dueItems.length === 0) return null
 
   return (
     <div className={s.section}>
       <button className={s.header} onClick={() => setOpen(v => !v)}>
-        <span className={s.label}>Selfcare</span>
+        <span className={s.label}>Reminder</span>
         <span className={[s.badge, dueItems.length > 0 ? s.badgeBlink : ''].join(' ')}>
           {dueItems.length}
         </span>
@@ -82,6 +94,9 @@ export default function ReminderSection() {
 
       {open && (
         <div className={s.items}>
+          <button className={s.addAllBtn} onClick={handleAddAll}>
+            + Alle hinzufügen
+          </button>
           {dueItems.map(item => (
             <div key={item.id} className={s.item}>
               <span className={s.itemIcon}>{item.icon || '🔔'}</span>
@@ -89,13 +104,6 @@ export default function ReminderSection() {
                 <span className={s.itemText}>{item.text}</span>
                 {item.time && <span className={s.itemTime}>{item.time}</span>}
               </div>
-              <button
-                className={s.addBtn}
-                style={{ '--c': item.color }}
-                onClick={() => handleAdd(item)}
-              >
-                {item.actionType === 'slot' ? '+ Zeitplan' : '+ Todo'}
-              </button>
               <button className={s.dismissBtn} onClick={() => dismiss(item.id)}>✕</button>
             </div>
           ))}
