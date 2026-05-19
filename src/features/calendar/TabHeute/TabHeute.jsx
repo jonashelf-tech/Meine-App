@@ -10,8 +10,12 @@ import s from './TabHeute.module.css'
 export default function TabHeute() {
   const { todos, setTodos, days, setDays } = useAppStore()
 
-  const [visStart,    setVisStart]    = useState(8)
-  const [visEnd,      setVisEnd]      = useState(20)
+  const [visStart, setVisStart] = useState(() => {
+    try { return parseInt(localStorage.getItem('adhs_vis_start')) || 8 } catch { return 8 }
+  })
+  const [visEnd, setVisEnd] = useState(() => {
+    try { return parseInt(localStorage.getItem('adhs_vis_end')) || 20 } catch { return 20 }
+  })
   const [editingTodo, setEditingTodo] = useState(null)
   const [dragState,   setDragState]   = useState(null)
 
@@ -77,11 +81,22 @@ export default function TabHeute() {
   }, [setTodaySlots])
 
   // ─── Zeitplan expand/shrink ───────────────────────────────
-  const handleExpandUp   = useCallback(() => setVisStart(v => Math.max(0, v - 1)), [])
-  const handleExpandDown = useCallback(() => setVisEnd(v => Math.min(23, v + 1)), [])
+  const saveVis = (start, end) => {
+    try {
+      localStorage.setItem('adhs_vis_start', start)
+      localStorage.setItem('adhs_vis_end', end)
+    } catch {}
+  }
+
+  const handleExpandUp   = useCallback(() => setVisStart(v => {
+    const next = Math.max(0, v - 1); saveVis(next, visEnd); return next
+  }), [visEnd])
+  const handleExpandDown = useCallback(() => setVisEnd(v => {
+    const next = Math.min(23, v + 1); saveVis(visStart, next); return next
+  }), [visStart])
   const handleRemoveHour = useCallback((h) => {
-    if (h === visStart) setVisStart(v => Math.min(v + 1, visEnd - 1))
-    else if (h === visEnd) setVisEnd(v => Math.max(v - 1, visStart + 1))
+    if (h === visStart) setVisStart(v => { const next = Math.min(v + 1, visEnd - 1); saveVis(next, visEnd); return next })
+    else if (h === visEnd) setVisEnd(v => { const next = Math.max(v - 1, visStart + 1); saveVis(visStart, next); return next })
   }, [visStart, visEnd])
 
   // ─── Shift all slots ±30min ───────────────────────────────
