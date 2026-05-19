@@ -1,0 +1,372 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 32px;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 0;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 4px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.titleBlock { display: flex; flex-direction: column; }
+
+.eyebrow {
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 207, 255, 0.45);
+  font-family: 'Outfit', sans-serif;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'Orbitron', monospace;
+  color: var(--text);
+}
+
+.title em { color: var(--cyan); font-style: normal; }
+
+/* ─── Sections ───────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 0;
+  gap: 2px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sectionLabel {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.addBtn {
+  background: none;
+  border: 1px solid rgba(0, 207, 255, 0.25);
+  color: var(--cyan);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.empty {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  padding: 8px 0;
+  margin: 0;
+}
+
+/* ─── ItemRow ────────────────────────────────────────────── */
+.itemRow {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.itemMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.itemBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+}
+
+.itemIcon { font-size: 1.1rem; flex-shrink: 0; }
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemText {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemMeta {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  margin-top: 2px;
+}
+
+.chevron {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+/* ─── Toggle ─────────────────────────────────────────────── */
+.toggle {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.toggleOn { background: var(--cyan); }
+
+.toggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+
+.toggleOn .toggleThumb { transform: translateX(16px); }
+
+/* ─── Edit section ───────────────────────────────────────── */
+.itemEdit {
+  padding: 0 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.editLabel {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 8px;
+  display: block;
+}
+
+.optional { font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+.editInput {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.editInput:focus { border-color: rgba(0, 207, 255, 0.4); }
+
+/* ─── IntervalPicker ─────────────────────────────────────── */
+.intervalWrap { display: flex; flex-direction: column; gap: 6px; }
+
+.presetRow { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.presetBtn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+
+.presetBtnActive {
+  background: rgba(0, 207, 255, 0.12);
+  border-color: rgba(0, 207, 255, 0.4);
+  color: var(--cyan);
+}
+
+.customRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.customLabel {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+}
+
+.customInput {
+  width: 56px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  outline: none;
+  text-align: center;
+}
+
+.customInput:focus { border-color: rgba(0, 207, 255, 0.4); }
+
+.customSelect {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  padding: 6px 8px;
+  outline: none;
+}
+
+/* ─── Delete ─────────────────────────────────────────────── */
+.deleteBtn {
+  background: none;
+  border: 1px solid rgba(255, 45, 120, 0.25);
+  border-radius: 20px;
+  color: var(--pink);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  cursor: pointer;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+/* ─── AddForm ────────────────────────────────────────────── */
+.addForm {
+  background: rgba(0, 207, 255, 0.04);
+  border: 1px solid rgba(0, 207, 255, 0.15);
+  border-radius: var(--r-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.addFormRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconInput {
+  width: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-size: 1rem;
+  padding: 6px 4px;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.addFormText {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  outline: none;
+}
+
+.addFormText:focus { border-color: rgba(0, 207, 255, 0.4); }
+
+.addFormActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+.cancelBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.saveBtn {
+  background: rgba(0, 207, 255, 0.12);
+  border: 1px solid rgba(0, 207, 255, 0.4);
+  border-radius: 20px;
+  color: var(--cyan);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+
+.saveBtn:disabled { opacity: 0.4; cursor: default; }

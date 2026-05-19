@@ -1,0 +1,129 @@
+.section {
+  margin: 0 12px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+
+.label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  flex: 1;
+}
+
+.badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  font-family: 'Orbitron', monospace;
+  color: var(--cyan);
+  background: rgba(0, 207, 255, 0.1);
+  border-radius: 10px;
+  padding: 2px 7px;
+  min-width: 20px;
+  text-align: center;
+}
+
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.badgeBlink { animation: badgePulse 1.6s ease-in-out infinite; }
+
+.chevron {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+
+/* ─── Items ──────────────────────────────────────────────── */
+.items {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px 10px;
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+}
+
+.itemIcon { font-size: 1rem; flex-shrink: 0; }
+
+.itemBody {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemText {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemTime {
+  font-size: 0.65rem;
+  font-family: 'Orbitron', monospace;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.addBtn {
+  background: rgba(var(--c, 0, 207, 255), 0.1);
+  border: 1px solid color-mix(in srgb, var(--c, #00CFFF) 40%, transparent);
+  border-radius: 20px;
+  color: var(--c, var(--cyan));
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dismissBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+
+.dismissBtn:hover { color: var(--text); }

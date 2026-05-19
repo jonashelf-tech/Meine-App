@@ -18,6 +18,7 @@ const TOOL_TAB = {
   gewicht:      9,
   gamification: 10,
   geburtstage:  4,
+  reminder:     12,
 }
 
 export default function TabTools() {

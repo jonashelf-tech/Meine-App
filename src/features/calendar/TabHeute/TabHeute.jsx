@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, sk, parseHHMM, ALL_SLOT_KEYS } from '../../../utils'
-import Zeitplan  from '../Zeitplan/Zeitplan'
-import Pool      from '../Pool/Pool'
-import EditModal from '../../../components/EditModal/EditModal'
+import Zeitplan         from '../Zeitplan/Zeitplan'
+import Pool             from '../Pool/Pool'
+import EditModal        from '../../../components/EditModal/EditModal'
+import ReminderSection  from '../../tools/reminder/ReminderSection'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
@@ -190,6 +191,7 @@ export default function TabHeute() {
           handleDragStart(text, color, todoId, duration)
         }
       />
+      <ReminderSection />
 
       {editingTodo && (
         <EditModal

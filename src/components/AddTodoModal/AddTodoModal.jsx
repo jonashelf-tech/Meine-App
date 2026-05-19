@@ -128,10 +128,12 @@ export default function AddTodoModal({ onClose }) {
   const [time, setTime] = useState('')
 
   // Routine fields
-  const [freq,        setFreq]        = useState('daily')
-  const [routineHour, setRoutineHour] = useState(8)
-  const [weekday,     setWeekday]     = useState(1)
-  const [monthday,    setMonthday]    = useState(1)
+  const [freq,         setFreq]        = useState('daily')
+  const [routineHour,  setRoutineHour] = useState(8)
+  const [weekday,      setWeekday]     = useState(1)
+  const [monthday,     setMonthday]    = useState(1)
+  const [customEvery,  setCustomEvery] = useState(2)
+  const [customUnit,   setCustomUnit]  = useState('days')
 
   // Blink state for Termin validation
   const [blinkDate, setBlinkDate] = useState(false)
@@ -210,15 +212,17 @@ export default function AddTodoModal({ onClose }) {
 
     } else if (type === 'routine') {
       const routine = {
-        id:       Date.now(),
-        text:     text.trim(),
+        id:          Date.now(),
+        text:        text.trim(),
         freq,
-        hour:     routineHour,
+        customEvery: freq === 'custom' ? customEvery : null,
+        customUnit:  freq === 'custom' ? customUnit  : null,
+        hour:        routineHour || null,
         weekday,
         monthday,
         color,
-        duration: duration || null,
-        category: category.trim() || null,
+        duration:    duration || null,
+        category:    category.trim() || null,
       }
       setRoutines(prev => [...prev, routine])
 
@@ -374,7 +378,7 @@ export default function AddTodoModal({ onClose }) {
             <div className={s.row}>
               <span className={s.rowLabel}>Takt</span>
               <div className={s.segControl}>
-                {[['daily','Täglich'],['weekly','Wöchentlich'],['monthly','Monatlich']].map(([v, l]) => (
+                {[['daily','Täglich'],['weekly','Wöchentlich'],['monthly','Monatlich'],['custom','Eigener']].map(([v, l]) => (
                   <button
                     key={v}
                     className={[s.segBtn, freq === v ? s.segBtnActive : ''].join(' ')}
@@ -384,6 +388,25 @@ export default function AddTodoModal({ onClose }) {
                 ))}
               </div>
             </div>
+
+            {freq === 'custom' && (
+              <div className={s.row}>
+                <span className={s.rowLabel}>Alle</span>
+                <input
+                  type="number" min={1} max={999} className={s.durInput}
+                  value={customEvery}
+                  onChange={e => setCustomEvery(Math.max(1, parseInt(e.target.value) || 1))}
+                />
+                <select
+                  className={s.fieldSelect} value={customUnit}
+                  onChange={e => setCustomUnit(e.target.value)}
+                >
+                  <option value="days">Tage</option>
+                  <option value="weeks">Wochen</option>
+                  <option value="months">Monate</option>
+                </select>
+              </div>
+            )}
 
             {freq === 'weekly' && (
               <div className={s.row}>
@@ -413,11 +436,12 @@ export default function AddTodoModal({ onClose }) {
 
             {/* Uhrzeit */}
             <div className={s.row}>
-              <span className={s.rowLabel}>Uhrzeit</span>
+              <span className={s.rowLabel}>Uhrzeit <span style={{opacity:0.4,fontWeight:400}}>(optional)</span></span>
               <select
                 className={s.fieldSelect} value={routineHour}
                 onChange={e => setRoutineHour(Number(e.target.value))}
               >
+                <option value="">—</option>
                 {ROUTINE_HOURS.map(h => (
                   <option key={h} value={h}>{String(h).padStart(2,'0')}:00</option>
                 ))}

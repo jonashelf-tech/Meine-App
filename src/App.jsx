@@ -13,6 +13,7 @@ import TabElvi         from './features/tools/elvi/TabElvi'
 import TabGewicht      from './features/tools/gewicht/TabGewicht'
 import TabGamification from './features/tools/gamification/TabGamification'
 import TabRad          from './features/tools/rad/TabRad'
+import TabReminder     from './features/tools/reminder/TabReminder'
 import AddTodoModal    from './components/AddTodoModal/AddTodoModal'
 
 const TABS = [
@@ -45,6 +46,7 @@ export default function App() {
         {currentTab === 9  && <TabGewicht      onBack={goBack} />}
         {currentTab === 10 && <TabGamification onBack={goBack} />}
         {currentTab === 11 && <TabRad          onBack={goBack} />}
+        {currentTab === 12 && <TabReminder     onBack={goBack} />}
       </div>
 
       <button

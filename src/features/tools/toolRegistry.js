@@ -71,4 +71,13 @@ export const TOOL_REGISTRY = [
     standalone: false,
     integrated: true,
   },
+  {
+    id: 'reminder',
+    name: 'Reminder',
+    icon: '🔔',
+    color: '#00FF94',
+    description: 'Selfcare-Erinnerungen & Routinen',
+    standalone: true,
+    integrated: true,
+  },
 ]
