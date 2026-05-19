@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, sk, parseHHMM, ALL_SLOT_KEYS } from '../../../utils'
 import Zeitplan         from '../Zeitplan/Zeitplan'
 import Pool             from '../Pool/Pool'
 import EditModal        from '../../../components/EditModal/EditModal'
 import ReminderSection  from '../../tools/reminder/ReminderSection'
+import ClockPopup       from '../Zeitplan/ClockPopup'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
@@ -18,9 +19,56 @@ export default function TabHeute() {
   })
   const [editingTodo, setEditingTodo] = useState(null)
   const [dragState,   setDragState]   = useState(null)
+  const [clockPopup,  setClockPopup]  = useState(null)
+
+  const promptedRef = useRef(new Set())
+  const snoozeRef   = useRef({})
+  const daysRef     = useRef(days)
 
   const viewDate   = todayKey()
   const todaySlots = days[viewDate] ?? {}
+
+  // ─── Keep daysRef current ─────────────────────────────
+  useEffect(() => { daysRef.current = days }, [days])
+
+  // ─── Init: mark done slots as already prompted ────────
+  useEffect(() => {
+    const slots = daysRef.current[viewDate] ?? {}
+    Object.keys(slots).forEach(k => {
+      if (slots[k]?.done) promptedRef.current.add(k)
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ─── Clock interval ───────────────────────────────────
+  useEffect(() => {
+    const tick = () => {
+      if (document.hidden) return
+      const now     = new Date()
+      const nowMins = now.getHours() * 60 + now.getMinutes()
+      const slots   = daysRef.current[viewDate] ?? {}
+
+      for (const key of Object.keys(slots)) {
+        const slot = slots[key]
+        if (!slot || slot.done || slot.locked) continue
+        if (promptedRef.current.has(key)) continue
+        if (snoozeRef.current[key] && snoozeRef.current[key] > Date.now()) continue
+
+        const startMins = parseFloat(key) * 60
+        const endMins   = startMins + (slot.duration || 30)
+
+        if (endMins <= nowMins) {
+          promptedRef.current.add(key)
+          setClockPopup({ slotKey: key, slotText: slot.text || '?' })
+          return // eines nach dem anderen
+        }
+      }
+    }
+
+    tick()
+    const id = setInterval(tick, 60_000)
+    return () => clearInterval(id)
+  }, [viewDate])
 
   // ─── Helpers ─────────────────────────────────────────────
   const setTodaySlots = useCallback((updater) => {
@@ -51,6 +99,14 @@ export default function TabHeute() {
       const slot = prev[slotKey]
       if (!slot) return prev
       return { ...prev, [slotKey]: { ...slot, done: !slot.done } }
+    })
+  }, [setTodaySlots])
+
+  const handleToggleLock = useCallback((slotKey) => {
+    setTodaySlots(prev => {
+      const slot = prev[slotKey]
+      if (!slot) return prev
+      return { ...prev, [slotKey]: { ...slot, locked: !slot.locked } }
     })
   }, [setTodaySlots])
 
@@ -135,12 +191,13 @@ export default function TabHeute() {
     const existing = todaySlots[targetKey]
     if (existing) return
 
+    const linkedTodo = dragState.todoId ? todos.find(t => t.id === dragState.todoId) : null
     const newSlot = {
       text:     dragState.text,
       todoId:   dragState.todoId || null,
       color:    dragState.color,
       duration: dragState.duration || 30,
-      locked:   false,
+      locked:   !!(linkedTodo?.time),
       done:     false,
     }
 
@@ -155,7 +212,7 @@ export default function TabHeute() {
       handleSetSlot(targetKey, newSlot)
     }
     setDragState(null)
-  }, [dragState, todaySlots, handleSetSlot, setTodaySlots])
+  }, [dragState, todaySlots, todos, handleSetSlot, setTodaySlots])
 
   // ─── Edit modal ───────────────────────────────────────────
   const handleEdit = useCallback((id) => {
@@ -172,6 +229,27 @@ export default function TabHeute() {
     setTodos(prev => prev.filter(t => t.id !== id))
     setEditingTodo(null)
   }, [setTodos])
+
+  // ─── Clock popup actions ──────────────────────────────────
+  const closeClockPopup = useCallback(() => setClockPopup(null), [])
+
+  const handleClockDone = useCallback(() => {
+    if (!clockPopup) return
+    handleToggleSlotDone(clockPopup.slotKey)
+    closeClockPopup()
+  }, [clockPopup, handleToggleSlotDone, closeClockPopup])
+
+  const handleClockSnooze = useCallback(() => {
+    if (!clockPopup) return
+    promptedRef.current.delete(clockPopup.slotKey)
+    snoozeRef.current[clockPopup.slotKey] = Date.now() + 15 * 60 * 1000
+    closeClockPopup()
+  }, [clockPopup, closeClockPopup])
+
+  const handleClockShift = useCallback(() => {
+    handleShiftAll(1)
+    closeClockPopup()
+  }, [handleShiftAll, closeClockPopup])
 
   return (
     <div className={s.page}>
@@ -191,6 +269,7 @@ export default function TabHeute() {
         onExpandDown={handleExpandDown}
         onRemoveHour={handleRemoveHour}
         onSlotDragStart={handleSlotDragStart}
+        onToggleLock={handleToggleLock}
         dragState={dragState}
         onDrop={handleDropOnSlot}
         onDragEnd={handleDragEnd}
@@ -214,6 +293,16 @@ export default function TabHeute() {
           onSave={handleEditSave}
           onDelete={handleEditDelete}
           onClose={() => setEditingTodo(null)}
+        />
+      )}
+
+      {clockPopup && (
+        <ClockPopup
+          slotText={clockPopup.slotText}
+          onDone={handleClockDone}
+          onSnooze={handleClockSnooze}
+          onShift={handleClockShift}
+          onDismiss={closeClockPopup}
         />
       )}
     </div>

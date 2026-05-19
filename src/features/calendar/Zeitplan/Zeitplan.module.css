@@ -137,6 +137,36 @@
   min-height: 40px;
 }
 
+/* ── Lock button ──────────────────────────────────────── */
+.lockBtn {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 5;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: color 0.15s, opacity 0.15s, filter 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sgHalf:hover .lockBtn {
+  opacity: 1;
+}
+
+.lockBtnOn {
+  opacity: 1 !important;
+  color: var(--cyan);
+  filter: drop-shadow(0 0 5px rgba(0, 207, 255, 0.6));
+}
+
 .sgHalfBot {
   border-bottom: 1px dashed rgba(255,255,255,0.04);
 }

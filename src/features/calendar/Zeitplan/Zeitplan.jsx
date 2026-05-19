@@ -5,6 +5,19 @@ import s from './Zeitplan.module.css'
 
 const ROW_H = 40
 
+// ─── LockIcon ─────────────────────────────────────────────
+function LockIcon({ locked }) {
+  return (
+    <svg width="9" height="11" viewBox="0 0 9 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="5" width="7" height="6" rx="1.5" fill="currentColor"/>
+      {locked
+        ? <path d="M2.5 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        : <path d="M2.5 4.5V3a2 2 0 014 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
+      }
+    </svg>
+  )
+}
+
 // ─── RemoveDialog ─────────────────────────────────────────
 function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
   return (
@@ -76,6 +89,7 @@ export default function Zeitplan({
   onExpandDown,
   onRemoveHour,
   onSlotDragStart,
+  onToggleLock,
   dragState,
   onDrop,
   onDragEnd,
@@ -178,6 +192,12 @@ export default function Zeitplan({
                         onRemove={() => openRemove(topKey, topSlot.text)}
                         onDragStart={onSlotDragStart ? () => onSlotDragStart(topKey) : undefined}
                       />
+                      <button
+                        className={[s.lockBtn, topSlot.locked ? s.lockBtnOn : ''].join(' ')}
+                        onClick={e => { e.stopPropagation(); onToggleLock?.(topKey) }}
+                      >
+                        <LockIcon locked={!!topSlot.locked} />
+                      </button>
                     </div>
                   : <div
                       key={`top-${h}`}
@@ -209,6 +229,12 @@ export default function Zeitplan({
                         onRemove={() => openRemove(botKey, botSlot.text)}
                         onDragStart={onSlotDragStart ? () => onSlotDragStart(botKey) : undefined}
                       />
+                      <button
+                        className={[s.lockBtn, botSlot.locked ? s.lockBtnOn : ''].join(' ')}
+                        onClick={e => { e.stopPropagation(); onToggleLock?.(botKey) }}
+                      >
+                        <LockIcon locked={!!botSlot.locked} />
+                      </button>
                     </div>
                   : <div
                       key={`bot-${h}`}
