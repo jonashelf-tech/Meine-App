@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, sk, parseHHMM, ALL_SLOT_KEYS } from '../../../utils'
+import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan         from '../Zeitplan/Zeitplan'
 import Pool             from '../Pool/Pool'
 import EditModal        from '../../../components/EditModal/EditModal'
@@ -18,12 +19,14 @@ export default function TabHeute() {
     try { return parseInt(localStorage.getItem('adhs_vis_end')) || 20 } catch { return 20 }
   })
   const [editingTodo, setEditingTodo] = useState(null)
-  const [dragState,   setDragState]   = useState(null)
   const [clockPopup,  setClockPopup]  = useState(null)
+
+  const { registerHalf, startDrag } = useDragDrop()
 
   const promptedRef = useRef(new Set())
   const snoozeRef   = useRef({})
   const daysRef     = useRef(days)
+  const tickRef     = useRef(null)
 
   const viewDate   = todayKey()
   const todaySlots = days[viewDate] ?? {}
@@ -40,6 +43,41 @@ export default function TabHeute() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // ─── Auto-Return: unchecked Zeitplan-Einträge vergangener Tage → Pool ──
+  // Läuft einmal pro Tag beim App-Start. Slots ohne todoId (Text-only) werden
+  // als neues Todo angelegt, damit sie im Pool erscheinen.
+  useEffect(() => {
+    const LAST_KEY = 'adhs_last_pool_return'
+    const today = todayKey()
+    try { if (localStorage.getItem(LAST_KEY) === today) return } catch {}
+
+    const existingIds = new Set(todos.map(t => t.id))
+    const newTodos = []
+    let idx = 0
+
+    Object.entries(days).forEach(([dk, dayData]) => {
+      if (dk >= today || !dayData || typeof dayData !== 'object') return
+      Object.values(dayData).forEach(slot => {
+        if (!slot || slot.done || !slot.text) return
+        // Todo mit todoId existiert noch → bereits im Pool sichtbar
+        if (slot.todoId && existingIds.has(slot.todoId)) return
+        newTodos.push({
+          id:       Date.now() + idx++,
+          text:     slot.text,
+          color:    slot.color  || null,
+          duration: slot.duration || null,
+          priority: 3,
+          done:     false,
+          subItems: [],
+        })
+      })
+    })
+
+    if (newTodos.length > 0) setTodos(prev => [...prev, ...newTodos])
+    try { localStorage.setItem(LAST_KEY, today) } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // ─── Clock interval ───────────────────────────────────
   useEffect(() => {
     const tick = () => {
@@ -48,23 +86,24 @@ export default function TabHeute() {
       const nowMins = now.getHours() * 60 + now.getMinutes()
       const slots   = daysRef.current[viewDate] ?? {}
 
-      for (const key of Object.keys(slots)) {
-        const slot = slots[key]
-        if (!slot || slot.done || slot.locked) continue
-        if (promptedRef.current.has(key)) continue
-        if (snoozeRef.current[key] && snoozeRef.current[key] > Date.now()) continue
+      const expired = Object.keys(slots)
+        .filter(key => {
+          const slot = slots[key]
+          if (!slot || slot.done || slot.locked) return false
+          if (promptedRef.current.has(key)) return false
+          if (snoozeRef.current[key] && snoozeRef.current[key] > Date.now()) return false
+          const endMins = parseFloat(key) * 60 + (slot.duration || 30)
+          return endMins <= nowMins
+        })
+        .sort((a, b) => parseFloat(a) - parseFloat(b))
 
-        const startMins = parseFloat(key) * 60
-        const endMins   = startMins + (slot.duration || 30)
-
-        if (endMins <= nowMins) {
-          promptedRef.current.add(key)
-          setClockPopup({ slotKey: key, slotText: slot.text || '?' })
-          return // eines nach dem anderen
-        }
-      }
+      if (expired.length === 0) return
+      const key = expired[0]
+      promptedRef.current.add(key)
+      setClockPopup({ slotKey: key, slotText: slots[key].text || '?' })
     }
 
+    tickRef.current = tick
     tick()
     const id = setInterval(tick, 60_000)
     return () => clearInterval(id)
@@ -158,9 +197,9 @@ export default function TabHeute() {
   // ─── Shift all slots ±30min ───────────────────────────────
   const handleShiftAll = useCallback((dir) => {
     setTodaySlots(currentSlots => {
-      const keys = Object.keys(currentSlots).filter(k => !currentSlots[k]?.locked)
+      const keys   = Object.keys(currentSlots).filter(k => !currentSlots[k]?.locked)
       const sorted = [...keys].sort((a, b) => dir * (parseFloat(b) - parseFloat(a)))
-      const ns = { ...currentSlots }
+      const ns     = { ...currentSlots }
       sorted.forEach(k => {
         let ni = ALL_SLOT_KEYS.indexOf(k) + dir
         while (ni >= 0 && ni < ALL_SLOT_KEYS.length && ns[ALL_SLOT_KEYS[ni]]?.locked) ni += dir
@@ -173,46 +212,50 @@ export default function TabHeute() {
     })
   }, [setTodaySlots])
 
-  // ─── Drag & drop ─────────────────────────────────────────
-  const handleDragStart = useCallback((text, color, todoId, duration, sourceSlotKey = null) => {
-    setDragState({ text, color, todoId, duration, sourceSlotKey })
-  }, [])
+  // ─── Drag & Drop (v2.7-Ansatz: Ghost + Koordinaten) ──────
+  // Pool-Chip → Zeitplan-Slot
+  const startPoolDrag = useCallback((todoId, text, color, duration, e) => {
+    startDrag(text, color, (dropKey) => {
+      // Bereits verplant → verschieben
+      const curKey = Object.keys(todaySlots).find(k => todaySlots[k]?.todoId === todoId)
+      if (curKey) {
+        if (dropKey === curKey) return
+        setTodaySlots(prev => {
+          const ns    = { ...prev }
+          const entry = ns[curKey]
+          delete ns[curKey]
+          ns[dropKey] = entry
+          return ns
+        })
+      } else {
+        // Neu einplanen
+        handleSetSlot(dropKey, {
+          text,
+          todoId:   todoId || null,
+          color,
+          duration: duration || 30,
+          locked:   false,
+          done:     false,
+        })
+      }
+    }, e)
+  }, [startDrag, todaySlots, setTodaySlots, handleSetSlot])
 
-  const handleDragEnd = useCallback(() => setDragState(null), [])
-
-  const handleSlotDragStart = useCallback((slotKey) => {
-    const slot = todaySlots[slotKey]
-    if (!slot) return
-    handleDragStart(slot.text, slot.color, slot.todoId, slot.duration, slotKey)
-  }, [todaySlots, handleDragStart])
-
-  const handleDropOnSlot = useCallback((targetKey) => {
-    if (!dragState) return
-    const existing = todaySlots[targetKey]
-    if (existing) return
-
-    const linkedTodo = dragState.todoId ? todos.find(t => t.id === dragState.todoId) : null
-    const newSlot = {
-      text:     dragState.text,
-      todoId:   dragState.todoId || null,
-      color:    dragState.color,
-      duration: dragState.duration || 30,
-      locked:   !!(linkedTodo?.time),
-      done:     false,
-    }
-
-    if (dragState.sourceSlotKey && dragState.sourceSlotKey !== targetKey) {
+  // Zeitplan-Slot → anderen Slot (verschieben)
+  const startSlotDrag = useCallback((fromKey, e) => {
+    const slot = todaySlots[fromKey]
+    if (!slot || slot.locked) return
+    startDrag(slot.text, slot.color || '#00CFFF', (toKey) => {
+      if (toKey === fromKey) return
       setTodaySlots(prev => {
-        const next = { ...prev }
-        delete next[dragState.sourceSlotKey]
-        next[targetKey] = newSlot
-        return next
+        const ns    = { ...prev }
+        const entry = ns[fromKey]
+        delete ns[fromKey]
+        ns[toKey] = entry
+        return ns
       })
-    } else {
-      handleSetSlot(targetKey, newSlot)
-    }
-    setDragState(null)
-  }, [dragState, todaySlots, todos, handleSetSlot, setTodaySlots])
+    }, e)
+  }, [startDrag, todaySlots, setTodaySlots])
 
   // ─── Edit modal ───────────────────────────────────────────
   const handleEdit = useCallback((id) => {
@@ -231,7 +274,10 @@ export default function TabHeute() {
   }, [setTodos])
 
   // ─── Clock popup actions ──────────────────────────────────
-  const closeClockPopup = useCallback(() => setClockPopup(null), [])
+  const closeClockPopup = useCallback(() => {
+    setClockPopup(null)
+    setTimeout(() => tickRef.current?.(), 50)
+  }, [])
 
   const handleClockDone = useCallback(() => {
     if (!clockPopup) return
@@ -268,11 +314,9 @@ export default function TabHeute() {
         onExpandUp={handleExpandUp}
         onExpandDown={handleExpandDown}
         onRemoveHour={handleRemoveHour}
-        onSlotDragStart={handleSlotDragStart}
         onToggleLock={handleToggleLock}
-        dragState={dragState}
-        onDrop={handleDropOnSlot}
-        onDragEnd={handleDragEnd}
+        registerHalf={registerHalf}
+        startSlotDrag={startSlotDrag}
       />
       <Pool
         todos={todos}
@@ -281,9 +325,7 @@ export default function TabHeute() {
         onToggleDone={handleToggleDone}
         onEdit={handleEdit}
         onRemove={handleRemove}
-        onDragStart={(text, color, todoId, duration) =>
-          handleDragStart(text, color, todoId, duration)
-        }
+        startDrag={startPoolDrag}
       />
       {activeTools.includes('reminder') && <ReminderSection />}
 

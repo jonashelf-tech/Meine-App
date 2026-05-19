@@ -5,6 +5,17 @@ import s from './Zeitplan.module.css'
 
 const ROW_H = 40
 
+const DragIcon = (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+  </svg>
+)
+
 // ─── LockIcon ─────────────────────────────────────────────
 function LockIcon({ locked }) {
   return (
@@ -53,9 +64,17 @@ function SlotBlock({ slotKey, slot, todo, height, todos, setTodos, onToggleDone,
     done: !!(slot.done),
   }
   const chipStyle = { borderRadius: 4, height: height ? `${height}px` : '100%', border: 'none', margin: 0, flexShrink: 0 }
+
+  // Handle nur wenn nicht locked (locked Slots sind nicht verschiebbar)
   const handle = onDragStart ? (
-    <span className={s.slotHandle} onPointerDown={e => { e.preventDefault(); onDragStart() }}>⠿</span>
+    <span
+      className={s.slotHandle}
+      onPointerDown={e => { e.preventDefault(); onDragStart(e) }}
+    >
+      {DragIcon}
+    </span>
   ) : null
+
   return (
     <TodoChip
       todo={displayTodo}
@@ -88,11 +107,9 @@ export default function Zeitplan({
   onExpandUp,
   onExpandDown,
   onRemoveHour,
-  onSlotDragStart,
   onToggleLock,
-  dragState,
-  onDrop,
-  onDragEnd,
+  registerHalf,    // (key, el, type) — registriert Drop-Zonen im useDragDrop-Hook
+  startSlotDrag,   // (fromKey, e) — startet Drag eines Zeitplan-Slots
 }) {
   const [hideEmpty, setHideEmpty]       = useState(false)
   const [removeDialog, setRemoveDialog] = useState(null)
@@ -103,10 +120,8 @@ export default function Zeitplan({
   const now = new Date()
   const isNow = true
 
-  // Build list of hours in range (inclusive of visibleEnd)
   const hours = Array.from({ length: visibleEnd - visibleStart + 1 }, (_, i) => i + visibleStart)
 
-  // Determine which slots are "consumed" by a previous multi-slot block
   const consumedKeys = new Set()
   for (const key of ALL_SLOT_KEYS) {
     const slot = slots[key]
@@ -118,7 +133,7 @@ export default function Zeitplan({
   }
 
   return (
-    <div className={s.zeitplan} onPointerUp={() => { if (dragState) onDragEnd?.() }}>
+    <div className={s.zeitplan}>
 
       {/* Shift controls */}
       <div className={s.controls}>
@@ -146,16 +161,15 @@ export default function Zeitplan({
         <div className={s.sgGrid}>
           {hours.map((h, hi) => {
             const rowBase = hi * 2 + 1
-            const topKey = sk(h, false)
-            const botKey = sk(h, true)
+            const topKey  = sk(h, false)
+            const botKey  = sk(h, true)
             const topSlot = slots[topKey]
             const botSlot = slots[botKey]
-            const isNowHour = isNow && now.getHours() === h
-            const topConsumed = consumedKeys.has(topKey)
-            const botConsumed = consumedKeys.has(botKey)
+            const isNowHour    = isNow && now.getHours() === h
+            const topConsumed  = consumedKeys.has(topKey)
+            const botConsumed  = consumedKeys.has(botKey)
 
-            // Top span: how many 30-min slots does topSlot take?
-            const topSpan = topSlot?.duration ? Math.ceil(topSlot.duration / 30) : 1
+            const topSpan         = topSlot?.duration ? Math.ceil(topSlot.duration / 30) : 1
             const botConsumedByTop = !topConsumed && topSlot && topSpan > 1
               && !botSlot && consumedKeys.has(botKey)
 
@@ -163,7 +177,7 @@ export default function Zeitplan({
             const botH = botSlot ? slotPx(botSlot.duration || 30) : ROW_H
 
             return [
-              // Hour label — spans 2 rows
+              // Hour label
               <div
                 key={`lbl-${h}`}
                 className={[s.sgLabel, isNowHour ? s.sgLabelNow : ''].join(' ')}
@@ -176,7 +190,12 @@ export default function Zeitplan({
               topConsumed
                 ? <div key={`top-${h}`} className={s.sgConsumed} style={{ gridRow: rowBase }} />
                 : topSlot
-                  ? <div key={`top-${h}`} className={s.sgHalf} style={{ gridRow: rowBase, height: topH }}>
+                  ? <div
+                      key={`top-${h}`}
+                      className={s.sgHalf}
+                      style={{ gridRow: rowBase, height: topH }}
+                      ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : null)}
+                    >
                       <SlotBlock
                         slotKey={topKey}
                         slot={topSlot}
@@ -190,7 +209,10 @@ export default function Zeitplan({
                           lt ? onEditTodo?.(lt.id) : onEditTodo?.(topKey)
                         }}
                         onRemove={() => openRemove(topKey, topSlot.text)}
-                        onDragStart={onSlotDragStart ? () => onSlotDragStart(topKey) : undefined}
+                        onDragStart={startSlotDrag && !topSlot.locked
+                          ? (e) => startSlotDrag(topKey, e)
+                          : undefined
+                        }
                       />
                       <button
                         className={[s.lockBtn, topSlot.locked ? s.lockBtnOn : ''].join(' ')}
@@ -203,17 +225,21 @@ export default function Zeitplan({
                       key={`top-${h}`}
                       className={[s.sgHalf, s.sgEmpty, isNowHour ? s.sgNow : ''].join(' ')}
                       style={{ gridRow: rowBase }}
-                      onPointerUp={() => dragState && onDrop?.(topKey)}
+                      ref={el => registerHalf?.(topKey, el, 'empty')}
                     >
                       <span className={s.halfTime}>:00</span>
-                      {dragState && <span className={s.dropHint}>+</span>}
                     </div>,
 
               // Bot half
               (botConsumed || botConsumedByTop)
                 ? <div key={`bot-${h}`} className={s.sgConsumed} style={{ gridRow: rowBase + 1 }} />
                 : botSlot
-                  ? <div key={`bot-${h}`} className={[s.sgHalf, s.sgHalfBot].join(' ')} style={{ gridRow: rowBase + 1, height: botH }}>
+                  ? <div
+                      key={`bot-${h}`}
+                      className={[s.sgHalf, s.sgHalfBot].join(' ')}
+                      style={{ gridRow: rowBase + 1, height: botH }}
+                      ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : null)}
+                    >
                       <SlotBlock
                         slotKey={botKey}
                         slot={botSlot}
@@ -227,7 +253,10 @@ export default function Zeitplan({
                           lt ? onEditTodo?.(lt.id) : onEditTodo?.(botKey)
                         }}
                         onRemove={() => openRemove(botKey, botSlot.text)}
-                        onDragStart={onSlotDragStart ? () => onSlotDragStart(botKey) : undefined}
+                        onDragStart={startSlotDrag && !botSlot.locked
+                          ? (e) => startSlotDrag(botKey, e)
+                          : undefined
+                        }
                       />
                       <button
                         className={[s.lockBtn, botSlot.locked ? s.lockBtnOn : ''].join(' ')}
@@ -240,10 +269,9 @@ export default function Zeitplan({
                       key={`bot-${h}`}
                       className={[s.sgHalf, s.sgHalfBot, s.sgEmpty].join(' ')}
                       style={{ gridRow: rowBase + 1 }}
-                      onPointerUp={() => dragState && onDrop?.(botKey)}
+                      ref={el => registerHalf?.(botKey, el, 'empty')}
                     >
                       <span className={s.halfTime}>:30</span>
-                      {dragState && <span className={s.dropHint}>+</span>}
                     </div>,
             ].filter(Boolean)
           })}

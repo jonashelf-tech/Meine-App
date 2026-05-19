@@ -114,20 +114,28 @@
 
 /* ─── Drag handle ────────────────────────────────────────── */
 .handle {
+  width: 34px;
+  min-width: 34px;
+  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 100%;
+  color: rgba(255, 255, 255, 0.18);
   cursor: grab;
-  color: var(--text-dim);
-  font-size: 1rem;
+  flex-shrink: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
   touch-action: none;
-  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
   user-select: none;
+  transition: color 0.15s;
 }
 
-.handle:active {
-  cursor: grabbing;
-  color: var(--text);
+.handle:hover  { color: rgba(255, 255, 255, 0.45); }
+.handle:active { cursor: grabbing; }
+
+/* ↩ wenn Todo bereits verplant ist */
+.placedIcon {
+  font-size: 0.65rem;
+  opacity: 0.5;
+  line-height: 1;
 }

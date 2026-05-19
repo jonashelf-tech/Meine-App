@@ -3,12 +3,25 @@ import TodoChip from '../../../components/TodoChip/TodoChip'
 import { isFaelligkeit } from '../../todos/Block'
 import s from './Pool.module.css'
 
+const DragIcon = (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+  </svg>
+)
+
 // ─── PoolChip ─────────────────────────────────────────────
-function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart }) {
+function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced }) {
+  const color = todo.color || '#00CFFF'
+
   const handlePointerDown = useCallback((e) => {
     e.preventDefault()
-    onDragStart?.(todo.text, todo.color, todo.id, todo.duration)
-  }, [todo, onDragStart])
+    startDrag?.(todo.id, todo.text, color, todo.duration, e)
+  }, [todo, color, startDrag])
 
   const handle = (
     <span
@@ -16,7 +29,10 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, onDra
       onPointerDown={handlePointerDown}
       aria-label="Ziehen"
     >
-      ⠿
+      {isPlaced
+        ? <span className={s.placedIcon}>↩</span>
+        : DragIcon
+      }
     </span>
   )
 
@@ -41,7 +57,7 @@ export default function Pool({
   onToggleDone,
   onEdit,
   onRemove,
-  onDragStart,
+  startDrag,
 }) {
   const [fullscreen, setFullscreen] = useState(false)
 
@@ -70,7 +86,8 @@ export default function Pool({
       onToggleDone={() => onToggleDone?.(t.id)}
       onEdit={() => onEdit?.(t.id)}
       onRemove={() => onRemove?.(t.id)}
-      onDragStart={onDragStart}
+      startDrag={startDrag}
+      isPlaced={isPlaced(t)}
     />
   )
 

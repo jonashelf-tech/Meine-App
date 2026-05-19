@@ -214,21 +214,23 @@
 
 /* ── Slot handle ──────────────────────────────────────── */
 .slotHandle {
+  width: 34px;
+  min-width: 34px;
+  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  color: var(--text-dim);
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.18);
   cursor: grab;
-  opacity: 0.35;
-  transition: opacity 0.15s;
+  flex-shrink: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  transition: color 0.15s;
 }
 
-.slotHandle:hover { opacity: 0.75; }
+.slotHandle:hover  { color: rgba(255, 255, 255, 0.45); }
 .slotHandle:active { cursor: grabbing; }
 
 /* ─── Remove Dialog ──────────────────────────────────────── */
