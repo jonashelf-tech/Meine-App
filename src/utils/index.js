@@ -78,3 +78,27 @@ export const NEON = [
 ]
 
 export const todoColor = (t) => t?.color || NEON[0]
+
+// ─── Tool color helpers ──────────────────────────────────
+export function hexToGlow(hex) {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `0 0 18px rgba(${r},${g},${b},0.2), 0 0 40px rgba(${r},${g},${b},0.08)`
+}
+
+export function getToolColor(toolId, toolColors) {
+  if (toolColors && toolColors[toolId]) return toolColors[toolId]
+  const DEFAULTS = {
+    rad:          '#BF00FF',
+    timer:        '#00CFFF',
+    rezepte:      '#FF9F43',
+    pizza:        '#FF6B6B',
+    elvi:         '#00E5FF',
+    gewicht:      '#00FF94',
+    geburtstage:  '#FF2D78',
+    gamification: '#FFD700',
+    reminder:     '#00FF94',
+  }
+  return DEFAULTS[toolId] ?? '#8B5CF6'
+}
