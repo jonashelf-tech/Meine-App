@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react'
+import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import s from './TabPizza.module.css'
 
 const REF_TOTAL = 1986.5
@@ -20,6 +22,8 @@ const minusMins = (hhmm, minutes) => {
 }
 
 export default function TabPizza({ onBack }) {
+  const { toolColors } = useAppStore()
+  const toolColor = getToolColor('pizza', toolColors)
   const [pizzenStr, setPizzenStr] = useState('6')
   const [teigStr,   setTeigStr]   = useState(String(DEFAULT_TEIG))
   const [essenszeit, setEssenszeit] = useState('18:00')
@@ -65,7 +69,7 @@ export default function TabPizza({ onBack }) {
   }
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
 
       {/* Header */}
       <div className={s.header}>

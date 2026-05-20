@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import s from './TabGamification.module.css'
 
 const SK = "adhs_gamification_v1"
@@ -28,6 +30,8 @@ const getLevelProgress = xp => (xp % XP_PER_LEVEL) / XP_PER_LEVEL
 const getXPInLevel = xp => xp % XP_PER_LEVEL
 
 export default function TabGamification({ onBack }) {
+  const { toolColors } = useAppStore()
+  const toolColor = getToolColor('gamification', toolColors)
   const [data, setData] = useState(() => loadXP())
   const [justLeveled, setJustLeveled] = useState(false)
   const [lastGain, setLastGain] = useState(null)
@@ -67,7 +71,7 @@ export default function TabGamification({ onBack }) {
   const pct = getLevelProgress(data.totalXP)
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
       {/* Level-up overlay */}
       {justLeveled && (
         <div className={s.overlay} onClick={()=>setJustLeveled(false)}>

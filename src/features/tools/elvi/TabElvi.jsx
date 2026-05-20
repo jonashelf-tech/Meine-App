@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
+import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import s from './TabElvi.module.css'
 
 // ─── PK Model ────────────────────────────────────────────────
@@ -52,6 +54,8 @@ const SK = "adhs_elvi_v1"
 
 // ─── Component ───────────────────────────────────────────────
 export default function TabElvi({ onBack }) {
+  const { toolColors } = useAppStore()
+  const toolColor = getToolColor('elvi', toolColors)
   const load = () => { try { const r=localStorage.getItem(SK); return r?JSON.parse(r):null } catch { return null } }
   const save = d => { try { localStorage.setItem(SK,JSON.stringify(d)) } catch {} }
 
@@ -167,7 +171,7 @@ export default function TabElvi({ onBack }) {
   const rec = recommend()
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
       <div className={s.header}>
         <button className={s.back} onClick={onBack}>← Tools</button>
         <div className={s.badge}>PK · Elvanse</div>

@@ -52,7 +52,7 @@
   color: var(--text);
 }
 .title em {
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-style: normal;
 }
 
@@ -75,8 +75,8 @@
 }
 .secBtn:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
 .active {
-  border-color: var(--cyan);
-  color: var(--cyan);
+  border-color: var(--tool-color, var(--cyan));
+  color: var(--tool-color, var(--cyan));
   background: rgba(0,207,255,0.08);
 }
 
@@ -157,7 +157,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 
 .ratingSection {
@@ -229,11 +229,11 @@
   width: 100%;
   outline: none;
 }
-.notesInput:focus { border-color: var(--cyan); }
+.notesInput:focus { border-color: var(--tool-color, var(--cyan)); }
 .saveBtn {
   background: rgba(0,207,255,0.1);
   border: 1.5px solid rgba(0,207,255,0.3);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   border-radius: var(--r-sm);
   padding: 12px;
   font-family: 'Outfit', sans-serif;
@@ -277,7 +277,7 @@
   color: var(--text-dim);
   margin-top: 6px;
 }
-.recMg strong { color: var(--cyan); }
+.recMg strong { color: var(--tool-color, var(--cyan)); }
 
 .empty {
   text-align: center;
@@ -305,7 +305,7 @@
 .histDoses {
   font-family: 'Orbitron', sans-serif;
   font-size: 0.7rem;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 .histRatings {
   display: flex;

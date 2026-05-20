@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAppStore } from '../../../store'
-import { todayKey } from '../../../utils'
+import { todayKey, getToolColor } from '../../../utils'
 import s from './TabRad.module.css'
 
 const NEON = ['#00CFFF', '#BF00FF', '#FF2D78', '#00FF94', '#FFD700']
@@ -137,7 +137,8 @@ function drawDrum(canvas, segs, offset, glow) {
 
 // ════════════════════════════════════════════════════════════
 export default function TabRad({ onBack }) {
-  const { todos, setTodos, days } = useAppStore()
+  const { todos, setTodos, days, toolColors } = useAppStore()
+  const toolColor = getToolColor('rad', toolColors)
   const today = todayKey()
   // days[dateKey] = { slotKey: { text, color, ... }, ... }
   const todaySlots = days[today] || {}
@@ -263,7 +264,7 @@ export default function TabRad({ onBack }) {
   const PRIO_COLOR = { 1: 'var(--pink)', 2: '#f5a623', 3: 'var(--cyan)' }
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
 
       {/* ─── Confetti ────────────────────────────────────────── */}
       {confetti.length > 0 && (

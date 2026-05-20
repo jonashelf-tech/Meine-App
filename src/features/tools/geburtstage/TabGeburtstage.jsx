@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import { useToast } from '../../../components/Toast/Toast'
 import s from './TabGeburtstage.module.css'
 
@@ -34,7 +35,8 @@ function calcAge(mmdd, year) {
 }
 
 export default function TabGeburtstage() {
-  const { birthdays, setBirthdays } = useAppStore()
+  const { birthdays, setBirthdays, toolColors } = useAppStore()
+  const toolColor = getToolColor('geburtstage', toolColors)
   const { showToast } = useToast()
 
   const [showForm, setShowForm] = useState(false)
@@ -66,7 +68,7 @@ export default function TabGeburtstage() {
   }
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
       <div className={s.header}>
         <h2 className={s.title}>Geburtstage</h2>
         <button className={s.fab} onClick={() => setShowForm(p => !p)}>

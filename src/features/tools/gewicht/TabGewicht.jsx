@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
+import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import s from './TabGewicht.module.css'
 
 const SK      = 'adhs_health_weight'
@@ -56,6 +58,8 @@ const saveDash  = d => { try { localStorage.setItem(SK_DASH,JSON.stringify(d)) }
 
 // ── Component ─────────────────────────────────────────────────
 export default function TabGewicht({ onBack }) {
+  const { toolColors } = useAppStore()
+  const toolColor = getToolColor('gewicht', toolColors)
   const today = isoToday()
   const [entries,        setEntriesRaw]      = useState(loadEntries)
   const [activeTab,      setActiveTab]        = useState('dashboard')
@@ -187,7 +191,7 @@ export default function TabGewicht({ onBack }) {
   const isEditing = !!entries.find(e=>e.date===inputDate)
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
       <div className={s.header}>
         <button className={s.back} onClick={onBack}>← Tools</button>
         <div className={s.titleBlock}>

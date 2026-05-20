@@ -42,7 +42,7 @@
   color: var(--text);
 }
 
-.title em { color: var(--cyan); font-style: normal; }
+.title em { color: var(--tool-color, var(--cyan)); font-style: normal; }
 
 /* ─── Sections ───────────────────────────────────────────── */
 .section {
@@ -72,7 +72,7 @@
 .addBtn {
   background: none;
   border: 1px solid rgba(139, 92, 246, 0.25);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-family: 'Outfit', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
@@ -163,7 +163,7 @@
   transition: background 0.2s;
 }
 
-.toggleOn { background: var(--cyan); }
+.toggleOn { background: var(--tool-color, var(--cyan)); }
 
 .toggleThumb {
   position: absolute;
@@ -236,7 +236,7 @@
 .presetBtnActive {
   background: rgba(139, 92, 246, 0.12);
   border-color: rgba(139, 92, 246, 0.4);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 
 .customRow {
@@ -361,7 +361,7 @@
   background: rgba(139, 92, 246, 0.12);
   border: 1px solid rgba(139, 92, 246, 0.4);
   border-radius: 20px;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-family: 'Outfit', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;

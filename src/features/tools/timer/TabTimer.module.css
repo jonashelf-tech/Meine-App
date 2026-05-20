@@ -86,7 +86,7 @@
 }
 
 .todoConfirmText {
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-weight: 600;
 }
 
@@ -101,7 +101,7 @@
   padding: 10px;
   background: rgba(139, 92, 246, 0.12);
   border: 1.5px solid rgba(139, 92, 246, 0.35);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   border-radius: var(--r-sm);
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
@@ -127,7 +127,7 @@
 /* ─── Active Todo Banner ───────────────────────────────────── */
 .activeTodoBanner {
   background: rgba(139, 92, 246, 0.06);
-  border-left: 3px solid var(--ft-color, var(--cyan));
+  border-left: 3px solid var(--ft-color, var(--tool-color, var(--cyan)));
   padding: 8px 12px;
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
   display: flex;
@@ -140,7 +140,7 @@
   width: 3px;
   height: 20px;
   border-radius: 2px;
-  background: var(--ft-color, var(--cyan));
+  background: var(--ft-color, var(--tool-color, var(--cyan)));
   flex-shrink: 0;
   display: none; /* border-left on parent handles it */
 }
@@ -239,7 +239,7 @@
 .startBtn {
   background: rgba(139, 92, 246, 0.1);
   border: 1.5px solid rgba(139, 92, 246, 0.3);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   border-radius: 50px;
   padding: 10px 28px;
   cursor: pointer;
@@ -304,8 +304,8 @@
 }
 
 .modeBtnActive {
-  border-color: var(--cyan);
-  color: var(--cyan);
+  border-color: var(--tool-color, var(--cyan));
+  color: var(--tool-color, var(--cyan));
   background: rgba(139, 92, 246, 0.08);
 }
 
@@ -332,13 +332,13 @@
 
 .pill:hover {
   border-color: rgba(139, 92, 246, 0.4);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 
 .pill:active,
 .pillActive {
-  border-color: var(--cyan);
-  color: var(--cyan);
+  border-color: var(--tool-color, var(--cyan));
+  color: var(--tool-color, var(--cyan));
   background: rgba(139, 92, 246, 0.1);
 }
 
@@ -379,7 +379,7 @@
   width: 100%;
   background: rgba(139, 92, 246, 0.12);
   border: 1.5px solid rgba(139, 92, 246, 0.35);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   border-radius: var(--r-sm);
   padding: 12px;
   font-family: 'Outfit', sans-serif;
@@ -487,7 +487,7 @@
   width: 3px;
   height: 20px;
   border-radius: 2px;
-  background: var(--ft-color, var(--cyan));
+  background: var(--ft-color, var(--tool-color, var(--cyan)));
   flex-shrink: 0;
 }
 

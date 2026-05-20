@@ -41,7 +41,7 @@
   font-weight: 700;
   color: var(--text);
 }
-.title em { font-style: normal; color: var(--cyan); }
+.title em { font-style: normal; color: var(--tool-color, var(--cyan)); }
 
 /* ─── Tab nav ────────────────────────────────────────────── */
 .tabs {
@@ -69,7 +69,7 @@
 
 .tabActive {
   background: var(--bg3);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 
 /* ─── Input card ─────────────────────────────────────────── */
@@ -100,12 +100,12 @@
   outline: none;
   cursor: pointer;
 }
-.dateInput:focus { border-color: var(--cyan); }
+.dateInput:focus { border-color: var(--tool-color, var(--cyan)); }
 
 .editBadge {
   font-family: 'Outfit', sans-serif;
   font-size: 0.68rem;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   background: rgba(0,207,255,0.08);
   border: 1px solid rgba(0,207,255,0.2);
   border-radius: 4px;
@@ -146,13 +146,13 @@
   width: 100%;
   text-align: center;
 }
-.numInput:focus { border-color: var(--cyan); }
+.numInput:focus { border-color: var(--tool-color, var(--cyan)); }
 
 .saveBtn {
   background: rgba(0,207,255,0.12);
   border: 1.5px solid rgba(0,207,255,0.3);
   border-radius: var(--r-sm);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-family: 'Outfit', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
@@ -189,7 +189,7 @@
   font-family: 'Orbitron', monospace;
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 
 .kpiLbl {
@@ -237,7 +237,7 @@
   font-family: 'Orbitron', monospace;
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 
 /* ─── Chart section ──────────────────────────────────────── */
@@ -271,8 +271,8 @@
 }
 
 .chartTabActive {
-  border-color: var(--cyan);
-  color: var(--cyan);
+  border-color: var(--tool-color, var(--cyan));
+  color: var(--tool-color, var(--cyan));
   background: rgba(0,207,255,0.06);
 }
 
@@ -361,7 +361,7 @@
   font-family: 'Orbitron', monospace;
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   min-width: 64px;
 }
 
@@ -428,7 +428,7 @@
 
 .toggleOn {
   background: rgba(0,207,255,0.25);
-  border-color: var(--cyan);
+  border-color: var(--tool-color, var(--cyan));
 }
 
 .toggleThumb {
@@ -444,7 +444,7 @@
 
 .toggleOn .toggleThumb {
   transform: translateX(16px);
-  background: var(--cyan);
+  background: var(--tool-color, var(--cyan));
 }
 
 .toggleLabel {

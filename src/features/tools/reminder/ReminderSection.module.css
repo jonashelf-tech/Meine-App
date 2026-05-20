@@ -34,7 +34,7 @@
   font-size: 0.62rem;
   font-weight: 800;
   font-family: 'Orbitron', monospace;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   background: rgba(139, 92, 246, 0.1);
   border-radius: 10px;
   padding: 2px 7px;
@@ -104,7 +104,7 @@
   background: rgba(139, 92, 246, 0.08);
   border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: var(--r-sm);
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;

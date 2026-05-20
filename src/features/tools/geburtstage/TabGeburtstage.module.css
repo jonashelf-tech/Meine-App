@@ -185,7 +185,7 @@
   font-family: 'Orbitron', monospace;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   background: rgba(0,207,255,0.08);
   border-radius: var(--r-sm);
   padding: 3px 8px;

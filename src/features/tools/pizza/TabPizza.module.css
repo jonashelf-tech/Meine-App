@@ -73,7 +73,7 @@
 }
 
 .title em {
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-style: normal;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .inputBox input:focus {
-  border-color: var(--cyan);
+  border-color: var(--tool-color, var(--cyan));
 }
 
 .inputBox input[type='time'] {
@@ -137,7 +137,7 @@
 }
 
 .totalVal {
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   font-weight: 700;
 }
 
@@ -199,7 +199,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 
 .rowUnit {
@@ -252,7 +252,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   min-width: 60px;
 }
 

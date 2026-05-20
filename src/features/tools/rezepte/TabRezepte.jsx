@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react'
+import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import { lv, sv } from '../../../storage'
 import s from './TabRezepte.module.css'
 
@@ -33,6 +35,8 @@ const sortByMeat = arr => {
 }
 
 export default function TabRezepte({ onBack }) {
+  const { toolColors } = useAppStore()
+  const toolColor = getToolColor('rezepte', toolColors)
   const [recipes, setRecipesRaw] = useState(() => lv(SK_R, []))
   const [selected, setSelectedRaw] = useState(() => lv(SK_S, []))
   const [shoppingList, setShoppingListRaw] = useState(() => lv(SK_SL, []))
@@ -113,7 +117,7 @@ export default function TabRezepte({ onBack }) {
   }
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
       {/* Viewer Modal */}
       {viewing && (
         <div className={s.overlay} onClick={e=>{if(e.target===e.currentTarget)setViewing(null)}}>

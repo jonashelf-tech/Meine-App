@@ -35,7 +35,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 .levelTitleText {
   font-family: 'Outfit', sans-serif;
@@ -228,7 +228,7 @@
 }
 .levelUpCard {
   background: var(--bg);
-  border: 2px solid var(--cyan);
+  border: 2px solid var(--tool-color, var(--cyan));
   border-radius: 20px;
   padding: 32px 40px;
   text-align: center;
@@ -255,7 +255,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 1.5rem;
   font-weight: 900;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
 }
 .luLevel {
   font-family: 'Outfit', sans-serif;
@@ -270,7 +270,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--bg);
-  border: 1.5px solid var(--cyan);
+  border: 1.5px solid var(--tool-color, var(--cyan));
   border-radius: 50px;
   padding: 8px 22px;
   font-family: 'Outfit', sans-serif;

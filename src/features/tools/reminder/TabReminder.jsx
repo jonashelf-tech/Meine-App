@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import {
   CURATED, intervalLabel, mergeWithCurated,
   loadReminderItems, saveReminderItems,
@@ -174,6 +176,8 @@ function AddForm({ onAdd, onCancel }) {
 
 // ─── Main ─────────────────────────────────────────────────
 export default function TabReminder({ onBack }) {
+  const { toolColors } = useAppStore()
+  const toolColor = getToolColor('reminder', toolColors)
   const [items, setItemsState] = useState(() => mergeWithCurated(loadReminderItems()))
   const [showAdd, setShowAdd]  = useState(false)
 
@@ -187,7 +191,7 @@ export default function TabReminder({ onBack }) {
   const custom  = items.filter(i => !i.curated)
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
       <div className={s.header}>
         <button className={s.back} onClick={onBack}>← Tools</button>
         <div className={s.titleBlock}>

@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
 import s from './TabTimer.module.css'
 
 // ─── Presets ───────────────────────────────────────────────
@@ -45,7 +46,8 @@ const playBreakStart = () => {
 
 // ─── Component ─────────────────────────────────────────────
 export default function TabTimer({ onBack }) {
-  const { todos, setTodos } = useAppStore()
+  const { todos, setTodos, toolColors } = useAppStore()
+  const toolColor = getToolColor('timer', toolColors)
 
   // Config state
   const [timerMode,  setTimerMode]  = useState('normal')  // "normal" | "pomodoro"
@@ -304,7 +306,7 @@ export default function TabTimer({ onBack }) {
   const C   = 2 * Math.PI * R
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
 
       {/* ── Header ─────────────────────────────────────────── */}
       <div className={s.header}>

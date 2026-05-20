@@ -150,7 +150,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--tool-color, var(--cyan));
   min-width: 24px;
   text-align: center;
 }
@@ -271,7 +271,7 @@
   font-size: 0.9rem;
   border-left: 1px solid var(--border);
 }
-.editBtn:hover { color: var(--cyan); }
+.editBtn:hover { color: var(--tool-color, var(--cyan)); }
 
 /* Einkauf */
 .einkaufStats {
@@ -288,7 +288,7 @@
   font-size: 0.78rem;
   color: var(--text-dim);
 }
-.einkaufActive { color: var(--cyan); font-weight: 700; }
+.einkaufActive { color: var(--tool-color, var(--cyan)); font-weight: 700; }
 .clearBtnSmall {
   background: none;
   border: none;
@@ -346,7 +346,7 @@
 .einkaufChecked { opacity: 0.45; text-decoration: line-through; }
 .einkaufDeleted { opacity: 0.25; }
 .itemName { font-family: 'Outfit', sans-serif; font-size: 0.84rem; color: var(--text); }
-.itemAmount { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--cyan); }
+.itemAmount { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--tool-color, var(--cyan)); }
 
 /* Modal */
 .overlay {
@@ -412,7 +412,7 @@
   padding: 8px 12px;
 }
 .portionLbl { font-family: 'Outfit', sans-serif; font-size: 0.8rem; color: var(--text-dim); flex: 1; }
-.portionNum { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700; color: var(--cyan); min-width: 24px; text-align: center; }
+.portionNum { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700; color: var(--tool-color, var(--cyan)); min-width: 24px; text-align: center; }
 .portionBase { font-family: 'Outfit', sans-serif; font-size: 0.68rem; color: var(--text-dim); }
 .secHead {
   font-family: 'Outfit', sans-serif;
@@ -430,7 +430,7 @@
   border-radius: 4px;
 }
 .ingAlt { background: rgba(255,255,255,0.03); }
-.ingAmount { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--cyan); }
+.ingAmount { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--tool-color, var(--cyan)); }
 .nutritionGrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
 .nutCell {
   background: var(--surface);
@@ -440,7 +440,7 @@
   text-align: center;
 }
 .nutGreen { border-color: rgba(0,255,148,0.3); background: rgba(0,255,148,0.07); }
-.nutVal { font-family: 'Orbitron', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--cyan); }
+.nutVal { font-family: 'Orbitron', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--tool-color, var(--cyan)); }
 .nutLbl { font-family: 'Outfit', sans-serif; font-size: 0.58rem; color: var(--text-dim); margin-top: 2px; }
 .instructions { font-family: 'Outfit', sans-serif; font-size: 0.84rem; color: var(--text-dim); line-height: 1.6; }
 .editBtnFull {
@@ -499,7 +499,7 @@
   border-bottom: 1px solid var(--border);
 }
 .ingEditName { flex: 1; font-family: 'Outfit', sans-serif; font-size: 0.82rem; }
-.ingEditAmt { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--cyan); }
+.ingEditAmt { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--tool-color, var(--cyan)); }
 .ingDelBtn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.7rem; }
 .ingDelBtn:hover { color: var(--pink); }
 .addIngRow {
