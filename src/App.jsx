@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppStore } from './store'
+import { hexToGlow } from './utils'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
 import TabKalender     from './features/calendar/TabKalender/TabKalender'
@@ -26,8 +27,13 @@ const TABS = [
 const TOOL_TABS = [4,5,6,7,8,9,10,11]
 
 export default function App() {
-  const { currentTab, setCurrentTab } = useAppStore()
+  const { currentTab, setCurrentTab, accentColor } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--primary', accentColor)
+    document.documentElement.style.setProperty('--glow-primary', hexToGlow(accentColor))
+  }, [accentColor])
 
   const goBack = () => setCurrentTab(2)
 
