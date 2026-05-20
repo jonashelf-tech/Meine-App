@@ -11,10 +11,12 @@ const THEMES = [
 ]
 
 const ACCENTS = [
-  { id: 'cyan',   color: '#00CFFF', label: 'Cyan' },
-  { id: 'pink',   color: '#FF2D78', label: 'Pink' },
-  { id: 'purple', color: '#BF00FF', label: 'Purple' },
-  { id: 'green',  color: '#00FF94', label: 'Green' },
+  { color: '#8B5CF6', label: 'Violet' },
+  { color: '#00CFFF', label: 'Cyan'   },
+  { color: '#FF2D78', label: 'Pink'   },
+  { color: '#00FF94', label: 'Green'  },
+  { color: '#FF9F43', label: 'Orange' },
+  { color: '#14B8A6', label: 'Teal'   },
 ]
 
 export default function TabSettings() {
@@ -23,7 +25,8 @@ export default function TabSettings() {
 
   const [showKey, setShowKey] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
-  const fileRef = useRef(null)
+  const fileRef        = useRef(null)
+  const accentInputRef = useRef(null)
 
   const aiEnabled = settings?.aiEnabled ?? false
   const apiKey    = settings?.apiKey ?? ''
@@ -127,13 +130,27 @@ export default function TabSettings() {
         <div className={s.accentRow}>
           {ACCENTS.map(a => (
             <button
-              key={a.id}
-              className={[s.accentBtn, accentColor === a.id ? s.accentBtnActive : ''].join(' ')}
+              key={a.color}
+              className={[s.accentBtn, accentColor === a.color ? s.accentBtnActive : ''].join(' ')}
               style={{ '--ac': a.color }}
-              onClick={() => setAccentColor(a.id)}
+              onClick={() => setAccentColor(a.color)}
               title={a.label}
             />
           ))}
+          <button
+            className={s.accentPickerBtn}
+            onClick={() => accentInputRef.current?.click()}
+            title="Eigene Farbe"
+          >
+            ＋
+          </button>
+          <input
+            ref={accentInputRef}
+            type="color"
+            value={accentColor}
+            onChange={e => setAccentColor(e.target.value)}
+            className={s.hidden}
+          />
         </div>
       </section>
 

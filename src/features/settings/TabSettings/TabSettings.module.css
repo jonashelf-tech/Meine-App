@@ -174,6 +174,27 @@
   transform: scale(1.15);
 }
 
+.accentPickerBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 2px dashed rgba(255,255,255,0.25);
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.accentPickerBtn:hover {
+  border-color: rgba(255,255,255,0.5);
+  color: var(--text);
+}
+
 /* ─── Data Buttons ──────────────────────────────────────── */
 .btnGroup {
   display: flex;
