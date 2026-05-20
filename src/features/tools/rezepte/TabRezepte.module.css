@@ -261,7 +261,7 @@
   padding: 2px 7px;
   color: var(--text-dim);
 }
-.tagGreen { background: rgba(0,255,148,0.1); color: #00FF94; }
+.tagGreen { background: rgba(0,255,148,0.1); color: var(--emerald); }
 .editBtn {
   padding: 12px 14px;
   background: none;

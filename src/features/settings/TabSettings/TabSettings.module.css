@@ -3,7 +3,7 @@
 }
 
 .title {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Outfit', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text);
@@ -54,8 +54,8 @@
 }
 
 .toggleOn {
-  background: rgba(0,207,255,0.3);
-  border-color: var(--cyan);
+  background: rgba(139,92,246,0.3);
+  border-color: var(--primary);
 }
 
 .toggleThumb {
@@ -71,7 +71,7 @@
 
 .toggleOn .toggleThumb {
   transform: translateX(20px);
-  background: var(--cyan);
+  background: var(--primary);
 }
 
 .keyWrap {
@@ -99,7 +99,7 @@
   transition: border-color 0.15s;
 }
 
-.keyInput:focus { border-color: var(--cyan); }
+.keyInput:focus { border-color: var(--primary); }
 
 .keyToggle {
   background: var(--surface);
@@ -112,7 +112,7 @@
   color: var(--text);
 }
 
-.keyToggle:hover { border-color: var(--cyan); }
+.keyToggle:hover { border-color: var(--primary); }
 
 .infoText {
   font-family: 'Outfit', sans-serif;
@@ -147,7 +147,7 @@
 
 .segActive {
   background: var(--bg3);
-  color: var(--cyan);
+  color: var(--primary);
 }
 
 /* ─── Accent ─────────────────────────────────────────────── */
@@ -164,7 +164,7 @@
   border: 2px solid transparent;
   cursor: pointer;
   transition: transform 0.15s, border-color 0.15s;
-  box-shadow: 0 0 8px color-mix(in srgb, var(--ac) 40%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ac) 35%, transparent);
 }
 
 .accentBtn:hover { transform: scale(1.1); }
@@ -196,14 +196,14 @@
   transition: border-color 0.15s, background 0.15s;
 }
 
-.actionBtn:hover { border-color: var(--cyan); }
+.actionBtn:hover { border-color: var(--primary); }
 
-.actionBtnDanger { color: var(--pink); }
-.actionBtnDanger:hover { border-color: var(--pink); }
+.actionBtnDanger { color: var(--rose); }
+.actionBtnDanger:hover { border-color: var(--rose); }
 
 .actionBtnConfirm {
-  background: rgba(255,45,120,0.1);
-  border-color: var(--pink);
+  background: rgba(251,113,133,0.1);
+  border-color: var(--rose);
 }
 
 .hidden { display: none; }
@@ -234,7 +234,7 @@
 .link {
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
-  color: var(--cyan);
+  color: var(--primary);
   text-decoration: none;
   transition: opacity 0.15s;
 }

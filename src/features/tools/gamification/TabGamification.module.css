@@ -18,7 +18,7 @@
 
 /* Level card */
 .levelCard {
-  background: linear-gradient(135deg, rgba(0,207,255,0.08), rgba(191,0,255,0.06));
+  background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(20,184,166,0.06));
   border: 1px solid rgba(0,207,255,0.2);
   border-radius: var(--r);
   padding: 18px;
@@ -62,7 +62,7 @@
 }
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  background: linear-gradient(90deg, var(--primary), var(--teal));
   border-radius: 3px;
   transition: width 0.5s ease;
 }

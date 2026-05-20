@@ -241,11 +241,11 @@
 
 .stepEnd {
   cursor: default;
-  background: rgba(0, 207, 255, 0.06);
+  background: rgba(139, 92, 246, 0.06);
 }
 
 .stepEnd:hover {
-  background: rgba(0, 207, 255, 0.06);
+  background: rgba(139, 92, 246, 0.06);
 }
 
 .stepTime {

@@ -13,10 +13,10 @@
 }
 
 .infoNum {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--primary);
   line-height: 1;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .select:focus {
-  border-color: var(--cyan);
+  border-color: var(--primary);
 }
 
 /* ─── Stepper ────────────────────────────────────────────── */
@@ -95,10 +95,10 @@
 }
 
 .stepNum {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--primary);
   min-width: 28px;
   text-align: center;
   padding: 5px 2px;
@@ -107,10 +107,10 @@
 
 /* ─── Build button ───────────────────────────────────────── */
 .buildBtn {
-  background: rgba(0, 207, 255, 0.1);
-  border: 1px solid rgba(0, 207, 255, 0.3);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: var(--r-sm);
-  color: var(--cyan);
+  color: var(--primary);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
@@ -121,8 +121,8 @@
 }
 
 .buildBtn:hover {
-  background: rgba(0, 207, 255, 0.18);
-  border-color: var(--cyan);
+  background: rgba(139, 92, 246, 0.18);
+  border-color: var(--primary);
 }
 
 .buildBtn:active {
@@ -167,9 +167,10 @@
 }
 
 .proposalTime {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.65rem;
-  color: var(--cyan);
+  font-weight: 700;
+  color: var(--primary);
   min-width: 38px;
 }
 
@@ -183,8 +184,9 @@
 }
 
 .proposalDur {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.6rem;
+  font-weight: 600;
   color: var(--text-dim);
   flex-shrink: 0;
 }
@@ -207,10 +209,10 @@
 
 .acceptBtn {
   flex: 1;
-  background: rgba(0, 255, 148, 0.1);
-  border: 1px solid rgba(0, 255, 148, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: var(--r-sm);
-  color: var(--green);
+  color: var(--emerald);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
@@ -221,8 +223,8 @@
 }
 
 .acceptBtn:hover {
-  background: rgba(0, 255, 148, 0.18);
-  border-color: var(--green);
+  background: rgba(16, 185, 129, 0.18);
+  border-color: var(--emerald);
 }
 
 .discardBtn {

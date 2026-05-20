@@ -15,7 +15,7 @@
 
 /* ─── Modal ───────────────────────────────────────────────── */
 .modal {
-  background: rgba(11, 11, 23, 0.96);
+  background: rgba(12, 12, 26, 0.97);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--r);
   padding: 18px 16px;
@@ -28,10 +28,10 @@
   gap: 11px;
   animation: scaleIn 0.18s ease both;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.055),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
     0 24px 64px rgba(0, 0, 0, 0.7),
     0 8px 24px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 @keyframes scaleIn {
@@ -93,9 +93,9 @@
 .typeBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
 
 .typeBtnActive {
-  background: color-mix(in srgb, var(--tc, var(--cyan)) 14%, transparent);
-  border-color: var(--tc, var(--cyan));
-  color: var(--tc, var(--cyan));
+  background: color-mix(in srgb, var(--tc, var(--primary)) 14%, transparent);
+  border-color: var(--tc, var(--primary));
+  color: var(--tc, var(--primary));
 }
 
 /* ─── Text + Auto row ────────────────────────────────────── */
@@ -120,18 +120,18 @@
   -webkit-tap-highlight-color: transparent;
 }
 .textInput:focus {
-  border-color: var(--cyan);
-  box-shadow: 0 0 0 2px rgba(0, 207, 255, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
 }
 
 .autoBtn {
   flex-shrink: 0;
   height: 40px;
   padding: 0 14px;
-  background: rgba(0, 207, 255, 0.08);
-  border: 1px solid rgba(0, 207, 255, 0.25);
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.28);
   border-radius: var(--r-sm);
-  color: var(--cyan);
+  color: var(--primary);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.76rem;
@@ -141,8 +141,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 .autoBtn:hover:not(:disabled) {
-  background: rgba(0, 207, 255, 0.16);
-  border-color: var(--cyan);
+  background: rgba(139, 92, 246, 0.16);
+  border-color: var(--primary);
 }
 .autoBtn:disabled { opacity: 0.3; cursor: default; }
 
@@ -190,9 +190,9 @@
 .segBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
 
 .segBtnActive {
-  background: color-mix(in srgb, var(--tc, var(--cyan)) 12%, transparent);
-  border-color: color-mix(in srgb, var(--tc, var(--cyan)) 60%, transparent);
-  color: var(--tc, var(--cyan));
+  background: color-mix(in srgb, var(--tc, var(--primary)) 12%, transparent);
+  border-color: color-mix(in srgb, var(--tc, var(--primary)) 60%, transparent);
+  color: var(--tc, var(--primary));
 }
 
 /* ─── Duration presets ────────────────────────────────────── */
@@ -208,8 +208,9 @@
   border-radius: var(--r-sm);
   color: var(--text-dim);
   cursor: pointer;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.6rem;
+  font-weight: 600;
   padding: 5px 9px;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
@@ -217,9 +218,9 @@
 .durBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
 
 .durBtnActive {
-  background: rgba(0, 207, 255, 0.1);
-  border-color: rgba(0, 207, 255, 0.4);
-  color: var(--cyan);
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: var(--primary);
 }
 
 .durInput {
@@ -237,14 +238,14 @@
   -webkit-tap-highlight-color: transparent;
   transition: border-color 0.15s;
 }
-.durInput:focus { border-color: var(--cyan); }
+.durInput:focus { border-color: var(--primary); }
 
 /* ─── Termin block (Datum + Uhrzeit prominent) ───────────── */
 .terminBlock {
   display: flex;
   gap: 10px;
-  background: rgba(255, 45, 120, 0.05);
-  border: 1px solid rgba(255, 45, 120, 0.18);
+  background: rgba(251, 113, 133, 0.05);
+  border: 1px solid rgba(251, 113, 133, 0.18);
   border-radius: var(--r-sm);
   padding: 10px 12px;
 }
@@ -258,8 +259,8 @@
 
 /* ─── Blink animation (missing required fields) ──────────── */
 @keyframes blinkRequired {
-  0%,100% { border-color: rgba(255, 45, 120, 0.25); box-shadow: none; }
-  50%     { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255, 45, 120, 0.22); }
+  0%,100% { border-color: rgba(251, 113, 133, 0.25); box-shadow: none; }
+  50%     { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.2); }
 }
 
 .blinkField {
@@ -293,9 +294,9 @@
 .wdayBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
 
 .wdayBtnActive {
-  background: rgba(191, 0, 255, 0.14);
-  border-color: var(--purple);
-  color: var(--purple);
+  background: rgba(139, 92, 246, 0.14);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* ─── Select (Routine Uhrzeit) ───────────────────────────── */
@@ -313,7 +314,7 @@
   transition: border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.fieldSelect:focus { border-color: var(--cyan); }
+.fieldSelect:focus { border-color: var(--primary); }
 
 /* ─── More toggle ────────────────────────────────────────── */
 .moreToggle {
@@ -376,7 +377,7 @@
   transition: border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.fieldInput:focus { border-color: var(--cyan); }
+.fieldInput:focus { border-color: var(--primary); }
 
 .fieldInputSm {
   background: rgba(255, 255, 255, 0.05);
@@ -392,18 +393,18 @@
   -webkit-tap-highlight-color: transparent;
   width: 100%;
 }
-.fieldInputSm:focus { border-color: var(--cyan); }
+.fieldInputSm:focus { border-color: var(--primary); }
 
 /* ─── Submit button ──────────────────────────────────────── */
 .submitBtn {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--tc, var(--cyan)) 20%, transparent) 0%,
-    color-mix(in srgb, var(--tc, var(--cyan)) 10%, transparent) 100%
+    color-mix(in srgb, var(--tc, var(--primary)) 20%, transparent) 0%,
+    color-mix(in srgb, var(--tc, var(--primary)) 10%, transparent) 100%
   );
-  border: 1px solid color-mix(in srgb, var(--tc, var(--cyan)) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tc, var(--primary)) 55%, transparent);
   border-radius: var(--r-sm);
-  color: var(--tc, var(--cyan));
+  color: var(--tc, var(--primary));
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -413,7 +414,7 @@
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
   -webkit-tap-highlight-color: transparent;
   margin-top: 2px;
-  box-shadow: 0 2px 16px color-mix(in srgb, var(--tc, var(--cyan)) 15%, transparent);
+  box-shadow: 0 2px 16px color-mix(in srgb, var(--tc, var(--primary)) 14%, transparent);
   position: relative;
   overflow: hidden;
 }
@@ -421,7 +422,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.09) 50%, transparent 80%);
+  background: linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.08) 50%, transparent 80%);
   transform: translateX(-110%) skewX(-15deg);
   transition: transform 0.55s ease;
 }
@@ -431,9 +432,9 @@
 .submitBtn:hover:not(:disabled) {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--tc, var(--cyan)) 28%, transparent) 0%,
-    color-mix(in srgb, var(--tc, var(--cyan)) 16%, transparent) 100%
+    color-mix(in srgb, var(--tc, var(--primary)) 28%, transparent) 0%,
+    color-mix(in srgb, var(--tc, var(--primary)) 16%, transparent) 100%
   );
-  box-shadow: 0 4px 24px color-mix(in srgb, var(--tc, var(--cyan)) 28%, transparent);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--tc, var(--primary)) 26%, transparent);
 }
 .submitBtn:disabled { opacity: 0.3; cursor: default; }

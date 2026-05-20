@@ -5,9 +5,9 @@
 }
 
 @keyframes doneFlash {
-  0%   { background: rgba(0, 255, 148, 0); }
-  30%  { background: rgba(0, 255, 148, 0.18); }
-  100% { background: rgba(0, 255, 148, 0); }
+  0%   { background: rgba(16, 185, 129, 0); }
+  30%  { background: rgba(16, 185, 129, 0.16); }
+  100% { background: rgba(16, 185, 129, 0); }
 }
 
 /* ── Outer wrapper ───────────────────────────────────────── */
@@ -56,7 +56,7 @@
   width: 3px;
   min-width: 3px;
   align-self: stretch;
-  background: var(--chip-color, #00CFFF);
+  background: var(--chip-color, var(--primary));
   flex-shrink: 0;
 }
 
@@ -80,7 +80,7 @@
 }
 
 .expandBtn:hover {
-  background: rgba(0, 207, 255, 0.06);
+  background: rgba(139, 92, 246, 0.07);
 }
 
 .expandArr {
@@ -90,7 +90,7 @@
 }
 
 .expandCount {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.38rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.2);
@@ -98,7 +98,7 @@
 }
 
 .expandCountDone {
-  color: #00FF94;
+  color: var(--emerald);
 }
 
 /* ── Body ────────────────────────────────────────────────── */
@@ -118,7 +118,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.84rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -140,7 +140,7 @@
   font-size: 0.56rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.22);
   margin-top: 2px;
   display: block;
   white-space: nowrap;
@@ -167,8 +167,8 @@
 }
 
 .removeBtn:hover {
-  color: var(--pink);
-  background: rgba(255, 45, 120, 0.07);
+  color: var(--rose);
+  background: rgba(251, 113, 133, 0.07);
 }
 
 /* ── Sub-items wrap ──────────────────────────────────────── */
@@ -176,7 +176,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-top: 2px solid var(--chip-color);
   border-radius: 0 0 var(--r) var(--r);
-  background: rgba(18, 18, 32, 0.97);
+  background: rgba(16, 16, 32, 0.97);
   backdrop-filter: blur(8px);
   overflow: hidden;
 }
@@ -229,15 +229,15 @@
   align-items: center;
   justify-content: center;
   font-size: 0.52rem;
-  color: #00FF94;
+  color: var(--emerald);
   flex-shrink: 0;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .itemCheckDone {
-  background: rgba(0, 255, 148, 0.1);
-  border-color: rgba(0, 255, 148, 0.45);
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.45);
 }
 
 /* Text */
@@ -270,7 +270,7 @@
 }
 
 .itemRm:hover {
-  color: var(--pink);
+  color: var(--rose);
 }
 
 /* Drag handle */
@@ -291,7 +291,7 @@
 
 /* Drag-over highlight */
 .itemDragOver {
-  background: rgba(0, 207, 255, 0.06) !important;
+  background: rgba(139, 92, 246, 0.07) !important;
 }
 
 /* ── Add row ─────────────────────────────────────────────── */
@@ -311,7 +311,7 @@
   font-size: 0.76rem;
   font-family: 'Outfit', sans-serif;
   padding: 9px 6px 9px 0;
-  caret-color: var(--cyan);
+  caret-color: var(--primary);
 }
 
 .itemInput::placeholder {
@@ -321,7 +321,7 @@
 .itemAddBtn {
   background: none;
   border: none;
-  color: rgba(0, 207, 255, 0.4);
+  color: rgba(139, 92, 246, 0.45);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -331,5 +331,5 @@
 }
 
 .itemAddBtn:hover {
-  color: var(--cyan);
+  color: var(--primary);
 }

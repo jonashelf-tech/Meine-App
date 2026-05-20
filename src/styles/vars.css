@@ -1,28 +1,41 @@
 /* ─── Global CSS Variables ─────────────────────────────── */
 :root {
-  --cyan:    #00CFFF;
-  --pink:    #FF2D78;
-  --purple:  #BF00FF;
-  --violet:  #7C4DFF;
-  --green:   #00FF94;
-  --bg:      #07070e;
-  --bg2:     #0b0b17;
-  --bg3:     #0f0f1e;
-  --surface: rgba(255, 255, 255, 0.048);
-  --border:  rgba(255, 255, 255, 0.08);
-  --text:    rgba(255, 255, 255, 0.9);
-  --text-dim: rgba(255, 255, 255, 0.38);
+  /* ─── Neue Calm-Dark-Palette ─────────────────────────── */
+  --primary:  #8B5CF6;   /* Violet — Hauptakzent */
+  --teal:     #14B8A6;   /* Teal — sekundärer Akzent / Focus */
+  --emerald:  #10B981;   /* Emerald — Erfolg / CTA */
+  --rose:     #FB7185;   /* Rose — nur für Löschen / Fehler */
+
+  /* ─── Backwards-compat aliases (werden schrittweise entfernt) */
+  --cyan:    var(--primary);
+  --green:   var(--emerald);
+  --pink:    var(--rose);
+  --purple:  var(--primary);
+  --violet:  var(--primary);
+
+  /* ─── Backgrounds ────────────────────────────────────── */
+  --bg:      #080810;
+  --bg2:     #0c0c1a;
+  --bg3:     #101020;
+  --surface: rgba(255, 255, 255, 0.065);
+  --border:  rgba(255, 255, 255, 0.09);
+  --text:    rgba(255, 255, 255, 0.92);
+  --text-dim: rgba(255, 255, 255, 0.52);   /* war 0.38 — Accessibility-Fix */
+
+  /* ─── Border Radius ──────────────────────────────────── */
   --r:       14px;
   --r-sm:    8px;
   --r-lg:    20px;
 
-  /* ─── Shadow / Glow system ───────────────────────────── */
-  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.35);
-  --shadow-md:   0 4px 24px rgba(0, 0, 0, 0.55);
-  --shadow-lg:   0 8px 48px rgba(0, 0, 0, 0.65);
-  --glow-cyan:   0 0 20px rgba(0, 207, 255, 0.3), 0 0 50px rgba(0, 207, 255, 0.1);
-  --glow-pink:   0 0 20px rgba(255, 45, 120, 0.3), 0 0 50px rgba(255, 45, 120, 0.1);
-  --glow-purple: 0 0 20px rgba(191, 0, 255, 0.3), 0 0 50px rgba(191, 0, 255, 0.1);
+  /* ─── Shadows ────────────────────────────────────────── */
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md:   0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg:   0 8px 40px rgba(0, 0, 0, 0.6);
+
+  /* ─── Glows — deutlich gedämpft ─────────────────────── */
+  --glow-primary: 0 0 18px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.08);
+  --glow-teal:    0 0 18px rgba(20, 184, 166, 0.2),  0 0 40px rgba(20, 184, 166, 0.08);
+  --glow-emerald: 0 0 18px rgba(16, 185, 129, 0.2),  0 0 40px rgba(16, 185, 129, 0.08);
 }
 
 /* ─── Reset ────────────────────────────────────────────── */
@@ -41,16 +54,16 @@ body {
   overscroll-behavior: none;
 }
 
-/* ─── Atmosphere ─────────────────────────────────────── */
+/* ─── Atmosphere — stark reduziert ──────────────────────── */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 140% 70% at 10% -10%,   rgba(0, 207, 255, 0.1)    0%, transparent 55%),
-    radial-gradient(ellipse 100% 70% at 95% 105%,   rgba(191, 0, 255, 0.09)   0%, transparent 55%),
-    radial-gradient(ellipse 80%  50% at 85% 10%,    rgba(255, 45, 120, 0.045) 0%, transparent 55%),
-    radial-gradient(ellipse 60%  40% at 50% 60%,    rgba(0, 207, 255, 0.02)   0%, transparent 70%);
+    radial-gradient(ellipse 140% 70% at 10% -10%,   rgba(139, 92, 246, 0.06)  0%, transparent 55%),
+    radial-gradient(ellipse 100% 70% at 95% 105%,   rgba(20, 184, 166, 0.05)  0%, transparent 55%),
+    radial-gradient(ellipse 80%  50% at 85% 10%,    rgba(139, 92, 246, 0.025) 0%, transparent 55%),
+    radial-gradient(ellipse 60%  40% at 50% 60%,    rgba(20, 184, 166, 0.015) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -60,7 +73,7 @@ body::before {
 /* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
 /* ─── Animations ────────────────────────────────────────── */
 @keyframes fadeInUp {
@@ -79,8 +92,8 @@ body::before {
 }
 
 @keyframes glowPulse {
-  0%, 100% { opacity: 0.85; filter: brightness(1); }
-  50%       { opacity: 1;    filter: brightness(1.18); }
+  0%, 100% { opacity: 0.8; filter: brightness(1); }
+  50%       { opacity: 1;   filter: brightness(1.12); }
 }
 
 @keyframes shimmer {
@@ -88,12 +101,21 @@ body::before {
   to   { transform: translateX(220%)  skewX(-15deg); }
 }
 
+/* ─── Reduced Motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ─── Utility ───────────────────────────────────────────── */
 .animate-in { animation: fadeInUp 0.2s ease both; }
 
-/* ─── Drag & Drop highlights (global, weil Hook direkt classList nutzt) ─── */
-.dnd-half-over   { background: rgba(0, 207, 255, 0.07) !important; }
+/* ─── Drag & Drop highlights ────────────────────────────── */
+.dnd-half-over   { background: rgba(139, 92, 246, 0.07) !important; }
 .dnd-half-locked {
-  background: rgba(255, 45, 120, 0.08) !important;
-  box-shadow: inset 0 0 10px rgba(255, 45, 120, 0.18) !important;
+  background: rgba(251, 113, 133, 0.07) !important;
+  box-shadow: inset 0 0 10px rgba(251, 113, 133, 0.15) !important;
 }

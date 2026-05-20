@@ -31,7 +31,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(0, 207, 255, 0.45);
+  color: rgba(139, 92, 246, 0.45);
   font-family: 'Outfit', sans-serif;
 }
 
@@ -71,7 +71,7 @@
 
 .addBtn {
   background: none;
-  border: 1px solid rgba(0, 207, 255, 0.25);
+  border: 1px solid rgba(139, 92, 246, 0.25);
   color: var(--cyan);
   font-family: 'Outfit', sans-serif;
   font-size: 0.75rem;
@@ -212,7 +212,7 @@
   box-sizing: border-box;
 }
 
-.editInput:focus { border-color: rgba(0, 207, 255, 0.4); }
+.editInput:focus { border-color: rgba(139, 92, 246, 0.4); }
 
 /* ─── IntervalPicker ─────────────────────────────────────── */
 .intervalWrap { display: flex; flex-direction: column; gap: 6px; }
@@ -234,8 +234,8 @@
 }
 
 .presetBtnActive {
-  background: rgba(0, 207, 255, 0.12);
-  border-color: rgba(0, 207, 255, 0.4);
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.4);
   color: var(--cyan);
 }
 
@@ -265,7 +265,7 @@
   text-align: center;
 }
 
-.customInput:focus { border-color: rgba(0, 207, 255, 0.4); }
+.customInput:focus { border-color: rgba(139, 92, 246, 0.4); }
 
 .customSelect {
   background: rgba(255, 255, 255, 0.04);
@@ -281,7 +281,7 @@
 /* ─── Delete ─────────────────────────────────────────────── */
 .deleteBtn {
   background: none;
-  border: 1px solid rgba(255, 45, 120, 0.25);
+  border: 1px solid rgba(251, 113, 133, 0.25);
   border-radius: 20px;
   color: var(--pink);
   font-family: 'Outfit', sans-serif;
@@ -295,8 +295,8 @@
 
 /* ─── AddForm ────────────────────────────────────────────── */
 .addForm {
-  background: rgba(0, 207, 255, 0.04);
-  border: 1px solid rgba(0, 207, 255, 0.15);
+  background: rgba(139, 92, 246, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: var(--r-sm);
   padding: 12px;
   display: flex;
@@ -337,7 +337,7 @@
   outline: none;
 }
 
-.addFormText:focus { border-color: rgba(0, 207, 255, 0.4); }
+.addFormText:focus { border-color: rgba(139, 92, 246, 0.4); }
 
 .addFormActions {
   display: flex;
@@ -358,8 +358,8 @@
 }
 
 .saveBtn {
-  background: rgba(0, 207, 255, 0.12);
-  border: 1px solid rgba(0, 207, 255, 0.4);
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.4);
   border-radius: 20px;
   color: var(--cyan);
   font-family: 'Outfit', sans-serif;

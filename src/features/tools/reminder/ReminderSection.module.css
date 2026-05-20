@@ -35,7 +35,7 @@
   font-weight: 800;
   font-family: 'Orbitron', monospace;
   color: var(--cyan);
-  background: rgba(0, 207, 255, 0.1);
+  background: rgba(139, 92, 246, 0.1);
   border-radius: 10px;
   padding: 2px 7px;
   min-width: 20px;
@@ -101,8 +101,8 @@
 
 .addAllBtn {
   width: 100%;
-  background: rgba(0, 207, 255, 0.08);
-  border: 1px solid rgba(0, 207, 255, 0.25);
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: var(--r-sm);
   color: var(--cyan);
   font-family: 'Outfit', sans-serif;
@@ -116,7 +116,7 @@
 }
 
 .addAllBtn:hover {
-  background: rgba(0, 207, 255, 0.14);
+  background: rgba(139, 92, 246, 0.14);
 }
 
 .dismissBtn {

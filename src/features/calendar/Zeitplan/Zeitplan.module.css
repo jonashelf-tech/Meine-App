@@ -27,8 +27,8 @@
 }
 
 .shiftBtn:hover {
-  border-color: var(--cyan);
-  color: var(--cyan);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .hideBtn {
@@ -48,9 +48,9 @@
 }
 
 .hideBtnOn {
-  border-color: var(--cyan);
-  color: var(--cyan);
-  background: rgba(0,207,255,0.07);
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(139,92,246,0.07);
 }
 
 /* ── Expand rows ──────────────────────────────────────── */
@@ -78,18 +78,18 @@
 }
 
 .xBtnAdd:hover {
-  border-color: rgba(0,207,255,0.3);
-  color: rgba(0,207,255,0.5);
+  border-color: rgba(139,92,246,0.35);
+  color: rgba(139,92,246,0.6);
 }
 
 .xBtnRm {
-  border-color: rgba(255,45,120,0.1);
-  color: rgba(255,45,120,0.22);
+  border-color: rgba(251,113,133,0.12);
+  color: rgba(251,113,133,0.25);
 }
 
 .xBtnRm:hover {
-  border-color: rgba(255,45,120,0.4);
-  color: rgba(255,45,120,0.6);
+  border-color: rgba(251,113,133,0.4);
+  color: rgba(251,113,133,0.65);
 }
 
 /* ── Flat grid (v2.7-style) ───────────────────────────── */
@@ -114,23 +114,23 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: 5px;
-  font-family: 'Orbitron', monospace;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.52rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.32);
-  border-right: 1px solid rgba(255,255,255,0.1);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.28);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   user-select: none;
 }
 
 .sgLabelNow {
-  color: var(--cyan);
+  color: var(--primary);
   font-size: 0.56rem;
 }
 
 .sgHalf {
   grid-column: 2;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   position: relative;
   overflow: visible;
   transition: background 0.12s;
@@ -163,8 +163,8 @@
 
 .lockBtnOn {
   opacity: 1 !important;
-  color: var(--cyan);
-  filter: drop-shadow(0 0 5px rgba(0, 207, 255, 0.6));
+  color: var(--primary);
+  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
 }
 
 .sgHalfBot {
@@ -181,7 +181,7 @@
 }
 
 .sgNow {
-  background: rgba(0,207,255,0.018);
+  background: rgba(139,92,246,0.016);
 }
 
 .sgConsumed {
@@ -193,7 +193,7 @@
 .halfTime {
   font-size: 0.42rem;
   color: rgba(255,255,255,0.08);
-  font-family: 'Orbitron', monospace;
+  font-family: 'Outfit', sans-serif;
   transition: color 0.12s;
   user-select: none;
 }
@@ -207,8 +207,8 @@
   margin-left: auto;
   padding-right: 8px;
   font-size: 1rem;
-  color: var(--cyan);
-  opacity: 0.6;
+  color: var(--primary);
+  opacity: 0.5;
   font-weight: 300;
 }
 
@@ -248,7 +248,7 @@
 }
 
 .dialog {
-  background: rgba(11, 11, 23, 0.96);
+  background: rgba(12, 12, 26, 0.97);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--r);
   padding: 20px;
@@ -258,9 +258,9 @@
   flex-direction: column;
   gap: 10px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.055),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
     0 24px 64px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .dialogTitle {
@@ -290,12 +290,12 @@
 }
 
 .dialogBtnDelete {
-  border-color: rgba(255, 45, 120, 0.3);
-  color: var(--pink);
+  border-color: rgba(251, 113, 133, 0.3);
+  color: var(--rose);
 }
 
 .dialogBtnDelete:hover {
-  background: rgba(255, 45, 120, 0.12);
+  background: rgba(251, 113, 133, 0.1);
 }
 
 .dialogBtnCancel {

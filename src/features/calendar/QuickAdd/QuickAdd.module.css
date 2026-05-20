@@ -31,18 +31,18 @@
 }
 
 .input:focus {
-  border-color: var(--cyan);
-  box-shadow: 0 0 0 2px rgba(0, 207, 255, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
 }
 
 .submitBtn {
   flex-shrink: 0;
   height: 38px;
   padding: 0 14px;
-  background: rgba(0, 207, 255, 0.12);
-  border: 1px solid rgba(0, 207, 255, 0.3);
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.32);
   border-radius: var(--r);
-  color: var(--cyan);
+  color: var(--primary);
   cursor: pointer;
   font-size: 0.78rem;
   font-family: 'Outfit', sans-serif;
@@ -56,8 +56,8 @@
 }
 
 .submitBtn:hover:not(:disabled) {
-  background: rgba(0, 207, 255, 0.2);
-  border-color: var(--cyan);
+  background: rgba(139, 92, 246, 0.22);
+  border-color: var(--primary);
 }
 
 .submitBtn:active:not(:disabled) {
@@ -76,8 +76,8 @@
   flex-wrap: wrap;
   gap: 5px;
   padding: 5px 10px;
-  background: rgba(0, 207, 255, 0.05);
-  border: 1px solid rgba(0, 207, 255, 0.15);
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: var(--r-sm);
   animation: fadeInUp 0.15s ease both;
 }
@@ -91,11 +91,12 @@
 }
 
 .tag {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.6rem;
-  color: var(--cyan);
-  background: rgba(0, 207, 255, 0.1);
-  border: 1px solid rgba(0, 207, 255, 0.2);
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.22);
   border-radius: 4px;
   padding: 2px 6px;
   white-space: nowrap;
@@ -105,9 +106,9 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--pink);
-  background: rgba(255, 45, 120, 0.12);
-  border: 1px solid rgba(255, 45, 120, 0.25);
+  color: var(--rose);
+  background: rgba(251, 113, 133, 0.1);
+  border: 1px solid rgba(251, 113, 133, 0.22);
   border-radius: 4px;
   padding: 2px 6px;
 }
