@@ -1,6 +1,19 @@
 import { create } from 'zustand'
 import { sv, lv, SK, DEFAULT_MODULES } from '../storage'
 
+const ACCENT_LEGACY = {
+  cyan:   '#00CFFF',
+  pink:   '#FF2D78',
+  purple: '#BF00FF',
+  green:  '#00FF94',
+}
+
+function migrateAccent(stored) {
+  if (!stored) return '#8B5CF6'
+  if (stored.startsWith('#')) return stored
+  return ACCENT_LEGACY[stored] ?? '#8B5CF6'
+}
+
 export const useAppStore = create((set, get) => ({
   // ─── Todos ─────────────────────────────────────────────
   todos:     lv(SK.todos, []),
@@ -80,6 +93,14 @@ export const useAppStore = create((set, get) => ({
   },
 
   // ─── Accent ────────────────────────────────────────────
-  accentColor: lv(SK.accentColor, 'cyan'),
+  accentColor: migrateAccent(lv(SK.accentColor, null)),
   setAccentColor: (color) => { set({ accentColor: color }); sv(SK.accentColor, color) },
+
+  // ─── Tool Colors ───────────────────────────────────────
+  toolColors: lv(SK.toolColors, {}),
+  setToolColors: (colors) => {
+    const next = typeof colors === 'function' ? colors(get().toolColors) : colors
+    set({ toolColors: next })
+    sv(SK.toolColors, next)
+  },
 }))

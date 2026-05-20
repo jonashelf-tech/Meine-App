@@ -36,6 +36,7 @@ export const SK = {
   activeTools:    `${PREFIX}app_active_tools`,
   birthdays:      `${PREFIX}birthdays`,
   accentColor:    `${PREFIX}app_accent`,
+  toolColors:     `${PREFIX}app_tool_colors`,
 }
 
 export const exportData = () => {
