@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Claude Code — machine-spezifisch, nicht ins Repo
+.claude/settings.json
+.claude/settings.local.json
