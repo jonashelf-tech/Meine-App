@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor } from '../../../utils'
 import { TOOL_REGISTRY } from '../../tools/toolRegistry'
+import NavPill from '../../../components/NavPill/NavPill'
 import s from './TabKalender.module.css'
 
 const DAY_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -257,17 +258,14 @@ export default function TabKalender() {
       {/* ─── WOCHENANSICHT — Zeitgitter ───────────────────────── */}
       {view === 'woche' && (
         <>
-          <div className={s.navRow}>
-            <button className={s.navBtn} onClick={() => setWeekStart(d => addDays(d, -7))}>◀</button>
-            <span className={s.navLabel}>
-              {addDays(weekStart, 0).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })} –{' '}
-              {addDays(weekStart, 6).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}
-            </span>
-            <button className={s.navBtn} onClick={() => setWeekStart(d => addDays(d, 7))}>▶</button>
-            {!isCurrentWeek && (
-              <button className={s.navTodayBtn} onClick={() => setWeekStart(getMonday(today))}>Heute</button>
-            )}
-          </div>
+          <NavPill
+            label={`${addDays(weekStart, 0).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })} – ${addDays(weekStart, 6).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}`}
+            onPrev={() => setWeekStart(d => addDays(d, -7))}
+            onNext={() => setWeekStart(d => addDays(d, 7))}
+            isCurrent={isCurrentWeek}
+            leftGlows={!isCurrentWeek && toDateKey(weekStart) > toDateKey(getMonday(today))}
+            rightGlows={!isCurrentWeek && toDateKey(weekStart) < toDateKey(getMonday(today))}
+          />
 
           <div className={s.weekWrapper}>
             {/* Spalten-Header */}
@@ -380,35 +378,22 @@ export default function TabKalender() {
       {/* ─── MONATSANSICHT ────────────────────────────────────── */}
       {view === 'monat' && (
         <>
-          <div className={s.navRow}>
-            <button
-              className={s.navBtn}
-              onClick={() => setMonthRef(r => {
-                const m = r.month === 0 ? 11 : r.month - 1
-                const y = r.month === 0 ? r.year - 1 : r.year
-                return { year: y, month: m }
-              })}
-            >◀</button>
-            <span className={s.navLabel}>
-              {MONTH_NAMES[monthRef.month]} {monthRef.year}
-            </span>
-            <button
-              className={s.navBtn}
-              onClick={() => setMonthRef(r => {
-                const m = r.month === 11 ? 0 : r.month + 1
-                const y = r.month === 11 ? r.year + 1 : r.year
-                return { year: y, month: m }
-              })}
-            >▶</button>
-            {!isCurrentMonth && (
-              <button
-                className={s.navTodayBtn}
-                onClick={() => setMonthRef({ year: today.getFullYear(), month: today.getMonth() })}
-              >
-                Heute
-              </button>
-            )}
-          </div>
+          <NavPill
+            label={`${MONTH_NAMES[monthRef.month]} ${monthRef.year}`}
+            onPrev={() => setMonthRef(r => {
+              const m = r.month === 0 ? 11 : r.month - 1
+              const y = r.month === 0 ? r.year - 1 : r.year
+              return { year: y, month: m }
+            })}
+            onNext={() => setMonthRef(r => {
+              const m = r.month === 11 ? 0 : r.month + 1
+              const y = r.month === 11 ? r.year + 1 : r.year
+              return { year: y, month: m }
+            })}
+            isCurrent={isCurrentMonth}
+            leftGlows={monthRef.year > today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month > today.getMonth())}
+            rightGlows={monthRef.year < today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month < today.getMonth())}
+          />
 
           <div className={s.monthGrid}>
             {DAY_SHORT.map(d => (

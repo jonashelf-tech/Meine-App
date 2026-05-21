@@ -1,5 +1,5 @@
 import { todayKey, dateKey } from '../../utils'
-import s from './DayNav.module.css'
+import NavPill from '../NavPill/NavPill'
 
 const DAY_SHORT   = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
 const MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember']
@@ -18,36 +18,20 @@ function formatDate(dk) {
 }
 
 export default function DayNav({ date, onChange, onCalendarOpen }) {
-  const today      = todayKey()
-  const isToday    = date === today
-  const leftGlows  = date > today
-  const rightGlows = date < today
+  const today     = todayKey()
+  const isToday   = date === today
+  const leftGlows = date > today   // heute liegt in Vergangenheit → ‹ bringt zu heute
+  const rightGlows = date < today  // heute liegt in Zukunft → › bringt zu heute
 
   return (
-    <div className={s.pill}>
-      <button
-        className={[s.arrow, leftGlows ? s.arrowToday : ''].join(' ')}
-        onClick={() => onChange(shiftDay(date, -1))}
-        aria-label="Vorheriger Tag"
-      >
-        ‹
-      </button>
-      <span
-        className={[s.label, isToday ? s.labelToday : ''].join(' ')}
-        onClick={onCalendarOpen}
-        role="button"
-        tabIndex={0}
-        onKeyDown={e => e.key === 'Enter' && onCalendarOpen?.()}
-      >
-        {formatDate(date)}
-      </span>
-      <button
-        className={[s.arrow, rightGlows ? s.arrowToday : ''].join(' ')}
-        onClick={() => onChange(shiftDay(date, 1))}
-        aria-label="Nächster Tag"
-      >
-        ›
-      </button>
-    </div>
+    <NavPill
+      label={formatDate(date)}
+      onPrev={() => onChange(shiftDay(date, -1))}
+      onNext={() => onChange(shiftDay(date, 1))}
+      isCurrent={isToday}
+      leftGlows={leftGlows}
+      rightGlows={rightGlows}
+      onLabelClick={onCalendarOpen}
+    />
   )
 }
