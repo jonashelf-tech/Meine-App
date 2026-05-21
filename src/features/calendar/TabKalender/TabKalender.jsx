@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth } from '../../../utils'
+import { TOOL_REGISTRY } from '../../tools/toolRegistry'
 import s from './TabKalender.module.css'
 
 const DAY_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -9,10 +10,9 @@ const MONTH_NAMES = [
   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
 ]
 
-// Dot colors — feste Werte, ändern sich nicht mit Akzentfarbe
-const DOT_APPOINTMENT = '#00CFFF'
-const DOT_DONE        = '#10B981'
-const DOT_BIRTHDAY    = '#FF2D78'
+const SLOT_H     = 28
+const GRID_START = 7
+const GRID_END   = 22
 
 function getMonday(date) {
   const d = new Date(date)
@@ -29,21 +29,35 @@ function addDays(date, n) {
   return d
 }
 
-function getDots(dk, days, todos, birthdays, activeTools) {
-  const dots = []
+function slotToTop(slotKey) {
+  return (parseFloat(slotKey) - GRID_START) * 2 * SLOT_H
+}
+
+function slotToHeight(duration) {
+  return Math.max(8, Math.round(((duration ?? 30) / 30) * SLOT_H))
+}
+
+function getToolDots(dk, todos, activeTools, birthdays = []) {
+  const hasDoneTodo = todos.some(t => t.doneAt?.startsWith(dk))
+  const [, mm, dd] = dk.split('-')
+  return TOOL_REGISTRY
+    .filter(t => {
+      if (!activeTools.includes(t.id)) return false
+      if (t.id === 'geburtstage') return birthdays.some(b => b.date === `${mm}-${dd}`)
+      return true
+    })
+    .map(t => ({ id: t.id, color: t.color, done: hasDoneTodo }))
+}
+
+function getCellBars(dk, days) {
   const slots = days[dk] ?? {}
-  if (Object.keys(slots).length > 0) dots.push(DOT_APPOINTMENT)
-
-  const doneTodos = todos.filter(t => t.doneAt && t.doneAt.startsWith(dk))
-  if (doneTodos.length > 0) dots.push(DOT_DONE)
-
-  if (activeTools.includes('geburtstage') && birthdays?.length > 0) {
-    const [, mm, dd] = dk.split('-')
-    const hasBday = birthdays.some(b => b.date === `${mm}-${dd}`)
-    if (hasBday) dots.push(DOT_BIRTHDAY)
-  }
-
-  return dots.slice(0, 3)
+  return Object.entries(slots)
+    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+    .map(([, slot]) => ({
+      text: slot.text,
+      color: slot.color || 'var(--primary)',
+      isTodo: Boolean(slot.todoId),
+    }))
 }
 
 function DayDetail({ dateKey, days, todos, onNavigate }) {
@@ -66,10 +80,7 @@ function DayDetail({ dateKey, days, todos, onNavigate }) {
         <div className={s.detailSlots}>
           {entries.slice(0, 6).map(([key, slot]) => (
             <div key={key} className={s.detailSlot}>
-              <span
-                className={s.detailDot}
-                style={{ background: slot.color || 'var(--cyan)' }}
-              />
+              <span className={s.detailDot} style={{ background: slot.color || 'var(--primary)' }} />
               <span className={s.detailSlotText}>{slot.text}</span>
               {slot.done && <span className={s.detailDone}>✓</span>}
             </div>
@@ -93,9 +104,19 @@ export default function TabKalender() {
   }, [])
   const todayKey = toDateKey(today)
 
-  const [weekStart, setWeekStart] = useState(() => getMonday(today))
-  const [monthRef, setMonthRef]   = useState(() => ({ year: today.getFullYear(), month: today.getMonth() }))
+  const [weekStart, setWeekStart]     = useState(() => getMonday(today))
+  const [monthRef, setMonthRef]       = useState(() => ({ year: today.getFullYear(), month: today.getMonth() }))
   const [selectedDay, setSelectedDay] = useState(null)
+  const [showTermine, setShowTermine] = useState(true)
+  const [showTodos,   setShowTodos]   = useState(true)
+  const [showTools,   setShowTools]   = useState(true)
+  const weekScrollRef = useRef(null)
+
+  useEffect(() => {
+    if (view !== 'woche' || !weekScrollRef.current) return
+    const scrollTo = Math.max(0, (new Date().getHours() - GRID_START) * 2 * SLOT_H - 80)
+    weekScrollRef.current.scrollTop = scrollTo
+  }, [view])
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek  = weekDays.some(d => toDateKey(d) === todayKey)
@@ -135,7 +156,7 @@ export default function TabKalender() {
         </button>
       </div>
 
-      {/* ─── WOCHENANSICHT (Agenda-Style) ─────────────────── */}
+      {/* ─── WOCHENANSICHT — Zeitgitter ───────────────────────── */}
       {view === 'woche' && (
         <>
           <div className={s.navRow}>
@@ -146,74 +167,119 @@ export default function TabKalender() {
             </span>
             <button className={s.navBtn} onClick={() => setWeekStart(d => addDays(d, 7))}>▶</button>
             {!isCurrentWeek && (
-              <button className={s.navTodayBtn} onClick={() => setWeekStart(getMonday(today))}>
-                Heute
-              </button>
+              <button className={s.navTodayBtn} onClick={() => setWeekStart(getMonday(today))}>Heute</button>
             )}
           </div>
 
-          <div className={s.agendaList}>
-            {weekDays.map(date => {
-              const key = toDateKey(date)
-              const isToday = key === todayKey
-              const isSelected = selectedDay === key
-              const daySlots = days[key] ?? {}
-              const slotEntries = Object.entries(daySlots)
-                .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+          <div className={s.weekWrapper}>
+            {/* Spalten-Header */}
+            <div className={s.weekHeaderRow}>
+              <div className={s.weekTimeCorner} />
+              {weekDays.map(date => {
+                const dk       = toDateKey(date)
+                const isToday  = dk === todayKey
+                const toolDots = showTools ? getToolDots(dk, todos, activeTools, birthdays) : []
+                return (
+                  <div key={dk} className={[s.weekDayHead, isToday ? s.weekDayHeadToday : ''].join(' ')}>
+                    <span className={s.weekDayHeadName}>
+                      {DAY_SHORT[date.getDay() === 0 ? 6 : date.getDay() - 1]}
+                    </span>
+                    <span className={s.weekDayHeadNum}>{date.getDate()}</span>
+                    {toolDots.length > 0 && (
+                      <div className={s.weekDayToolDots}>
+                        {toolDots.map(dot => (
+                          <span
+                            key={dot.id}
+                            className={[s.toolDot, dot.done ? '' : s.toolDotActive].join(' ')}
+                            style={dot.done
+                              ? { background: dot.color }
+                              : { color: dot.color, borderColor: dot.color }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
 
-              return (
-                <div key={key}>
-                  <button
-                    className={[
-                      s.agendaDay,
-                      isToday    ? s.agendaDayToday    : '',
-                      isSelected ? s.agendaDaySelected : '',
-                    ].join(' ')}
-                    onClick={() => handleDayClick(key)}
-                  >
-                    <div className={s.agendaLeft}>
-                      <span className={s.agendaDayName}>
-                        {DAY_SHORT[date.getDay() === 0 ? 6 : date.getDay() - 1]}
-                      </span>
-                      <span className={s.agendaDayNum}>{date.getDate()}</span>
+            {/* Allday-Streifen — Todos ohne Uhrzeit */}
+            {showTodos && (
+              <div className={s.weekAlldayRow}>
+                <div className={s.weekAlldayLabel}>All</div>
+                {weekDays.map(date => {
+                  const dk          = toDateKey(date)
+                  const alldayTodos = todos.filter(t => t.date === dk && !t.time)
+                  return (
+                    <div key={dk} className={s.weekAlldayCol}>
+                      {alldayTodos.map(t => (
+                        <div
+                          key={t.id}
+                          className={s.weekAlldayBar}
+                          style={{ background: t.color || 'var(--primary)' }}
+                        >
+                          <span className={s.weekAlldayBarText}>{t.text}</span>
+                        </div>
+                      ))}
                     </div>
-                    <div className={s.agendaRight}>
-                      {slotEntries.length === 0 ? (
-                        <span className={s.agendaEmpty}>–</span>
-                      ) : (
-                        <>
-                          {slotEntries.slice(0, 2).map(([k, slot]) => (
-                            <span
-                              key={k}
-                              className={s.agendaPill}
-                              style={{ '--pill-color': slot.color || 'var(--cyan)' }}
-                            >
-                              {slot.text}
-                            </span>
-                          ))}
-                          {slotEntries.length > 2 && (
-                            <span className={s.agendaMore}>+{slotEntries.length - 2}</span>
-                          )}
-                        </>
-                      )}
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Scrollbares Zeitgitter */}
+            <div className={s.weekScrollBody} ref={weekScrollRef}>
+              <div className={s.weekTimeAxis}>
+                {Array.from({ length: (GRID_END - GRID_START) * 2 }, (_, i) => {
+                  const h      = GRID_START + i * 0.5
+                  const isHour = h === Math.floor(h)
+                  if (!isHour) return <div key={i} className={s.weekTimeLabel} />
+                  return (
+                    <div key={i} className={s.weekTimeLabel}>
+                      {String(Math.floor(h)).padStart(2, '0')}:00
                     </div>
-                  </button>
-                  {isSelected && (
-                    <DayDetail
-                      dateKey={key}
-                      days={days}
-                      todos={todos}
-                      onNavigate={navigateToDay}
-                    />
-                  )}
-                </div>
-              )
-            })}
+                  )
+                })}
+              </div>
+              <div className={s.weekColsBody}>
+                {weekDays.map(date => {
+                  const dk      = toDateKey(date)
+                  const slots   = days[dk] ?? {}
+                  const entries = Object.entries(slots).filter(([key]) => {
+                    const h = parseFloat(key)
+                    return h >= GRID_START && h < GRID_END
+                  })
+                  return (
+                    <div key={dk} className={s.weekDayCol}>
+                      {entries.map(([key, slot]) => {
+                        const isTodo = Boolean(slot.todoId)
+                        if (!showTermine && !isTodo) return null
+                        if (!showTodos   &&  isTodo) return null
+                        const top    = slotToTop(key)
+                        const height = slotToHeight(slot.duration)
+                        const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
+                        const mm     = parseFloat(key) % 1 ? '30' : '00'
+                        return (
+                          <div
+                            key={key}
+                            className={[s.weekSlotBlock, isTodo ? s.weekSlotTodo : ''].join(' ')}
+                            style={{ top, height, background: slot.color || 'var(--primary)' }}
+                          >
+                            {height >= 20 && <span className={s.weekSlotName}>{slot.text}</span>}
+                            {height >= 32 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </>
       )}
 
-      {/* ─── MONATSANSICHT ────────────────────────────────── */}
+      {/* ─── MONATSANSICHT ────────────────────────────────────── */}
       {view === 'monat' && (
         <>
           <div className={s.navRow}>
@@ -251,31 +317,57 @@ export default function TabKalender() {
               <div key={d} className={s.monthHeader}>{d}</div>
             ))}
             {monthCells.map((day, idx) => {
-              if (!day) return <div key={`empty-${idx}`} className={s.monthCell} />
-              const key = `${monthRef.year}-${String(monthRef.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-              const isToday = key === todayKey
-              const dots = getDots(key, days, todos, birthdays, activeTools)
+              if (!day) return <div key={`empty-${idx}`} className={[s.monthCell, s.monthCellEmpty].join(' ')} />
+              const dk         = `${monthRef.year}-${String(monthRef.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+              const isToday    = dk === todayKey
+              const isSelected = selectedDay === dk
+              const bars       = getCellBars(dk, days)
+              const filtered   = [
+                ...(showTermine ? bars.filter(b => !b.isTodo) : []),
+                ...(showTodos   ? bars.filter(b =>  b.isTodo) : []),
+              ]
+              const visible  = filtered.slice(0, 3)
+              const overflow = filtered.length - visible.length
+              const toolDots = showTools ? getToolDots(dk, todos, activeTools, birthdays) : []
+
               return (
-                <div key={key}>
+                <div key={dk}>
                   <button
-                    className={[s.monthCell, s.monthCellBtn, isToday ? s.monthCellToday : '', selectedDay === key ? s.monthCellSelected : ''].join(' ')}
-                    onClick={() => handleDayClick(key)}
+                    className={[
+                      s.monthCell,
+                      isToday    ? s.monthCellToday    : '',
+                      isSelected ? s.monthCellSelected : '',
+                    ].join(' ')}
+                    onClick={() => handleDayClick(dk)}
                   >
                     <span className={s.monthDay}>{day}</span>
-                    <div className={s.dotRow}>
-                      {dots.map((c, i) => (
-                        <span key={i} className={s.dot} style={{ background: c }} />
-                      ))}
-                    </div>
+                    {visible.map((bar, i) => (
+                      <div
+                        key={i}
+                        className={[s.cellBar, bar.isTodo ? s.cellBarTodo : ''].join(' ')}
+                        style={{ background: bar.color }}
+                      >
+                        <span className={s.cellBarText}>{bar.text}</span>
+                      </div>
+                    ))}
+                    {overflow > 0 && <span className={s.cellMore}>+{overflow}</span>}
+                    {toolDots.length > 0 && (
+                      <div className={s.toolDots}>
+                        {toolDots.map(dot => (
+                          <span
+                            key={dot.id}
+                            className={[s.toolDot, dot.done ? '' : s.toolDotActive].join(' ')}
+                            style={dot.done
+                              ? { background: dot.color }
+                              : { color: dot.color, borderColor: dot.color }}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </button>
-                  {selectedDay === key && (
+                  {isSelected && (
                     <div className={s.monthDetailWrap}>
-                      <DayDetail
-                        dateKey={key}
-                        days={days}
-                        todos={todos}
-                        onNavigate={navigateToDay}
-                      />
+                      <DayDetail dateKey={dk} days={days} todos={todos} onNavigate={navigateToDay} />
                     </div>
                   )}
                 </div>
@@ -284,6 +376,27 @@ export default function TabKalender() {
           </div>
         </>
       )}
+
+      <div className={s.toggleStrip}>
+        <button
+          className={[s.toggleChip, s.toggleChipTermine, showTermine ? s.toggleChipOn : ''].join(' ')}
+          onClick={() => setShowTermine(v => !v)}
+        >
+          Termine {showTermine ? '●' : '○'}
+        </button>
+        <button
+          className={[s.toggleChip, s.toggleChipTodos, showTodos ? s.toggleChipOn : ''].join(' ')}
+          onClick={() => setShowTodos(v => !v)}
+        >
+          Todos {showTodos ? '●' : '○'}
+        </button>
+        <button
+          className={[s.toggleChip, s.toggleChipTools, showTools ? s.toggleChipOn : ''].join(' ')}
+          onClick={() => setShowTools(v => !v)}
+        >
+          Tools {showTools ? '●' : '○'}
+        </button>
+      </div>
     </div>
   )
 }
