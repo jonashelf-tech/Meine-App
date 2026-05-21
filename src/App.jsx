@@ -18,7 +18,7 @@ import TabReminder     from './features/tools/reminder/TabReminder'
 import AddTodoModal    from './components/AddTodoModal/AddTodoModal'
 
 const TABS = [
-  { id: 0, label: 'Heute',    icon: '◈' },
+  { id: 0, label: 'Tagesplaner', icon: '◈' },
   { id: 1, label: 'Kalender', icon: '⊞' },
   { id: 2, label: 'Tools',    icon: '⚙' },
   { id: 3, label: 'Einstellungen', icon: '≡' },
