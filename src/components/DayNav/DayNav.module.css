@@ -1,0 +1,65 @@
+.pill {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 999px;
+  padding: 6px 4px;
+  gap: 0;
+  user-select: none;
+}
+
+.arrow {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.28);
+  font-size: 1rem;
+  padding: 2px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s, text-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+
+.arrow:hover {
+  color: rgba(255,255,255,0.7);
+}
+
+.arrowToday {
+  color: var(--primary);
+  text-shadow: 0 0 10px var(--glow-primary);
+}
+
+.arrowToday:hover {
+  color: var(--primary);
+  text-shadow: 0 0 16px var(--glow-primary);
+}
+
+.label {
+  flex: 1;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: color 0.15s, text-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.labelToday {
+  color: var(--primary);
+  text-shadow: 0 0 12px var(--glow-primary);
+}
+
+.label:hover {
+  color: rgba(255,255,255,0.95);
+}
+
+.labelToday:hover {
+  color: var(--primary);
+}
