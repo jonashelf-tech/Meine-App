@@ -28,60 +28,27 @@
 
 .segActive {
   background: var(--bg3);
-  color: var(--cyan);
-  box-shadow: 0 1px 8px rgba(0,207,255,0.1);
+  color: var(--primary);
+  box-shadow: 0 1px 8px rgba(139, 92, 246, 0.1);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 16px 14px 14px;
+/* ─── Shared List ───────────────────────────────────────── */
+.list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  cursor: pointer;
-  transition: border-color 0.2s, opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  position: relative;
+  gap: 8px;
 }
 
-.card:active { transform: scale(0.97); }
-
-.cardActive {
-  border-color: var(--tool-color, var(--cyan));
-  box-shadow:
-    0 0 18px color-mix(in srgb, var(--tool-color, var(--cyan)) 28%, transparent),
-    0 4px 20px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 32px 16px;
+  line-height: 1.6;
 }
 
-.cardInactive {
-  opacity: 0.5;
-}
-
-.cardLarge {
-  padding: 20px 16px 18px;
-}
-
-.cardIcon {
-  font-size: 1.6rem;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.cardIconLarge {
-  font-size: 2.2rem;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-
+/* ─── Shared chip parts ─────────────────────────────────── */
 .cardName {
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -95,114 +62,6 @@
   color: var(--text-dim);
   line-height: 1.35;
 }
-
-.cardFooter {
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.toggle {
-  width: 36px;
-  height: 20px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 10px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s;
-  border: 1px solid var(--border);
-}
-
-.toggleOn {
-  background: color-mix(in srgb, var(--tool-color, var(--cyan)) 35%, transparent);
-  border-color: var(--tool-color, var(--cyan));
-}
-
-.toggleThumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  background: rgba(255,255,255,0.4);
-  border-radius: 50%;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.toggleOn .toggleThumb {
-  transform: translateX(16px);
-  background: var(--tool-color, var(--cyan));
-}
-
-.empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  padding: 32px 16px;
-  line-height: 1.6;
-}
-
-/* ─── Color Dot (Alle Tools) ────────────────────────────── */
-.colorDot {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.25);
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  flex-shrink: 0;
-}
-
-.colorDot:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 8px currentColor;
-}
-
-/* ─── List View (Meine Tools) ───────────────────────────── */
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.listCard {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: border-color 0.2s, opacity 0.2s, transform 0.15s;
-  border-left: 3px solid var(--tool-color, var(--primary));
-  -webkit-tap-highlight-color: transparent;
-  position: relative;
-}
-
-.listCard:active { transform: scale(0.98); }
-
-.listCardDragging { opacity: 0.4; }
-
-.listCardOver {
-  border-color: var(--tool-color, var(--primary));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--tool-color, var(--primary)) 25%, transparent);
-}
-
-.dragHandle {
-  color: var(--text-dim);
-  font-size: 1.1rem;
-  cursor: grab;
-  flex-shrink: 0;
-  user-select: none;
-}
-
-.dragHandle:active { cursor: grabbing; }
 
 .listIcon {
   font-size: 1.6rem;
@@ -219,3 +78,115 @@
 }
 
 .hidden { display: none; }
+
+/* ─── Meine Tools ───────────────────────────────────────── */
+.listCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, opacity 0.2s, transform 0.15s;
+  border-left: 3px solid var(--tool-color, var(--primary));
+  -webkit-tap-highlight-color: transparent;
+}
+
+.listCard:active { transform: scale(0.98); }
+
+.listCardDragging {
+  opacity: 0.2;
+  border-style: dashed;
+  border-left-style: solid;
+  pointer-events: none;
+}
+
+.dragHandle {
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  cursor: grab;
+  flex-shrink: 0;
+  user-select: none;
+  touch-action: none;
+  padding: 4px 2px;
+}
+
+.dragHandle:active { cursor: grabbing; }
+
+/* Insert line between cards during drag */
+.insertLine {
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+}
+
+/* ─── Alle Tools ────────────────────────────────────────── */
+.allChip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  border-left: 3px solid var(--tool-color, var(--primary));
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.allChip:active { transform: scale(0.98); }
+
+.allChipInactive {
+  opacity: 0.45;
+}
+
+.colorDotInline {
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+  padding: 0;
+}
+
+.colorDotInline:hover {
+  transform: scale(1.4);
+}
+
+.addBtn {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  font-family: 'Outfit', sans-serif;
+  line-height: 1;
+}
+
+.addBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.addBtnActive {
+  border-color: var(--tool-color, var(--primary));
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 15%, transparent);
+}

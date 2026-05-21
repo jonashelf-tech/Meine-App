@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useAppStore } from '../../../store'
 import { TOOL_REGISTRY } from '../toolRegistry'
 import { getToolColor } from '../../../utils'
@@ -27,8 +27,9 @@ export default function TabTools() {
   const [view, setView] = useState('mine')
   const { activeTools, toggleTool, setCurrentTab, setToolColors, toolColors } = useAppStore()
 
-  const [dragId,     setDragId]     = useState(null)
-  const [dragOverId, setDragOverId] = useState(null)
+  const [dragId,         setDragId]         = useState(null)
+  const [insertAfterIdx, setInsertAfterIdx] = useState(null)
+  const cardRefs      = useRef({})
   const colorInputRefs = useRef({})
 
   const myTools = activeTools
@@ -40,41 +41,135 @@ export default function TabTools() {
     if (tab != null) setCurrentTab(tab)
   }
 
-  const handleDragStart = (e, id) => {
-    setDragId(id)
-    e.dataTransfer.effectAllowed = 'move'
-  }
-
-  const handleDragOver = (e, id) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    if (id !== dragId) setDragOverId(id)
-  }
-
-  const handleDrop = (e, targetId) => {
-    e.preventDefault()
-    if (!dragId || dragId === targetId) {
-      setDragId(null)
-      setDragOverId(null)
-      return
-    }
-    const order = [...activeTools]
-    const from  = order.indexOf(dragId)
-    const to    = order.indexOf(targetId)
-    order.splice(from, 1)
-    order.splice(to, 0, dragId)
-    useAppStore.getState().setActiveTools(order)
-    setDragId(null)
-    setDragOverId(null)
-  }
-
-  const handleDragEnd = () => {
-    setDragId(null)
-    setDragOverId(null)
-  }
-
   const handleColorChange = (toolId, hex) => {
     setToolColors(prev => ({ ...prev, [toolId]: hex }))
+  }
+
+  // ── Pointer-Drag für Meine Tools ─────────────────────────
+  const startPointerDrag = useCallback((e, toolId) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const cardEl = cardRefs.current[toolId]
+    if (!cardEl) return
+
+    const rect    = cardEl.getBoundingClientRect()
+    const startY  = e.clientY
+    let moved     = false
+    let ghost     = null
+    let insertAfter = -1
+
+    const snapshots = useAppStore.getState().activeTools
+      .map(id => TOOL_REGISTRY.find(t => t.id === id))
+      .filter(Boolean)
+
+    const onMove = (me) => {
+      const dy = me.clientY - startY
+      if (!moved && Math.abs(dy) < 5) return
+
+      if (!moved) {
+        moved = true
+        setDragId(toolId)
+
+        ghost = cardEl.cloneNode(true)
+        Object.assign(ghost.style, {
+          position:    'fixed',
+          left:        `${rect.left}px`,
+          top:         `${rect.top}px`,
+          width:       `${rect.width}px`,
+          pointerEvents: 'none',
+          zIndex:      '9999',
+          transform:   'rotate(-1.5deg) scale(1.02)',
+          boxShadow:   '0 10px 28px rgba(0,0,0,0.7), 0 0 16px rgba(139,92,246,0.2)',
+          opacity:     '0.95',
+          margin:      '0',
+          transition:  'none',
+        })
+        document.body.appendChild(ghost)
+      }
+
+      if (!ghost) return
+      ghost.style.top = `${rect.top + dy}px`
+
+      const ghostCY = rect.top + dy + rect.height / 2
+      let newInsert = -1
+      snapshots.forEach((t, i) => {
+        if (t.id === toolId) return
+        const el = cardRefs.current[t.id]
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        if (ghostCY > r.top + r.height / 2) newInsert = i
+      })
+      if (newInsert !== insertAfter) {
+        insertAfter = newInsert
+        setInsertAfterIdx(newInsert)
+      }
+    }
+
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerup',   onUp)
+      if (ghost) { ghost.remove(); ghost = null }
+
+      if (moved) {
+        const order = [...useAppStore.getState().activeTools]
+        const from  = order.indexOf(toolId)
+        order.splice(from, 1)
+        let to = insertAfter + 1
+        if (insertAfter >= from) to = insertAfter
+        order.splice(Math.max(0, Math.min(to, order.length)), 0, toolId)
+        useAppStore.getState().setActiveTools(order)
+      }
+
+      setDragId(null)
+      setInsertAfterIdx(null)
+    }
+
+    document.addEventListener('pointermove', onMove)
+    document.addEventListener('pointerup',   onUp)
+  }, [])
+
+  // ── Meine Tools Liste rendern ─────────────────────────────
+  const renderMyTools = () => {
+    if (myTools.length === 0) {
+      return <p className={s.empty}>Noch keine Tools aktiviert.<br />Wechsle zu "Alle Tools".</p>
+    }
+
+    const items = []
+    myTools.forEach((tool, idx) => {
+      const toolColor  = getToolColor(tool.id, toolColors)
+      const isDragging = dragId === tool.id
+
+      if (dragId && insertAfterIdx === idx - 1) {
+        items.push(<div key={`line-${idx}`} className={s.insertLine} />)
+      }
+
+      items.push(
+        <div
+          key={tool.id}
+          ref={el => { cardRefs.current[tool.id] = el }}
+          className={[s.listCard, isDragging ? s.listCardDragging : ''].join(' ')}
+          style={{ '--tool-color': toolColor }}
+          onClick={() => !isDragging && openTool(tool)}
+        >
+          <span className={s.listIcon}>{tool.icon}</span>
+          <div className={s.listText}>
+            <span className={s.cardName}>{tool.name}</span>
+            <span className={s.cardDesc}>{tool.description}</span>
+          </div>
+          <span
+            className={s.dragHandle}
+            onPointerDown={e => startPointerDrag(e, tool.id)}
+          >⠿</span>
+        </div>
+      )
+    })
+
+    if (dragId && insertAfterIdx === myTools.length - 1) {
+      items.push(<div key="line-end" className={s.insertLine} />)
+    }
+
+    return items
   }
 
   return (
@@ -92,19 +187,19 @@ export default function TabTools() {
       </div>
 
       {view === 'all' && (
-        <div className={s.grid}>
+        <div className={s.list}>
           {allToolsSorted.map(tool => {
             const isActive  = activeTools.includes(tool.id)
             const toolColor = getToolColor(tool.id, toolColors)
             return (
               <div
                 key={tool.id}
-                className={[s.card, isActive ? s.cardActive : s.cardInactive].join(' ')}
-                style={isActive ? { '--tool-color': toolColor } : {}}
+                className={[s.allChip, isActive ? '' : s.allChipInactive].join(' ')}
+                style={{ '--tool-color': toolColor }}
                 onClick={() => isActive && openTool(tool)}
               >
                 <button
-                  className={s.colorDot}
+                  className={s.colorDotInline}
                   style={{ background: toolColor }}
                   onClick={e => { e.stopPropagation(); colorInputRefs.current[tool.id]?.click() }}
                   title="Farbe ändern"
@@ -116,18 +211,17 @@ export default function TabTools() {
                   onChange={e => handleColorChange(tool.id, e.target.value)}
                   className={s.hidden}
                 />
-                <span className={s.cardIcon}>{tool.icon}</span>
-                <span className={s.cardName}>{tool.name}</span>
-                <span className={s.cardDesc}>{tool.description}</span>
-                <div className={s.cardFooter}>
-                  <div
-                    className={[s.toggle, isActive ? s.toggleOn : ''].join(' ')}
-                    onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
-                    style={isActive ? { '--tool-color': toolColor } : {}}
-                  >
-                    <div className={s.toggleThumb} />
-                  </div>
+                <span className={s.listIcon}>{tool.icon}</span>
+                <div className={s.listText}>
+                  <span className={s.cardName}>{tool.name}</span>
+                  <span className={s.cardDesc}>{tool.description}</span>
                 </div>
+                <button
+                  className={[s.addBtn, isActive ? s.addBtnActive : ''].join(' ')}
+                  onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
+                >
+                  {isActive ? '✓' : '+'}
+                </button>
               </div>
             )
           })}
@@ -136,44 +230,7 @@ export default function TabTools() {
 
       {view === 'mine' && (
         <div className={s.list}>
-          {myTools.length === 0 ? (
-            <p className={s.empty}>Noch keine Tools aktiviert.<br />Wechsle zu "Alle Tools".</p>
-          ) : (
-            myTools.map(tool => {
-              const toolColor  = getToolColor(tool.id, toolColors)
-              const isDragging = dragId === tool.id
-              const isOver     = dragOverId === tool.id
-              return (
-                <div
-                  key={tool.id}
-                  className={[
-                    s.listCard,
-                    isDragging ? s.listCardDragging : '',
-                    isOver     ? s.listCardOver    : '',
-                  ].join(' ')}
-                  style={{ '--tool-color': toolColor }}
-                  draggable
-                  onDragStart={e => handleDragStart(e, tool.id)}
-                  onDragOver={e  => handleDragOver(e, tool.id)}
-                  onDrop={e      => handleDrop(e, tool.id)}
-                  onDragEnd={handleDragEnd}
-                  onClick={() => openTool(tool)}
-                >
-                  <span
-                    className={s.dragHandle}
-                    onMouseDown={e => e.stopPropagation()}
-                  >
-                    ≡
-                  </span>
-                  <span className={s.listIcon}>{tool.icon}</span>
-                  <div className={s.listText}>
-                    <span className={s.cardName}>{tool.name}</span>
-                    <span className={s.cardDesc}>{tool.description}</span>
-                  </div>
-                </div>
-              )
-            })
-          )}
+          {renderMyTools()}
         </div>
       )}
     </div>
