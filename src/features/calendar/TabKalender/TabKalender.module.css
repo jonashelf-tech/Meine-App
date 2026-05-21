@@ -79,104 +79,8 @@
 
 .navTodayBtn:hover { border-color: var(--primary); background: rgba(139,92,246,0.07); }
 
-/* ─── Agenda (Week) View ─────────────────────────────────── */
-.agendaList {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
 
-.agendaDay {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-  text-align: left;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.agendaDay:hover { border-color: rgba(255,255,255,0.15); }
-
-.agendaDayToday {
-  border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(139,92,246,0.1);
-}
-
-.agendaDaySelected {
-  background: rgba(139,92,246,0.05);
-}
-
-.agendaLeft {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 32px;
-  flex-shrink: 0;
-}
-
-.agendaDayName {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-}
-
-.agendaDayNum {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.1;
-}
-
-.agendaDayToday .agendaDayNum { color: var(--primary); }
-
-.agendaRight {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.agendaEmpty {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.15);
-}
-
-.agendaPill {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--pill-color, var(--primary));
-  background: rgba(139,92,246,0.1);
-  border-radius: 4px;
-  padding: 2px 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 130px;
-}
-
-.agendaMore {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.68rem;
-  color: var(--text-dim);
-  padding: 2px 4px;
-}
-
-/* ─── Month View ────────────────────────────────────────── */
+/* ─── Month View ───────────────────────────────────────── */
 .monthGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -195,65 +99,89 @@
 
 .monthCell {
   min-height: 44px;
-}
-
-.monthCellBtn {
-  width: 100%;
+  background: rgba(255,255,255,0.035);
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  padding: 3px 2px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  background: var(--surface);
-  border: 1px solid transparent;
-  border-radius: var(--r-sm);
+  gap: 1.5px;
   cursor: pointer;
-  padding: 5px 2px;
   transition: border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
 }
 
-.monthCellBtn:hover { border-color: rgba(255,255,255,0.15); }
-
-.monthCellToday {
-  border-color: var(--primary);
-  box-shadow: 0 0 8px rgba(139,92,246,0.12);
-}
-
-.monthCellSelected {
-  background: rgba(139,92,246,0.07);
-}
+.monthCell:hover { border-color: rgba(255,255,255,0.12); }
+.monthCellToday { border-color: var(--primary); box-shadow: 0 0 8px rgba(139,92,246,0.2); }
+.monthCellSelected { background: rgba(139,92,246,0.07); }
+.monthCellEmpty { background: transparent; cursor: default; border-color: transparent !important; }
 
 .monthDay {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text);
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  line-height: 1;
+  padding: 0 1px;
 }
 
 .monthCellToday .monthDay { color: var(--primary); }
 
-.monthDetailWrap {
-  grid-column: 1 / -1;
-}
-
-/* ─── Dots ───────────────────────────────────────────────── */
-.dotRow {
-  display: flex;
-  gap: 2px;
-  justify-content: center;
-  min-height: 6px;
-}
-
-.dot {
-  width: 5px;
+.cellBar {
   height: 5px;
-  border-radius: 50%;
-  display: block;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
-/* ─── Day Detail ────────────────────────────────────────── */
+.cellBarText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.33rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.cellBarTodo { opacity: 0.65; }
+
+.cellMore {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.32rem;
+  color: var(--text-dim);
+  padding: 0 1px;
+}
+
+.toolDots {
+  display: flex;
+  gap: 1.5px;
+  padding: 0 1px;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.toolDot {
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.toolDotActive {
+  background: transparent !important;
+  border: 1px solid currentColor;
+  opacity: 0.55;
+}
+
+/* ─── Month Detail ───────────────────────────────────────── */
+.monthDetailWrap { grid-column: 1 / -1; }
+
 .detail {
   background: var(--bg3);
   border: 1px solid var(--border);
@@ -300,24 +228,9 @@
   padding: 8px 0;
 }
 
-.detailSlots {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.detailSlot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.detailDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
+.detailSlots { display: flex; flex-direction: column; gap: 6px; }
+.detailSlot { display: flex; align-items: center; gap: 8px; }
+.detailDot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
 .detailSlotText {
   font-family: 'Outfit', sans-serif;
@@ -329,15 +242,238 @@
   white-space: nowrap;
 }
 
-.detailDone {
-  font-size: 0.75rem;
-  color: var(--emerald);
+.detailDone { font-size: 0.75rem; color: var(--emerald); }
+.detailMore { font-family: 'Outfit', sans-serif; font-size: 0.72rem; color: var(--text-dim); }
+
+/* ─── Week Time Grid ─────────────────────────────────────── */
+.weekWrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
 }
 
-.detailMore {
+.weekHeaderRow {
+  display: flex;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.weekTimeCorner { width: 32px; flex-shrink: 0; }
+
+.weekDayHead {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 2px 4px;
+  gap: 1px;
+  border-left: 1px solid var(--border);
+}
+
+.weekDayHeadName {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.weekDayHeadNum {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.weekDayHeadToday .weekDayHeadName,
+.weekDayHeadToday .weekDayHeadNum { color: var(--primary); }
+
+.weekDayToolDots {
+  display: flex;
+  gap: 1.5px;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 5px;
+}
+
+.weekAlldayRow {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  flex-shrink: 0;
+  min-height: 18px;
+}
+
+.weekAlldayLabel {
+  width: 32px;
+  flex-shrink: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.42rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.03em;
+}
+
+.weekAlldayCol {
+  flex: 1;
+  border-left: 1px solid var(--border);
+  padding: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  align-items: center;
+}
+
+.weekAlldayBar {
+  height: 5px;
+  border-radius: 2px;
+  min-width: 18px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+  overflow: hidden;
+  opacity: 0.7;
+}
+
+.weekAlldayBarText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.32rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weekScrollBody {
+  display: flex;
+  overflow-y: auto;
+  max-height: 480px;
+}
+
+.weekTimeAxis {
+  width: 32px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.weekTimeLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.42rem;
+  color: rgba(255,255,255,0.2);
+  text-align: right;
+  padding-right: 4px;
+  height: 28px;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 1px;
+  flex-shrink: 0;
+}
+
+.weekColsBody { flex: 1; display: flex; }
+
+.weekDayCol {
+  flex: 1;
+  border-left: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+  height: 840px;
+}
+
+.weekDayCol::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    rgba(255,255,255,0.03) 27px,
+    rgba(255,255,255,0.03) 28px
+  );
+  pointer-events: none;
+}
+
+.weekSlotBlock {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 1px 3px;
+  min-height: 8px;
+}
+
+.weekSlotTodo { opacity: 0.65; }
+
+.weekSlotName {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.42rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.92);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.weekSlotTime {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.36rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1;
+}
+
+/* ─── Toggle Strip ───────────────────────────────────────── */
+.toggleStrip {
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.toggleChip {
+  flex: 1;
+  text-align: center;
   font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
-  color: var(--text-dim);
+  font-weight: 700;
+  padding: 6px 4px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.toggleChipTermine.toggleChipOn {
+  color: var(--primary);
+  border-color: rgba(139,92,246,0.35);
+  background: rgba(139,92,246,0.08);
+}
+
+.toggleChipTodos.toggleChipOn {
+  color: var(--teal);
+  border-color: rgba(20,184,166,0.35);
+  background: rgba(20,184,166,0.08);
+}
+
+.toggleChipTools.toggleChipOn {
+  color: var(--emerald);
+  border-color: rgba(16,185,129,0.35);
+  background: rgba(16,185,129,0.08);
 }
 
 @keyframes fadeInUp {
