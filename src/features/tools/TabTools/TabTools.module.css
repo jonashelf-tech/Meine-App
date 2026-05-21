@@ -79,18 +79,38 @@
 
 .hidden { display: none; }
 
+/* ─── Color Bar ─────────────────────────────────────────── */
+.colorBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 11px;
+  background: var(--tool-color, var(--primary));
+  border-radius: var(--r) 0 0 var(--r);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.15s;
+  flex-shrink: 0;
+}
+
+.colorBar:hover {
+  width: 16px;
+}
+
 /* ─── Meine Tools ───────────────────────────────────────── */
 .listCard {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 14px 16px;
+  padding: 14px 16px 14px 20px;
   cursor: pointer;
   transition: border-color 0.2s, opacity 0.2s, transform 0.15s;
-  border-left: 3px solid var(--tool-color, var(--primary));
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -125,14 +145,14 @@
 
 /* ─── Alle Tools ────────────────────────────────────────── */
 .allChip {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 14px 16px;
-  border-left: 3px solid var(--tool-color, var(--primary));
+  padding: 14px 16px 14px 20px;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.15s;
   -webkit-tap-highlight-color: transparent;
@@ -144,31 +164,16 @@
   opacity: 0.45;
 }
 
-.colorDotInline {
-  width: 10px;
-  height: 10px;
-  min-width: 10px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: transform 0.15s;
-  padding: 0;
-}
-
-.colorDotInline:hover {
-  transform: scale(1.4);
-}
 
 .addBtn {
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   border-radius: 50%;
   border: 1.5px solid rgba(255, 255, 255, 0.15);
   background: none;
   color: rgba(255, 255, 255, 0.4);
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -181,8 +186,8 @@
 }
 
 .addBtn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--tool-color, var(--primary));
+  color: var(--tool-color, var(--primary));
 }
 
 .addBtnActive {

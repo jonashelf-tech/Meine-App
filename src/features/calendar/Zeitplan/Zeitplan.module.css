@@ -31,26 +31,35 @@
   color: var(--primary);
 }
 
-.hideBtn {
-  padding: 4px 10px;
+.viewToggle {
+  display: flex;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.viewBtn {
+  padding: 4px 9px;
   font-family: 'Outfit', sans-serif;
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
+  border: none;
   color: rgba(255,255,255,0.22);
   cursor: pointer;
   transition: all 0.18s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.hideBtnOn {
-  border-color: var(--primary);
+.viewBtn + .viewBtn {
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+.viewBtnActive {
   color: var(--primary);
-  background: rgba(139,92,246,0.07);
+  background: rgba(139,92,246,0.1);
 }
 
 /* ── Expand rows ──────────────────────────────────────── */
@@ -90,6 +99,49 @@
 .xBtnRm:hover {
   border-color: rgba(251,113,133,0.4);
   color: rgba(251,113,133,0.65);
+}
+
+/* ── Outside-range hints ──────────────────────────────── */
+.outsideHint {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
+}
+
+.outsideItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px dashed rgba(255,255,255,0.07);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.outsideDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.outsideTime {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.28);
+  flex-shrink: 0;
+}
+
+.outsideText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Flat grid (v2.7-style) ───────────────────────────── */
@@ -137,35 +189,6 @@
   min-height: 40px;
 }
 
-/* ── Lock button ──────────────────────────────────────── */
-.lockBtn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 5;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  color: rgba(255, 255, 255, 0.1);
-  opacity: 0;
-  transition: color 0.15s, opacity 0.15s, filter 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.sgHalf:hover .lockBtn {
-  opacity: 1;
-}
-
-.lockBtnOn {
-  opacity: 1 !important;
-  color: var(--primary);
-  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
-}
 
 .sgHalfBot {
   border-bottom: 1px dashed rgba(255,255,255,0.04);
@@ -232,6 +255,14 @@
 
 .slotHandle:hover  { color: rgba(255, 255, 255, 0.45); }
 .slotHandle:active { cursor: grabbing; }
+
+.slotHandleLocked {
+  cursor: pointer;
+  color: var(--primary);
+  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
+}
+
+.slotHandleLocked:hover { color: var(--primary); }
 
 /* ─── Remove Dialog ──────────────────────────────────────── */
 .dialogOverlay {

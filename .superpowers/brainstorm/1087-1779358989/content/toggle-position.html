@@ -1,0 +1,251 @@
+<style>
+  body { font-family: 'Outfit', system-ui, sans-serif; }
+  .phone {
+    width: 190px;
+    background: #080810;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 10px 8px 14px;
+    font-family: 'Outfit', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  /* Segment Woche/Monat */
+  .seg-row {
+    display: flex;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .seg {
+    flex: 1;
+    text-align: center;
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    padding: 4px 0;
+    border-radius: 6px;
+  }
+  .seg.active {
+    background: rgba(255,255,255,0.08);
+    color: #8B5CF6;
+  }
+
+  /* Nav row */
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.45rem;
+    color: rgba(255,255,255,0.4);
+  }
+  .nav-label {
+    flex: 1;
+    text-align: center;
+    font-size: 0.48rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Filter chips */
+  .filter-row {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+  .fchip {
+    font-size: 0.4rem;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.03);
+  }
+  .fchip.on {
+    border-color: #8B5CF6;
+    color: #8B5CF6;
+    background: rgba(139,92,246,0.1);
+  }
+  .fchip.on2 {
+    border-color: #14B8A6;
+    color: #14B8A6;
+    background: rgba(20,184,166,0.1);
+  }
+
+  /* Icon buttons in nav */
+  .icon-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    color: rgba(255,255,255,0.4);
+  }
+  .icon-btn.active { background: rgba(139,92,246,0.15); color: #8B5CF6; }
+
+  /* Fake calendar content */
+  .fake-cal {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0.6;
+  }
+  .fake-day {
+    background: rgba(255,255,255,0.03);
+    border-radius: 4px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0 5px;
+  }
+  .fake-num { font-size: 0.45rem; color: rgba(255,255,255,0.4); font-weight: 700; min-width: 10px; }
+  .fake-bar { height: 4px; border-radius: 2px; }
+  .fake-dot { width: 4px; height: 4px; border-radius: 50%; margin-left: auto; }
+
+  /* Bottom toggle strip */
+  .btm-strip {
+    display: flex;
+    gap: 3px;
+    padding: 5px 3px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 2px;
+  }
+  .btm-chip {
+    flex: 1;
+    text-align: center;
+    font-size: 0.38rem;
+    font-weight: 700;
+    padding: 3px 2px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.25);
+    border: 1px solid transparent;
+  }
+  .btm-chip.on { color: #8B5CF6; border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.07); }
+  .btm-chip.on2 { color: #14B8A6; border-color: rgba(20,184,166,0.3); background: rgba(20,184,166,0.07); }
+</style>
+
+<h2>Wo sollen die Todos/Tools-Toggles sitzen?</h2>
+<p class="subtitle">Drei Positionen — gleiche Funktion, unterschiedliche Platzierung</p>
+
+<div class="cards">
+
+  <!-- A: Filter-Zeile unter Nav -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="seg-row">
+          <div class="seg active">Woche</div>
+          <div class="seg">Monat</div>
+        </div>
+        <div class="nav">
+          <div class="nav-btn">◀</div>
+          <div class="nav-label">19–25 Mai</div>
+          <div class="nav-btn">▶</div>
+        </div>
+        <!-- Filter row -->
+        <div class="filter-row">
+          <div class="fchip on">● Termine</div>
+          <div class="fchip on2">● Tools</div>
+          <div class="fchip">○ Todos</div>
+        </div>
+        <div class="fake-cal">
+          <div class="fake-day"><div class="fake-num">Mo</div><div class="fake-bar" style="width:30px;background:#14B8A6"></div><div class="fake-dot" style="background:#10B981"></div></div>
+          <div class="fake-day"><div class="fake-num">Di</div></div>
+          <div class="fake-day" style="border:1px solid #8B5CF6;opacity:1"><div class="fake-num" style="color:#8B5CF6">Mi</div><div class="fake-bar" style="width:24px;background:#8B5CF6"></div></div>
+          <div class="fake-day"><div class="fake-num">Do</div><div class="fake-bar" style="width:20px;background:#F97316"></div></div>
+          <div class="fake-day"><div class="fake-num">Fr</div></div>
+          <div class="fake-day"><div class="fake-num">Sa</div></div>
+          <div class="fake-day"><div class="fake-num">So</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Filter-Chips unter Nav</h3>
+      <p>Kleine Chips direkt unter der Woche/Monat-Navigation. Immer sichtbar, leicht erreichbar.</p>
+    </div>
+  </div>
+
+  <!-- B: Icons in der Nav-Zeile -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="seg-row">
+          <div class="seg active">Woche</div>
+          <div class="seg">Monat</div>
+        </div>
+        <div class="nav">
+          <div class="nav-btn">◀</div>
+          <div class="nav-label">19–25 Mai</div>
+          <div class="nav-btn">▶</div>
+          <!-- Icons direkt in Nav -->
+          <div class="icon-btn active" title="Todos">☑</div>
+          <div class="icon-btn active" title="Tools">⚙</div>
+        </div>
+        <div class="fake-cal">
+          <div class="fake-day"><div class="fake-num">Mo</div><div class="fake-bar" style="width:30px;background:#14B8A6"></div><div class="fake-dot" style="background:#10B981"></div></div>
+          <div class="fake-day"><div class="fake-num">Di</div></div>
+          <div class="fake-day" style="border:1px solid #8B5CF6;opacity:1"><div class="fake-num" style="color:#8B5CF6">Mi</div><div class="fake-bar" style="width:24px;background:#8B5CF6"></div></div>
+          <div class="fake-day"><div class="fake-num">Do</div><div class="fake-bar" style="width:20px;background:#F97316"></div></div>
+          <div class="fake-day"><div class="fake-num">Fr</div></div>
+          <div class="fake-day"><div class="fake-num">Sa</div></div>
+          <div class="fake-day"><div class="fake-num">So</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Icons in der Nav-Leiste</h3>
+      <p>Zwei Icon-Buttons direkt neben den Pfeilen. Spart Platz, braucht aber kurze Eingewöhnung.</p>
+    </div>
+  </div>
+
+  <!-- C: Strip unten -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="seg-row">
+          <div class="seg active">Woche</div>
+          <div class="seg">Monat</div>
+        </div>
+        <div class="nav">
+          <div class="nav-btn">◀</div>
+          <div class="nav-label">19–25 Mai</div>
+          <div class="nav-btn">▶</div>
+        </div>
+        <div class="fake-cal">
+          <div class="fake-day"><div class="fake-num">Mo</div><div class="fake-bar" style="width:30px;background:#14B8A6"></div><div class="fake-dot" style="background:#10B981"></div></div>
+          <div class="fake-day"><div class="fake-num">Di</div></div>
+          <div class="fake-day" style="border:1px solid #8B5CF6;opacity:1"><div class="fake-num" style="color:#8B5CF6">Mi</div><div class="fake-bar" style="width:24px;background:#8B5CF6"></div></div>
+          <div class="fake-day"><div class="fake-num">Do</div><div class="fake-bar" style="width:20px;background:#F97316"></div></div>
+          <div class="fake-day"><div class="fake-num">Fr</div></div>
+          <div class="fake-day"><div class="fake-num">Sa</div></div>
+          <div class="fake-day"><div class="fake-num">So</div></div>
+        </div>
+        <!-- Bottom strip -->
+        <div class="btm-strip">
+          <div class="btm-chip on">Termine ●</div>
+          <div class="btm-chip on2">Tools ●</div>
+          <div class="btm-chip">Todos ○</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Strip am unteren Rand</h3>
+      <p>Toggle-Leiste unter dem Kalender. Aus dem Weg, aber immer erreichbar ohne den Kalender zu verengen.</p>
+    </div>
+  </div>
+
+</div>

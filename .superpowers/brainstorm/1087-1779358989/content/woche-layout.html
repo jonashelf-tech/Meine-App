@@ -1,0 +1,257 @@
+<style>
+  body { font-family: 'Outfit', system-ui, sans-serif; }
+  .phone {
+    width: 200px;
+    background: #080810;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 10px 8px;
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+  .ph { font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 6px; }
+
+  /* ── A: Agenda expanded ── */
+  .agenda { display: flex; flex-direction: column; gap: 2px; }
+  .aday {
+    background: rgba(255,255,255,0.04);
+    border-radius: 5px;
+    border: 1px solid transparent;
+    padding: 5px 7px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .aday.today { border-color: #8B5CF6; }
+  .aleft { display: flex; flex-direction: column; align-items: center; min-width: 22px; }
+  .adn { font-size: 0.42rem; color: rgba(255,255,255,0.35); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .adnum { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.8); line-height: 1.1; }
+  .aday.today .adnum { color: #8B5CF6; }
+  .aright { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .abar { height: 5px; border-radius: 2px; display: flex; align-items: center; padding: 0 3px; overflow: hidden; }
+  .abar span { font-size: 0.36rem; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .atime { font-size: 0.35rem; color: rgba(255,255,255,0.3); padding: 0 1px; }
+  .aempty { font-size: 0.4rem; color: rgba(255,255,255,0.15); align-self: center; }
+
+  /* ── B: Time grid ── */
+  .tgrid { display: flex; gap: 2px; }
+  .tgrid-times { display: flex; flex-direction: column; gap: 0; min-width: 16px; }
+  .ttime { font-size: 0.32rem; color: rgba(255,255,255,0.25); text-align: right; padding-right: 2px; height: 14px; display: flex; align-items: flex-start; }
+  .tgrid-cols { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+  .tcol { display: flex; flex-direction: column; gap: 1px; }
+  .tch { font-size: 0.38rem; text-align: center; color: rgba(255,255,255,0.4); font-weight: 700; padding-bottom: 2px; }
+  .tch.today { color: #8B5CF6; }
+  .tslot { height: 14px; border-radius: 2px; overflow: hidden; }
+  .tslot span { font-size: 0.3rem; font-weight: 600; color: rgba(255,255,255,0.9); padding: 1px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .tslot.empty { background: transparent; }
+
+  /* ── C: Expanded agenda mit Todos ── */
+  .cday {
+    background: rgba(255,255,255,0.04);
+    border-radius: 5px;
+    border: 1px solid transparent;
+    padding: 5px 7px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .cday.today { border-color: #8B5CF6; }
+  .cleft { display: flex; flex-direction: column; align-items: center; min-width: 22px; }
+  .cdn { font-size: 0.42rem; color: rgba(255,255,255,0.35); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .cdnum { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.8); line-height: 1.1; }
+  .cday.today .cdnum { color: #8B5CF6; }
+  .cright { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .cbar { height: 5px; border-radius: 2px; display: flex; align-items: center; padding: 0 3px; overflow: hidden; }
+  .cbar span { font-size: 0.36rem; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ctodo { display: flex; align-items: center; gap: 2px; }
+  .ccheck { width: 4px; height: 4px; border-radius: 1px; border: 1px solid rgba(255,255,255,0.25); flex-shrink: 0; }
+  .ccheck.done { background: #10B981; border-color: #10B981; }
+  .ctodotext { font-size: 0.34rem; color: rgba(255,255,255,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ctodotext.done { text-decoration: line-through; opacity: 0.4; }
+  .cdivider { height: 1px; background: rgba(255,255,255,0.06); margin: 1px 0; }
+  .cempty { font-size: 0.4rem; color: rgba(255,255,255,0.15); }
+</style>
+
+<h2>Wochenansicht — mehr anzeigen</h2>
+<p class="subtitle">Wie soll die Woche mehr zeigen?</p>
+
+<div class="cards">
+
+  <!-- OPTION A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="ph">19–25 Mai</div>
+        <div class="agenda">
+          <div class="aday">
+            <div class="aleft"><div class="adn">Mo</div><div class="adnum">19</div></div>
+            <div class="aright"><div class="aempty">–</div></div>
+          </div>
+          <div class="aday">
+            <div class="aleft"><div class="adn">Di</div><div class="adnum">20</div></div>
+            <div class="aright">
+              <div class="abar" style="background:#14B8A6"><span>Leube</span></div>
+              <div class="abar" style="background:#FB7185"><span>Rebecca</span></div>
+              <div class="abar" style="background:rgba(255,255,255,0.08)"><span style="color:rgba(255,255,255,0.35)">Anwalt</span></div>
+            </div>
+          </div>
+          <div class="aday today">
+            <div class="aleft"><div class="adn">Mi</div><div class="adnum">21</div></div>
+            <div class="aright">
+              <div class="abar" style="background:#8B5CF6"><span>SHG 10:00</span></div>
+              <div class="abar" style="background:#FB7185"><span>Andrea 14:30</span></div>
+            </div>
+          </div>
+          <div class="aday">
+            <div class="aleft"><div class="adn">Do</div><div class="adnum">22</div></div>
+            <div class="aright">
+              <div class="abar" style="background:#F97316"><span>MRT 09:00</span></div>
+            </div>
+          </div>
+          <div class="aday">
+            <div class="aleft"><div class="adn">Fr</div><div class="adnum">23</div></div>
+            <div class="aright"><div class="aempty">–</div></div>
+          </div>
+          <div class="aday">
+            <div class="aleft"><div class="adn">Sa</div><div class="adnum">24</div></div>
+            <div class="aright"><div class="aempty">–</div></div>
+          </div>
+          <div class="aday">
+            <div class="aleft"><div class="adn">So</div><div class="adnum">25</div></div>
+            <div class="aright">
+              <div class="abar" style="background:#FB7185"><span>Achim</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Agenda mit mehr Balken</h3>
+      <p>Gleicher Stil wie heute, aber bis zu 3–4 Balken pro Tag sichtbar (statt nur 2 Pills). Mit Uhrzeiten.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="ph">19–25 Mai</div>
+        <div class="tgrid">
+          <div class="tgrid-times">
+            <div style="height:14px"></div>
+            <div class="ttime">8</div>
+            <div class="ttime">9</div>
+            <div class="ttime">10</div>
+            <div class="ttime">11</div>
+            <div class="ttime">12</div>
+            <div class="ttime">13</div>
+            <div class="ttime">14</div>
+            <div class="ttime">15</div>
+            <div class="ttime">16</div>
+          </div>
+          <div class="tgrid-cols">
+            <div class="tcol"><div class="tch">Mo</div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div></div>
+            <div class="tcol">
+              <div class="tch">Di</div>
+              <div class="tslot empty"></div>
+              <div class="tslot" style="background:#14B8A6"><span>Leu</span></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot" style="background:#FB7185"><span>Reb</span></div>
+              <div class="tslot empty"></div>
+              <div class="tslot" style="background:rgba(255,255,255,0.1)"><span style="color:rgba(255,255,255,0.5)">Anw</span></div>
+              <div class="tslot empty"></div>
+            </div>
+            <div class="tcol">
+              <div class="tch today">Mi</div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot" style="background:#8B5CF6"><span>SHG</span></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot" style="background:#FB7185"><span>And</span></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+            </div>
+            <div class="tcol">
+              <div class="tch">Do</div>
+              <div class="tslot empty"></div>
+              <div class="tslot" style="background:#F97316"><span>MRT</span></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+              <div class="tslot empty"></div>
+            </div>
+            <div class="tcol"><div class="tch">Fr</div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div></div>
+            <div class="tcol"><div class="tch">Sa</div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div></div>
+            <div class="tcol">
+              <div class="tch">So</div>
+              <div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div>
+              <div class="tslot" style="background:#FB7185"><span>Ach</span></div>
+              <div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div><div class="tslot empty"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Zeitgitter (Google-Stil)</h3>
+      <p>7 Spalten, feste Zeitachse. Termine sitzen genau auf der Uhrzeit. Sehr übersichtlich, aber weniger Text.</p>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="ph">19–25 Mai</div>
+        <div class="agenda" style="gap:2px">
+          <div class="cday">
+            <div class="cleft"><div class="cdn">Mo</div><div class="cdnum">19</div></div>
+            <div class="cright"><div class="cempty">–</div></div>
+          </div>
+          <div class="cday">
+            <div class="cleft"><div class="cdn">Di</div><div class="cdnum">20</div></div>
+            <div class="cright">
+              <div class="cbar" style="background:#14B8A6"><span>Leube</span></div>
+              <div class="cbar" style="background:#FB7185"><span>Rebecca</span></div>
+              <div class="cdivider"></div>
+              <div class="ctodo"><div class="ccheck done"></div><div class="ctodotext done">Apotheke</div></div>
+              <div class="ctodo"><div class="ccheck"></div><div class="ctodotext">Arzt anrufen</div></div>
+            </div>
+          </div>
+          <div class="cday today">
+            <div class="cleft"><div class="cdn">Mi</div><div class="cdnum">21</div></div>
+            <div class="cright">
+              <div class="cbar" style="background:#8B5CF6"><span>SHG</span></div>
+              <div class="cbar" style="background:#FB7185"><span>Andrea</span></div>
+              <div class="cdivider"></div>
+              <div class="ctodo"><div class="ccheck"></div><div class="ctodotext">Meds nehmen</div></div>
+            </div>
+          </div>
+          <div class="cday">
+            <div class="cleft"><div class="cdn">Do</div><div class="cdnum">22</div></div>
+            <div class="cright">
+              <div class="cbar" style="background:#F97316"><span>MRT</span></div>
+              <div class="cdivider"></div>
+              <div class="ctodo"><div class="ccheck done"></div><div class="ctodotext done">Nüchtern</div></div>
+            </div>
+          </div>
+          <div class="cday">
+            <div class="cleft"><div class="cdn">Fr</div><div class="cdnum">23</div></div>
+            <div class="cright"><div class="cempty">–</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Agenda + Todos pro Tag</h3>
+      <p>Termine oben, Todos darunter mit Trennlinie. Man sieht Termine und fällige Todos auf einen Blick.</p>
+    </div>
+  </div>
+
+</div>

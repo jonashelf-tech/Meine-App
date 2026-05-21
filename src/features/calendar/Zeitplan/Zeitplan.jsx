@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
 import { sk, skLabel, slotPx, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import s from './Zeitplan.module.css'
@@ -50,7 +50,7 @@ function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
 }
 
 // ─── SlotBlock ────────────────────────────────────────────
-function SlotBlock({ slotKey, slot, todo, height, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart }) {
+function SlotBlock({ slotKey, slot, todo, height, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart, onToggleLock }) {
   const displayTodo = {
     ...(todo ?? {
       id: null,
@@ -65,15 +65,43 @@ function SlotBlock({ slotKey, slot, todo, height, todos, setTodos, onToggleDone,
   }
   const chipStyle = { borderRadius: 4, height: height ? `${height}px` : '100%', border: 'none', margin: 0, flexShrink: 0 }
 
-  // Handle nur wenn nicht locked (locked Slots sind nicht verschiebbar)
-  const handle = onDragStart ? (
+  const dragRef = useRef(null)
+
+  const handlePointerDown = (e) => {
+    e.preventDefault()
+    const start = { x: e.clientX, y: e.clientY, moved: false, evt: e }
+    dragRef.current = start
+
+    const onMove = (me) => {
+      if (start.moved) return
+      const dx = me.clientX - start.x
+      const dy = me.clientY - start.y
+      if (Math.hypot(dx, dy) > 4 && onDragStart) {
+        start.moved = true
+        document.removeEventListener('pointermove', onMove)
+        document.removeEventListener('pointerup', onUp)
+        onDragStart(start.evt)
+      }
+    }
+
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerup', onUp)
+      if (!start.moved) onToggleLock?.()
+    }
+
+    document.addEventListener('pointermove', onMove)
+    document.addEventListener('pointerup', onUp)
+  }
+
+  const handle = (
     <span
-      className={s.slotHandle}
-      onPointerDown={e => { e.preventDefault(); onDragStart(e) }}
+      className={[s.slotHandle, slot.locked ? s.slotHandleLocked : ''].join(' ')}
+      onPointerDown={handlePointerDown}
     >
-      {DragIcon}
+      {slot.locked ? <LockIcon locked={true} /> : DragIcon}
     </span>
-  ) : null
+  )
 
   return (
     <TodoChip
@@ -120,7 +148,18 @@ export default function Zeitplan({
   const now = new Date()
   const isNow = dateLabel === todayKey()
 
-  const hours = Array.from({ length: visibleEnd - visibleStart + 1 }, (_, i) => i + visibleStart)
+  const fullHours = Array.from({ length: 24 }, (_, i) => i)
+  const rangeHours = Array.from({ length: visibleEnd - visibleStart + 1 }, (_, i) => i + visibleStart)
+  const hours = hideEmpty
+    ? fullHours.filter(h => slots[sk(h, false)] || slots[sk(h, true)])
+    : rangeHours
+
+  const outsideBefore = !hideEmpty
+    ? fullHours.filter(h => h < visibleStart && (slots[sk(h, false)] || slots[sk(h, true)]))
+    : []
+  const outsideAfter = !hideEmpty
+    ? fullHours.filter(h => h > visibleEnd && (slots[sk(h, false)] || slots[sk(h, true)]))
+    : []
 
   const consumedKeys = new Set()
   for (const key of ALL_SLOT_KEYS) {
@@ -140,13 +179,27 @@ export default function Zeitplan({
         <button className={s.shiftBtn} onClick={() => onShiftAll?.(-1)}>▲ 30min</button>
         <button className={s.shiftBtn} onClick={() => onShiftAll?.(1)}>▼ 30min</button>
         <div style={{ flex: 1 }} />
-        <button
-          className={[s.hideBtn, hideEmpty ? s.hideBtnOn : ''].join(' ')}
-          onClick={() => setHideEmpty(v => !v)}
-        >
-          {hideEmpty ? 'Alle zeigen' : 'Ausblenden'}
-        </button>
+        <div className={s.viewToggle}>
+          <button className={[s.viewBtn, !hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(false)}>Alles</button>
+          <button className={[s.viewBtn,  hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(true)}>Minimal</button>
+        </div>
       </div>
+
+      {/* Outside-range hint — before */}
+      {outsideBefore.length > 0 && (
+        <div className={s.outsideHint}>
+          {outsideBefore.flatMap(h => [
+            slots[sk(h, false)] && { time: `${String(h).padStart(2,'0')}:00`, slot: slots[sk(h, false)] },
+            slots[sk(h, true)]  && { time: `${String(h).padStart(2,'0')}:30`, slot: slots[sk(h, true)] },
+          ].filter(Boolean)).map(({ time, slot }) => (
+            <span key={time} className={s.outsideItem}>
+              <span className={s.outsideDot} style={{ background: slot.color || '#00CFFF' }} />
+              <span className={s.outsideTime}>↑ {time}</span>
+              <span className={s.outsideText}>{slot.text}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Top expand row */}
       <div className={s.expandRow}>
@@ -213,13 +266,8 @@ export default function Zeitplan({
                           ? (e) => startSlotDrag(topKey, e)
                           : undefined
                         }
+                        onToggleLock={() => onToggleLock?.(topKey)}
                       />
-                      <button
-                        className={[s.lockBtn, topSlot.locked ? s.lockBtnOn : ''].join(' ')}
-                        onClick={e => { e.stopPropagation(); onToggleLock?.(topKey) }}
-                      >
-                        <LockIcon locked={!!topSlot.locked} />
-                      </button>
                     </div>
                   : <div
                       key={`top-${h}`}
@@ -257,13 +305,8 @@ export default function Zeitplan({
                           ? (e) => startSlotDrag(botKey, e)
                           : undefined
                         }
+                        onToggleLock={() => onToggleLock?.(botKey)}
                       />
-                      <button
-                        className={[s.lockBtn, botSlot.locked ? s.lockBtnOn : ''].join(' ')}
-                        onClick={e => { e.stopPropagation(); onToggleLock?.(botKey) }}
-                      >
-                        <LockIcon locked={!!botSlot.locked} />
-                      </button>
                     </div>
                   : <div
                       key={`bot-${h}`}
@@ -285,6 +328,22 @@ export default function Zeitplan({
         )}
         <button className={[s.xBtn, s.xBtnAdd].join(' ')} onClick={() => onExpandDown?.()}>+ später</button>
       </div>
+
+      {/* Outside-range hint — after */}
+      {outsideAfter.length > 0 && (
+        <div className={s.outsideHint}>
+          {outsideAfter.flatMap(h => [
+            slots[sk(h, false)] && { time: `${String(h).padStart(2,'0')}:00`, slot: slots[sk(h, false)] },
+            slots[sk(h, true)]  && { time: `${String(h).padStart(2,'0')}:30`, slot: slots[sk(h, true)] },
+          ].filter(Boolean)).map(({ time, slot }) => (
+            <span key={time} className={s.outsideItem}>
+              <span className={s.outsideDot} style={{ background: slot.color || '#00CFFF' }} />
+              <span className={s.outsideTime}>↓ {time}</span>
+              <span className={s.outsideText}>{slot.text}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Remove dialog */}
       {removeDialog && (

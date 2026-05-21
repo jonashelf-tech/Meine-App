@@ -1,0 +1,314 @@
+<h2>Tagesplaner — DayNav Stil</h2>
+<p class="subtitle">Wie soll die Tagesnavigation oben aussehen?</p>
+
+<style>
+  :root {
+    --app-bg: #0c0c1a;
+    --accent: #00cfff;
+    --accent-glow: rgba(0,207,255,0.35);
+    --border: rgba(255,255,255,0.08);
+    --text: rgba(255,255,255,0.9);
+    --text-dim: rgba(255,255,255,0.35);
+    --today: #00cfff;
+  }
+
+  .phone-frame {
+    background: var(--app-bg);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 14px 12px 10px;
+    max-width: 320px;
+    margin: 0 auto;
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+  }
+
+  /* ── Option A: Pill Nav ─────── */
+  .pill-nav {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 999px;
+    padding: 6px 10px;
+    gap: 0;
+  }
+  .pill-nav .nav-arrow {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+    transition: color 0.15s;
+  }
+  .pill-nav .nav-arrow:hover { color: var(--accent); }
+  .pill-nav .nav-label {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+    cursor: pointer;
+  }
+  .pill-nav .nav-label:hover { text-shadow: 0 0 12px var(--accent-glow); }
+
+  /* ── Option B: Wochenstreifen ─ */
+  .week-strip {
+    display: flex;
+    gap: 4px;
+    align-items: stretch;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+  }
+  .week-day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 2px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .week-day .wd-name {
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  .week-day .wd-num {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+  }
+  .week-day:hover { background: rgba(255,255,255,0.05); }
+  .week-day.today {
+    background: rgba(0,207,255,0.12);
+    border: 1px solid rgba(0,207,255,0.3);
+  }
+  .week-day.today .wd-name { color: var(--accent); }
+  .week-day.today .wd-num {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
+  }
+  .week-day.selected {
+    background: rgba(0,207,255,0.08);
+    border: 1px solid rgba(0,207,255,0.2);
+  }
+  .week-day.selected .wd-name { color: rgba(0,207,255,0.7); }
+  .week-day.selected .wd-num { color: rgba(255,255,255,0.8); }
+  .week-day.has-dot::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(0,207,255,0.4);
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* ── Option C: Big Header ────── */
+  .big-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+  }
+  .big-header .bh-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .big-header .bh-arrow:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .big-header .bh-center {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+  }
+  .big-header .bh-weekday {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    display: block;
+    margin-bottom: 1px;
+  }
+  .big-header .bh-date {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+    display: block;
+  }
+  .big-header .bh-today-badge {
+    font-size: 0.48rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    background: rgba(0,207,255,0.12);
+    border: 1px solid rgba(0,207,255,0.25);
+    border-radius: 999px;
+    padding: 1px 7px;
+    display: inline-block;
+    margin-top: 3px;
+  }
+
+  /* ── Slot preview ───────────── */
+  .slot-preview {
+    margin-top: 10px;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .slot-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    min-height: 36px;
+  }
+  .slot-time {
+    width: 26px;
+    text-align: center;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.22);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slot-chip {
+    margin: 3px 4px;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    flex: 1;
+  }
+  .label-box {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.3);
+    font-weight: 500;
+    margin-top: 6px;
+    padding: 0 4px;
+  }
+</style>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="phone-frame">
+        <div class="pill-nav">
+          <button class="nav-arrow">‹</button>
+          <span class="nav-label">Do, 21. Mai</span>
+          <button class="nav-arrow">›</button>
+        </div>
+        <div class="slot-preview">
+          <div class="slot-row">
+            <div class="slot-time">08</div>
+            <div class="slot-chip" style="background:rgba(139,92,246,0.25)">Arzttermin</div>
+          </div>
+          <div class="slot-row"><div class="slot-time">09</div></div>
+          <div class="slot-row">
+            <div class="slot-time">10</div>
+            <div class="slot-chip" style="background:rgba(0,207,255,0.2)">Wochenbericht</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Kompakte Pille</h3>
+      <p>Minimal, wie jetzt — Pfeile + Datum als Zeile. Klick auf Datum → Kalender. Viel Platz für den Zeitplan.</p>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="phone-frame">
+        <div class="week-strip">
+          <div class="week-day has-dot"><span class="wd-name">Mo</span><span class="wd-num">19</span></div>
+          <div class="week-day has-dot"><span class="wd-name">Di</span><span class="wd-num">20</span></div>
+          <div class="week-day today"><span class="wd-name">Mi</span><span class="wd-num">21</span></div>
+          <div class="week-day selected"><span class="wd-name">Do</span><span class="wd-num">22</span></div>
+          <div class="week-day"><span class="wd-name">Fr</span><span class="wd-num">23</span></div>
+          <div class="week-day"><span class="wd-name">Sa</span><span class="wd-num">24</span></div>
+          <div class="week-day"><span class="wd-name">So</span><span class="wd-num">25</span></div>
+        </div>
+        <div class="slot-preview">
+          <div class="slot-row">
+            <div class="slot-time">08</div>
+            <div class="slot-chip" style="background:rgba(139,92,246,0.25)">Arzttermin</div>
+          </div>
+          <div class="slot-row"><div class="slot-time">09</div></div>
+          <div class="slot-row">
+            <div class="slot-time">10</div>
+            <div class="slot-chip" style="background:rgba(0,207,255,0.2)">Wochenbericht</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Wochenstreifen</h3>
+      <p>7 Tage sichtbar, heute leuchtet auf, andere Tage antippbar. Dots zeigen wo Einträge sind. Gibt Wochenkontext.</p>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="phone-frame">
+        <div class="big-header">
+          <div class="bh-arrow">‹</div>
+          <div class="bh-center">
+            <span class="bh-weekday">Donnerstag</span>
+            <span class="bh-date">21. Mai 2026</span>
+            <span class="bh-today-badge">Heute</span>
+          </div>
+          <div class="bh-arrow">›</div>
+        </div>
+        <div class="slot-preview">
+          <div class="slot-row">
+            <div class="slot-time">08</div>
+            <div class="slot-chip" style="background:rgba(139,92,246,0.25)">Arzttermin</div>
+          </div>
+          <div class="slot-row"><div class="slot-time">09</div></div>
+          <div class="slot-row">
+            <div class="slot-time">10</div>
+            <div class="slot-chip" style="background:rgba(0,207,255,0.2)">Wochenbericht</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Großer Header</h3>
+      <p>Datum prominent mit vollem Wochentag. "Heute"-Badge erscheint/verschwindet beim Navigieren. Klick auf Mitte → Kalender.</p>
+    </div>
+  </div>
+
+</div>

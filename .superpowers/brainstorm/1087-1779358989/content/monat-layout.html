@@ -1,0 +1,270 @@
+<style>
+  .phone {
+    width: 160px;
+    background: #080810;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 10px 7px;
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+  .phone-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    margin-bottom: 6px;
+    padding-left: 2px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+  }
+  .gh {
+    font-size: 0.42rem;
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+    padding: 2px 0;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+  /* ── OPTION A: Mini Chips ── */
+  .a-cell {
+    min-height: 36px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    padding: 2px 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border: 1px solid transparent;
+  }
+  .a-cell.today { border-color: #8B5CF6; }
+  .a-num {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    line-height: 1;
+    margin-bottom: 1px;
+  }
+  .a-cell.today .a-num { color: #8B5CF6; }
+  .a-chip {
+    font-size: 0.38rem;
+    font-weight: 600;
+    border-radius: 2px;
+    padding: 1px 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+  }
+  .a-more { font-size: 0.35rem; color: rgba(255,255,255,0.4); padding: 0 1px; }
+
+  /* ── OPTION B: Dot Grid ── */
+  .b-cell {
+    min-height: 36px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    border: 1px solid transparent;
+  }
+  .b-cell.today { border-color: #8B5CF6; }
+  .b-num {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    line-height: 1;
+  }
+  .b-cell.today .b-num { color: #8B5CF6; }
+  .b-dots { display: flex; gap: 1.5px; flex-wrap: wrap; justify-content: center; }
+  .b-dot { width: 4px; height: 4px; border-radius: 50%; }
+  .b-badge {
+    font-size: 0.35rem;
+    background: rgba(139,92,246,0.3);
+    color: #8B5CF6;
+    border-radius: 3px;
+    padding: 0.5px 2px;
+    font-weight: 700;
+  }
+
+  /* ── OPTION C: Bar Style ── */
+  .c-cell {
+    min-height: 36px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border: 1px solid transparent;
+    overflow: hidden;
+  }
+  .c-cell.today { border-color: #8B5CF6; }
+  .c-num {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    line-height: 1;
+    padding: 0 1px;
+  }
+  .c-cell.today .c-num { color: #8B5CF6; }
+  .c-bar {
+    height: 4px;
+    border-radius: 2px;
+    width: 100%;
+    margin: 0.5px 0;
+  }
+  .c-dot-row { display: flex; gap: 1px; padding: 0 1px; flex-wrap: wrap; }
+  .c-dot { width: 4px; height: 4px; border-radius: 50%; }
+</style>
+
+<h2>Welches Monatsraster-Layout gefällt dir?</h2>
+<p class="subtitle">Jede Option zeigt einen anderen Stil für die Terminanzeige in Monatszellen</p>
+
+<div class="cards">
+
+  <!-- OPTION A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="phone-header">Mai 2026</div>
+        <div class="grid">
+          <div class="gh">Mo</div><div class="gh">Di</div><div class="gh">Mi</div>
+          <div class="gh">Do</div><div class="gh">Fr</div><div class="gh">Sa</div><div class="gh">So</div>
+
+          <div class="a-cell"></div><div class="a-cell"></div><div class="a-cell"></div>
+          <div class="a-cell"></div>
+          <div class="a-cell"><div class="a-num">1</div></div>
+          <div class="a-cell"><div class="a-num">2</div><div class="a-chip" style="background:#8B5CF6">Umzug</div></div>
+          <div class="a-cell"><div class="a-num">3</div></div>
+
+          <div class="a-cell"><div class="a-num">4</div><div class="a-chip" style="background:#14B8A6">Melina</div><div class="a-more">+1</div></div>
+          <div class="a-cell"><div class="a-num">5</div><div class="a-chip" style="background:#FB7185">Karin</div></div>
+          <div class="a-cell"><div class="a-num">6</div></div>
+          <div class="a-cell"><div class="a-num">7</div><div class="a-chip" style="background:#8B5CF6">Jugend</div></div>
+          <div class="a-cell"><div class="a-num">8</div></div>
+          <div class="a-cell"><div class="a-num">9</div></div>
+          <div class="a-cell"><div class="a-num">10</div><div class="a-chip" style="background:#F59E0B">Essen</div></div>
+
+          <div class="a-cell"><div class="a-num">11</div></div>
+          <div class="a-cell"><div class="a-num">12</div></div>
+          <div class="a-cell"><div class="a-num">13</div><div class="a-chip" style="background:#FB7185">Iris</div><div class="a-chip" style="background:#14B8A6">BTal</div></div>
+          <div class="a-cell"><div class="a-num">14</div></div>
+          <div class="a-cell"><div class="a-num">15</div></div>
+          <div class="a-cell"><div class="a-num">16</div></div>
+          <div class="a-cell"><div class="a-num">17</div></div>
+
+          <div class="a-cell"><div class="a-num">18</div></div>
+          <div class="a-cell"><div class="a-num">19</div></div>
+          <div class="a-cell"><div class="a-num">20</div></div>
+          <div class="a-cell today"><div class="a-num">21</div><div class="a-chip" style="background:#8B5CF6">SHG</div></div>
+          <div class="a-cell"><div class="a-num">22</div><div class="a-chip" style="background:#F97316">MRT</div></div>
+          <div class="a-cell"><div class="a-num">23</div></div>
+          <div class="a-cell"><div class="a-num">24</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Mini Chips</h3>
+      <p>Texte direkt in der Zelle sichtbar, genau wie im Screenshot. Kompakt, viel Info auf einen Blick.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="phone-header">Mai 2026</div>
+        <div class="grid">
+          <div class="gh">Mo</div><div class="gh">Di</div><div class="gh">Mi</div>
+          <div class="gh">Do</div><div class="gh">Fr</div><div class="gh">Sa</div><div class="gh">So</div>
+
+          <div class="b-cell"></div><div class="b-cell"></div><div class="b-cell"></div>
+          <div class="b-cell"></div>
+          <div class="b-cell"><div class="b-num">1</div></div>
+          <div class="b-cell"><div class="b-num">2</div><div class="b-dots"><div class="b-dot" style="background:#8B5CF6"></div></div></div>
+          <div class="b-cell"><div class="b-num">3</div></div>
+
+          <div class="b-cell"><div class="b-num">4</div><div class="b-dots"><div class="b-dot" style="background:#14B8A6"></div><div class="b-dot" style="background:#FB7185"></div></div><div class="b-badge">2</div></div>
+          <div class="b-cell"><div class="b-num">5</div><div class="b-dots"><div class="b-dot" style="background:#FB7185"></div></div></div>
+          <div class="b-cell"><div class="b-num">6</div></div>
+          <div class="b-cell"><div class="b-num">7</div><div class="b-dots"><div class="b-dot" style="background:#8B5CF6"></div></div></div>
+          <div class="b-cell"><div class="b-num">8</div></div>
+          <div class="b-cell"><div class="b-num">9</div></div>
+          <div class="b-cell"><div class="b-num">10</div><div class="b-dots"><div class="b-dot" style="background:#F59E0B"></div></div></div>
+
+          <div class="b-cell"><div class="b-num">11</div></div>
+          <div class="b-cell"><div class="b-num">12</div></div>
+          <div class="b-cell"><div class="b-num">13</div><div class="b-dots"><div class="b-dot" style="background:#FB7185"></div><div class="b-dot" style="background:#14B8A6"></div></div></div>
+          <div class="b-cell"><div class="b-num">14</div></div>
+          <div class="b-cell"><div class="b-num">15</div></div>
+          <div class="b-cell"><div class="b-num">16</div></div>
+          <div class="b-cell"><div class="b-num">17</div></div>
+
+          <div class="b-cell"><div class="b-num">18</div></div>
+          <div class="b-cell"><div class="b-num">19</div></div>
+          <div class="b-cell"><div class="b-num">20</div></div>
+          <div class="b-cell today"><div class="b-num">21</div><div class="b-dots"><div class="b-dot" style="background:#8B5CF6"></div></div></div>
+          <div class="b-cell"><div class="b-num">22</div><div class="b-dots"><div class="b-dot" style="background:#F97316"></div></div></div>
+          <div class="b-cell"><div class="b-num">23</div></div>
+          <div class="b-cell"><div class="b-num">24</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Dots + Badge</h3>
+      <p>Farbpunkte pro Termin, Badge zeigt Anzahl. Sehr kompakt, aber kein Text sichtbar — Tap für Details.</p>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px 0">
+      <div class="phone">
+        <div class="phone-header">Mai 2026</div>
+        <div class="grid">
+          <div class="gh">Mo</div><div class="gh">Di</div><div class="gh">Mi</div>
+          <div class="gh">Do</div><div class="gh">Fr</div><div class="gh">Sa</div><div class="gh">So</div>
+
+          <div class="c-cell"></div><div class="c-cell"></div><div class="c-cell"></div>
+          <div class="c-cell"></div>
+          <div class="c-cell"><div class="c-num">1</div></div>
+          <div class="c-cell"><div class="c-num">2</div><div class="c-bar" style="background:#8B5CF6;opacity:0.8"></div></div>
+          <div class="c-cell"><div class="c-num">3</div></div>
+
+          <div class="c-cell"><div class="c-num">4</div><div class="c-bar" style="background:#14B8A6;opacity:0.8"></div><div class="c-bar" style="background:#FB7185;opacity:0.8"></div></div>
+          <div class="c-cell"><div class="c-num">5</div><div class="c-bar" style="background:#FB7185;opacity:0.8"></div></div>
+          <div class="c-cell"><div class="c-num">6</div></div>
+          <div class="c-cell"><div class="c-num">7</div><div class="c-bar" style="background:#8B5CF6;opacity:0.8"></div></div>
+          <div class="c-cell"><div class="c-num">8</div></div>
+          <div class="c-cell"><div class="c-num">9</div></div>
+          <div class="c-cell"><div class="c-num">10</div><div class="c-bar" style="background:#F59E0B;opacity:0.8"></div></div>
+
+          <div class="c-cell"><div class="c-num">11</div></div>
+          <div class="c-cell"><div class="c-num">12</div></div>
+          <div class="c-cell"><div class="c-num">13</div><div class="c-bar" style="background:#FB7185;opacity:0.8"></div><div class="c-bar" style="background:#14B8A6;opacity:0.8"></div></div>
+          <div class="c-cell"><div class="c-num">14</div></div>
+          <div class="c-cell"><div class="c-num">15</div></div>
+          <div class="c-cell"><div class="c-num">16</div></div>
+          <div class="c-cell"><div class="c-num">17</div></div>
+
+          <div class="c-cell"><div class="c-num">18</div></div>
+          <div class="c-cell"><div class="c-num">19</div></div>
+          <div class="c-cell"><div class="c-num">20</div></div>
+          <div class="c-cell today"><div class="c-num">21</div><div class="c-bar" style="background:#8B5CF6"></div></div>
+          <div class="c-cell"><div class="c-num">22</div><div class="c-bar" style="background:#F97316;opacity:0.8"></div></div>
+          <div class="c-cell"><div class="c-num">23</div></div>
+          <div class="c-cell"><div class="c-num">24</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Farbbalken</h3>
+      <p>Schmale Farbstreifen statt Punkte. Visuell ruhiger als Chips, aber klarer als Dots.</p>
+    </div>
+  </div>
+
+</div>

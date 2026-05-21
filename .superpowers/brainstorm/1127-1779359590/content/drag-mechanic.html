@@ -1,0 +1,177 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', system-ui, sans-serif; }
+  body { background: #080810; color: rgba(255,255,255,0.92); padding: 16px; }
+  h2 { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,0.92); margin-bottom: 4px; }
+  .sub { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
+
+  .col-wrap { display: flex; gap: 16px; }
+  .col { flex: 1; min-width: 0; }
+  .col-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 10px; }
+
+  /* ── chip style (same as Meine Tools listCard) ── */
+  .chip {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.065);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--tc, #8B5CF6);
+    margin-bottom: 8px;
+    position: relative;
+    cursor: pointer;
+  }
+  .chip-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .chip-text { flex: 1; min-width: 0; }
+  .chip-name { font-size: 0.88rem; font-weight: 700; display: block; }
+  .chip-desc { font-size: 0.68rem; color: rgba(255,255,255,0.45); display: block; margin-top: 1px; }
+  .chip-inactive { opacity: 0.45; }
+
+  /* drag handle dots */
+  .handle { color: rgba(255,255,255,0.35); font-size: 1rem; flex-shrink: 0; cursor: grab; }
+
+  /* ── add buttons ── */
+  .btn-add {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    background: none; color: rgba(255,255,255,0.55);
+    font-size: 1rem; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; cursor: pointer;
+  }
+  .btn-add-active {
+    border-color: #8B5CF6; color: #8B5CF6;
+    background: rgba(139,92,246,0.12);
+  }
+
+  /* ── swipe-right illustration ── */
+  .swipe-chip {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.065);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    padding: 12px 14px;
+    border-left: 3px solid #14B8A6;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .swipe-bg {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 60%; background: rgba(16,185,129,0.12);
+    border-radius: 14px 0 0 14px;
+    display: flex; align-items: center; padding-left: 14px;
+  }
+  .swipe-arrow { color: #10B981; font-size: 0.8rem; font-weight: 700; }
+  .swipe-label { font-size: 0.6rem; color: #10B981; margin-left: 4px; font-weight: 700; }
+
+  /* ── drag ghost ── */
+  .ghost {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(20,20,40,0.95);
+    border: 1px solid rgba(139,92,246,0.5);
+    border-radius: 14px;
+    padding: 12px 14px;
+    border-left: 3px solid #8B5CF6;
+    margin-bottom: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 16px rgba(139,92,246,0.2);
+    transform: rotate(-1.5deg) scale(1.02);
+    opacity: 0.9;
+  }
+  .ghost-trail {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.015);
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid rgba(139,92,246,0.2);
+  }
+
+  .divider { height: 1px; background: rgba(255,255,255,0.06); margin: 16px 0; }
+
+  .section-label {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 10px;
+  }
+
+  /* option selectors */
+  .opt-row { display: flex; gap: 10px; margin-top: 12px; }
+  .opt {
+    flex: 1; border: 1.5px solid rgba(255,255,255,0.1); border-radius: 10px;
+    padding: 10px 12px; cursor: pointer; transition: all 0.15s;
+    background: rgba(255,255,255,0.03);
+  }
+  .opt:hover { border-color: rgba(139,92,246,0.5); background: rgba(139,92,246,0.06); }
+  .opt.selected { border-color: #8B5CF6; background: rgba(139,92,246,0.1); }
+  .opt-title { font-size: 0.8rem; font-weight: 700; margin-bottom: 3px; }
+  .opt-desc { font-size: 0.65rem; color: rgba(255,255,255,0.45); line-height: 1.4; }
+</style>
+
+<h2>Wie soll "Drag nach rechts" funktionieren?</h2>
+<p class="sub">Ich zeige zwei Varianten. Klicke was du meinst. Der Rest ist klar — Alle Tools bekommt exakt die Listen-Optik von Meine Tools.</p>
+
+<!-- OBEN: Wie Alle Tools künftig aussieht (klar) -->
+<p class="section-label">So sieht Alle Tools künftig aus (Meine Tools-Optik, klar)</p>
+<div class="col-wrap">
+  <div class="col">
+    <div class="chip" style="--tc:#14B8A6">
+      <div class="handle">⠿</div>
+      <div class="chip-icon">⏱️</div>
+      <div class="chip-text"><span class="chip-name">Timer</span><span class="chip-desc">Fokus-Timer</span></div>
+      <button class="btn-add btn-add-active">✓</button>
+    </div>
+    <div class="chip chip-inactive" style="--tc:#8B5CF6">
+      <div class="handle">⠿</div>
+      <div class="chip-icon">🎂</div>
+      <div class="chip-text"><span class="chip-name">Geburtstage</span><span class="chip-desc">Reminder</span></div>
+      <button class="btn-add">+</button>
+    </div>
+    <div class="chip chip-inactive" style="--tc:#FB7185">
+      <div class="handle">⠿</div>
+      <div class="chip-icon">⚖️</div>
+      <div class="chip-text"><span class="chip-name">Gewicht</span><span class="chip-desc">Tracker</span></div>
+      <button class="btn-add">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FRAGE: Drag Mechanic -->
+<p class="section-label">Offene Frage: Was meinst du mit "Drag nach rechts"?</p>
+
+<div class="opt-row">
+  <!-- Option A: Swipe right auf inaktiven Chip = aktivieren -->
+  <div class="opt" data-choice="swipe-right" onclick="toggleSelect(this)">
+    <div class="opt-title">A — Wischen nach rechts</div>
+    <div class="opt-desc">Inaktiven Chip nach rechts wischen = zum Tool-Strip hinzufügen. Wie eine Swipe-Geste.</div>
+    <div style="margin-top:10px">
+      <div class="swipe-chip">
+        <div class="swipe-bg">
+          <span class="swipe-arrow">→</span>
+          <span class="swipe-label">hinzufügen</span>
+        </div>
+        <div class="chip-icon" style="position:relative;z-index:1">🎂</div>
+        <div class="chip-text" style="position:relative;z-index:1"><span class="chip-name">Geburtstage</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: Pointer-Drag beim Reorder in Meine Tools = ganzer Chip bewegt sich -->
+  <div class="opt" data-choice="pointer-drag" onclick="toggleSelect(this)">
+    <div class="opt-title">B — Chip physisch ziehen</div>
+    <div class="opt-desc">In Meine Tools den Chip direkt mit dem Finger ziehen (kein HTML5-Drag). Der ganze Chip schwebt und folgt deinem Finger.</div>
+    <div style="margin-top:10px">
+      <div class="ghost">
+        <div class="handle">⠿</div>
+        <div class="chip-icon">⏱️</div>
+        <div class="chip-text"><span class="chip-name">Timer</span></div>
+      </div>
+      <div class="ghost-trail">
+        <div class="handle" style="opacity:0.3">⠿</div>
+        <div style="width:100%;height:12px;background:rgba(255,255,255,0.04);border-radius:4px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:14px">Beides lässt sich auch kombinieren — erst sagen was du meinst.</p>

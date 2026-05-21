@@ -176,8 +176,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-top: 2px solid var(--chip-color);
   border-radius: 0 0 var(--r) var(--r);
-  background: rgba(16, 16, 32, 0.97);
-  backdrop-filter: blur(8px);
+  background: rgba(10, 10, 22, 1);
   overflow: hidden;
 }
 
@@ -321,7 +320,7 @@
 .itemAddBtn {
   background: none;
   border: none;
-  color: rgba(139, 92, 246, 0.45);
+  color: var(--primary);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -332,4 +331,5 @@
 
 .itemAddBtn:hover {
   color: var(--primary);
+  opacity: 0.75;
 }

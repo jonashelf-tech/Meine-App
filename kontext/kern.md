@@ -57,6 +57,7 @@ days,         setDays       // { "2024-01-15": { "8": SlotEntry, "8.5": SlotEntr
 settings,     setSettings
 theme,        setTheme
 accentColor,  setAccentColor
+toolColors,   setToolColors  // { [toolId]: "#hexcolor" } — überschreibt TOOL_REGISTRY.color
 currentTab,   setCurrentTab
 modules,      setModules
 activeTools,  toggleTool
@@ -127,8 +128,32 @@ ALL_SLOT_KEYS        // alle gültigen Slot-Keys 0–23.5
 ## Tab-Routing (Kern)
 
 ```
-Tab 0 — Heute     (TabHeute: Pool + Zeitplan)
-Tab 1 — Kalender  (TabKalender: Woche/Monat)
-Tab 2 — Tools     (TabTools)
-Tab 3 — Einstellungen
+Tab 0  — Heute          (TabHeute: Pool + Zeitplan)
+Tab 1  — Kalender       (TabKalender: Woche/Monat + DayPanel)
+Tab 2  — Tools          (TabTools: Meine Tools / Alle Tools)
+Tab 3  — Einstellungen
+Tab 4  — Geburtstage
+Tab 5  — Fokus-Timer
+Tab 6  — Rezepte
+Tab 7  — Pizza-Rechner
+Tab 8  — Elvi
+Tab 9  — Gewicht
+Tab 10 — XP & Level
+Tab 11 — Zufallsrad
+Tab 12 — Reminder
 ```
+
+Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping in TabTools.jsx und TabKalender.jsx.
+
+---
+
+## TabKalender — Features
+
+- **Ansichten:** Woche (Zeitgitter 07–22 Uhr) · Monat (Kacheln mit Farbbalken)
+- **Toggle-Strip:** Termine / Todos / Tools ein-/ausblendbar (3 lokale Booleans)
+- **Tool-Dots:** ein Dot pro aktivem Tool in Tool-Farbe; ausgefüllt = Todo an dem Tag abgehakt, Ring = offen
+- **DayPanel:** erscheint unterhalb des Grids wenn Monatskachel angeklickt
+  - Sektionen: Zeitplan · Erledigt · Tools — alle einzeln klappbar
+  - Daten: `days[dk]` · `todos.filter(t => t.doneAt?.startsWith(dk))` · `activeTools`
+  - Doppelklick Termin/Todo → Tab 0 · Doppelklick Tool-Chip → direkt ins Tool
+  - Read-only, keine Bearbeitung

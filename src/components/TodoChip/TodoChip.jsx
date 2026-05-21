@@ -105,7 +105,9 @@ export default function TodoChip({
     if (!floatExpand || !expanded) return
     const close = (e) => {
       if (e.target.closest?.('[data-expand-btn]')) return
-      if (itemsWrapRef.current && !itemsWrapRef.current.contains(e.target)) {
+      const inside = itemsWrapRef.current?.contains(e.target)
+      console.log('[close] target:', e.target, 'inside:', inside, 'ref:', itemsWrapRef.current)
+      if (itemsWrapRef.current && !inside) {
         setExpanded(false); onExpandedChange?.(false, 0)
       }
     }
@@ -214,7 +216,7 @@ export default function TodoChip({
           }}
         >
           {/* Header */}
-          <div className={s.itemsHeader}>{todo.text}</div>
+          {!floatExpand && <div className={s.itemsHeader}>{todo.text}</div>}
 
           {/* Rows */}
           {allItems.map((item, idx) => (

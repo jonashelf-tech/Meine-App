@@ -1,0 +1,180 @@
+<h2>Heute-Indikator beim Navigieren</h2>
+<p class="subtitle">Du bist auf "Fr, 23. Mai" (nicht heute). Wie soll das aussehen?</p>
+
+<style>
+  :root {
+    --accent: #00cfff;
+    --accent-glow: rgba(0,207,255,0.35);
+    --border: rgba(255,255,255,0.08);
+    --text-dim: rgba(255,255,255,0.35);
+  }
+  .phone-frame {
+    background: #0c0c1a;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px;
+    font-family: 'Outfit','Segoe UI',sans-serif;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  /* Shared pill base */
+  .pill {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 999px;
+    padding: 6px 10px;
+    gap: 0;
+  }
+  .nav-arrow {
+    background: none; border: none;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.9rem; padding: 2px 10px;
+    border-radius: 999px;
+  }
+
+  /* A: Farbe wechselt */
+  .label-dimmed {
+    flex: 1; text-align: center;
+    font-size: 0.9rem; font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.01em;
+  }
+
+  /* B: Badge darunter */
+  .pill-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .label-other {
+    flex: 1; text-align: center;
+    font-size: 0.9rem; font-weight: 700;
+    color: rgba(255,255,255,0.75);
+  }
+  .heute-back {
+    text-align: center;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    cursor: pointer;
+    opacity: 0.75;
+  }
+  .heute-back:hover { opacity: 1; }
+
+  /* C: Dot im Pfeil-Bereich */
+  .label-plain {
+    flex: 1; text-align: center;
+    font-size: 0.9rem; font-weight: 700;
+    color: rgba(255,255,255,0.75);
+  }
+  .heute-dot-arrow {
+    background: none; border: none;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.9rem; padding: 2px 6px;
+    border-radius: 999px;
+    position: relative;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .heute-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent-glow);
+    display: inline-block;
+  }
+
+  .slot-preview {
+    margin-top: 8px;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; overflow: hidden;
+  }
+  .slot-row {
+    display: flex; align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    min-height: 32px;
+  }
+  .slot-time {
+    width: 24px; text-align: center;
+    font-size: 0.52rem; font-weight: 700;
+    color: rgba(255,255,255,0.22);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    align-self: stretch; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .slot-empty { color: rgba(255,255,255,0.06); font-size: 0.5rem; padding-left: 6px; }
+</style>
+
+<div class="cards">
+
+  <!-- A: Farbe dimmt einfach ab -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="phone-frame">
+        <div class="pill">
+          <button class="nav-arrow">‹</button>
+          <span class="label-dimmed">Fr, 23. Mai</span>
+          <button class="nav-arrow">›</button>
+        </div>
+        <div class="slot-preview">
+          <div class="slot-row"><div class="slot-time">08</div><span class="slot-empty">leer</span></div>
+          <div class="slot-row"><div class="slot-time">09</div></div>
+          <div class="slot-row"><div class="slot-time">10</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Farbe dimmt</h3>
+      <p>Heute = Cyan/leuchtend. Anderer Tag = weißlich/gedimmt. Kein extra Element, minimal.</p>
+    </div>
+  </div>
+
+  <!-- B: "· Heute" Link taucht unter der Pille auf -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="phone-frame">
+        <div class="pill-wrap">
+          <div class="pill">
+            <button class="nav-arrow">‹</button>
+            <span class="label-other">Fr, 23. Mai</span>
+            <button class="nav-arrow">›</button>
+          </div>
+          <div class="heute-back">↩ zurück zu heute</div>
+        </div>
+        <div class="slot-preview">
+          <div class="slot-row"><div class="slot-time">08</div><span class="slot-empty">leer</span></div>
+          <div class="slot-row"><div class="slot-time">09</div></div>
+          <div class="slot-row"><div class="slot-time">10</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — "Zurück zu heute" Link</h3>
+      <p>Unter der Pille erscheint ein dezenter Link. Verschwindet wenn man wieder auf heute ist.</p>
+    </div>
+  </div>
+
+  <!-- C: Dot neben dem Heute-Pfeil -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="phone-frame">
+        <div class="pill">
+          <div class="heute-dot-arrow">‹ <span class="heute-dot"></span></div>
+          <span class="label-plain">Fr, 23. Mai</span>
+          <button class="nav-arrow">›</button>
+        </div>
+        <div class="slot-preview">
+          <div class="slot-row"><div class="slot-time">08</div><span class="slot-empty">leer</span></div>
+          <div class="slot-row"><div class="slot-time">09</div></div>
+          <div class="slot-row"><div class="slot-time">10</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Dot am Pfeil</h3>
+      <p>Ein leuchtender Cyan-Dot erscheint am Zurück-Pfeil — zeigt wo "heute" liegt, Klick springt direkt hin.</p>
+    </div>
+  </div>
+
+</div>

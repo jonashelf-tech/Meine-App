@@ -152,6 +152,18 @@ export default function TabTools() {
           style={{ '--tool-color': toolColor }}
           onClick={() => !isDragging && openTool(tool)}
         >
+          <button
+            className={s.colorBar}
+            onClick={e => { e.stopPropagation(); colorInputRefs.current[tool.id]?.click() }}
+            title="Farbe ändern"
+          />
+          <input
+            ref={el => { colorInputRefs.current[tool.id] = el }}
+            type="color"
+            value={toolColor}
+            onChange={e => handleColorChange(tool.id, e.target.value)}
+            className={s.hidden}
+          />
           <span className={s.listIcon}>{tool.icon}</span>
           <div className={s.listText}>
             <span className={s.cardName}>{tool.name}</span>
@@ -199,8 +211,7 @@ export default function TabTools() {
                 onClick={() => isActive && openTool(tool)}
               >
                 <button
-                  className={s.colorDotInline}
-                  style={{ background: toolColor }}
+                  className={s.colorBar}
                   onClick={e => { e.stopPropagation(); colorInputRefs.current[tool.id]?.click() }}
                   title="Farbe ändern"
                 />
