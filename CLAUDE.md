@@ -41,5 +41,10 @@ Ich kategorisiere, lese was nötig ist, plane zuerst — und fange nie ohne Best
 | UI / Design / Komponenten | `kontext/architektur.md` |
 | Unterwegs-Tool einbauen (Chat-Ansatz) | `kontext/tool-chat.md` |
 
+## Austausch
+`Dateien/input/` — Dateien die ich mitbringe  
+`Dateien/output/` — Dateien die Claude ausgibt  
+Ich weise hin wenn etwas Relevantes drin liegt.
+
 ## Deploy
 `npx vercel --prod`

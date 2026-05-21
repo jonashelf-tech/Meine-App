@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
 import { isFaelligkeit } from '../../todos/Block'
 import s from './Pool.module.css'
@@ -49,6 +49,21 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, start
   )
 }
 
+// ─── Group ────────────────────────────────────────────────
+function Group({ label, count, children, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className={s.group}>
+      <button className={s.groupHeader} onClick={() => setOpen(v => !v)}>
+        <span className={s.groupLabel}>{label}</span>
+        <span className={s.groupCount}>{count}</span>
+        <span className={[s.groupChevron, open ? s.groupChevronOpen : ''].join(' ')}>▾</span>
+      </button>
+      {open && <div className={s.groupItems}>{children}</div>}
+    </div>
+  )
+}
+
 // ─── Pool ─────────────────────────────────────────────────
 export default function Pool({
   todos = [],
@@ -61,14 +76,19 @@ export default function Pool({
 }) {
   const [fullscreen, setFullscreen] = useState(false)
 
-  const placedTexts = new Set(
-    Object.values(todaySlots).filter(Boolean).map(sl => sl.text).filter(Boolean)
-  )
-  const placedIds = new Set(
-    Object.values(todaySlots).filter(Boolean).map(sl => sl.todoId).filter(Boolean)
-  )
+  // Memoize placed sets — only slots without a todoId use text fallback
+  const { placedIds, placedTexts } = useMemo(() => {
+    const slotValues = Object.values(todaySlots).filter(Boolean)
+    return {
+      placedIds:   new Set(slotValues.map(sl => sl.todoId).filter(Boolean)),
+      placedTexts: new Set(slotValues.filter(sl => !sl.todoId).map(sl => sl.text).filter(Boolean)),
+    }
+  }, [todaySlots])
 
-  const isPlaced = (t) => placedIds.has(t.id) || placedTexts.has(t.text)
+  const isPlaced = useCallback(
+    (t) => placedIds.has(t.id) || placedTexts.has(t.text),
+    [placedIds, placedTexts]
+  )
 
   const pool1 = todos.filter(
     t => !t.done && (t.priority === 1 || isFaelligkeit(t)) && !isPlaced(t)
@@ -104,31 +124,19 @@ export default function Pool({
         </button>
       </div>
 
-      <details className={s.group} open>
-        <summary className={s.groupHeader}>
-          <span className={s.groupLabel}>Heute relevant</span>
-          <span className={s.groupCount}>{pool1.length}</span>
-        </summary>
-        <div className={s.groupItems}>
-          {pool1.length === 0
-            ? <p className={s.empty}>Alles verplant ✓</p>
-            : pool1.map(renderChip)
-          }
-        </div>
-      </details>
+      <Group label="Heute relevant" count={pool1.length} defaultOpen>
+        {pool1.length === 0
+          ? <p className={s.empty}>Alles verplant ✓</p>
+          : pool1.map(renderChip)
+        }
+      </Group>
 
-      <details className={s.group}>
-        <summary className={s.groupHeader}>
-          <span className={s.groupLabel}>Offen</span>
-          <span className={s.groupCount}>{pool2.length}</span>
-        </summary>
-        <div className={s.groupItems}>
-          {pool2.length === 0
-            ? <p className={s.empty}>Kein weiteres Todo</p>
-            : pool2.map(renderChip)
-          }
-        </div>
-      </details>
+      <Group label="Offen" count={pool2.length}>
+        {pool2.length === 0
+          ? <p className={s.empty}>Kein weiteres Todo</p>
+          : pool2.map(renderChip)
+        }
+      </Group>
     </>
   )
 

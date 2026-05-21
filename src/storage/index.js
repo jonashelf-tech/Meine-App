@@ -37,6 +37,9 @@ export const SK = {
   birthdays:      `${PREFIX}birthdays`,
   accentColor:    `${PREFIX}app_accent`,
   toolColors:     `${PREFIX}app_tool_colors`,
+  visStart:       `${PREFIX}view_vis_start`,
+  visEnd:         `${PREFIX}view_vis_end`,
+  lastPoolReturn: `${PREFIX}view_last_pool_return`,
 }
 
 export const exportData = () => {

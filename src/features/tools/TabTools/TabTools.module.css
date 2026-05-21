@@ -147,18 +147,21 @@
 /* ─── Color Dot (Alle Tools) ────────────────────────────── */
 .colorDot {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 14px;
-  height: 14px;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.25);
   cursor: pointer;
-  transition: transform 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s;
   flex-shrink: 0;
 }
 
-.colorDot:hover { transform: scale(1.25); }
+.colorDot:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 8px currentColor;
+}
 
 /* ─── List View (Meine Tools) ───────────────────────────── */
 .list {

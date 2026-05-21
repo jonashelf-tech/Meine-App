@@ -28,3 +28,6 @@ dist-ssr
 # Claude Code — machine-spezifisch, nicht ins Repo
 .claude/settings.json
 .claude/settings.local.json
+
+# Austausch-Ordner — lokal, nicht ins Repo
+Dateien/

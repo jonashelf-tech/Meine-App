@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useAppStore } from '../../../store'
+import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth } from '../../../utils'
 import s from './TabKalender.module.css'
 
 const DAY_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -8,12 +9,10 @@ const MONTH_NAMES = [
   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
 ]
 
-function toDateKey(date) {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
-}
+// Dot colors — feste Werte, ändern sich nicht mit Akzentfarbe
+const DOT_APPOINTMENT = '#00CFFF'
+const DOT_DONE        = '#10B981'
+const DOT_BIRTHDAY    = '#FF2D78'
 
 function getMonday(date) {
   const d = new Date(date)
@@ -30,28 +29,18 @@ function addDays(date, n) {
   return d
 }
 
-function daysInMonth(year, month) {
-  return new Date(year, month + 1, 0).getDate()
-}
-
-function firstDayOfMonth(year, month) {
-  const d = new Date(year, month, 1)
-  const day = d.getDay()
-  return day === 0 ? 6 : day - 1
-}
-
-function getDots(dateKey, days, todos, birthdays, activeTools) {
+function getDots(dk, days, todos, birthdays, activeTools) {
   const dots = []
-  const slots = days[dateKey] ?? {}
-  if (Object.keys(slots).length > 0) dots.push('cyan')
+  const slots = days[dk] ?? {}
+  if (Object.keys(slots).length > 0) dots.push(DOT_APPOINTMENT)
 
-  const doneTodos = todos.filter(t => t.doneAt && t.doneAt.startsWith(dateKey))
-  if (doneTodos.length > 0) dots.push('green')
+  const doneTodos = todos.filter(t => t.doneAt && t.doneAt.startsWith(dk))
+  if (doneTodos.length > 0) dots.push(DOT_DONE)
 
   if (activeTools.includes('geburtstage') && birthdays?.length > 0) {
-    const [, mm, dd] = dateKey.split('-')
+    const [, mm, dd] = dk.split('-')
     const hasBday = birthdays.some(b => b.date === `${mm}-${dd}`)
-    if (hasBday) dots.push('pink')
+    if (hasBday) dots.push(DOT_BIRTHDAY)
   }
 
   return dots.slice(0, 3)
@@ -112,9 +101,7 @@ export default function TabKalender() {
   const isCurrentWeek  = weekDays.some(d => toDateKey(d) === todayKey)
   const isCurrentMonth = monthRef.year === today.getFullYear() && monthRef.month === today.getMonth()
 
-  const navigateToDay = () => {
-    setCurrentTab(0)
-  }
+  const navigateToDay = () => setCurrentTab(0)
 
   const handleDayClick = (dateKey) => {
     setSelectedDay(prev => prev === dateKey ? null : dateKey)
@@ -122,8 +109,8 @@ export default function TabKalender() {
 
   const monthCells = useMemo(() => {
     const { year, month } = monthRef
-    const total = daysInMonth(year, month)
-    const startOffset = firstDayOfMonth(year, month)
+    const total = getDaysInMonth(year, month)
+    const startOffset = getFirstDayOfMonth(year, month)
     const cells = []
     for (let i = 0; i < startOffset; i++) cells.push(null)
     for (let d = 1; d <= total; d++) cells.push(d)
@@ -277,7 +264,7 @@ export default function TabKalender() {
                     <span className={s.monthDay}>{day}</span>
                     <div className={s.dotRow}>
                       {dots.map((c, i) => (
-                        <span key={i} className={s.dot} style={{ background: `var(--${c})` }} />
+                        <span key={i} className={s.dot} style={{ background: c }} />
                       ))}
                     </div>
                   </button>

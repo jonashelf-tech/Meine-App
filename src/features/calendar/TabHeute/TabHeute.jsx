@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, sk, parseHHMM, ALL_SLOT_KEYS } from '../../../utils'
+import { sv, lv, SK } from '../../../storage'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan         from '../Zeitplan/Zeitplan'
 import Pool             from '../Pool/Pool'
@@ -12,12 +13,8 @@ import s from './TabHeute.module.css'
 export default function TabHeute() {
   const { todos, setTodos, days, setDays, activeTools } = useAppStore()
 
-  const [visStart, setVisStart] = useState(() => {
-    try { return parseInt(localStorage.getItem('adhs_vis_start')) || 8 } catch { return 8 }
-  })
-  const [visEnd, setVisEnd] = useState(() => {
-    try { return parseInt(localStorage.getItem('adhs_vis_end')) || 20 } catch { return 20 }
-  })
+  const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
+  const [visEnd,   setVisEnd]   = useState(() => lv(SK.visEnd,   20))
   const [editingTodo, setEditingTodo] = useState(null)
   const [clockPopup,  setClockPopup]  = useState(null)
 
@@ -47,9 +44,8 @@ export default function TabHeute() {
   // Läuft einmal pro Tag beim App-Start. Slots ohne todoId (Text-only) werden
   // als neues Todo angelegt, damit sie im Pool erscheinen.
   useEffect(() => {
-    const LAST_KEY = 'adhs_last_pool_return'
     const today = todayKey()
-    try { if (localStorage.getItem(LAST_KEY) === today) return } catch {}
+    if (lv(SK.lastPoolReturn, null) === today) return
 
     const existingIds = new Set(todos.map(t => t.id))
     const newTodos = []
@@ -74,7 +70,7 @@ export default function TabHeute() {
     })
 
     if (newTodos.length > 0) setTodos(prev => [...prev, ...newTodos])
-    try { localStorage.setItem(LAST_KEY, today) } catch {}
+    sv(SK.lastPoolReturn, today)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -177,10 +173,8 @@ export default function TabHeute() {
 
   // ─── Zeitplan expand/shrink ───────────────────────────────
   const saveVis = (start, end) => {
-    try {
-      localStorage.setItem('adhs_vis_start', start)
-      localStorage.setItem('adhs_vis_end', end)
-    } catch {}
+    sv(SK.visStart, start)
+    sv(SK.visEnd,   end)
   }
 
   const handleExpandUp   = useCallback(() => setVisStart(v => {

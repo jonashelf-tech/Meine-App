@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
-import { sk, skLabel, slotPx, getDurationKeys, ALL_SLOT_KEYS } from '../../../utils'
+import { sk, skLabel, slotPx, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import s from './Zeitplan.module.css'
 
 const ROW_H = 40
@@ -118,7 +118,7 @@ export default function Zeitplan({
   const closeRemove = useCallback(() => setRemoveDialog(null), [])
 
   const now = new Date()
-  const isNow = true
+  const isNow = dateLabel === todayKey()
 
   const hours = Array.from({ length: visibleEnd - visibleStart + 1 }, (_, i) => i + visibleStart)
 
@@ -144,7 +144,7 @@ export default function Zeitplan({
           className={[s.hideBtn, hideEmpty ? s.hideBtnOn : ''].join(' ')}
           onClick={() => setHideEmpty(v => !v)}
         >
-          {hideEmpty ? 'Minimal' : 'Alles'}
+          {hideEmpty ? 'Alle zeigen' : 'Ausblenden'}
         </button>
       </div>
 

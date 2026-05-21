@@ -115,7 +115,7 @@
   justify-content: center;
   padding-top: 5px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.52rem;
+  font-size: 0.62rem;
   font-weight: 700;
   color: rgba(255,255,255,0.28);
   border-right: 1px solid rgba(255,255,255,0.08);
@@ -125,7 +125,7 @@
 
 .sgLabelNow {
   color: var(--primary);
-  font-size: 0.56rem;
+  font-size: 0.65rem;
 }
 
 .sgHalf {
@@ -140,13 +140,13 @@
 /* ── Lock button ──────────────────────────────────────── */
 .lockBtn {
   position: absolute;
-  top: 3px;
-  right: 3px;
+  top: 0;
+  right: 0;
   z-index: 5;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 3px 4px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,7 +191,7 @@
 }
 
 .halfTime {
-  font-size: 0.42rem;
+  font-size: 0.56rem;
   color: rgba(255,255,255,0.08);
   font-family: 'Outfit', sans-serif;
   transition: color 0.12s;

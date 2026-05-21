@@ -10,8 +10,11 @@ export const isRoutine     = (b) => !!b.recurring
 export const isBlockTemplate = (b) => !!b.isTemplate
 export const isTodo        = (b) => !b.date && !b.recurring && !b.isTemplate
 
+const genId = () =>
+  crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+
 export const createBlock = (partial = {}) => ({
-  id: Date.now() + Math.random(),
+  id: genId(),
   text: '',
   color: '#00CFFF',
   priority: 3,
