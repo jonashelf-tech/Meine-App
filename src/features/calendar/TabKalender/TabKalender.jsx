@@ -66,7 +66,7 @@ function getCellBars(dk, days) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab }) {
+function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate }) {
   const [open, setOpen] = useState({ zeitplan: true, done: true, tools: true })
 
   const slots = days[dateKey] ?? {}
@@ -115,7 +115,7 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
                   key={key}
                   className={[s.dayPanelEntry, isTodo ? s.dayPanelEntryTodo : ''].join(' ')}
                   style={{ borderLeftColor: color }}
-                  onDoubleClick={() => setCurrentTab(0)}
+                  onDoubleClick={() => { setDayplanDate(dateKey); setCurrentTab(0) }}
                 >
                   <span className={s.dayPanelEntryTime} style={{ color }}>{hh}:{mm}</span>
                   <span className={s.dayPanelEntryText}>{slot.text}</span>
@@ -145,7 +145,7 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
                 key={t.id}
                 className={s.dayPanelTodoEntry}
                 style={{ borderLeftColor: t.color || 'var(--primary)' }}
-                onDoubleClick={() => setCurrentTab(0)}
+                onDoubleClick={() => { setDayplanDate(dateKey); setCurrentTab(0) }}
               >
                 <span className={s.dayPanelCheck}>✓</span>
                 <span className={s.dayPanelEntryText}>{t.text}</span>
@@ -195,7 +195,7 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
 }
 
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate } = useAppStore()
   const [view, setView] = useState('woche')
   const today = useMemo(() => {
     const d = new Date()
@@ -476,6 +476,7 @@ export default function TabKalender() {
               activeTools={activeTools}
               toolColors={toolColors}
               setCurrentTab={setCurrentTab}
+              setDayplanDate={setDayplanDate}
             />
           )}
         </>
