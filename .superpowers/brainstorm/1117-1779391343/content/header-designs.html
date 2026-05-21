@@ -1,0 +1,277 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
+
+  .demo-wrap {
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 8px 0 24px;
+  }
+
+  .demo-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 8px;
+  }
+
+  /* ── Phone frame ── */
+  .phone {
+    background: #080810;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    max-width: 360px;
+  }
+
+  /* ══ Option A — Minimal Centered ════════════════════════ */
+  .a-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 16px;
+    background: #080810;
+    position: relative;
+  }
+  .a-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.45);
+    font-family: 'Outfit', sans-serif;
+  }
+  .a-back-arrow {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+  .a-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+  }
+  .a-title em {
+    color: #8B5CF6;
+    font-style: normal;
+  }
+  .a-body {
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .a-bar {
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.07);
+  }
+  .a-bar.accent { background: rgba(139,92,246,0.25); width: 60%; }
+
+  /* ══ Option B — Left-aligned mit Icon & Eyebrow ═════════ */
+  .b-header {
+    padding: 14px 16px 12px;
+    background: #080810;
+  }
+  .b-back {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.38);
+    margin-bottom: 12px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .b-back-arrow {
+    font-size: 0.7rem;
+  }
+  .b-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .b-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(139,92,246,0.15);
+    border: 1px solid rgba(139,92,246,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .b-text { display: flex; flex-direction: column; }
+  .b-eyebrow {
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: rgba(139,92,246,0.55);
+    font-family: 'Outfit', sans-serif;
+  }
+  .b-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    font-family: 'Outfit', sans-serif;
+  }
+  .b-name em { color: #8B5CF6; font-style: normal; }
+  .b-body {
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .b-bar {
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.07);
+  }
+  .b-bar.accent { background: rgba(139,92,246,0.25); width: 55%; }
+
+  /* ══ Option C — Farbstreifen + kompakter Header ══════════ */
+  .c-header {
+    padding: 0;
+    background: #080810;
+  }
+  .c-stripe {
+    height: 3px;
+    background: linear-gradient(90deg, #8B5CF6, rgba(139,92,246,0.2));
+  }
+  .c-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px 12px;
+  }
+  .c-back {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(139,92,246,0.12);
+    border: 1px solid rgba(139,92,246,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #8B5CF6;
+    flex-shrink: 0;
+  }
+  .c-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(255,255,255,0.1);
+  }
+  .c-icon {
+    font-size: 1.15rem;
+  }
+  .c-name {
+    font-size: 1.0rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    font-family: 'Outfit', sans-serif;
+  }
+  .c-name em { color: #8B5CF6; font-style: normal; }
+  .c-body {
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .c-bar {
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.07);
+  }
+  .c-bar.accent { background: rgba(139,92,246,0.25); width: 65%; }
+</style>
+
+<h2>Tool-Header Design</h2>
+<p class="subtitle">Welcher Stil passt am besten zur App? Klick zum Auswählen.</p>
+
+<div class="demo-wrap">
+
+  <!-- Option A -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Minimal · Centered</h3>
+      <p>Zurück-Button links, Tool-Name zentriert. Ruhig, iOS-nah.</p>
+      <div class="phone">
+        <div class="a-header">
+          <div class="a-back"><div class="a-back-arrow">←</div> Tools</div>
+          <div class="a-title">Zufalls<em>rad</em></div>
+        </div>
+        <div class="a-body">
+          <div class="a-bar accent"></div>
+          <div class="a-bar" style="width:90%"></div>
+          <div class="a-bar" style="width:75%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Icon + Eyebrow · Links</h3>
+      <p>Kleines "← Zurück" oben, darunter Icon + Eyebrow + Name. Mehr Persönlichkeit pro Tool.</p>
+      <div class="phone">
+        <div class="b-header">
+          <div class="b-back"><span class="b-back-arrow">←</span> Tools</div>
+          <div class="b-title-row">
+            <div class="b-icon">🎡</div>
+            <div class="b-text">
+              <div class="b-eyebrow">Tool</div>
+              <div class="b-name">Zufalls<em>rad</em></div>
+            </div>
+          </div>
+        </div>
+        <div class="b-body">
+          <div class="b-bar accent"></div>
+          <div class="b-bar" style="width:88%"></div>
+          <div class="b-bar" style="width:70%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Farbstreifen · Kompakt</h3>
+      <p>Dünner Tool-Farbstreifen ganz oben. Zurück-Button + Trennlinie + Icon + Name in einer Zeile.</p>
+      <div class="phone">
+        <div class="c-header">
+          <div class="c-stripe"></div>
+          <div class="c-inner">
+            <div class="c-back">←</div>
+            <div class="c-divider"></div>
+            <div class="c-icon">🎡</div>
+            <div class="c-name">Zufalls<em>rad</em></div>
+          </div>
+        </div>
+        <div class="c-body">
+          <div class="c-bar accent"></div>
+          <div class="c-bar" style="width:88%"></div>
+          <div class="c-bar" style="width:70%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
