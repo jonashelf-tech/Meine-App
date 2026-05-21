@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ansätze</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #080810;
+  color: rgba(255,255,255,0.88);
+  font-family: 'Outfit', system-ui, sans-serif;
+  padding: 14px;
+}
+h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 3px; }
+.sub { font-size: 0.68rem; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+
+.cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.card {
+  border: 1.5px solid rgba(255,255,255,0.07);
+  border-radius: 12px; overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  background: rgba(255,255,255,0.02);
+  position: relative;
+}
+.card:hover { border-color: rgba(139,92,246,0.4); }
+.card.selected { border-color: #8B5CF6; box-shadow: 0 0 18px rgba(139,92,246,0.25); }
+.card.selected::after {
+  content: '✓'; position: absolute; top: 6px; right: 8px;
+  font-size: 0.65rem; color: #8B5CF6; font-weight: 700;
+}
+.card-head {
+  font-size: 0.5rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 7px 10px 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.15); color: rgba(255,255,255,0.4);
+}
+.card.selected .card-head { color: #a78bfa; }
+.tag {
+  display: inline-block; font-size: 0.38rem; font-weight: 800;
+  padding: 1px 5px; border-radius: 3px; margin-left: 5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.tag-rec { background: rgba(139,92,246,0.2); color: #a78bfa; }
+.tag-safe { background: rgba(16,185,129,0.15); color: #34d399; }
+.tag-bold { background: rgba(251,113,133,0.15); color: #fb7185; }
+
+/* ── MOCKUP STYLES ────────────────────────────────── */
+.preview { padding: 8px 6px; }
+
+/* shared grid */
+.zgrid {
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 7px; overflow: hidden;
+  background: rgba(0,0,0,0.12);
+}
+.zrow {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.zrow:last-child { border-bottom: none; }
+.zlbl {
+  font-size: 0.3rem; font-weight: 700;
+  color: rgba(255,255,255,0.2);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 2px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.zhalf { padding: 1px 2px; }
+
+/* ── VARIANT 1: Kalender-Harmonisiert ─── */
+/* Slot mit farbigem Left-Border + semi-transparent bg */
+.v1-slot {
+  display: flex; align-items: stretch; border-radius: 3px;
+  border-left: 2.5px solid;
+  background: rgba(255,255,255,0.035);
+  overflow: hidden; border: 1px solid rgba(255,255,255,0.07);
+}
+.v1-slot-bar { width: 2.5px; flex-shrink: 0; align-self: stretch; }
+.v1-slot-body { flex: 1; padding: 2px 4px; }
+.v1-slot-text { font-size: 0.38rem; font-weight: 600; color: rgba(255,255,255,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.v1-slot-meta { font-size: 0.3rem; color: rgba(255,255,255,0.3); }
+.v1-slot-right { display: flex; align-items: center; gap: 2px; padding: 0 3px; }
+.v1-done {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  flex-shrink: 0;
+}
+.v1-done.done { background: rgba(16,185,129,0.4); border-color: transparent; }
+.v1-handle { font-size: 0.3rem; color: rgba(255,255,255,0.15); }
+.v1-lock { font-size: 0.42rem; color: #8B5CF6; filter: drop-shadow(0 0 3px rgba(139,92,246,0.6)); }
+
+/* Controls bar V1 */
+.v1-ctrl {
+  display: flex; align-items: center; gap: 3px; margin-bottom: 5px;
+}
+.v1-btn {
+  padding: 3px 7px; font-size: 0.4rem; font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 5px;
+  color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.025);
+}
+.v1-range {
+  display: flex; align-items: center; gap: 2px;
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 5px;
+  padding: 2px 5px; background: rgba(255,255,255,0.025);
+  font-size: 0.38rem; font-weight: 700; color: rgba(139,92,246,0.7);
+}
+.v1-toggle {
+  display: flex; border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden;
+}
+.v1-toggle span {
+  padding: 3px 6px; font-size: 0.36rem; font-weight: 700;
+  color: rgba(255,255,255,0.22); letter-spacing: 0.05em; text-transform: uppercase;
+}
+.v1-toggle .on { background: rgba(139,92,246,0.1); color: #a78bfa; }
+
+/* ── VARIANT 2: Kalender-Klon ────────── */
+/* Farbige Background-Blöcke wie Wochenansicht */
+.v2-slot {
+  border-radius: 3px; padding: 2px 4px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.v2-slot-name { font-size: 0.38rem; font-weight: 700; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-slot-time { font-size: 0.28rem; color: rgba(255,255,255,0.5); }
+.v2-slot-ctrl {
+  display: flex; align-items: center; gap: 2px; margin-top: 1px;
+}
+.v2-lock { font-size: 0.38rem; color: rgba(255,255,255,0.7); }
+.v2-done-btn {
+  font-size: 0.28rem; color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.12); border-radius: 2px; padding: 0 2px;
+}
+
+/* Controls V2 — minimal header */
+.v2-ctrl {
+  display: flex; align-items: center; gap: 3px; margin-bottom: 5px;
+}
+.v2-btn {
+  padding: 3px 6px; font-size: 0.4rem; font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.07); border-radius: 5px;
+  color: rgba(255,255,255,0.28); background: transparent;
+}
+
+/* ── VARIANT 3: Inkrementell ─────────── */
+/* Wie jetzt aber besser */
+.v3-slot {
+  display: flex; align-items: stretch; border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.025); overflow: hidden;
+}
+.v3-stripe { width: 2px; flex-shrink: 0; align-self: stretch; }
+.v3-expbtn {
+  width: 12px; flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+}
+.v3-expbtn span { font-size: 0.3rem; color: rgba(255,255,255,0.2); }
+.v3-body { flex: 1; padding: 2px 3px; }
+.v3-text { font-size: 0.38rem; font-weight: 600; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.v3-meta { font-size: 0.28rem; color: rgba(255,255,255,0.27); }
+.v3-rm { font-size: 0.3rem; color: rgba(255,255,255,0.1); padding: 0 3px; border-left: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; }
+.v3-prio {
+  width: 6px; align-self: stretch;
+  display: flex; align-items: center; justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.05);
+}
+.v3-prio span { width: 3px; height: 3px; border-radius: 50%; background: rgba(251,113,133,0.7); }
+.v3-handle { padding: 0 3px; display: flex; align-items: center; border-left: 1px solid rgba(255,255,255,0.05); }
+.v3-handle span { font-size: 0.28rem; color: rgba(255,255,255,0.15); }
+
+.v3-ctrl { display: flex; align-items: center; gap: 3px; margin-bottom: 5px; }
+.v3-btn { padding: 3px 7px; font-size: 0.4rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.025); }
+
+/* empty + expand rows */
+.mg-empty { font-size: 0.26rem; color: rgba(255,255,255,0.07); padding: 0 3px; display: flex; align-items: center; min-height: 16px; }
+.xrow { display: flex; gap: 2px; padding: 2px 2px; }
+.xbtn { flex: 1; text-align: center; font-size: 0.33rem; font-weight: 700; border: 1px dashed rgba(255,255,255,0.07); border-radius: 5px; padding: 2px; color: rgba(139,92,246,0.4); }
+
+/* description */
+.desc {
+  font-size: 0.54rem; color: rgba(255,255,255,0.38);
+  padding: 8px 10px 10px; line-height: 1.5;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.pros { color: rgba(52,211,153,0.7); font-size: 0.46rem; margin-bottom: 2px; }
+.cons { color: rgba(251,113,133,0.6); font-size: 0.46rem; }
+</style>
+</head>
+<body>
+
+<h2>3 Design-Ansätze</h2>
+<p class="sub">Klick zum Auswählen — ich empfehle A</p>
+
+<div class="cards">
+
+  <!-- ── ANSATZ A ──────────────────────────────────────── -->
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <div class="card-head">A · Kalender-Harmonisiert <span class="tag tag-rec">Empfohlen</span></div>
+    <div class="preview">
+
+      <!-- Controls -->
+      <div class="v1-ctrl">
+        <div class="v1-btn">▲</div>
+        <div class="v1-btn">▼</div>
+        <div style="flex:1"></div>
+        <div class="v1-toggle"><span class="on">Alle</span><span>Min</span></div>
+        <div class="v1-range">08 – 20 ±</div>
+      </div>
+
+      <!-- Expand up -->
+      <div class="xrow"><div class="xbtn">+ früher</div></div>
+
+      <!-- Grid -->
+      <div class="zgrid">
+        <!-- 8:00 — 30min -->
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2">08</div>
+          <div class="zhalf" style="height:20px">
+            <div class="v1-slot" style="height:100%">
+              <div class="v1-slot-bar" style="background:#8B5CF6"></div>
+              <div class="v1-slot-body"><span class="v1-slot-text">Sport</span></div>
+              <div class="v1-slot-right">
+                <div class="v1-done done"></div>
+                <span class="v1-handle">⠿</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="zrow">
+          <div class="zhalf" style="height:20px">
+            <div class="v1-slot" style="height:100%">
+              <div class="v1-slot-bar" style="background:#14B8A6"></div>
+              <div class="v1-slot-body"><span class="v1-slot-text">Dusche</span></div>
+              <div class="v1-slot-right"><span class="v1-handle">⠿</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- 9:00 — 60min slot spanning both halves -->
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2; color:#8B5CF6">09</div>
+          <div class="zhalf" style="height:40px; grid-row:1/span 2">
+            <div class="v1-slot" style="height:100%">
+              <div class="v1-slot-bar" style="background:#FB7185"></div>
+              <div class="v1-slot-body">
+                <span class="v1-slot-text">Deep Work Block</span>
+                <span class="v1-slot-meta">60min</span>
+              </div>
+              <div class="v1-slot-right">
+                <span class="v1-lock">🔒</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="zrow"><div></div><div style="height:0;border:none"></div></div>
+        <!-- 10:00 — leer -->
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2">10</div>
+          <div class="zhalf"><div class="mg-empty">:00</div></div>
+        </div>
+        <div class="zrow"><div></div><div class="zhalf"><div class="mg-empty">:30</div></div></div>
+      </div>
+
+      <div class="xrow" style="margin-top:2px"><div class="xbtn">+ später</div></div>
+    </div>
+
+    <div class="desc">
+      <div class="pros">+ Visuell nah am Kalender (gleiche Sprache)</div>
+      <div class="pros">+ Sauberer Stripe statt volle Farbe</div>
+      <div class="pros">+ Done-Toggle sichtbar im Slot</div>
+      <div class="pros">+ Dauer-Bug gefixt via grid-row span</div>
+      <div class="cons">− Mehr Umbau als Ansatz C</div>
+    </div>
+  </div>
+
+  <!-- ── ANSATZ B ──────────────────────────────────────── -->
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <div class="card-head">B · Kalender-Klon <span class="tag tag-bold">Radikal</span></div>
+    <div class="preview">
+
+      <div class="v2-ctrl">
+        <div class="v2-btn">▲ 30</div>
+        <div class="v2-btn">▼ 30</div>
+        <div style="flex:1"></div>
+        <div class="v2-btn">Alle / Min</div>
+      </div>
+      <div class="xrow"><div class="xbtn">+ früher</div></div>
+
+      <div class="zgrid">
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2">08</div>
+          <div class="zhalf" style="height:20px">
+            <div class="v2-slot" style="background:rgba(139,92,246,0.35); height:100%">
+              <span class="v2-slot-name">Sport</span>
+            </div>
+          </div>
+        </div>
+        <div class="zrow"><div></div>
+          <div class="zhalf" style="height:20px">
+            <div class="v2-slot" style="background:rgba(20,184,166,0.3); height:100%">
+              <span class="v2-slot-name">Dusche</span>
+            </div>
+          </div>
+        </div>
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2; color:#8B5CF6">09</div>
+          <div class="zhalf" style="height:40px; grid-row:1/span 2">
+            <div class="v2-slot" style="background:rgba(251,113,133,0.3); height:100%">
+              <span class="v2-slot-name">Deep Work</span>
+              <span class="v2-slot-time">09:00 – 10:00</span>
+              <div class="v2-slot-ctrl">
+                <span class="v2-lock">🔒</span>
+                <span class="v2-done-btn">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="zrow"><div></div><div></div></div>
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2">10</div>
+          <div class="zhalf"><div class="mg-empty">:00</div></div>
+        </div>
+        <div class="zrow"><div></div><div class="zhalf"><div class="mg-empty">:30</div></div></div>
+      </div>
+      <div class="xrow" style="margin-top:2px"><div class="xbtn">+ später</div></div>
+    </div>
+    <div class="desc">
+      <div class="pros">+ Maximale visuelle Konsistenz mit Kalender</div>
+      <div class="pros">+ Sehr clean, minimal</div>
+      <div class="cons">− Sub-Items & Prio schlecht unterzubringen</div>
+      <div class="cons">− Drag-Handle schwierig auf farbigem Bg</div>
+      <div class="cons">− Komplett anderes Erscheinungsbild</div>
+    </div>
+  </div>
+
+  <!-- ── ANSATZ C ──────────────────────────────────────── -->
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <div class="card-head">C · Inkrementell <span class="tag tag-safe">Sicher</span></div>
+    <div class="preview">
+
+      <div class="v3-ctrl">
+        <div class="v3-btn">▲ 30min</div>
+        <div class="v3-btn">▼ 30min</div>
+        <div style="flex:1"></div>
+        <div class="v1-toggle"><span class="on">Alle</span><span>Min</span></div>
+      </div>
+      <div class="xrow"><div class="xbtn">+ früher</div></div>
+
+      <div class="zgrid">
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2">08</div>
+          <div class="zhalf" style="height:20px">
+            <div class="v3-slot" style="height:100%">
+              <div class="v3-stripe" style="background:#8B5CF6"></div>
+              <div class="v3-expbtn"><span>▸</span></div>
+              <div class="v3-body"><span class="v3-text">Sport</span></div>
+              <div class="v3-rm">✕</div>
+              <div class="v3-prio"><span></span></div>
+              <div class="v3-handle"><span>⠿</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="zrow"><div></div>
+          <div class="zhalf" style="height:20px">
+            <div class="v3-slot" style="height:100%">
+              <div class="v3-stripe" style="background:#14B8A6"></div>
+              <div class="v3-expbtn"><span>▸</span></div>
+              <div class="v3-body"><span class="v3-text">Dusche</span></div>
+              <div class="v3-rm">✕</div>
+              <div class="v3-handle"><span>⠿</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2; color:#8B5CF6">09</div>
+          <div class="zhalf" style="height:40px; grid-row:1/span 2">
+            <div class="v3-slot" style="height:100%">
+              <div class="v3-stripe" style="background:#FB7185"></div>
+              <div class="v3-expbtn"><span>▸</span></div>
+              <div class="v3-body">
+                <span class="v3-text">Deep Work Block</span>
+                <span class="v3-meta">60min</span>
+              </div>
+              <div class="v3-rm">✕</div>
+              <div class="v3-handle" style="color:#8B5CF6; filter:drop-shadow(0 0 3px rgba(139,92,246,0.6))"><span style="font-size:0.45rem">🔒</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="zrow"><div></div><div></div></div>
+        <div class="zrow">
+          <div class="zlbl" style="grid-row:1/span 2">10</div>
+          <div class="zhalf"><div class="mg-empty">:00</div></div>
+        </div>
+        <div class="zrow"><div></div><div class="zhalf"><div class="mg-empty">:30</div></div></div>
+      </div>
+      <div class="xrow" style="margin-top:2px"><div class="xbtn">+ später</div></div>
+    </div>
+    <div class="desc">
+      <div class="pros">+ Minimales Risiko, wenig Umbau</div>
+      <div class="pros">+ Alle Features bleiben wie bekannt</div>
+      <div class="cons">− Immer noch anders als Kalender-Sprache</div>
+      <div class="cons">− Slotfläche durch viele Icons verschwendet</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

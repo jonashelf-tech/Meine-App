@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pool — Integriert</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #080810;
+    color: rgba(255,255,255,0.88);
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+    padding: 20px 16px 60px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #8B5CF6; margin-bottom: 4px; }
+  .subtitle { font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-bottom: 20px; }
+
+  /* ─── Pool Box ─── */
+  .pool-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  /* ─── Header ─── */
+  .pool-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    gap: 8px;
+  }
+  .pool-title {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #8B5CF6; flex-shrink: 0;
+  }
+  .sort-row { display: flex; gap: 4px; flex: 1; }
+  .sort-chip {
+    font-size: 0.58rem; font-weight: 600; padding: 3px 7px;
+    border-radius: 7px; border: 1px solid rgba(255,255,255,0.08);
+    background: none; color: rgba(255,255,255,0.3); cursor: pointer;
+    font-family: 'Outfit','Segoe UI',sans-serif;
+    letter-spacing: 0.03em;
+  }
+  .sort-chip.active {
+    background: rgba(139,92,246,0.13); border-color: rgba(139,92,246,0.3);
+    color: rgba(139,92,246,0.9);
+  }
+  .collapse-btn {
+    font-size: 0.6rem; color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 6px; padding: 3px 7px; cursor: pointer;
+    font-family: 'Outfit','Segoe UI',sans-serif;
+    flex-shrink: 0;
+  }
+
+  /* ─── Chip ─── */
+  .chip {
+    display: flex; align-items: stretch;
+    background: rgba(255,255,255,0.022); border: 1px solid rgba(255,255,255,0.065);
+    border-radius: 14px; overflow: hidden; height: 38px;
+    margin: 0 8px 4px;
+  }
+  .stripe { width: 3px; min-width: 3px; align-self: stretch; }
+  .chip-expand {
+    width: 30px; min-width: 30px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.2); font-size: 0.5rem;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    gap: 1px;
+  }
+  .chip-expand .sub { font-size: 0.34rem; opacity: 0.55; }
+  .chip-body {
+    flex: 1; padding: 0 8px; display: flex; align-items: center;
+    overflow: hidden; gap: 6px;
+  }
+  .chip-text {
+    font-size: 0.84rem; font-weight: 600; color: rgba(255,255,255,0.85);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .chip-meta { font-size: 0.56rem; color: rgba(255,255,255,0.22); flex-shrink: 0; }
+  .chip-drag {
+    width: 28px; min-width: 28px; display: flex; align-items: center;
+    justify-content: center; color: rgba(255,255,255,0.14);
+    border-left: 1px solid rgba(255,255,255,0.05); font-size: 0.7rem;
+  }
+
+  /* done */
+  .chip-done { opacity: 0.45; }
+  .chip-done .chip-text { text-decoration: line-through; color: rgba(255,255,255,0.4); }
+
+  /* ─── List section ─── */
+  .list-section { padding: 6px 0 2px; }
+
+  /* ─── Expand more ─── */
+  .expand-more {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin: 4px 8px 2px; padding: 7px;
+    background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; color: rgba(255,255,255,0.32);
+    font-size: 0.68rem; font-weight: 600; cursor: pointer;
+    font-family: 'Outfit','Segoe UI',sans-serif;
+  }
+  .expand-count {
+    background: rgba(255,255,255,0.08); border-radius: 8px;
+    padding: 1px 6px; font-size: 0.58rem;
+  }
+
+  /* ─── Aufräumen row ─── */
+  .cleanup-row {
+    display: flex; justify-content: flex-end;
+    padding: 2px 10px 6px;
+  }
+  .cleanup-btn {
+    font-size: 0.65rem; font-weight: 600;
+    color: rgba(16,185,129,0.75); background: rgba(16,185,129,0.07);
+    border: 1px solid rgba(16,185,129,0.18); border-radius: 8px;
+    padding: 4px 10px; cursor: pointer; font-family: 'Outfit','Segoe UI',sans-serif;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .cleanup-count {
+    background: rgba(16,185,129,0.18); border-radius: 10px;
+    padding: 1px 5px; font-size: 0.58rem;
+  }
+
+  /* ─── Erledigt section ─── */
+  .done-section { border-top: 1px solid rgba(255,255,255,0.07); }
+  .done-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 12px 3px;
+  }
+  .done-label {
+    font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(16,185,129,0.65);
+  }
+  .done-hint {
+    font-size: 0.56rem; color: rgba(255,255,255,0.2); font-style: italic;
+  }
+  .done-list { padding: 0 0 6px; }
+
+  /* clickable done chip */
+  .chip-done-db {
+    opacity: 0.4; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .chip-done-db:hover { opacity: 0.65; }
+  .chip-done-db .chip-text {
+    text-decoration: line-through; color: rgba(255,255,255,0.5);
+  }
+
+  /* ─── Annotations ─── */
+  .annotations { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .ann { display: flex; gap: 10px; align-items: flex-start; font-size: 0.68rem; color: rgba(255,255,255,0.42); line-height: 1.45; }
+  .ann-num {
+    min-width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.35);
+    color: #8B5CF6; font-size: 0.56rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .ann-num.green {
+    background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: #10B981;
+  }
+
+  .note-box {
+    margin-top: 16px; background: rgba(16,185,129,0.05);
+    border: 1px solid rgba(16,185,129,0.18); border-radius: 10px;
+    padding: 10px 12px; font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.55;
+  }
+  .note-box strong { color: rgba(16,185,129,0.8); }
+</style>
+</head>
+<body>
+
+<h1>Pool — Integriert</h1>
+<p class="subtitle">Alles in einem Panel. Kein Overlay, kein Kontextwechsel.</p>
+
+<div class="pool-box">
+
+  <!-- Header: Pool + Sort + Collapse -->
+  <div class="pool-header">
+    <span class="pool-title">Pool</span>
+    <div class="sort-row">
+      <button class="sort-chip active">Standard</button>
+      <button class="sort-chip">Kategorie</button>
+      <button class="sort-chip">Alter</button>
+    </div>
+    <button class="collapse-btn">▾</button>
+  </div>
+
+  <!-- Active list (max 10) -->
+  <div class="list-section">
+
+    <!-- Heute relevant + Prio 1 zuerst -->
+    <div class="chip">
+      <span class="stripe" style="background:#FF2D78"></span>
+      <div class="chip-expand">▸<span class="sub">0/0</span></div>
+      <div class="chip-body"><span class="chip-text">Arzttermin Unterlagen</span><span class="chip-meta">heute fällig</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip">
+      <span class="stripe" style="background:#FF2D78"></span>
+      <div class="chip-expand">▸<span class="sub">2/3</span></div>
+      <div class="chip-body"><span class="chip-text">Mail an Steuerberater</span><span class="chip-meta">fällig</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <!-- Prio 2 -->
+    <div class="chip">
+      <span class="stripe" style="background:#00CFFF"></span>
+      <div class="chip-expand">▸<span class="sub">0/2</span></div>
+      <div class="chip-body"><span class="chip-text">Wohnung aufräumen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <!-- abgehakt (bleibt bis Aufräumen) -->
+    <div class="chip chip-done">
+      <span class="stripe" style="background:rgba(16,185,129,0.45)"></span>
+      <div class="chip-expand" style="color:rgba(16,185,129,0.3)">✓</div>
+      <div class="chip-body"><span class="chip-text">Einkaufen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <!-- Prio 3 -->
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸<span class="sub">0/0</span></div>
+      <div class="chip-body"><span class="chip-text">Sport machen</span><span class="chip-meta">Fitness</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Küche putzen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Notizen sortieren</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Kalender prüfen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Balkon fegen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Fotos sortieren</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <!-- Mehr anzeigen (wenn > 10) -->
+    <button class="expand-more">
+      Weitere anzeigen <span class="expand-count">+7</span> ▾
+    </button>
+
+    <!-- Aufräumen (nur wenn abgehakte vorhanden) -->
+    <div class="cleanup-row">
+      <button class="cleanup-btn">✓ Aufräumen <span class="cleanup-count">1</span></button>
+    </div>
+
+  </div>
+
+  <!-- ─── Erledigt heute ─── -->
+  <div class="done-section">
+    <div class="done-head">
+      <span class="done-label">✓ Erledigt heute</span>
+      <span class="done-hint">Antippen = rückgängig</span>
+    </div>
+    <div class="done-list">
+      <div class="chip chip-done chip-done-db" style="margin:0 8px 4px">
+        <span class="stripe" style="background:rgba(16,185,129,0.35)"></span>
+        <div class="chip-expand" style="color:rgba(16,185,129,0.3); font-size:0.65rem">✓</div>
+        <div class="chip-body"><span class="chip-text">Medikament nehmen</span><span class="chip-meta">09:15</span></div>
+      </div>
+      <div class="chip chip-done chip-done-db" style="margin:0 8px 4px">
+        <span class="stripe" style="background:rgba(16,185,129,0.35)"></span>
+        <div class="chip-expand" style="color:rgba(16,185,129,0.3); font-size:0.65rem">✓</div>
+        <div class="chip-body"><span class="chip-text">Duschen</span><span class="chip-meta">08:30</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Annotations -->
+<div class="annotations">
+  <div class="ann"><div class="ann-num">1</div><span>Kein separates Overlay mehr — alles direkt im Pool-Panel integriert.</span></div>
+  <div class="ann"><div class="ann-num">2</div><span>Max. 10 Einträge sichtbar → "Weitere anzeigen" Button wenn mehr vorhanden.</span></div>
+  <div class="ann"><div class="ann-num">3</div><span>Abgehaktes bleibt im aktiven Bereich mit Strikethrough bis "Aufräumen" gedrückt wird.</span></div>
+  <div class="ann"><div class="ann-num green">4</div><span>"Aufräumen" schiebt alle abgehakten Einträge in "Erledigt heute" — Kalender zeigt dieselben Daten.</span></div>
+  <div class="ann"><div class="ann-num green">5</div><span>"Erledigt heute" — antippen macht rückgängig (done:false, doneAt:null).</span></div>
+</div>
+
+<div class="note-box">
+  <strong>ADHS-Vorteil:</strong> Abhaken + Aufräumen = zwei kleine Erfolgserlebnisse statt einem. Der "Erledigt heute"-Block gibt visuelles Feedback was man geschafft hat — motivierend ohne zu überfordern.
+</div>
+
+</body>
+</html>

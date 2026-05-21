@@ -103,16 +103,9 @@ export default function TodoChip({
   // ── Close float on outside tap ──────────────────────────
   useEffect(() => {
     if (!floatExpand || !expanded) return
-    const close = (e) => {
-      if (e.target.closest?.('[data-expand-btn]')) return
-      const inside = itemsWrapRef.current?.contains(e.target)
-      console.log('[close] target:', e.target, 'inside:', inside, 'ref:', itemsWrapRef.current)
-      if (itemsWrapRef.current && !inside) {
-        setExpanded(false); onExpandedChange?.(false, 0)
-      }
-    }
-    document.addEventListener('pointerdown', close, true)
-    return () => document.removeEventListener('pointerdown', close, true)
+    const close = () => { setExpanded(false); onExpandedChange?.(false, 0) }
+    document.addEventListener('click', close)
+    return () => document.removeEventListener('click', close)
   }, [floatExpand, expanded, onExpandedChange])
 
   const color = todo.color || '#00CFFF'
@@ -198,6 +191,7 @@ export default function TodoChip({
         <div
           ref={itemsWrapRef}
           className={s.itemsWrap}
+          onClick={e => e.stopPropagation()}
           style={{
             '--chip-color': color,
             ...(floatExpand ? {

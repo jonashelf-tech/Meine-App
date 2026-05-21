@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controls Review</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #080810;
+    color: rgba(255,255,255,0.88);
+    font-family: 'Outfit', system-ui, sans-serif;
+    padding: 14px;
+    min-height: 100vh;
+  }
+  h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 3px; }
+  .sub { font-size: 0.68rem; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+
+  .panel {
+    border: 1.5px solid rgba(255,255,255,0.07);
+    border-radius: 11px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.02);
+  }
+  .panel-head {
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 10px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.15);
+  }
+  .panel-head.old { color: rgba(255,113,133,0.7); }
+  .panel-head.new { color: rgba(52,211,153,0.7); }
+  .panel-body { padding: 8px; }
+
+  /* Simulate app UI */
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 5px;
+  }
+  .btn {
+    padding: 4px 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.42rem;
+    font-weight: 700;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: rgba(255,255,255,0.32);
+    white-space: nowrap;
+  }
+  .btn.accent { border-color: rgba(139,92,246,0.3); color: rgba(139,92,246,0.7); }
+  .btn.del { border-color: rgba(251,113,133,0.18); color: rgba(251,113,133,0.4); font-size: 0.36rem; }
+  .btn-group {
+    display: flex;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .btn-group .btn {
+    border: none;
+    border-radius: 0;
+    padding: 4px 7px;
+  }
+  .btn-group .btn + .btn {
+    border-left: 1px solid rgba(255,255,255,0.08);
+  }
+  .btn-group .btn.on {
+    background: rgba(139,92,246,0.1);
+    color: rgba(139,92,246,0.85);
+  }
+  .spacer { flex: 1; }
+
+  .expand-row {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 4px;
+  }
+  .xbtn {
+    flex: 1;
+    padding: 4px;
+    font-size: 0.38rem;
+    font-weight: 700;
+    text-align: center;
+    border: 1px dashed rgba(255,255,255,0.06);
+    border-radius: 7px;
+    color: rgba(255,255,255,0.18);
+    letter-spacing: 0.05em;
+  }
+  .xbtn.add { color: rgba(139,92,246,0.4); border-color: rgba(139,92,246,0.15); }
+  .xbtn.rm  { color: rgba(251,113,133,0.3); border-color: rgba(251,113,133,0.1); }
+
+  /* Grid preview */
+  .mini-grid {
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.1);
+  }
+  .mg-row {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    min-height: 18px;
+  }
+  .mg-lbl {
+    font-size: 0.3rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 2px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .mg-half {
+    padding: 1px 3px;
+    min-height: 18px;
+    display: flex;
+    align-items: center;
+  }
+  .mg-chip {
+    display: flex;
+    align-items: center;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+  }
+  .mg-stripe { width: 2px; align-self: stretch; flex-shrink: 0; }
+  .mg-text { font-size: 0.3rem; color: rgba(255,255,255,0.7); padding: 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mg-empty { font-size: 0.26rem; color: rgba(255,255,255,0.07); padding-left: 3px; }
+
+  /* Shift inline */
+  .shift-inline {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 5px;
+  }
+  .shift-btn {
+    padding: 4px 8px;
+    font-size: 0.4rem;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.025);
+  }
+
+  /* Range indicator */
+  .range-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.025);
+    font-size: 0.42rem;
+    color: rgba(255,255,255,0.45);
+    font-weight: 600;
+  }
+  .range-pill .range-val {
+    font-size: 0.48rem;
+    color: rgba(139,92,246,0.8);
+    font-weight: 700;
+  }
+  .range-pill .plus-btn {
+    width: 14px; height: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem;
+    color: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+  }
+
+  /* Feature table */
+  .feat-table { width: 100%; border-collapse: collapse; }
+  .feat-table td {
+    padding: 5px 8px;
+    font-size: 0.58rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+  .feat-table .feat-name { color: rgba(255,255,255,0.65); font-weight: 600; }
+  .feat-table .verdict { font-size: 0.5rem; font-weight: 700; }
+  .keep  { color: #34d399; }
+  .cut   { color: #fb7185; }
+  .merge { color: #fbbf24; }
+  .fix   { color: #a78bfa; }
+  .note  { color: rgba(255,255,255,0.3); font-size: 0.46rem; }
+
+  /* Options */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .opt {
+    border: 1.5px solid rgba(255,255,255,0.07);
+    border-radius: 9px;
+    padding: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+  .opt:hover { border-color: rgba(139,92,246,0.35); }
+  .opt.selected { border-color: #8B5CF6; box-shadow: 0 0 12px rgba(139,92,246,0.2); }
+  .opt.selected::after {
+    content: '✓';
+    position: absolute; top: 6px; right: 8px;
+    font-size: 0.6rem; color: #8B5CF6; font-weight: 700;
+  }
+  .opt-letter {
+    font-size: 0.52rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 4px;
+    color: rgba(255,255,255,0.3);
+  }
+  .opt-title { font-size: 0.72rem; font-weight: 700; margin-bottom: 3px; color: rgba(255,255,255,0.82); }
+  .opt-sub { font-size: 0.52rem; color: rgba(255,255,255,0.35); line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<h2>Kritische Funktionsüberprüfung</h2>
+<p class="sub">Was behalten, was raus, was vereinfachen?</p>
+
+<table class="feat-table">
+  <tr>
+    <td class="feat-name">▲/▼ 30min Shift</td>
+    <td><span class="verdict keep">Behalten</span><br><span class="note">Gute ADHS-Funktion. Bleibt.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">Alles / Minimal Toggle</td>
+    <td><span class="verdict merge">Vereinfachen</span><br><span class="note">Zwei Modi verwirren. Entweder Default=Minimal, oder ganz raus.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">+ früher / + später</td>
+    <td><span class="verdict keep">Behalten</span><br><span class="note">Zeitbereich erweitern — sinnvoll.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">− früh / − spät</td>
+    <td><span class="verdict cut">Raus</span><br><span class="note">Hat bisher jemand genutzt? Schreibt bloß 2 extra Buttons die verwirren.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">Außenbereich-Hinweise</td>
+    <td><span class="verdict cut">Raus</span><br><span class="note">Wenn + früher/später da ist — dieser Hin­weis wird nie gelesen.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">Pool-Vollbild (⤢)</td>
+    <td><span class="verdict cut">Raus</span><br><span class="note">Kein echtes Use Case auf 480px. Pool ist immer sichtbar.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">Schloss-Icon</td>
+    <td><span class="verdict fix">Verbessern</span><br><span class="note">Zu klein, Hover beim Drag fehlt. → Größer + Hover-Glow beim Drag.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">Dauer-Visualisierung</td>
+    <td><span class="verdict fix">Bug fixen</span><br><span class="note">30min = 60min visuell. Fix: echtes grid-row span statt height-Trick.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">Sub-Items in Slots</td>
+    <td><span class="verdict keep">Behalten</span><br><span class="note">Float-Overlay bei verlinkten Todos — gut. Bleibt.</span></td>
+  </tr>
+  <tr>
+    <td class="feat-name">Clock-Popup</td>
+    <td><span class="verdict keep">Behalten</span><br><span class="note">Perfekte ADHS-Funktion. Unangetastet.</span></td>
+  </tr>
+</table>
+
+<p style="font-size:0.6rem; color:rgba(255,255,255,0.35); margin-top:12px; margin-bottom:8px;">
+  Konkrete Frage: Was soll mit dem <strong style="color:rgba(255,255,255,0.6)">Alles/Minimal-Toggle</strong> passieren?
+</p>
+
+<div class="options">
+  <div class="opt" onclick="this.classList.toggle('selected')">
+    <div class="opt-letter">A</div>
+    <div class="opt-title">Rauswerfen</div>
+    <div class="opt-sub">Zeitbereich zeigt immer alle Halbstunden. Sauber, kein Toggle-Gedanke nötig.</div>
+  </div>
+  <div class="opt" onclick="this.classList.toggle('selected')">
+    <div class="opt-letter">B</div>
+    <div class="opt-title">Minimal als Default</div>
+    <div class="opt-sub">Standard = nur belegte Slots. Toggle weg, dafür immer im kompakten Modus.</div>
+  </div>
+  <div class="opt" onclick="this.classList.toggle('selected')">
+    <div class="opt-letter">C</div>
+    <div class="opt-title">Behalten wie jetzt</div>
+    <div class="opt-sub">Toggle bleibt, nur visuell aufgeräumter platziert.</div>
+  </div>
+</div>
+
+</body>
+</html>

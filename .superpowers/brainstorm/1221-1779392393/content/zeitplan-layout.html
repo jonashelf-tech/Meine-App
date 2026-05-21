@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zeitplan Layout</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #080810;
+    color: rgba(255,255,255,0.88);
+    font-family: 'Outfit', system-ui, sans-serif;
+    padding: 16px;
+    min-height: 100vh;
+  }
+  h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 4px;
+  }
+  .sub {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.38);
+    margin-bottom: 20px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .card {
+    border: 1.5px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    background: rgba(255,255,255,0.025);
+    position: relative;
+  }
+  .card:hover { border-color: rgba(139,92,246,0.4); }
+  .card.selected {
+    border-color: #8B5CF6;
+    box-shadow: 0 0 18px rgba(139,92,246,0.25);
+  }
+  .card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.65rem;
+    color: #8B5CF6;
+    font-weight: 700;
+  }
+  .label-pill {
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    padding: 6px 10px 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.15);
+  }
+  .card.selected .label-pill { color: #8B5CF6; }
+  .preview {
+    padding: 8px 6px;
+  }
+
+  /* ── VARIANT A: Timeline (absolut) ───────────────────── */
+  .timeline {
+    position: relative;
+    height: 200px;
+    display: flex;
+    overflow: hidden;
+  }
+  .t-axis {
+    width: 22px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .t-hour {
+    height: 40px;
+    font-size: 0.36rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-right: 4px;
+    padding-top: 1px;
+    flex-shrink: 0;
+  }
+  .t-body {
+    flex: 1;
+    position: relative;
+    border-left: 1px solid rgba(255,255,255,0.07);
+  }
+  .t-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.04);
+  }
+  .t-halfline {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.02);
+  }
+  .t-slot {
+    position: absolute;
+    left: 2px; right: 2px;
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    padding: 2px 4px;
+  }
+  .t-slot-text {
+    font-size: 0.38rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.88);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+  .t-slot-time {
+    font-size: 0.32rem;
+    color: rgba(255,255,255,0.55);
+    display: block;
+    line-height: 1;
+  }
+
+  /* ── VARIANT B: Grid+ ────────────────────────────────── */
+  .grid-plus {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    height: 200px;
+    overflow: hidden;
+  }
+  .gp-row {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    flex-shrink: 0;
+  }
+  .gp-lbl {
+    font-size: 0.35rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.22);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 2px;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .gp-lbl.now { color: #8B5CF6; }
+  .gp-half {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 1px 2px;
+    min-height: 20px;
+  }
+  .gp-halfbot {
+    border-bottom: 1px dashed rgba(255,255,255,0.025);
+  }
+  .gp-chip {
+    display: flex;
+    align-items: center;
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.03);
+    overflow: hidden;
+  }
+  .gp-stripe {
+    width: 2px;
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+  .gp-text {
+    flex: 1;
+    font-size: 0.38rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    padding: 2px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gp-lock {
+    font-size: 0.42rem;
+    padding: 0 3px;
+    color: rgba(255,255,255,0.2);
+  }
+  .gp-empty {
+    font-size: 0.3rem;
+    color: rgba(255,255,255,0.06);
+    padding-left: 3px;
+    display: flex;
+    align-items: center;
+    height: 20px;
+  }
+
+  /* ── VARIANT C: Compact list ─────────────────────────── */
+  .compact {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: 200px;
+    overflow: hidden;
+  }
+  .cp-slot {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .cp-time {
+    width: 22px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1px;
+  }
+  .cp-time-h {
+    font-size: 0.42rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    line-height: 1;
+  }
+  .cp-time-m {
+    font-size: 0.3rem;
+    color: rgba(255,255,255,0.22);
+    line-height: 1;
+  }
+  .cp-dur-bar {
+    width: 2px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    align-self: stretch;
+    min-height: 22px;
+  }
+  .cp-body {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    padding: 3px 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .cp-title {
+    font-size: 0.4rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.82);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cp-meta {
+    font-size: 0.3rem;
+    color: rgba(255,255,255,0.3);
+    margin-top: 1px;
+  }
+  .cp-gap {
+    height: 5px;
+    border-left: 1px dashed rgba(255,255,255,0.04);
+    margin-left: 23px;
+  }
+
+  .desc {
+    font-size: 0.55rem;
+    color: rgba(255,255,255,0.4);
+    padding: 8px 10px 10px;
+    line-height: 1.5;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .tag {
+    display: inline-block;
+    background: rgba(139,92,246,0.12);
+    color: #a78bfa;
+    font-size: 0.42rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .tag.fix { background: rgba(16,185,129,0.12); color: #34d399; }
+  .tag.new { background: rgba(251,113,133,0.12); color: #fb7185; }
+</style>
+</head>
+<body>
+
+<h2>Wie soll der Tagesplaner aussehen?</h2>
+<p class="sub">Klick auf eine Variante um sie auszuwählen</p>
+
+<div class="cards">
+
+  <!-- VARIANT A -->
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <div class="label-pill">A · Timeline</div>
+    <div class="preview">
+      <div class="timeline">
+        <div class="t-axis">
+          <div class="t-hour">08</div>
+          <div class="t-hour" style="color:#8B5CF6">09</div>
+          <div class="t-hour">10</div>
+          <div class="t-hour">11</div>
+          <div class="t-hour">12</div>
+        </div>
+        <div class="t-body">
+          <!-- grid lines -->
+          <div class="t-line"  style="top:0"></div>
+          <div class="t-halfline" style="top:20px"></div>
+          <div class="t-line"  style="top:40px"></div>
+          <div class="t-halfline" style="top:60px"></div>
+          <div class="t-line"  style="top:80px;background:rgba(139,92,246,0.12)"></div>
+          <div class="t-halfline" style="top:100px"></div>
+          <div class="t-line"  style="top:120px"></div>
+          <div class="t-halfline" style="top:140px"></div>
+          <div class="t-line"  style="top:160px"></div>
+          <div class="t-halfline" style="top:180px"></div>
+
+          <!-- 60min slot -->
+          <div class="t-slot" style="top:5px; height:38px; background:#8B5CF6cc;">
+            <div>
+              <span class="t-slot-time">08:05</span>
+              <span class="t-slot-text">Sport / Dehnen</span>
+            </div>
+          </div>
+          <!-- 30min slot -->
+          <div class="t-slot" style="top:58px; height:18px; background:#14B8A6cc;">
+            <div>
+              <span class="t-slot-text">Dusche</span>
+            </div>
+          </div>
+          <!-- 90min slot -->
+          <div class="t-slot" style="top:86px; height:58px; background:#FB7185bb;">
+            <div>
+              <span class="t-slot-time">09:06</span>
+              <span class="t-slot-text">Deep Work Block</span>
+            </div>
+          </div>
+          <!-- 30min slot -->
+          <div class="t-slot" style="top:155px; height:18px; background:#8B5CF6aa;">
+            <div>
+              <span class="t-slot-text">Mittagessen</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="desc">
+      <div class="tag fix">Dauer-Bug gefixt</div><br>
+      Wie der Kalender: Slots nach Zeit positioniert, Höhe = Dauer. Sauber, visuell eindeutig. Braucht feste Zeitachse und Scroll.
+    </div>
+  </div>
+
+  <!-- VARIANT B -->
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <div class="label-pill">B · Grid+</div>
+    <div class="preview">
+      <div class="grid-plus">
+        <!-- 8:00 -->
+        <div class="gp-row" style="flex-shrink:0">
+          <div class="gp-lbl" style="grid-row:1/span 2">08</div>
+          <div class="gp-half" style="height:22px">
+            <div class="gp-chip" style="height:100%">
+              <div class="gp-stripe" style="background:#8B5CF6"></div>
+              <div class="gp-text">Sport / Dehnen</div>
+              <div class="gp-lock">🔒</div>
+            </div>
+          </div>
+        </div>
+        <div class="gp-row" style="flex-shrink:0">
+          <div style="border-right:1px solid rgba(255,255,255,0.07);border-bottom:1px dashed rgba(255,255,255,0.025)"></div>
+          <div class="gp-half gp-halfbot" style="height:22px">
+            <div class="gp-chip" style="height:100%;opacity:0.6">
+              <div class="gp-stripe" style="background:#14B8A6"></div>
+              <div class="gp-text">Dusche</div>
+            </div>
+          </div>
+        </div>
+        <!-- 9:00 -->
+        <div class="gp-row" style="flex-shrink:0">
+          <div class="gp-lbl now" style="grid-row:1/span 2">09</div>
+          <div class="gp-half" style="height:44px">
+            <div class="gp-chip" style="height:100%">
+              <div class="gp-stripe" style="background:#FB7185"></div>
+              <div class="gp-text">Deep Work Block (90min)</div>
+            </div>
+          </div>
+        </div>
+        <div class="gp-row" style="flex-shrink:0">
+          <div style="border-right:1px solid rgba(255,255,255,0.07);border-bottom:1px dashed rgba(255,255,255,0.025)"></div>
+          <div class="gp-half gp-halfbot" style="height:22px; visibility:hidden"></div>
+        </div>
+        <!-- 10:00 -->
+        <div class="gp-row" style="flex-shrink:0">
+          <div class="gp-lbl" style="grid-row:1/span 2">10</div>
+          <div class="gp-half" style="height:22px">
+            <div class="gp-empty">:00</div>
+          </div>
+        </div>
+        <div class="gp-row" style="flex-shrink:0">
+          <div style="border-right:1px solid rgba(255,255,255,0.07)"></div>
+          <div class="gp-half gp-halfbot" style="height:22px">
+            <div class="gp-chip" style="height:100%">
+              <div class="gp-stripe" style="background:#8B5CF6"></div>
+              <div class="gp-text">Mittagessen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="desc">
+      <div class="tag fix">Dauer-Bug gefixt</div><br>
+      Wie jetzt, aber Slots spannen echte Grid-Zeilen (kein height-Trick). Strukturierter, alle Zeitlücken sichtbar. Ähnelt dem aktuellen Stil.
+    </div>
+  </div>
+
+  <!-- VARIANT C -->
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <div class="label-pill">C · Liste</div>
+    <div class="preview">
+      <div class="compact">
+        <div class="cp-slot">
+          <div class="cp-time">
+            <span class="cp-time-h">08</span>
+            <span class="cp-time-m">:05</span>
+          </div>
+          <div class="cp-dur-bar" style="background:#8B5CF6; height:34px; align-self:auto"></div>
+          <div class="cp-body">
+            <div class="cp-title">Sport / Dehnen</div>
+            <div class="cp-meta">60min · 🔒</div>
+          </div>
+        </div>
+        <div class="cp-gap"></div>
+        <div class="cp-slot">
+          <div class="cp-time">
+            <span class="cp-time-h">08</span>
+            <span class="cp-time-m">:30</span>
+          </div>
+          <div class="cp-dur-bar" style="background:#14B8A6; height:22px; align-self:auto"></div>
+          <div class="cp-body">
+            <div class="cp-title">Dusche</div>
+            <div class="cp-meta">30min</div>
+          </div>
+        </div>
+        <div class="cp-gap" style="height:10px"></div>
+        <div class="cp-slot">
+          <div class="cp-time">
+            <span class="cp-time-h" style="color:#8B5CF6">09</span>
+            <span class="cp-time-m">:06</span>
+          </div>
+          <div class="cp-dur-bar" style="background:#FB7185; height:48px; align-self:auto"></div>
+          <div class="cp-body">
+            <div class="cp-title">Deep Work Block</div>
+            <div class="cp-meta">90min</div>
+          </div>
+        </div>
+        <div class="cp-gap" style="height:14px"></div>
+        <div class="cp-slot">
+          <div class="cp-time">
+            <span class="cp-time-h">10</span>
+            <span class="cp-time-m">:30</span>
+          </div>
+          <div class="cp-dur-bar" style="background:#8B5CF6; height:22px; align-self:auto"></div>
+          <div class="cp-body">
+            <div class="cp-title">Mittagessen</div>
+            <div class="cp-meta">30min</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="desc">
+      <div class="tag new">Komplett anders</div><br>
+      Kein Gitter — nur belegte Slots als Liste mit Zeitstempel. Dauer als Balken-Höhe. Keine Leerzeilen. Leaner, weniger Kontext über Lücken.
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

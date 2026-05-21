@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pool & Tagesplaner — Redesign Übersicht</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #080810;
+    color: rgba(255,255,255,0.88);
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+    padding: 20px 16px 40px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8B5CF6;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.38);
+    margin-bottom: 20px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ─── Section labels ─────────────────────────────── */
+  .section-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8B5CF6;
+    margin-bottom: 8px;
+    padding-left: 2px;
+  }
+
+  /* ─── Pool Box ───────────────────────────────────── */
+  .pool-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .pool-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .pool-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8B5CF6;
+  }
+  .collapse-btn {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 6px;
+    padding: 3px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chevron { font-size: 0.55rem; }
+
+  /* ─── Todo Chip ──────────────────────────────────── */
+  .chip {
+    display: flex;
+    align-items: stretch;
+    background: rgba(255,255,255,0.022);
+    border: 1px solid rgba(255,255,255,0.065);
+    border-radius: 14px;
+    overflow: hidden;
+    height: 38px;
+    margin: 0 8px 4px;
+  }
+  .chip:last-of-type { margin-bottom: 0; }
+  .stripe {
+    width: 3px;
+    min-width: 3px;
+    align-self: stretch;
+  }
+  .chip-expand {
+    width: 30px;
+    min-width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.2);
+    font-size: 0.5rem;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .chip-body {
+    flex: 1;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .chip-text {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chip-meta {
+    font-size: 0.56rem;
+    color: rgba(255,255,255,0.22);
+    margin-left: 6px;
+    flex-shrink: 0;
+  }
+  .chip-prio {
+    width: 3px;
+    min-width: 3px;
+    align-self: stretch;
+    margin-right: 2px;
+    border-radius: 0 2px 2px 0;
+  }
+  .chip-drag {
+    width: 28px;
+    min-width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.14);
+    border-left: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.7rem;
+  }
+
+  /* done state */
+  .chip-done {
+    opacity: 0.45;
+  }
+  .chip-done .chip-text {
+    text-decoration: line-through;
+    color: rgba(255,255,255,0.45);
+  }
+  .chip-done .stripe {
+    background: rgba(16,185,129,0.5) !important;
+  }
+
+  /* ─── List area ──────────────────────────────────── */
+  .list-area {
+    padding: 6px 0 4px;
+  }
+
+  /* ─── Aufräumen row ──────────────────────────────── */
+  .cleanup-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 4px 12px 0;
+    gap: 6px;
+  }
+  .cleanup-btn {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: rgba(16,185,129,0.75);
+    background: rgba(16,185,129,0.07);
+    border: 1px solid rgba(16,185,129,0.18);
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .cleanup-count {
+    background: rgba(16,185,129,0.18);
+    border-radius: 10px;
+    padding: 1px 5px;
+    font-size: 0.58rem;
+  }
+
+  /* ─── Manuelle Todos button ──────────────────────── */
+  .manual-btn-row {
+    padding: 6px 8px 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 6px;
+  }
+  .manual-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.42);
+    font-size: 0.72rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .manual-btn:hover {
+    background: rgba(139,92,246,0.07);
+    border-color: rgba(139,92,246,0.25);
+    color: rgba(255,255,255,0.65);
+  }
+  .manual-icon {
+    font-size: 0.65rem;
+    opacity: 0.6;
+  }
+
+  /* ─── annotation callouts ────────────────────────── */
+  .annotations {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .ann {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.4;
+  }
+  .ann-num {
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(139,92,246,0.25);
+    border: 1px solid rgba(139,92,246,0.4);
+    color: #8B5CF6;
+    font-size: 0.58rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─── Divider ─────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+    margin: 20px 0;
+  }
+
+  /* ─── Manual Overlay mockup ──────────────────────── */
+  .overlay-mockup {
+    background: #080810;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .overlay-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+  }
+  .close-btn {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 4px 9px;
+    cursor: pointer;
+  }
+  .sort-row {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .sort-chip {
+    font-size: 0.62rem;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.09);
+    background: none;
+    color: rgba(255,255,255,0.38);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+  }
+  .sort-chip.active {
+    background: rgba(139,92,246,0.14);
+    border-color: rgba(139,92,246,0.3);
+    color: rgba(139,92,246,0.9);
+  }
+  .overlay-section-head {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(16,185,129,0.7);
+    padding: 10px 14px 4px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .overlay-list {
+    padding: 4px 0 6px;
+  }
+  .undo-hint {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.22);
+    padding: 0 14px 8px;
+    font-style: italic;
+  }
+
+  /* annotation box */
+  .info-box {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid rgba(139,92,246,0.18);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.55;
+    margin-bottom: 20px;
+  }
+  .info-box strong { color: rgba(255,255,255,0.8); }
+</style>
+</head>
+<body>
+
+<h1>Pool + Tagesplaner — Redesign</h1>
+<p class="subtitle">Vorschlag für alle 4 Änderungen auf einen Blick</p>
+
+<!-- ══════════════════════════════════════════════════ -->
+<p class="section-label">① Pool — Neue Struktur</p>
+
+<div class="pool-box">
+  <!-- Header -->
+  <div class="pool-header">
+    <span class="pool-title">Pool</span>
+    <button class="collapse-btn">
+      <span class="chevron">▾</span> Zuklappen
+    </button>
+  </div>
+
+  <!-- Merged list (sorted: heute relevant first → prio) -->
+  <div class="list-area">
+
+    <!-- 1. Heute relevant + Prio 1 -->
+    <div class="chip">
+      <span class="stripe" style="background:#FF2D78"></span>
+      <div class="chip-expand">▸<br><span style="font-size:0.36rem;opacity:0.6">0/0</span></div>
+      <div class="chip-body">
+        <span class="chip-text">Arzttermin Unterlagen</span>
+        <span class="chip-meta">heute</span>
+      </div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <div class="chip">
+      <span class="stripe" style="background:#FF2D78"></span>
+      <div class="chip-expand">▸<br><span style="font-size:0.36rem;opacity:0.6">2/3</span></div>
+      <div class="chip-body"><span class="chip-text">Mail an Steuerberater</span><span class="chip-meta">fällig</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <!-- 2. Prio 2 -->
+    <div class="chip">
+      <span class="stripe" style="background:#00CFFF"></span>
+      <div class="chip-expand">▸<br><span style="font-size:0.36rem;opacity:0.6">0/2</span></div>
+      <div class="chip-body"><span class="chip-text">Wohnung aufräumen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <!-- done: flash → bleibt mit Strikethrough -->
+    <div class="chip chip-done">
+      <span class="stripe" style="background:rgba(16,185,129,0.5)"></span>
+      <div class="chip-expand" style="color:rgba(16,185,129,0.4)">▸</div>
+      <div class="chip-body"><span class="chip-text">Einkaufen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸<br><span style="font-size:0.36rem;opacity:0.6">0/0</span></div>
+      <div class="chip-body"><span class="chip-text">Sport machen</span><span class="chip-meta">Fitness</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <div class="chip">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Küche putzen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+
+    <!-- "Aufräumen" button — nur sichtbar wenn done todos vorhanden -->
+    <div class="cleanup-row">
+      <button class="cleanup-btn">
+        ✓ Aufräumen <span class="cleanup-count">1</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Manuelle Todos button — immer am Ende der Liste -->
+  <div class="manual-btn-row">
+    <button class="manual-btn">
+      <span class="manual-icon">≡</span>
+      Manuelle Todos
+    </button>
+  </div>
+</div>
+
+<div class="annotations">
+  <div class="ann"><div class="ann-num">1</div><span>Eine zusammengeführte Liste — kein "Heute relevant" / "Offen" Label mehr. Reihenfolge: heute fällig + Prio 1 zuerst, dann Prio 2, dann Prio 3.</span></div>
+  <div class="ann"><div class="ann-num">2</div><span>Abgehaktes Todo bleibt sichtbar mit Strikethrough (grüner Stripe). Verschwindet erst nach "Aufräumen".</span></div>
+  <div class="ann"><div class="ann-num">3</div><span>"Aufräumen" erscheint nur wenn abgehakte Todos da sind — räumt alle auf einmal weg.</span></div>
+  <div class="ann"><div class="ann-num">4</div><span>"Manuelle Todos" ersetzt ⤢ — immer am Ende der Liste (nach max. 10 Einträgen).</span></div>
+  <div class="ann"><div class="ann-num">5</div><span>Pool ist standardmäßig IMMER aufgeklappt wenn Tagesplaner-Tab geöffnet wird.</span></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<p class="section-label">② Manuelle Ansicht — Overlay</p>
+
+<div class="overlay-mockup">
+  <div class="overlay-header">
+    <span class="overlay-title">Manuelle Todos</span>
+    <button class="close-btn">✕ Schließen</button>
+  </div>
+
+  <!-- Sort options -->
+  <div class="sort-row">
+    <button class="sort-chip active">Standard</button>
+    <button class="sort-chip">Kategorie</button>
+    <button class="sort-chip">Alter</button>
+    <button class="sort-chip">Priorität</button>
+  </div>
+
+  <!-- Active todos -->
+  <div class="overlay-list">
+    <div class="chip" style="margin:0 8px 4px;">
+      <span class="stripe" style="background:#FF2D78"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Arzttermin Unterlagen</span><span class="chip-meta">heute</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip" style="margin:0 8px 4px;">
+      <span class="stripe" style="background:#00CFFF"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Wohnung aufräumen</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <div class="chip" style="margin:0 8px 4px;">
+      <span class="stripe" style="background:#8B5CF6"></span>
+      <div class="chip-expand">▸</div>
+      <div class="chip-body"><span class="chip-text">Sport machen</span><span class="chip-meta">Fitness</span></div>
+      <div class="chip-drag">⠿</div>
+    </div>
+    <!-- Aufräumen hier auch -->
+    <div class="cleanup-row" style="margin-top:4px">
+      <button class="cleanup-btn">✓ Aufräumen <span class="cleanup-count">1</span></button>
+    </div>
+  </div>
+
+  <!-- Done Bank section -->
+  <div class="overlay-section-head">✓ Erledigt heute</div>
+  <div class="overlay-list">
+    <div class="chip chip-done" style="margin:0 8px 4px; cursor:pointer;" title="Anklicken → rückgängig">
+      <span class="stripe" style="background:rgba(16,185,129,0.4)"></span>
+      <div class="chip-expand" style="color:rgba(16,185,129,0.3)">▸</div>
+      <div class="chip-body"><span class="chip-text">Einkaufen</span></div>
+    </div>
+  </div>
+  <p class="undo-hint">→ Anklicken um rückgängig zu machen</p>
+</div>
+
+<div class="annotations" style="margin-top:10px">
+  <div class="ann"><div class="ann-num">A</div><span>"Erledigt heute" = todos mit done:true + doneAt auf heute. Kein neues Datenfeld nötig — selbe Quelle wie Kalender-Panel.</span></div>
+  <div class="ann"><div class="ann-num">B</div><span>Kein "Heute relevant"/"Offen" Label in dieser Ansicht. Nur Sortierung.</span></div>
+  <div class="ann"><div class="ann-num">C</div><span>Klick auf erledigt-Todo = done:false, doneAt:null → zurück in die aktive Liste.</span></div>
+</div>
+
+</body>
+</html>

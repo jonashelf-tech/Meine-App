@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vollständiges Design</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #080810;
+  color: rgba(255,255,255,0.88);
+  font-family: 'Outfit', system-ui, sans-serif;
+  padding: 14px;
+}
+h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 3px; }
+.sub { font-size: 0.68rem; color: rgba(255,255,255,0.35); margin-bottom: 14px; }
+
+.section { margin-bottom: 20px; }
+.sec-title {
+  font-size: 0.55rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(139,92,246,0.7);
+  margin-bottom: 8px; padding-bottom: 5px;
+  border-bottom: 1px solid rgba(139,92,246,0.15);
+}
+
+/* ── PHONE FRAME ─── */
+.phone {
+  max-width: 320px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0c0c1a;
+  padding: 10px;
+}
+
+/* ── DAYNAV ─── */
+.daynav {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-bottom: 10px;
+}
+.daynav-btn { font-size: 0.75rem; color: rgba(255,255,255,0.3); background: none; border: none; }
+.daynav-label {
+  font-size: 0.75rem; font-weight: 700; color: #8B5CF6;
+  padding: 4px 12px; border-radius: 20px;
+  background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25);
+  box-shadow: 0 0 10px rgba(139,92,246,0.2);
+}
+
+/* ── CONTROLS ─── */
+.ctrl {
+  display: flex; align-items: center; gap: 5px; margin-bottom: 6px;
+}
+.shift-btn {
+  padding: 5px 10px; font-size: 0.62rem; font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+  color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.03);
+}
+.spacer { flex: 1; }
+.toggle {
+  display: flex; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; overflow: hidden;
+}
+.toggle span {
+  padding: 4px 8px; font-size: 0.55rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+}
+.toggle .on { background: rgba(139,92,246,0.1); color: #a78bfa; }
+.toggle span + span { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── EXPAND ROW ─── */
+.xrow { display: flex; gap: 4px; margin: 3px 0; }
+.xbtn {
+  flex: 1; padding: 5px; font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px dashed rgba(255,255,255,0.06); border-radius: 9px;
+  color: rgba(255,255,255,0.18); text-align: center;
+}
+.xbtn.add { color: rgba(139,92,246,0.4); border-color: rgba(139,92,246,0.15); }
+
+/* ── GRID ─── */
+.grid {
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px; overflow: visible;
+  background: rgba(0,0,0,0.1);
+}
+.grid-inner {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  grid-auto-rows: auto;
+}
+
+.lbl {
+  grid-column: 1;
+  font-size: 0.6rem; font-weight: 700; color: rgba(255,255,255,0.28);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 6px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  user-select: none;
+}
+.lbl.now { color: #8B5CF6; }
+
+.half {
+  grid-column: 2;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative; overflow: visible;
+}
+.half.bot { border-bottom: 1px dashed rgba(255,255,255,0.03); }
+.half.empty {
+  display: flex; align-items: center; padding-left: 8px;
+  background: rgba(255,255,255,0.008); height: 48px;
+}
+.half-time {
+  font-size: 0.54rem; color: rgba(255,255,255,0.07);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── NEW SLOT BLOCK ─── */
+.slot {
+  display: flex; align-items: stretch;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px; overflow: hidden;
+  margin: 2px 3px 2px 2px;
+  min-height: 44px;
+}
+.slot-stripe { width: 3px; flex-shrink: 0; align-self: stretch; }
+.slot-body { flex: 1; padding: 7px 8px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.slot-text {
+  font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.85);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+}
+.slot-meta {
+  font-size: 0.54rem; font-weight: 600; letter-spacing: 0.03em;
+  color: rgba(255,255,255,0.25); margin-top: 2px;
+}
+.slot-right {
+  display: flex; align-items: center; gap: 0;
+  flex-shrink: 0;
+}
+.slot-done {
+  width: 36px; height: 100%; display: flex; align-items: center; justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.done-circle {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.46rem; color: transparent;
+  transition: all 0.15s;
+}
+.done-circle.done {
+  background: rgba(16,185,129,0.25);
+  border-color: rgba(16,185,129,0.55);
+  color: #34d399;
+}
+.slot-handle {
+  width: 36px; height: 100%; display: flex; align-items: center; justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.18); flex-shrink: 0;
+  font-size: 0.7rem;
+}
+.slot-lock {
+  width: 36px; height: 100%; display: flex; align-items: center; justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  color: #8B5CF6; flex-shrink: 0;
+  filter: drop-shadow(0 0 5px rgba(139,92,246,0.45));
+}
+/* DRAG HOVER on locked slot */
+.slot-lock.drag-hover {
+  filter: drop-shadow(0 0 10px rgba(139,92,246,0.85));
+  color: #c4b5fd;
+}
+
+/* Tall slot (60min) */
+.slot.tall { min-height: 92px; }
+
+/* Done slot */
+.slot.is-done { opacity: 0.5; }
+.slot.is-done .slot-text { text-decoration: line-through; }
+
+/* ── POOL ─── */
+.pool {
+  margin-top: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; overflow: hidden;
+}
+.pool-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.pool-label {
+  font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.35);
+}
+.pool-count {
+  font-size: 0.55rem; font-weight: 600;
+  background: rgba(255,255,255,0.06); border-radius: 8px;
+  padding: 1px 6px; color: rgba(255,255,255,0.3);
+}
+.pool-group-head {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.pool-group-label { font-size: 0.6rem; font-weight: 700; color: rgba(255,255,255,0.4); flex: 1; }
+.pool-group-count {
+  font-size: 0.55rem; color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.04); border-radius: 8px;
+  padding: 1px 5px;
+}
+.pool-chip {
+  display: flex; align-items: stretch;
+  background: rgba(255,255,255,0.022); border-bottom: 1px solid rgba(255,255,255,0.04);
+  min-height: 40px;
+}
+.pool-chip:last-child { border-bottom: none; }
+.pool-stripe { width: 3px; flex-shrink: 0; align-self: stretch; }
+.pool-body { flex: 1; padding: 8px 8px; display: flex; flex-direction: column; justify-content: center; }
+.pool-text { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.82); }
+.pool-meta { font-size: 0.54rem; color: rgba(255,255,255,0.22); margin-top: 2px; }
+.pool-handle {
+  width: 36px; display: flex; align-items: center; justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.18); font-size: 0.7rem;
+}
+.pool-placed { color: rgba(20,184,166,0.6); }
+
+/* ── LOCK DETAIL ─── */
+.lock-states {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.lock-box {
+  border: 1px solid rgba(255,255,255,0.07); border-radius: 8px;
+  padding: 10px; flex: 1; min-width: 80px;
+}
+.lock-box-label { font-size: 0.46rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 6px; }
+.lock-demo {
+  width: 36px; height: 36px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.025);
+  font-size: 1rem;
+}
+.lock-demo.unlocked { color: rgba(255,255,255,0.18); }
+.lock-demo.locked { color: #8B5CF6; filter: drop-shadow(0 0 5px rgba(139,92,246,0.45)); }
+.lock-demo.drag-over { color: #c4b5fd; filter: drop-shadow(0 0 12px rgba(139,92,246,0.9)); background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.3); }
+
+/* ── CHANGE LIST ─── */
+.changes { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.changes li {
+  display: flex; align-items: flex-start; gap: 7px;
+  font-size: 0.6rem; color: rgba(255,255,255,0.55);
+  padding: 6px 8px; border-radius: 7px;
+  background: rgba(255,255,255,0.02);
+}
+.changes li .icon { font-size: 0.65rem; flex-shrink: 0; }
+.changes li.fix { border-left: 2px solid rgba(139,92,246,0.4); }
+.changes li.rm  { border-left: 2px solid rgba(251,113,133,0.4); }
+.changes li.add { border-left: 2px solid rgba(52,211,153,0.4); }
+</style>
+</head>
+<body>
+
+<h2>Vollständiges Design — Ansatz A</h2>
+<p class="sub">Alle Sections zum Abnicken</p>
+
+<!-- ── 1. TAGESPLANER ─────────────────────── -->
+<div class="section">
+  <div class="sec-title">1 · Tagesplaner (Zeitplan)</div>
+  <div class="phone">
+
+    <div class="daynav">
+      <button class="daynav-btn">‹</button>
+      <div class="daynav-label">Do, 21. Mai</div>
+      <button class="daynav-btn">›</button>
+    </div>
+
+    <div class="ctrl">
+      <button class="shift-btn">▲ 30min</button>
+      <button class="shift-btn">▼ 30min</button>
+      <div class="spacer"></div>
+      <div class="toggle">
+        <span class="on">Alle</span>
+        <span>Min</span>
+      </div>
+    </div>
+
+    <div class="xrow"><div class="xbtn add">+ früher</div></div>
+
+    <div class="grid">
+      <div class="grid-inner">
+
+        <!-- 8:00 — 30min slot -->
+        <div class="lbl" style="grid-row: 1 / span 2">08</div>
+        <div class="half" style="grid-row: 1">
+          <div class="slot">
+            <div class="slot-stripe" style="background:#8B5CF6"></div>
+            <div class="slot-body">
+              <span class="slot-text">Sport & Dehnen</span>
+            </div>
+            <div class="slot-done"><div class="done-circle done">✓</div></div>
+            <div class="slot-handle">⠿</div>
+          </div>
+        </div>
+        <!-- 8:30 — leer -->
+        <div class="half bot empty" style="grid-row: 2">
+          <span class="half-time">:30</span>
+        </div>
+
+        <!-- 9:00 — 60min slot (spans 2 rows) -->
+        <div class="lbl now" style="grid-row: 3 / span 2">09</div>
+        <div class="half" style="grid-row: 3 / span 2">
+          <div class="slot tall">
+            <div class="slot-stripe" style="background:#FB7185"></div>
+            <div class="slot-body">
+              <span class="slot-text">Deep Work Block</span>
+              <span class="slot-meta">60min · Arbeit</span>
+            </div>
+            <div class="slot-done"><div class="done-circle"></div></div>
+            <div class="slot-lock">🔒</div>
+          </div>
+        </div>
+
+        <!-- 10:00 — leer -->
+        <div class="lbl" style="grid-row: 5 / span 2">10</div>
+        <div class="half empty" style="grid-row: 5">
+          <span class="half-time">:00</span>
+        </div>
+        <div class="half bot empty" style="grid-row: 6">
+          <span class="half-time">:30</span>
+        </div>
+
+        <!-- 11:00 — 30min slot, done -->
+        <div class="lbl" style="grid-row: 7 / span 2">11</div>
+        <div class="half" style="grid-row: 7">
+          <div class="slot is-done">
+            <div class="slot-stripe" style="background:#14B8A6"></div>
+            <div class="slot-body">
+              <span class="slot-text">Mittagessen</span>
+            </div>
+            <div class="slot-done"><div class="done-circle done">✓</div></div>
+            <div class="slot-handle">⠿</div>
+          </div>
+        </div>
+        <div class="half bot empty" style="grid-row: 8">
+          <span class="half-time">:30</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="xrow" style="margin-top:4px"><div class="xbtn add">+ später</div></div>
+  </div>
+</div>
+
+<!-- ── 2. SCHLOSS-DETAIL ─────────────────── -->
+<div class="section">
+  <div class="sec-title">2 · Schloss — 3 Zustände</div>
+  <div class="lock-states">
+    <div class="lock-box">
+      <div class="lock-box-label">Offen</div>
+      <div class="lock-demo unlocked">⠿</div>
+      <p style="font-size:0.48rem;color:rgba(255,255,255,0.28);margin-top:6px">Drag-Handle, grau</p>
+    </div>
+    <div class="lock-box">
+      <div class="lock-box-label">Gesperrt</div>
+      <div class="lock-demo locked">🔒</div>
+      <p style="font-size:0.48rem;color:rgba(255,255,255,0.28);margin-top:6px">Violett + sanfter Glow</p>
+    </div>
+    <div class="lock-box">
+      <div class="lock-box-label">Drag-Hover</div>
+      <div class="lock-demo drag-over">🔒</div>
+      <p style="font-size:0.48rem;color:rgba(255,255,255,0.28);margin-top:6px">Heller + starker Glow, wenn Chip drüber</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── 3. POOL ────────────────────────────── -->
+<div class="section">
+  <div class="sec-title">3 · Pool (aufgeräumt)</div>
+  <div class="phone" style="padding:0">
+    <div class="pool-header">
+      <span class="pool-label">Pool</span>
+      <span class="pool-count">3</span>
+    </div>
+    <div class="pool-group-head">
+      <span class="pool-group-label">Heute relevant</span>
+      <span class="pool-group-count">2</span>
+      <span style="font-size:0.55rem;color:rgba(255,255,255,0.2)">▾</span>
+    </div>
+    <div class="pool-chip">
+      <div class="pool-stripe" style="background:#FB7185"></div>
+      <div class="pool-body">
+        <div class="pool-text">Zahnarzt anrufen</div>
+        <div class="pool-meta">Heute fällig</div>
+      </div>
+      <div class="pool-handle">⠿</div>
+    </div>
+    <div class="pool-chip">
+      <div class="pool-stripe" style="background:#8B5CF6"></div>
+      <div class="pool-body">
+        <div class="pool-text">Sport & Dehnen</div>
+      </div>
+      <div class="pool-handle pool-placed">↩</div>
+    </div>
+    <div class="pool-group-head">
+      <span class="pool-group-label">Offen</span>
+      <span class="pool-group-count">1</span>
+      <span style="font-size:0.55rem;color:rgba(255,255,255,0.2)">▸</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 4. ÄNDERUNGEN ZUSAMMENFASSUNG ──────── -->
+<div class="section">
+  <div class="sec-title">4 · Was ändert sich</div>
+  <ul class="changes">
+    <li class="fix"><span class="icon">⚡</span>Dauer-Bug: grid-row span statt height-Trick — 60min = 2× so hoch wie 30min</li>
+    <li class="fix"><span class="icon">🔒</span>Schloss größer (12×14px), Drag-Hover-Glow via :global(.dnd-half-locked) in CSS</li>
+    <li class="fix"><span class="icon">✦</span>Slot-Design: Stripe + done-circle + handle/lock rechts statt Prio+Meta+✕ gedrängt</li>
+    <li class="fix"><span class="icon">✦</span>ROW_H: 40px → 48px für bessere Touch-Targets</li>
+    <li class="rm"><span class="icon">✕</span>− früh / − spät Buttons entfernt</li>
+    <li class="rm"><span class="icon">✕</span>Außenbereich-Hinweise entfernt</li>
+    <li class="rm"><span class="icon">✕</span>Pool-Vollbild (⤢) entfernt</li>
+    <li class="add"><span class="icon">+</span>Done-Circle direkt im Slot sichtbar (kein tap nötig zum Erkennen)</li>
+  </ul>
+</div>
+
+</body>
+</html>
