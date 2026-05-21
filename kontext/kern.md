@@ -128,7 +128,7 @@ ALL_SLOT_KEYS        // alle gültigen Slot-Keys 0–23.5
 ## Tab-Routing (Kern)
 
 ```
-Tab 0  — Heute          (TabHeute: Pool + Zeitplan)
+Tab 0  — Tagesplaner    (TabHeute: DayNav + Zeitplan + Pool)
 Tab 1  — Kalender       (TabKalender: Woche/Monat + DayPanel)
 Tab 2  — Tools          (TabTools: Meine Tools / Alle Tools)
 Tab 3  — Einstellungen
@@ -155,5 +155,13 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping in TabTo
 - **DayPanel:** erscheint unterhalb des Grids wenn Monatskachel angeklickt
   - Sektionen: Zeitplan · Erledigt · Tools — alle einzeln klappbar
   - Daten: `days[dk]` · `todos.filter(t => t.doneAt?.startsWith(dk))` · `activeTools`
-  - Doppelklick Termin/Todo → Tab 0 · Doppelklick Tool-Chip → direkt ins Tool
+  - Doppelklick Termin/Todo → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
+  - Doppelklick Tool-Chip → direkt ins Tool
   - Read-only, keine Bearbeitung
+
+## TabHeute — Features
+
+- **DayNav:** Kompakte Pille oben — `‹ Datum ›`. Datum cyan+glow = heute, weiß = anderer Tag. Pfeil Richtung heute leuchtet cyan wenn nicht auf heute. Klick auf Datum → Tab 1 (Kalender).
+- **viewDate:** Lokaler State (`useState(() => store.dayplanDate ?? todayKey())`). Mount-Effect liest `store.dayplanDate`, setzt viewDate, löscht es. Tab verlassen → unmount → automatisch Reset auf heute beim nächsten Mount.
+- **store.dayplanDate:** Flüchtiger Intent-Wert (kein localStorage). DayPanel setzt ihn vor `setCurrentTab(0)`, TabHeute konsumiert ihn einmalig beim Mount.
+- **Pool + Drag & Drop:** Immer sichtbar, funktioniert auf allen Tagen — Slots schreiben auf `viewDate`.
