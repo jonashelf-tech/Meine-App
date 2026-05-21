@@ -8,11 +8,13 @@ import Pool             from '../Pool/Pool'
 import EditModal        from '../../../components/EditModal/EditModal'
 import ReminderSection  from '../../tools/reminder/ReminderSection'
 import ClockPopup       from '../Zeitplan/ClockPopup'
+import DayNav           from '../../../components/DayNav/DayNav'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate } = useAppStore()
 
+  const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
   const [visEnd,   setVisEnd]   = useState(() => lv(SK.visEnd,   20))
   const [editingTodo, setEditingTodo] = useState(null)
@@ -25,8 +27,16 @@ export default function TabHeute() {
   const daysRef     = useRef(days)
   const tickRef     = useRef(null)
 
-  const viewDate   = todayKey()
   const todaySlots = days[viewDate] ?? {}
+
+  // ─── Consume dayplanDate on mount ─────────────────────
+  useEffect(() => {
+    if (dayplanDate) {
+      setViewDate(dayplanDate)
+      setDayplanDate(null)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ─── Keep daysRef current ─────────────────────────────
   useEffect(() => { daysRef.current = days }, [days])
@@ -293,6 +303,11 @@ export default function TabHeute() {
 
   return (
     <div className={s.page}>
+      <DayNav
+        date={viewDate}
+        onChange={setViewDate}
+        onCalendarOpen={() => setCurrentTab(1)}
+      />
       <Zeitplan
         slots={todaySlots}
         todos={todos}
