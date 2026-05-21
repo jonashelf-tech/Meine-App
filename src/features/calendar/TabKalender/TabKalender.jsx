@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
-import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth } from '../../../utils'
+import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor } from '../../../utils'
 import { TOOL_REGISTRY } from '../../tools/toolRegistry'
 import s from './TabKalender.module.css'
 
@@ -13,6 +13,11 @@ const MONTH_NAMES = [
 const SLOT_H     = 28
 const GRID_START = 7
 const GRID_END   = 22
+
+const TOOL_TAB = {
+  rad: 11, timer: 5, rezepte: 6, pizza: 7, elvi: 8,
+  gewicht: 9, gamification: 10, geburtstage: 4, reminder: 12,
+}
 
 function getMonday(date) {
   const d = new Date(date)
@@ -60,42 +65,137 @@ function getCellBars(dk, days) {
     }))
 }
 
-function DayDetail({ dateKey, days, todos, onNavigate }) {
+// ─── Day Panel ────────────────────────────────────────────
+function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab }) {
+  const [open, setOpen] = useState({ zeitplan: true, done: true, tools: true })
+
   const slots = days[dateKey] ?? {}
-  const entries = Object.entries(slots)
+  const sortedSlots = Object.entries(slots)
+    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+
+  const doneTodos = todos.filter(t => t.doneAt?.startsWith(dateKey))
+
+  const activeToolsData = activeTools
+    .map(id => TOOL_REGISTRY.find(t => t.id === id))
+    .filter(Boolean)
+
   const [y, m, d] = dateKey.split('-')
-  const label = `${d}.${m}.${y}`
+  const dateObj  = new Date(parseInt(y), parseInt(m) - 1, parseInt(d))
+  const dayName  = dateObj.toLocaleDateString('de-DE', { weekday: 'long' })
+  const label    = `${dayName}, ${d}.${m}.${y}`
+
+  const toggle = (key) => setOpen(prev => ({ ...prev, [key]: !prev[key] }))
 
   return (
-    <div className={s.detail}>
-      <div className={s.detailHeader}>
-        <span className={s.detailDate}>{label}</span>
-        <button className={s.detailOpenBtn} onClick={() => onNavigate(dateKey)}>
-          Öffnen →
-        </button>
+    <div className={s.dayPanel}>
+      <div className={s.dayPanelHeader}>
+        <span className={s.dayPanelDate}>{label}</span>
       </div>
-      {entries.length === 0 ? (
-        <p className={s.detailEmpty}>Keine Einträge</p>
-      ) : (
-        <div className={s.detailSlots}>
-          {entries.slice(0, 6).map(([key, slot]) => (
-            <div key={key} className={s.detailSlot}>
-              <span className={s.detailDot} style={{ background: slot.color || 'var(--primary)' }} />
-              <span className={s.detailSlotText}>{slot.text}</span>
-              {slot.done && <span className={s.detailDone}>✓</span>}
-            </div>
-          ))}
-          {entries.length > 6 && (
-            <p className={s.detailMore}>+{entries.length - 6} weitere</p>
+
+      {/* Zeitplan */}
+      <div className={s.dayPanelSection}>
+        <button className={s.dayPanelSectionHead} onClick={() => toggle('zeitplan')}>
+          <span className={s.dayPanelSectionLabel}>Zeitplan</span>
+          {sortedSlots.length > 0 && (
+            <span className={s.dayPanelSectionCount}>{sortedSlots.length}</span>
           )}
-        </div>
-      )}
+          <span className={s.dayPanelArrow}>{open.zeitplan ? '▾' : '▸'}</span>
+        </button>
+        {open.zeitplan && (
+          <div className={s.dayPanelList}>
+            {sortedSlots.length === 0 ? (
+              <p className={s.dayPanelEmpty}>Keine Termine</p>
+            ) : sortedSlots.map(([key, slot]) => {
+              const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
+              const mm     = parseFloat(key) % 1 ? '30' : '00'
+              const isTodo = Boolean(slot.todoId)
+              const color  = slot.color || 'var(--primary)'
+              return (
+                <div
+                  key={key}
+                  className={[s.dayPanelEntry, isTodo ? s.dayPanelEntryTodo : ''].join(' ')}
+                  style={{ borderLeftColor: color }}
+                  onDoubleClick={() => setCurrentTab(0)}
+                >
+                  <span className={s.dayPanelEntryTime} style={{ color }}>{hh}:{mm}</span>
+                  <span className={s.dayPanelEntryText}>{slot.text}</span>
+                  {isTodo && <span className={s.dayPanelBadge}>Todo</span>}
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Abgehakte Todos */}
+      <div className={s.dayPanelSection}>
+        <button className={s.dayPanelSectionHead} onClick={() => toggle('done')}>
+          <span className={s.dayPanelSectionLabel}>Erledigt</span>
+          {doneTodos.length > 0 && (
+            <span className={s.dayPanelSectionCount}>{doneTodos.length}</span>
+          )}
+          <span className={s.dayPanelArrow}>{open.done ? '▾' : '▸'}</span>
+        </button>
+        {open.done && (
+          <div className={s.dayPanelList}>
+            {doneTodos.length === 0 ? (
+              <p className={s.dayPanelEmpty}>Keine erledigten Todos</p>
+            ) : doneTodos.map(t => (
+              <div
+                key={t.id}
+                className={s.dayPanelTodoEntry}
+                style={{ borderLeftColor: t.color || 'var(--primary)' }}
+                onDoubleClick={() => setCurrentTab(0)}
+              >
+                <span className={s.dayPanelCheck}>✓</span>
+                <span className={s.dayPanelEntryText}>{t.text}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Tools */}
+      <div className={s.dayPanelSection}>
+        <button className={s.dayPanelSectionHead} onClick={() => toggle('tools')}>
+          <span className={s.dayPanelSectionLabel}>Tools</span>
+          {activeToolsData.length > 0 && (
+            <span className={s.dayPanelSectionCount}>{activeToolsData.length}</span>
+          )}
+          <span className={s.dayPanelArrow}>{open.tools ? '▾' : '▸'}</span>
+        </button>
+        {open.tools && (
+          <div className={s.dayPanelToolGrid}>
+            {activeToolsData.length === 0 ? (
+              <p className={s.dayPanelEmpty}>Keine aktiven Tools</p>
+            ) : activeToolsData.map(tool => {
+              const color = getToolColor(tool.id, toolColors)
+              const tab   = TOOL_TAB[tool.id]
+              return (
+                <button
+                  key={tool.id}
+                  className={s.dayPanelToolChip}
+                  style={{
+                    borderColor: `${color}55`,
+                    background:  `${color}14`,
+                    color,
+                  }}
+                  onDoubleClick={() => tab != null && setCurrentTab(tab)}
+                >
+                  <span className={s.dayPanelToolIcon}>{tool.icon}</span>
+                  <span className={s.dayPanelToolName}>{tool.name}</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], setCurrentTab } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab } = useAppStore()
   const [view, setView] = useState('woche')
   const today = useMemo(() => {
     const d = new Date()
@@ -121,8 +221,6 @@ export default function TabKalender() {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek  = weekDays.some(d => toDateKey(d) === todayKey)
   const isCurrentMonth = monthRef.year === today.getFullYear() && monthRef.month === today.getMonth()
-
-  const navigateToDay = () => setCurrentTab(0)
 
   const handleDayClick = (dateKey) => {
     setSelectedDay(prev => prev === dateKey ? null : dateKey)
@@ -331,49 +429,55 @@ export default function TabKalender() {
               const toolDots = showTools ? getToolDots(dk, todos, activeTools, birthdays) : []
 
               return (
-                <div key={dk}>
-                  <button
-                    className={[
-                      s.monthCell,
-                      isToday    ? s.monthCellToday    : '',
-                      isSelected ? s.monthCellSelected : '',
-                    ].join(' ')}
-                    onClick={() => handleDayClick(dk)}
-                  >
-                    <span className={s.monthDay}>{day}</span>
-                    {visible.map((bar, i) => (
-                      <div
-                        key={i}
-                        className={[s.cellBar, bar.isTodo ? s.cellBarTodo : ''].join(' ')}
-                        style={{ background: bar.color }}
-                      >
-                        <span className={s.cellBarText}>{bar.text}</span>
-                      </div>
-                    ))}
-                    {overflow > 0 && <span className={s.cellMore}>+{overflow}</span>}
-                    {toolDots.length > 0 && (
-                      <div className={s.toolDots}>
-                        {toolDots.map(dot => (
-                          <span
-                            key={dot.id}
-                            className={[s.toolDot, dot.done ? '' : s.toolDotActive].join(' ')}
-                            style={dot.done
-                              ? { background: dot.color }
-                              : { color: dot.color, borderColor: dot.color }}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </button>
-                  {isSelected && (
-                    <div className={s.monthDetailWrap}>
-                      <DayDetail dateKey={dk} days={days} todos={todos} onNavigate={navigateToDay} />
+                <button
+                  key={dk}
+                  className={[
+                    s.monthCell,
+                    isToday    ? s.monthCellToday    : '',
+                    isSelected ? s.monthCellSelected : '',
+                  ].join(' ')}
+                  onClick={() => handleDayClick(dk)}
+                >
+                  <span className={s.monthDay}>{day}</span>
+                  {visible.map((bar, i) => (
+                    <div
+                      key={i}
+                      className={[s.cellBar, bar.isTodo ? s.cellBarTodo : ''].join(' ')}
+                      style={{ background: bar.color }}
+                    >
+                      <span className={s.cellBarText}>{bar.text}</span>
+                    </div>
+                  ))}
+                  {overflow > 0 && <span className={s.cellMore}>+{overflow}</span>}
+                  {toolDots.length > 0 && (
+                    <div className={s.toolDots}>
+                      {toolDots.map(dot => (
+                        <span
+                          key={dot.id}
+                          className={[s.toolDot, dot.done ? '' : s.toolDotActive].join(' ')}
+                          style={dot.done
+                            ? { background: dot.color }
+                            : { color: dot.color, borderColor: dot.color }}
+                        />
+                      ))}
                     </div>
                   )}
-                </div>
+                </button>
               )
             })}
           </div>
+
+          {/* Day Panel */}
+          {selectedDay && (
+            <DayPanel
+              dateKey={selectedDay}
+              days={days}
+              todos={todos}
+              activeTools={activeTools}
+              toolColors={toolColors}
+              setCurrentTab={setCurrentTab}
+            />
+          )}
         </>
       )}
 
