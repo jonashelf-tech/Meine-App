@@ -161,6 +161,7 @@ export default function TabTools() {
             ref={el => { colorInputRefs.current[tool.id] = el }}
             type="color"
             value={toolColor}
+            onClick={e => e.stopPropagation()}
             onChange={e => handleColorChange(tool.id, e.target.value)}
             className={s.hidden}
           />
@@ -219,6 +220,7 @@ export default function TabTools() {
                   ref={el => { colorInputRefs.current[tool.id] = el }}
                   type="color"
                   value={toolColor}
+                  onClick={e => e.stopPropagation()}
                   onChange={e => handleColorChange(tool.id, e.target.value)}
                   className={s.hidden}
                 />
