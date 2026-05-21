@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabTimer.module.css'
 
 // ─── Presets ───────────────────────────────────────────────
@@ -308,14 +309,13 @@ export default function TabTimer({ onBack }) {
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
 
-      {/* ── Header ─────────────────────────────────────────── */}
-      <div className={s.header}>
-        <button className={s.back} onClick={onBack}>← Tools</button>
-        <span className={s.title}>Fokus-Timer</span>
-        {pomCycles > 0 && (
-          <span className={s.cycles}>🍅×{pomCycles}</span>
-        )}
-      </div>
+      <ToolHeader
+        onBack={onBack}
+        icon="⏱"
+        eyebrow="Tool"
+        title={<>Fokus-<em>Timer</em></>}
+        actions={pomCycles > 0 && <span className={s.cycles}>🍅×{pomCycles}</span>}
+      />
 
       {/* ── Confirm: Stop ──────────────────────────────────── */}
       {confirmStop && (

@@ -90,6 +90,7 @@
   outline: none;
   cursor: pointer;
   width: 100%;
+  color-scheme: dark;
 }
 .select:focus { border-color: #FF9F43; }
 .selectedChips {

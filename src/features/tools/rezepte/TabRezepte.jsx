@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import { lv, sv } from '../../../storage'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabRezepte.module.css'
 
 const SK_R = 'adhs_recipes_list'
@@ -132,13 +133,16 @@ export default function TabRezepte({ onBack }) {
         </div>
       )}
 
-      <div className={s.header}>
-        <button className={s.back} onClick={onBack}>← Tools</button>
-        <div className={s.headerActions}>
+      <ToolHeader
+        onBack={onBack}
+        icon="🍳"
+        eyebrow="Tool"
+        title={<>Re<em>zepte</em></>}
+        actions={<>
           <span className={s.count}>{recipes.length} Rezepte</span>
           <button className={s.iconBtn} onClick={exportRecipes} title="Exportieren">↑</button>
-        </div>
-      </div>
+        </>}
+      />
 
       <div className={s.subtabs}>
         {[["planer","Planer"],["rezepte","Rezepte"],["einkauf","Einkauf"]].map(([id,label])=>(

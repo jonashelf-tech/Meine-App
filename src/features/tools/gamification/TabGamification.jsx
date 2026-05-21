@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabGamification.module.css'
 
 const SK = "adhs_gamification_v1"
@@ -91,9 +92,7 @@ export default function TabGamification({ onBack }) {
         </div>
       )}
 
-      <div className={s.header}>
-        <span className={s.title}>⚡ XP & Level</span>
-      </div>
+      <ToolHeader onBack={onBack} icon="⚡" eyebrow="XP & Level" title={<><em>Gamification</em></>} />
 
       {/* Level card */}
       <div className={s.levelCard}>

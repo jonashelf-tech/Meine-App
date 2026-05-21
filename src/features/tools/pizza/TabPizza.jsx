@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabPizza.module.css'
 
 const REF_TOTAL = 1986.5
@@ -71,17 +72,13 @@ export default function TabPizza({ onBack }) {
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
 
-      {/* Header */}
-      <div className={s.header}>
-        <button className={s.back} onClick={onBack}>← Tools</button>
-        <button className={s.resetBtn} onClick={reset}>↺</button>
-      </div>
-
-      {/* Title */}
-      <div className={s.titleBlock}>
-        <div className={s.eyebrow}>Impasto Napoletano</div>
-        <div className={s.title}>Pizza<em>rechner</em></div>
-      </div>
+      <ToolHeader
+        onBack={onBack}
+        icon="🍕"
+        eyebrow="Impasto Napoletano"
+        title={<>Pizza<em>rechner</em></>}
+        actions={<button className={s.resetBtn} onClick={reset}>↺</button>}
+      />
 
       {/* Inputs */}
       <div className={s.inputs}>

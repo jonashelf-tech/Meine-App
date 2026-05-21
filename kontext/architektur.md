@@ -4,7 +4,7 @@
 
 ```
 src/
-  components/       Globale Komponenten (AddTodoModal, TodoChip, Toast, EditModal, PrioBadge)
+  components/       Globale Komponenten (AddTodoModal, TodoChip, Toast, EditModal, PrioBadge, ToolHeader)
   features/
     calendar/       TabHeute, TabKalender, Zeitplan, Pool, QuickAdd, KiPlanSection
                     └─ Zeitplan/ClockPopup.jsx  (Clock-Popup wenn Slot-Zeit abläuft)

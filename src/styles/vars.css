@@ -110,6 +110,9 @@ body::before {
   }
 }
 
+/* ─── Native form controls — dark mode ─────────────────── */
+select { color-scheme: dark; }
+
 /* ─── Utility ───────────────────────────────────────────── */
 .animate-in { animation: fadeInUp 0.2s ease both; }
 

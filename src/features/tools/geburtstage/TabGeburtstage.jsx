@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import { useToast } from '../../../components/Toast/Toast'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabGeburtstage.module.css'
 
 const MONTH_NAMES = [
@@ -34,7 +35,7 @@ function calcAge(mmdd, year) {
   return age
 }
 
-export default function TabGeburtstage() {
+export default function TabGeburtstage({ onBack }) {
   const { birthdays, setBirthdays, toolColors } = useAppStore()
   const toolColor = getToolColor('geburtstage', toolColors)
   const { showToast } = useToast()
@@ -69,12 +70,17 @@ export default function TabGeburtstage() {
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
-      <div className={s.header}>
-        <h2 className={s.title}>Geburtstage</h2>
-        <button className={s.fab} onClick={() => setShowForm(p => !p)}>
-          {showForm ? '✕' : '+'}
-        </button>
-      </div>
+      <ToolHeader
+        onBack={onBack}
+        icon="🎂"
+        eyebrow="Tool"
+        title={<>Geburts<em>tage</em></>}
+        actions={
+          <button className={s.fab} onClick={() => setShowForm(p => !p)}>
+            {showForm ? '✕' : '+'}
+          </button>
+        }
+      />
 
       {showForm && (
         <div className={s.form}>

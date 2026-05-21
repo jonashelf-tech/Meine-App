@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabGewicht.module.css'
 
 const SK      = 'adhs_health_weight'
@@ -192,13 +193,7 @@ export default function TabGewicht({ onBack }) {
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
-      <div className={s.header}>
-        <button className={s.back} onClick={onBack}>← Tools</button>
-        <div className={s.titleBlock}>
-          <div className={s.eyebrow}>Tracking</div>
-          <div className={s.title}>Gewicht<em>tracker</em></div>
-        </div>
-      </div>
+      <ToolHeader onBack={onBack} icon="⚖" eyebrow="Tracking" title={<>Gewicht<em>tracker</em></>} />
 
       {/* Tab nav */}
       <div className={s.tabs}>

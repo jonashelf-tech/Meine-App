@@ -197,7 +197,8 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
 
 export default function TabKalender() {
   const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate } = useAppStore()
-  const [view, setView] = useState('woche')
+  const [view, setView] = useState(() => localStorage.getItem('adhs_cal_view') || 'woche')
+  const handleSetView = (v) => { localStorage.setItem('adhs_cal_view', v); setView(v) }
   const today = useMemo(() => {
     const d = new Date()
     d.setHours(0, 0, 0, 0)
@@ -243,13 +244,13 @@ export default function TabKalender() {
       <div className={s.segmented}>
         <button
           className={[s.seg, view === 'woche' ? s.segActive : ''].join(' ')}
-          onClick={() => setView('woche')}
+          onClick={() => handleSetView('woche')}
         >
           Woche
         </button>
         <button
           className={[s.seg, view === 'monat' ? s.segActive : ''].join(' ')}
-          onClick={() => setView('monat')}
+          onClick={() => handleSetView('monat')}
         >
           Monat
         </button>

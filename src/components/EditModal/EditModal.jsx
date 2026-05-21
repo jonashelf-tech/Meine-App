@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import s from './EditModal.module.css'
 
 const NEON = [
@@ -16,6 +17,7 @@ const PRIORITIES = [
 const DURATIONS = [15, 30, 45, 60, 90, 120]
 
 export default function EditModal({ todo, onSave, onDelete, onClose }) {
+  const keyboardOffset = useKeyboardOffset()
   const [text,     setText]     = useState(todo.text     ?? '')
   const [priority, setPriority] = useState(todo.priority ?? 3)
   const [color,    setColor]    = useState(todo.color    ?? '#00CFFF')
@@ -59,7 +61,11 @@ export default function EditModal({ todo, onSave, onDelete, onClose }) {
   }
 
   return (
-    <div className={s.overlay} onClick={handleOverlayClick}>
+    <div
+      className={s.overlay}
+      style={keyboardOffset > 0 ? { alignItems: 'flex-start', paddingTop: 16, paddingBottom: keyboardOffset } : {}}
+      onClick={handleOverlayClick}
+    >
       <div className={s.modal}>
         {/* Header */}
         <div className={s.header}>

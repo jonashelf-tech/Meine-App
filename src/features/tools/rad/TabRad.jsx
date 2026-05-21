@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, getToolColor } from '../../../utils'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabRad.module.css'
 
 const NEON = ['#00CFFF', '#BF00FF', '#FF2D78', '#00FF94', '#FFD700']
@@ -284,14 +285,7 @@ export default function TabRad({ onBack }) {
         </div>
       )}
 
-      {/* ─── Header ──────────────────────────────────────────── */}
-      <div className={s.header}>
-        <button className={s.back} onClick={onBack}>← Tools</button>
-        <div className={s.titleBlock}>
-          <div className={s.eyebrow}>Tool</div>
-          <div className={s.title}>Zufalls<em>rad</em></div>
-        </div>
-      </div>
+      <ToolHeader onBack={onBack} icon="🎡" eyebrow="Tool" title={<>Zufalls<em>rad</em></>} />
 
       {/* ─── Filter ──────────────────────────────────────────── */}
       <div className={s.radFilter}>

@@ -1,0 +1,271 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
+
+  .demo-wrap {
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 8px 0 24px;
+  }
+
+  .phone {
+    background: #080810;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    max-width: 360px;
+    margin-top: 12px;
+  }
+
+  /* Shared body placeholder */
+  .body {
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .bar {
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.07);
+  }
+  .bar.accent { background: rgba(139,92,246,0.25); width: 60%; }
+
+  /* ═══════════════════════════════════════════
+     Option A — Zurück-Pill + B-style title
+  ════════════════════════════════════════════ */
+  .a-header {
+    padding: 14px 16px 14px;
+    background: #080810;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .a-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px 5px 8px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Outfit', sans-serif;
+    width: fit-content;
+  }
+  .a-back-icon {
+    font-size: 0.85rem;
+    color: #8B5CF6;
+  }
+  .a-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .a-icon {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: rgba(139,92,246,0.12);
+    border: 1px solid rgba(139,92,246,0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .a-text { display: flex; flex-direction: column; }
+  .a-eyebrow {
+    font-size: 0.5rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: rgba(139,92,246,0.5);
+  }
+  .a-name {
+    font-size: 1.1rem; font-weight: 700;
+    color: rgba(255,255,255,0.92);
+  }
+  .a-name em { color: #8B5CF6; font-style: normal; }
+
+  /* ═══════════════════════════════════════════
+     Option B — Kompakter: alles eine Zeile
+  ════════════════════════════════════════════ */
+  .b-header {
+    padding: 13px 16px;
+    background: #080810;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .b-back {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    color: #8B5CF6;
+    flex-shrink: 0;
+  }
+  .b-divider {
+    width: 1px; height: 24px;
+    background: rgba(255,255,255,0.09);
+  }
+  .b-icon { font-size: 1.1rem; }
+  .b-text { display: flex; flex-direction: column; }
+  .b-eyebrow {
+    font-size: 0.5rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: rgba(139,92,246,0.5);
+  }
+  .b-name {
+    font-size: 1.0rem; font-weight: 700;
+    color: rgba(255,255,255,0.92);
+  }
+  .b-name em { color: #8B5CF6; font-style: normal; }
+
+  /* ═══════════════════════════════════════════
+     Option C — Farbstreifen + zweizeilig
+  ════════════════════════════════════════════ */
+  .c-header {
+    background: #080810;
+  }
+  .c-stripe {
+    height: 3px;
+    background: linear-gradient(90deg, #8B5CF6, rgba(139,92,246,0));
+  }
+  .c-inner {
+    padding: 12px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .c-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.4);
+    font-family: 'Outfit', sans-serif;
+  }
+  .c-back-btn {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: rgba(139,92,246,0.15);
+    border: 1px solid rgba(139,92,246,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    color: #8B5CF6;
+  }
+  .c-title-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .c-icon {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: rgba(139,92,246,0.12);
+    border: 1px solid rgba(139,92,246,0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .c-text { display: flex; flex-direction: column; }
+  .c-eyebrow {
+    font-size: 0.5rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: rgba(139,92,246,0.5);
+  }
+  .c-name {
+    font-size: 1.1rem; font-weight: 700;
+    color: rgba(255,255,255,0.92);
+  }
+  .c-name em { color: #8B5CF6; font-style: normal; }
+</style>
+
+<h2>Hybrid — Pfeil + Icon/Name</h2>
+<p class="subtitle">C-Pfeil (verfeinert) + B-Stil für Icon & Name. 3 Pfeil-Varianten:</p>
+
+<div class="demo-wrap">
+
+  <!-- A: Pill zurück-button, dann icon+title -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Pill-Button · gestapelt</h3>
+      <p>„← Zurück" als abgerundete Pill, darunter Icon + Eyebrow + Name.</p>
+      <div class="phone">
+        <div class="a-header">
+          <div class="a-back"><span class="a-back-icon">←</span> Zurück</div>
+          <div class="a-title-row">
+            <div class="a-icon">🎡</div>
+            <div class="a-text">
+              <div class="a-eyebrow">Tool</div>
+              <div class="a-name">Zufalls<em>rad</em></div>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="bar accent"></div>
+          <div class="bar" style="width:88%"></div>
+          <div class="bar" style="width:72%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Quadrat-Button inline mit Icon+title (alles eine Zeile) -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Quadrat-Button · eine Zeile</h3>
+      <p>Eckiger ← Button links, Trennlinie, dann Icon + Eyebrow + Name — alles inline.</p>
+      <div class="phone">
+        <div class="b-header">
+          <div class="b-back">←</div>
+          <div class="b-divider"></div>
+          <div class="b-icon">🎡</div>
+          <div class="b-text">
+            <div class="b-eyebrow">Tool</div>
+            <div class="b-name">Zufalls<em>rad</em></div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="bar accent"></div>
+          <div class="bar" style="width:88%"></div>
+          <div class="bar" style="width:72%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Farbstreifen + kleiner Pfeil-Button + gestapelter Titel -->
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Farbstreifen · kleiner Pfeil</h3>
+      <p>Violetter Streifen oben, kleiner Pfeil-Button + Icon + Eyebrow + Name gestapelt.</p>
+      <div class="phone">
+        <div class="c-header">
+          <div class="c-stripe"></div>
+          <div class="c-inner">
+            <div class="c-back">
+              <div class="c-back-btn">←</div>
+              <span>Zurück</span>
+            </div>
+            <div class="c-title-row">
+              <div class="c-icon">🎡</div>
+              <div class="c-text">
+                <div class="c-eyebrow">Tool</div>
+                <div class="c-name">Zufalls<em>rad</em></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="bar accent"></div>
+          <div class="bar" style="width:88%"></div>
+          <div class="bar" style="width:72%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

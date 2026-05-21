@@ -1,0 +1,168 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
+
+  .wrap {
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 8px 0 24px;
+  }
+
+  .phone {
+    background: #080810;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    max-width: 360px;
+    margin-top: 10px;
+  }
+
+  /* ── FINAL HEADER — alles eine Zeile ── */
+  .header {
+    padding: 14px 16px;
+    background: #080810;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Pill-Button links */
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px 5px 8px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .back-pill .arrow { color: #8B5CF6; font-size: 0.9rem; }
+
+  /* Trennlinie */
+  .divider {
+    width: 1px; height: 28px;
+    background: rgba(255,255,255,0.09);
+    flex-shrink: 0;
+  }
+
+  /* Icon */
+  .tool-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: rgba(139,92,246,0.12);
+    border: 1px solid rgba(139,92,246,0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+
+  /* Eyebrow + Name */
+  .title-text { display: flex; flex-direction: column; gap: 1px; }
+  .eyebrow {
+    font-size: 0.5rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: rgba(139,92,246,0.52);
+  }
+  .tool-name {
+    font-size: 1.0rem; font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.1;
+  }
+  .tool-name em { color: #8B5CF6; font-style: normal; }
+
+  /* Body placeholders */
+  .body { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .bar { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.07); }
+  .bar.accent { background: rgba(139,92,246,0.25); width: 60%; }
+
+  /* Tool-color tints */
+  .teal .tool-icon { background: rgba(20,184,166,0.12); border-color: rgba(20,184,166,0.22); }
+  .teal .eyebrow { color: rgba(20,184,166,0.52); }
+  .teal .tool-name em { color: #14B8A6; }
+  .teal .back-pill .arrow { color: #14B8A6; }
+  .teal .bar.accent { background: rgba(20,184,166,0.25); }
+
+  .rose .tool-icon { background: rgba(251,113,133,0.12); border-color: rgba(251,113,133,0.22); }
+  .rose .eyebrow { color: rgba(251,113,133,0.52); }
+  .rose .tool-name em { color: #FB7185; }
+  .rose .back-pill .arrow { color: #FB7185; }
+  .rose .bar.accent { background: rgba(251,113,133,0.25); }
+
+  .note { font-size: 0.72rem; color: rgba(255,255,255,0.4); margin-top: 4px; }
+</style>
+
+<h2>Alles in einer Zeile</h2>
+<p class="subtitle">← Zurück · Trennlinie · Icon · Eyebrow + Name — eine Zeile.</p>
+
+<div class="wrap">
+
+  <div>
+    <div class="note">Zufallsrad — Violett</div>
+    <div class="phone">
+      <div class="header">
+        <div class="back-pill"><span class="arrow">←</span> Zurück</div>
+        <div class="divider"></div>
+        <div class="tool-icon">🎡</div>
+        <div class="title-text">
+          <div class="eyebrow">Tool</div>
+          <div class="tool-name">Zufalls<em>rad</em></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="bar accent"></div>
+        <div class="bar" style="width:88%"></div>
+        <div class="bar" style="width:70%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="note">Fokus-Timer — Teal</div>
+    <div class="phone teal">
+      <div class="header">
+        <div class="back-pill"><span class="arrow">←</span> Zurück</div>
+        <div class="divider"></div>
+        <div class="tool-icon">⏱</div>
+        <div class="title-text">
+          <div class="eyebrow">Tool</div>
+          <div class="tool-name">Fokus-<em>Timer</em></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="bar accent"></div>
+        <div class="bar" style="width:80%"></div>
+        <div class="bar" style="width:65%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="note">Pizza-Rechner — Rose</div>
+    <div class="phone rose">
+      <div class="header">
+        <div class="back-pill"><span class="arrow">←</span> Zurück</div>
+        <div class="divider"></div>
+        <div class="tool-icon">🍕</div>
+        <div class="title-text">
+          <div class="eyebrow">Impasto Napoletano</div>
+          <div class="tool-name">Pizza-<em>rechner</em></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="bar accent"></div>
+        <div class="bar" style="width:85%"></div>
+        <div class="bar" style="width:60%"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:8px">So richtig? Dann bauen wir.</p>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../store'
+import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
 import { parseHHMM, minutesToSk, NEON } from '../../utils'
 import s from './AddTodoModal.module.css'
@@ -110,6 +111,7 @@ function ColorRow({ color, setColor }) {
 
 // ─── Main Component ───────────────────────────────────────
 export default function AddTodoModal({ onClose }) {
+  const keyboardOffset = useKeyboardOffset()
   const { todos, setTodos, routines, setRoutines, templates, setTemplates, days, setDays } = useAppStore()
 
   // Type
@@ -248,7 +250,11 @@ export default function AddTodoModal({ onClose }) {
   }[type]
 
   return (
-    <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+    <div
+      className={s.overlay}
+      style={keyboardOffset > 0 ? { alignItems: 'flex-start', paddingTop: 20, paddingBottom: keyboardOffset } : {}}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+    >
       <div className={s.modal}>
 
         {/* ── Header ─────────────────────────────────── */}

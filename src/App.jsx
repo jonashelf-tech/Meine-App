@@ -44,7 +44,7 @@ export default function App() {
         {currentTab === 1  && <TabKalender />}
         {currentTab === 2  && <TabTools />}
         {currentTab === 3  && <TabSettings />}
-        {currentTab === 4  && <TabGeburtstage />}
+        {currentTab === 4  && <TabGeburtstage     onBack={goBack} />}
         {currentTab === 5  && <TabTimer        onBack={goBack} />}
         {currentTab === 6  && <TabRezepte      onBack={goBack} />}
         {currentTab === 7  && <TabPizza        onBack={goBack} />}

@@ -1,8 +1,14 @@
+import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
 import s from './ClockPopup.module.css'
 
 export default function ClockPopup({ slotText, onDone, onSnooze, onShift, onDismiss }) {
+  const keyboardOffset = useKeyboardOffset()
   return (
-    <div className={s.overlay} onClick={onDismiss}>
+    <div
+      className={s.overlay}
+      style={keyboardOffset > 0 ? { alignItems: 'flex-start', paddingTop: 16, paddingBottom: keyboardOffset } : {}}
+      onClick={onDismiss}
+    >
       <div className={s.popup} onClick={e => e.stopPropagation()}>
 
         <div className={s.head}>

@@ -5,6 +5,7 @@ import {
   CURATED, intervalLabel, mergeWithCurated,
   loadReminderItems, saveReminderItems,
 } from './reminderData'
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabReminder.module.css'
 
 // ─── IntervalPicker ───────────────────────────────────────
@@ -192,13 +193,7 @@ export default function TabReminder({ onBack }) {
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
-      <div className={s.header}>
-        <button className={s.back} onClick={onBack}>← Tools</button>
-        <div className={s.titleBlock}>
-          <span className={s.eyebrow}>Tool</span>
-          <span className={s.title}>Re<em>minder</em></span>
-        </div>
-      </div>
+      <ToolHeader onBack={onBack} icon="🔔" eyebrow="Tool" title={<>Re<em>minder</em></>} />
 
       <div className={s.section}>
         <span className={s.sectionLabel}>Vorschläge</span>
