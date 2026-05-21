@@ -1,6 +1,7 @@
 import s from './NavPill.module.css'
 
-export default function NavPill({ label, onPrev, onNext, isCurrent, leftGlows, rightGlows, onLabelClick }) {
+export default function NavPill({ label, onPrev, onNext, isCurrent, leftGlows, rightGlows, onLabelClick, onLabelDoubleClick }) {
+  const isInteractive = onLabelClick || onLabelDoubleClick
   return (
     <div className={s.pill}>
       <button
@@ -14,11 +15,12 @@ export default function NavPill({ label, onPrev, onNext, isCurrent, leftGlows, r
         className={[
           s.label,
           isCurrent ? s.labelCurrent : '',
-          onLabelClick ? s.labelClickable : '',
+          isInteractive ? s.labelClickable : '',
         ].join(' ')}
         onClick={onLabelClick}
-        role={onLabelClick ? 'button' : undefined}
-        tabIndex={onLabelClick ? 0 : undefined}
+        onDoubleClick={onLabelDoubleClick}
+        role={isInteractive ? 'button' : undefined}
+        tabIndex={isInteractive ? 0 : undefined}
         onKeyDown={onLabelClick ? (e => e.key === 'Enter' && onLabelClick()) : undefined}
       >
         {label}

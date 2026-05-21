@@ -265,6 +265,7 @@ export default function TabKalender() {
             isCurrent={isCurrentWeek}
             leftGlows={!isCurrentWeek && toDateKey(weekStart) > toDateKey(getMonday(today))}
             rightGlows={!isCurrentWeek && toDateKey(weekStart) < toDateKey(getMonday(today))}
+            onLabelDoubleClick={isCurrentWeek ? undefined : () => setWeekStart(getMonday(today))}
           />
 
           <div className={s.weekWrapper}>
@@ -393,6 +394,7 @@ export default function TabKalender() {
             isCurrent={isCurrentMonth}
             leftGlows={monthRef.year > today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month > today.getMonth())}
             rightGlows={monthRef.year < today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month < today.getMonth())}
+            onLabelDoubleClick={isCurrentMonth ? undefined : () => setMonthRef({ year: today.getFullYear(), month: today.getMonth() })}
           />
 
           <div className={s.monthGrid}>
