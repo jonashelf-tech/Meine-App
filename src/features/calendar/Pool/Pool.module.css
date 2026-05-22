@@ -79,6 +79,8 @@
   color: rgba(255, 255, 255, 0.28);
   display: inline-block;
   transition: transform 0.2s ease;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .chevronCollapsed {
