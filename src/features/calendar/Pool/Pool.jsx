@@ -74,8 +74,6 @@ export default function Pool({
   onRemove,
   startDrag,
 }) {
-  const [fullscreen, setFullscreen] = useState(false)
-
   // Memoize placed sets — only slots without a todoId use text fallback
   const { placedIds, placedTexts } = useMemo(() => {
     const slotValues = Object.values(todaySlots).filter(Boolean)
@@ -111,17 +109,10 @@ export default function Pool({
     />
   )
 
-  const content = (
-    <>
+  return (
+    <div className={s.pool}>
       <div className={s.header}>
         <span className={s.poolLabel}>Pool</span>
-        <button
-          className={s.fullscreenBtn}
-          onClick={() => setFullscreen(v => !v)}
-          aria-label={fullscreen ? 'Vollbild schließen' : 'Vollbild öffnen'}
-        >
-          {fullscreen ? '✕' : '⤢'}
-        </button>
       </div>
 
       <Group label="Heute relevant" count={pool1.length} defaultOpen>
@@ -137,12 +128,6 @@ export default function Pool({
           : pool2.map(renderChip)
         }
       </Group>
-    </>
+    </div>
   )
-
-  if (fullscreen) {
-    return <div className={s.overlay}>{content}</div>
-  }
-
-  return <div className={s.pool}>{content}</div>
 }
