@@ -16,7 +16,7 @@ export default function ReminderSection() {
 
   const [items,     setItems]     = useState(() => mergeWithCurated(loadReminderItems()))
   const [dismissed, setDismissed] = useState(() => loadDismissed())
-  const [open,      setOpen]      = useState(true)
+  const [open,      setOpen]      = useState(false)
 
   const todayDismissed = dismissed[today] ?? []
   const dueItems = items.filter(item => isDueToday(item) && !todayDismissed.includes(item.id))
