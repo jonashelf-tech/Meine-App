@@ -101,49 +101,6 @@
   color: rgba(251,113,133,0.65);
 }
 
-/* ── Outside-range hints ──────────────────────────────── */
-.outsideHint {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 2px 0;
-}
-
-.outsideItem {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border: 1px dashed rgba(255,255,255,0.07);
-  border-radius: 7px;
-  overflow: hidden;
-}
-
-.outsideDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  opacity: 0.6;
-}
-
-.outsideTime {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: rgba(255,255,255,0.28);
-  flex-shrink: 0;
-}
-
-.outsideText {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.6rem;
-  color: rgba(255,255,255,0.2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 /* ── Flat grid (v2.7-style) ───────────────────────────── */
 .slotsContainer {
   border: 1px solid rgba(255,255,255,0.06);
@@ -156,7 +113,7 @@
 .sgGrid {
   display: grid;
   grid-template-columns: 28px 1fr;
-  grid-auto-rows: auto;
+  grid-auto-rows: 48px;
   overflow: visible;
 }
 
@@ -186,7 +143,7 @@
   position: relative;
   overflow: visible;
   transition: background 0.12s;
-  min-height: 40px;
+  padding: 2px 3px 2px 2px;
 }
 
 
@@ -197,10 +154,10 @@
 .sgEmpty {
   display: flex;
   align-items: center;
-  padding-left: 8px;
+  padding-left: 6px;
   cursor: default;
   background: rgba(255,255,255,0.008);
-  height: 40px;
+  height: 100%;
 }
 
 .sgNow {
@@ -208,9 +165,7 @@
 }
 
 .sgConsumed {
-  grid-column: 2;
-  height: 40px;
-  visibility: hidden;
+  display: none;
 }
 
 .halfTime {
@@ -235,6 +190,39 @@
   font-weight: 300;
 }
 
+/* ── Done circle ──────────────────────────────────────── */
+.slotDone {
+  width: 32px;
+  min-width: 32px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.doneCircle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.9);
+  transition: border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.doneCircleDone {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.7);
+}
+
 /* ── Slot handle ──────────────────────────────────────── */
 .slotHandle {
   width: 34px;
@@ -250,7 +238,7 @@
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  transition: color 0.15s;
+  transition: color 0.15s, filter 0.15s;
 }
 
 .slotHandle:hover  { color: rgba(255, 255, 255, 0.45); }
@@ -259,10 +247,20 @@
 .slotHandleLocked {
   cursor: pointer;
   color: var(--primary);
-  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
+  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.45));
 }
 
-.slotHandleLocked:hover { color: var(--primary); }
+.slotHandleLocked:hover {
+  color: #c4b5fd;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.65));
+}
+
+/* ── Drag-hover glow auf gesperrtem Slot ─────────────── */
+:global(.dnd-half-locked) .slotHandle,
+:global(.dnd-half-locked) .slotHandleLocked {
+  color: #c4b5fd;
+  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.9));
+}
 
 /* ─── Remove Dialog ──────────────────────────────────────── */
 .dialogOverlay {
