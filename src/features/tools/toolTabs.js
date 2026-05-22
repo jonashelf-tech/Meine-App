@@ -10,4 +10,5 @@ export const TOOL_TAB = {
   gamification: 10,
   rad:          11,
   reminder:     12,
+  haushalt:     13,
 }

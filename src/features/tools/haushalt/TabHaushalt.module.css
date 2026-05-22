@@ -1,0 +1,542 @@
+/* ── Page ─────────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* ── View tab strip ──────────────────────────────────────── */
+.tabStrip {
+  display: flex;
+  margin: 0 16px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 9px;
+  background: none;
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.14s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabBtn + .tabBtn {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tabBtnActive {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--primary);
+}
+
+/* ── Queue View ──────────────────────────────────────────── */
+.queueView {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 24px;
+}
+
+/* Mode strip — 3 large buttons */
+.modeStrip {
+  display: flex;
+  gap: 8px;
+}
+
+.modeBtn {
+  flex: 1;
+  padding: 10px 6px;
+  border-radius: var(--r);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.018);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modeBtn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.modeBtnActive {
+  border-color: var(--mode-color);
+  color: var(--mode-color);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Zeit-Schnellwahl */
+.zeitSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zeitLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.04em;
+}
+
+.zeitBtns {
+  display: flex;
+  gap: 6px;
+}
+
+.zeitBtn {
+  flex: 1;
+  padding: 7px 4px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zeitBtn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.zeitBtnActive {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Chip list */
+.chipList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 20px;
+}
+
+.emptyEmoji {
+  font-size: 2rem;
+}
+
+.emptyText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+}
+
+/* Transfer button */
+.transferBtn {
+  width: 100%;
+  padding: 11px;
+  border-radius: var(--r);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.14s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.transferBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.transferBtnDone {
+  color: var(--emerald);
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.06);
+  cursor: default;
+}
+
+/* ── Räume View ──────────────────────────────────────────── */
+.roomsView {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px 80px;
+}
+
+/* Room card */
+.roomCard {
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--r);
+  background: rgba(255, 255, 255, 0.018);
+  overflow: hidden;
+}
+
+.roomHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.roomIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.roomName {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.roomNameInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--r-sm);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  outline: none;
+  caret-color: var(--primary);
+}
+
+.statusBadge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  border-radius: 20px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.editRoomBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.28);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 4px 6px;
+  flex-shrink: 0;
+  transition: color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editRoomBtn:hover {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.roomChevron {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
+}
+
+/* Room body */
+.roomBody {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Task row */
+.taskRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.taskRow:last-of-type {
+  border-bottom: none;
+}
+
+.taskInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.taskText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.taskMeta {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.28);
+  font-family: 'Outfit', sans-serif;
+}
+
+.taskEditRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.taskSelect {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.deleteTaskBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: color 0.12s;
+  margin-left: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.deleteTaskBtn:hover {
+  color: var(--rose);
+}
+
+/* Add task row */
+.addTaskRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.addTaskInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  padding: 7px 10px;
+  outline: none;
+  caret-color: var(--primary);
+}
+
+.addTaskInput:focus {
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.addTaskInput::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.addTaskBtn {
+  background: rgba(139, 92, 246, 0.15);
+  border: none;
+  border-radius: var(--r-sm);
+  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 7px 12px;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.addTaskBtn:hover {
+  background: rgba(139, 92, 246, 0.25);
+}
+
+/* Delete room button */
+.deleteRoomBtn {
+  margin-top: 8px;
+  padding: 7px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(251, 113, 133, 0.3);
+  background: rgba(251, 113, 133, 0.06);
+  color: var(--rose);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.deleteRoomBtn:hover {
+  background: rgba(251, 113, 133, 0.12);
+}
+
+/* Add room button */
+.addRoomBtn {
+  padding: 11px;
+  border-radius: var(--r);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: none;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: all 0.14s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.addRoomBtn:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Add room form */
+.addRoomForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.addRoomInputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.addRoomInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  padding: 8px 12px;
+  outline: none;
+  caret-color: var(--primary);
+}
+
+.addRoomInput:focus {
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.addRoomInput::placeholder {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.addRoomIconInput {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  padding: 6px 10px;
+  outline: none;
+  width: 52px;
+  text-align: center;
+}
+
+.addRoomConfirmBtn {
+  padding: 8px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: rgba(139, 92, 246, 0.18);
+  color: var(--primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.addRoomConfirmBtn:hover {
+  background: rgba(139, 92, 246, 0.28);
+}
+
+.cancelBtn {
+  padding: 7px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: none;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cancelBtn:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Global reset */
+.resetBtn {
+  margin-top: 16px;
+  padding: 9px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: none;
+  color: rgba(255, 255, 255, 0.22);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.14s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.resetBtn:hover {
+  color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.resetBtnConfirm {
+  border-color: rgba(251, 113, 133, 0.4);
+  color: var(--rose);
+  background: rgba(251, 113, 133, 0.06);
+}
