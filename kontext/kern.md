@@ -1,50 +1,35 @@
 # Kern — Datenstrukturen & Store
 
-## Block (einheitlicher Datentyp)
+## Block (einziger Datentyp)
 
 ```js
 {
-  id:         genId(),   // crypto.randomUUID() oder Fallback-String — KEIN Date.now()
-  text:       "",
-  priority:   3,         // 1=Muss · 2=Sollte · 3=Kann
-  color:      "#8B5CF6", // Default = Akzentfarbe, nie '#00CFFF'
-  duration:   30,        // Minuten, null = keine Angabe
-  category:   null,
-  date:       null,      // "2024-01-15" — Fälligkeit oder Termin
-  time:       null,      // "14:30" — nur bei Terminen
-  done:       false,
-  doneAt:     null,
-  recurring:  null,      // Routine-Referenz
-  isTemplate: false,
-  subItems:   [],        // [{ id, text, done }]
-  notes:      null,      // freier Notiztext
-  createdAt:  new Date().toISOString(),
+  id:                    genId(),   // crypto.randomUUID() oder Fallback-String — KEIN Date.now()
+  text:                  "",
+  priority:              3,         // 1=Wichtig · 2=Sollte · 3=Kann
+  color:                 "#8B5CF6", // Default = Akzentfarbe
+  duration:              null,      // Minuten, null = keine Angabe (Default war früher 30 — jetzt null)
+  category:              null,
+  date:                  null,      // "2024-01-15" — Fälligkeit oder Termin
+  time:                  null,      // "14:30" — nur bei Terminen (date+time = Kalender-Termin)
+  done:                  false,
+  doneAt:                null,
+  awaitingClockResponse: false,     // true = Termin-Zeit abgelaufen, ClockPopup noch nicht beantwortet
+  subItems:              [],        // [{ id, text, done }]
+  notes:                 null,
+  createdAt:             new Date().toISOString(),
 }
 ```
 
 `createBlock(partial?)` in `src/features/todos/Block.js` erzeugt einen vollständigen Block.
 Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert createdAt + genId.
 
----
+**Hilfsfunktionen (Block.js):**
+- `isTermin(b)`      — `!!(b.date && b.time)` → Kalender-Termin
+- `isFaelligkeit(b)` — `!!(b.date && !b.time)` → nur Datum, kein Slot
+- `isTodo(b)`        — `!b.date && !b.time` → reines Pool-Todo
 
-## Routine (Datenstruktur)
-
-```js
-{
-  id:          Date.now(),
-  text:        "",
-  freq:        'daily' | 'weekly' | 'monthly' | 'custom',
-  customEvery: 2,        // nur wenn freq === 'custom'
-  customUnit:  'days',   // 'days' | 'weeks' | 'months' — nur wenn freq === 'custom'
-  hour:        null,     // optional (0–23)
-  weekday:     1,        // nur wenn freq === 'weekly' (0=So … 6=Sa)
-  monthday:    1,        // nur wenn freq === 'monthly' (1–31)
-  color:       "#8B5CF6",
-  duration:    null,
-  category:    null,
-  subItems:    [],       // [{ id, text, done }]
-}
-```
+**Routine und Vorlage wurden entfernt.** Block ist der einzige Typ.
 
 ---
 
@@ -53,10 +38,8 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 ```js
 // Kern
 todos,        setTodos
-routines,     setRoutines
 todoOrder,    setTodoOrder
 cats,         setCats
-templates,    setTemplates
 
 // Kalender
 days,         setDays       // { "2024-01-15": { "8": SlotEntry, "8.5": SlotEntry } }
