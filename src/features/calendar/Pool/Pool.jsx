@@ -111,6 +111,7 @@ export default function Pool({
   const [collapsed,      setCollapsed]      = useState(false)
   const [sort,           setSort]           = useState(() => lv(SK.poolSort, 'standard'))
   const [showAll,        setShowAll]        = useState(false)
+  const [confirmId,      setConfirmId]      = useState(null)
 
   const handleSort = useCallback((key) => {
     setSort(key)
@@ -190,7 +191,7 @@ export default function Pool({
       setTodos={setTodos}
       onToggleDone={() => handleToggle(t.id)}
       onEdit={() => onEdit?.(t.id)}
-      onRemove={() => onRemove?.(t.id)}
+      onRemove={() => setConfirmId(t.id)}
       startDrag={startDrag}
       isPlaced={isPlaced(t)}
     />
@@ -200,11 +201,20 @@ export default function Pool({
     <div className={s.pool}>
 
       {/* ── Header ────────────────────────────────────── */}
-      <div className={s.header}>
-        <span className={s.poolLabel}>Pool</span>
+      <div
+        className={s.header}
+        onClick={() => setCollapsed(v => !v)}
+        role="button"
+        aria-expanded={!collapsed}
+      >
+        <span className={s.poolLabel}>Todos</span>
+
+        {collapsed && activePool.length > 0 && (
+          <span className={s.countBadge}>{activePool.length} offen</span>
+        )}
 
         {!collapsed && (
-          <div className={s.sortRow}>
+          <div className={s.sortRow} onClick={e => e.stopPropagation()}>
             {[
               { key: 'standard',  label: 'Standard'  },
               { key: 'kategorie', label: 'Kategorie' },
@@ -221,13 +231,7 @@ export default function Pool({
           </div>
         )}
 
-        <button
-          className={s.collapseBtn}
-          onClick={() => setCollapsed(v => !v)}
-          aria-label={collapsed ? 'Pool aufklappen' : 'Pool zuklappen'}
-        >
-          <span className={[s.chevron, collapsed ? s.chevronCollapsed : ''].join(' ')}>▾</span>
-        </button>
+        <span className={[s.chevron, collapsed ? s.chevronCollapsed : ''].join(' ')}>▾</span>
       </div>
 
       {!collapsed && (
@@ -283,6 +287,26 @@ export default function Pool({
           </div>
         </>
       )}
+
+      {confirmId && (() => {
+        const todo = todos.find(t => t.id === confirmId)
+        return (
+          <div className={s.dialogOverlay} onClick={() => setConfirmId(null)}>
+            <div className={s.dialog} onClick={e => e.stopPropagation()}>
+              <p className={s.dialogTitle}>"{todo?.text}"</p>
+              <button
+                className={s.dialogBtnDelete}
+                onClick={() => { onRemove?.(confirmId); setConfirmId(null) }}
+              >
+                Löschen
+              </button>
+              <button className={s.dialogBtnCancel} onClick={() => setConfirmId(null)}>
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
