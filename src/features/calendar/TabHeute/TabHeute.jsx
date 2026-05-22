@@ -23,10 +23,11 @@ export default function TabHeute() {
 
   const { registerHalf, startDrag } = useDragDrop()
 
-  const promptedRef = useRef(new Set())
-  const snoozeRef   = useRef({})
-  const daysRef     = useRef(days)
-  const tickRef     = useRef(null)
+  const promptedRef    = useRef(new Set())
+  const snoozeRef      = useRef({})
+  const daysRef        = useRef(days)
+  const tickRef        = useRef(null)
+  const missedQueueRef = useRef([])
 
   const todaySlots = days[viewDate] ?? {}
 
@@ -79,6 +80,24 @@ export default function TabHeute() {
     })
 
     if (newTodos.length > 0) setTodos(prev => [...prev, ...newTodos])
+
+    // Verpasste Termine: undone locked Slots aus der Vergangenheit mit awaitingClockResponse
+    const missedTermine = []
+    Object.entries(days).forEach(([dk, dayData]) => {
+      if (dk >= today || !dayData || typeof dayData !== 'object') return
+      Object.entries(dayData).forEach(([slotKey, slot]) => {
+        if (!slot || slot.done || !slot.todoId) return
+        const todo = todos.find(t => t.id === slot.todoId)
+        if (todo && !todo.done && todo.awaitingClockResponse) {
+          missedTermine.push({ slotKey, dateKey: dk, todo })
+        }
+      })
+    })
+    if (missedTermine.length > 0) {
+      missedQueueRef.current = missedTermine
+      setTimeout(() => showNextMissed(), 800)
+    }
+
     sv(SK.lastPoolReturn, today)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -114,6 +133,19 @@ export default function TabHeute() {
     return () => clearInterval(id)
   }, [viewDate])
 
+  // ─── Missed-Termin Queue ─────────────────────────────────
+  const showNextMissed = useCallback(() => {
+    const next = missedQueueRef.current.shift()
+    if (!next) return
+    setClockPopup({
+      slotKey:  next.slotKey,
+      slotText: next.todo.text,
+      isMissed: true,
+      dateKey:  next.dateKey,
+      todoId:   next.todo.id,
+    })
+  }, [])
+
   // ─── Helpers ─────────────────────────────────────────────
   const setTodaySlots = useCallback((updater) => {
     setDays(prev => {
@@ -127,7 +159,12 @@ export default function TabHeute() {
   const handleToggleDone = useCallback((id) => {
     setTodos(prev =>
       prev.map(t => t.id === id
-        ? { ...t, done: !t.done, doneAt: !t.done ? new Date().toISOString() : null }
+        ? {
+            ...t,
+            done:                  !t.done,
+            doneAt:                !t.done ? new Date().toISOString() : null,
+            awaitingClockResponse: false,
+          }
         : t
       )
     )
@@ -274,16 +311,47 @@ export default function TabHeute() {
 
   const handleClockDone = useCallback(() => {
     if (!clockPopup) return
-    handleToggleSlotDone(clockPopup.slotKey)
+    if (clockPopup.isMissed) {
+      setTodos(prev => prev.map(t =>
+        t.id === clockPopup.todoId
+          ? { ...t, done: true, doneAt: new Date().toISOString(), awaitingClockResponse: false }
+          : t
+      ))
+    } else {
+      handleToggleSlotDone(clockPopup.slotKey)
+      const slot = todaySlots[clockPopup.slotKey]
+      if (slot?.todoId) {
+        setTodos(prev => prev.map(t =>
+          t.id === slot.todoId ? { ...t, awaitingClockResponse: false } : t
+        ))
+      }
+    }
     closeClockPopup()
-  }, [clockPopup, handleToggleSlotDone, closeClockPopup])
+    if (clockPopup.isMissed) setTimeout(() => showNextMissed(), 300)
+  }, [clockPopup, handleToggleSlotDone, todaySlots, setTodos, closeClockPopup, showNextMissed])
+
+  const handleMissedToPool = useCallback(() => {
+    if (!clockPopup?.isMissed) return
+    setTodos(prev => prev.map(t =>
+      t.id === clockPopup.todoId
+        ? { ...t, awaitingClockResponse: false }
+        : t
+    ))
+    closeClockPopup()
+    setTimeout(() => showNextMissed(), 300)
+  }, [clockPopup, setTodos, closeClockPopup, showNextMissed])
 
   const handleClockSnooze = useCallback(() => {
     if (!clockPopup) return
+    if (clockPopup.isMissed) {
+      closeClockPopup()
+      setTimeout(() => showNextMissed(), 300)
+      return
+    }
     promptedRef.current.delete(clockPopup.slotKey)
     snoozeRef.current[clockPopup.slotKey] = Date.now() + 15 * 60 * 1000
     closeClockPopup()
-  }, [clockPopup, closeClockPopup])
+  }, [clockPopup, closeClockPopup, showNextMissed])
 
   const handleClockShift = useCallback(() => {
     handleShiftAll(1)
@@ -337,10 +405,12 @@ export default function TabHeute() {
       {clockPopup && (
         <ClockPopup
           slotText={clockPopup.slotText}
+          isMissed={clockPopup.isMissed ?? false}
           onDone={handleClockDone}
           onSnooze={handleClockSnooze}
           onShift={handleClockShift}
           onDismiss={closeClockPopup}
+          onToPool={handleMissedToPool}
         />
       )}
     </div>

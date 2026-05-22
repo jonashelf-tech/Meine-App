@@ -15,23 +15,6 @@ const DUR_PRESETS = [
   { label: '2h', value: 120 },
 ]
 
-const WDAYS = ['So','Mo','Di','Mi','Do','Fr','Sa']
-const ROUTINE_HOURS = Array.from({ length: 19 }, (_, i) => i + 5)
-
-const TYPES = [
-  { id: 'todo',    label: 'Todo',    color: '#00CFFF' },
-  { id: 'termin',  label: 'Termin',  color: '#FF2D78' },
-  { id: 'routine', label: 'Routine', color: '#BF00FF' },
-  { id: 'vorlage', label: 'Vorlage', color: '#00FF94' },
-]
-
-function detectType(todo) {
-  if (!todo) return 'todo'
-  if (todo.isTemplate) return 'vorlage'
-  if (todo.time)       return 'termin'
-  return 'todo'
-}
-
 const _dk = (d) =>
   `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
 
@@ -81,18 +64,10 @@ function parseTodoText(raw) {
 
 export default function TodoModal({ onClose, existingTodo = null }) {
   const keyboardOffset = useKeyboardOffset()
-  const {
-    todos, setTodos,
-    routines, setRoutines,
-    templates, setTemplates,
-    days, setDays,
-    cats, setCats,
-    accentColor,
-  } = useAppStore()
+  const { todos, setTodos, days, setDays, cats, setCats, accentColor } = useAppStore()
 
   const isEdit = existingTodo !== null
 
-  const [type,     setType]     = useState(() => detectType(existingTodo))
   const [text,     setText]     = useState(existingTodo?.text     ?? '')
   const [priority, setPriority] = useState(existingTodo?.priority ?? 3)
   const [duration, setDuration] = useState(existingTodo?.duration ?? null)
@@ -103,29 +78,11 @@ export default function TodoModal({ onClose, existingTodo = null }) {
   const [subItems, setSubItems] = useState(() =>
     (existingTodo?.subItems ?? []).map(si => ({ ...si }))
   )
-  const [subInput, setSubInput] = useState('')
-
-  const [freq,        setFreq]        = useState('daily')
-  const [routineHour, setRoutineHour] = useState(8)
-  const [weekday,     setWeekday]     = useState(1)
-  const [monthday,    setMonthday]    = useState(1)
-  const [customEvery, setCustomEvery] = useState(2)
-  const [customUnit,  setCustomUnit]  = useState('days')
-
+  const [subInput,    setSubInput]    = useState('')
   const [blinkDate,   setBlinkDate]   = useState(false)
   const [blinkTime,   setBlinkTime]   = useState(false)
   const [catEditMode, setCatEditMode] = useState(false)
   const [catNewInput, setCatNewInput] = useState('')
-
-  const handleTypeChange = (newType) => {
-    setType(newType)
-    if (newType === 'termin') {
-      setTimeout(() => {
-        if (!date) { setBlinkDate(true); setTimeout(() => setBlinkDate(false), 1200) }
-        if (!time) { setBlinkTime(true); setTimeout(() => setBlinkTime(false), 1200) }
-      }, 60)
-    }
-  }
 
   const handleAuto = () => {
     if (!text.trim()) return
@@ -135,7 +92,6 @@ export default function TodoModal({ onClose, existingTodo = null }) {
     if (p.duration != null) setDuration(p.duration)
     if (p.date)             setDate(p.date)
     if (p.time)             setTime(p.time)
-    if (p.date && p.time && type === 'todo') setType('termin')
   }
 
   const addSubItem = () => {
@@ -163,94 +119,74 @@ export default function TodoModal({ onClose, existingTodo = null }) {
     if (field === 'time') { setBlinkTime(true); setTimeout(() => setBlinkTime(false), 1200) }
   }
 
+  const isTermin = !!(date && time)
+
   const handleSubmit = () => {
     if (!text.trim()) return
-
-    if (type === 'termin') {
-      let ok = true
-      if (!date) { triggerBlink('date'); ok = false }
-      if (!time) { triggerBlink('time'); ok = false }
-      if (!ok) return
-    }
+    if (time && !date) { triggerBlink('date'); return }
 
     if (isEdit) {
-      const wasTemplate = existingTodo.isTemplate
+      const wasTermin = !!(existingTodo.date && existingTodo.time)
+      const nowTermin = isTermin
 
-      if (type === 'routine') {
-        if (wasTemplate) setTemplates(prev => prev.filter(t => t.id !== existingTodo.id))
-        else             setTodos(prev => prev.filter(t => t.id !== existingTodo.id))
-        setRoutines(prev => [...prev, {
-          id:          Date.now(),
-          text:        text.trim(),
-          freq,
-          customEvery: freq === 'custom' ? customEvery : null,
-          customUnit:  freq === 'custom' ? customUnit  : null,
-          hour:        routineHour || null,
-          weekday,
-          monthday,
-          color,
-          duration:    duration || null,
-          category:    category || null,
-          subItems,
-        }])
-      } else {
-        const updated = {
-          ...existingTodo,
-          text:       text.trim(),
-          priority:   type === 'todo' ? priority : existingTodo.priority,
-          color,
-          duration:   duration || null,
-          category:   category || null,
-          subItems,
-          date:       (type === 'todo' || type === 'termin') ? (date || null) : null,
-          time:       type === 'termin' ? (time || null) : null,
-          isTemplate: type === 'vorlage',
-        }
-        setDays(prev => {
-          const result = { ...prev }
-          Object.keys(result).forEach(dk => {
-            const newDay = { ...result[dk] }
-            let changed = false
-            Object.keys(newDay).forEach(slotK => {
-              const slot = newDay[slotK]
-              if (slot?.todoId === existingTodo.id && slot.duration !== updated.duration) {
-                newDay[slotK] = { ...slot, duration: updated.duration }
-                changed = true
-              }
-            })
-            if (changed) result[dk] = newDay
-          })
-          return result
-        })
-        if (wasTemplate && type !== 'vorlage') {
-          setTemplates(prev => prev.filter(t => t.id !== existingTodo.id))
-          setTodos(prev => [...prev, updated])
-        } else if (!wasTemplate && type === 'vorlage') {
-          setTodos(prev => prev.filter(t => t.id !== existingTodo.id))
-          setTemplates(prev => [...prev, updated])
-        } else if (wasTemplate) {
-          setTemplates(prev => prev.map(t => t.id === existingTodo.id ? updated : t))
-        } else {
-          setTodos(prev => prev.map(t => t.id === existingTodo.id ? updated : t))
-        }
+      const updated = {
+        ...existingTodo,
+        text:                  text.trim(),
+        priority,
+        color,
+        duration:              duration || null,
+        category:              category || null,
+        subItems,
+        date:                  date || null,
+        time:                  time || null,
+        awaitingClockResponse: nowTermin
+          ? (wasTermin ? existingTodo.awaitingClockResponse : true)
+          : false,
       }
-    } else {
-      if (type === 'todo') {
-        setTodos(prev => [...prev, createBlock({
-          text: text.trim(), priority, color,
-          duration: duration || null,
-          date: date || null, time: null,
-          category: category || null,
-          subItems,
-        })])
 
-      } else if (type === 'termin') {
+      setDays(prev => {
+        const result = { ...prev }
+        Object.keys(result).forEach(dk => {
+          const newDay = { ...result[dk] }
+          let changed = false
+          Object.keys(newDay).forEach(slotK => {
+            const slot = newDay[slotK]
+            if (slot?.todoId === existingTodo.id && slot.duration !== updated.duration) {
+              newDay[slotK] = { ...slot, duration: updated.duration }
+              changed = true
+            }
+          })
+          if (changed) result[dk] = newDay
+        })
+        return result
+      })
+
+      if (nowTermin && !wasTermin) {
+        const mins    = parseHHMM(time)
+        const slotKey = minutesToSk(mins)
+        setDays(prev => ({
+          ...prev,
+          [date]: {
+            ...(prev[date] ?? {}),
+            [slotKey]: {
+              text: updated.text, todoId: updated.id, color: updated.color,
+              duration: updated.duration || 30, done: false, locked: true,
+            },
+          },
+        }))
+      }
+
+      setTodos(prev => prev.map(t => t.id === existingTodo.id ? updated : t))
+
+    } else {
+      if (isTermin) {
         const block = createBlock({
           text: text.trim(), priority, color,
           duration: duration || 30,
           date, time,
           category: category || null,
           subItems,
+          awaitingClockResponse: true,
         })
         const mins    = parseHHMM(time)
         const slotKey = minutesToSk(mins)
@@ -265,45 +201,19 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           },
         }))
         setTodos(prev => [...prev, block])
-
-      } else if (type === 'routine') {
-        setRoutines(prev => [...prev, {
-          id:          Date.now(),
-          text:        text.trim(),
-          freq,
-          customEvery: freq === 'custom' ? customEvery : null,
-          customUnit:  freq === 'custom' ? customUnit  : null,
-          hour:        routineHour || null,
-          weekday,
-          monthday,
-          color,
-          duration:    duration || null,
-          category:    category || null,
+      } else {
+        setTodos(prev => [...prev, createBlock({
+          text: text.trim(), priority, color,
+          duration: duration || null,
+          date: date || null,
+          category: category || null,
           subItems,
-        }])
-
-      } else if (type === 'vorlage') {
-        setTemplates(prev => [...prev, createBlock({
-          text:       text.trim(),
-          color,
-          duration:   duration || null,
-          isTemplate: true,
-          subItems,
-          category:   category || null,
         })])
       }
     }
 
     onClose()
   }
-
-  const activeTypeColor = TYPES.find(t => t.id === type)?.color ?? '#00CFFF'
-  const submitLabel = isEdit ? 'Speichern' : {
-    todo:    'Todo hinzufügen',
-    termin:  'Termin eintragen',
-    routine: 'Routine erstellen',
-    vorlage: 'Vorlage speichern',
-  }[type]
 
   return (
     <div
@@ -313,27 +223,11 @@ export default function TodoModal({ onClose, existingTodo = null }) {
     >
       <div className={s.modal}>
 
-        {/* Header */}
         <div className={s.header}>
           <span className={s.title}>{isEdit ? 'Bearbeiten' : 'Hinzufügen'}</span>
           <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">✕</button>
         </div>
 
-        {/* Typ-Tabs */}
-        <div className={s.typeRow}>
-          {TYPES.map(({ id, label, color: tc }) => (
-            <button
-              key={id}
-              className={[s.typeBtn, type === id ? s.typeBtnActive : ''].join(' ')}
-              style={type === id ? { '--tc': tc } : {}}
-              onClick={() => handleTypeChange(id)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Text + Auto */}
         <div className={s.textRow}>
           <input
             className={s.textInput}
@@ -341,19 +235,14 @@ export default function TodoModal({ onClose, existingTodo = null }) {
             value={text}
             onChange={e => setText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
-            placeholder={
-              type === 'routine' ? 'z.B. Morgenroutine, Sport…' :
-              type === 'vorlage' ? 'z.B. Deep Work Block…' :
-              type === 'termin'  ? 'z.B. Zahnarzt, Meeting…' :
-              'Was muss getan werden…'
-            }
+            placeholder="Was muss getan werden…"
             autoComplete="off" autoCorrect="off" spellCheck={false}
           />
           <button className={s.autoBtn} onClick={handleAuto} disabled={!text.trim()}>Auto</button>
         </div>
 
-        {/* Prio (nur Todo) */}
-        {type === 'todo' && (
+        {/* Prio — nur wenn kein time */}
+        {!time && (
           <div className={s.row}>
             <span className={s.rowLabel}>Prio</span>
             <div className={s.segControl}>
@@ -368,116 +257,32 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           </div>
         )}
 
-        {/* Termin: Datum + Uhrzeit */}
-        {type === 'termin' && (
-          <div className={s.terminBlock}>
-            <div className={s.terminField}>
-              <span className={s.rowLabel}>Datum</span>
-              <input
-                type="date"
-                className={[s.fieldInputSm, blinkDate ? s.blinkField : ''].join(' ')}
-                value={date}
-                onChange={e => setDate(e.target.value)}
-              />
-            </div>
-            <div className={s.terminField}>
-              <span className={s.rowLabel}>Uhrzeit</span>
-              <input
-                type="time"
-                className={[s.fieldInputSm, blinkTime ? s.blinkField : ''].join(' ')}
-                value={time}
-                onChange={e => setTime(e.target.value)}
-              />
-            </div>
-          </div>
-        )}
+        {/* Datum */}
+        <div className={s.row}>
+          <span className={s.rowLabel}>Datum</span>
+          <input
+            type="date"
+            className={[s.fieldInputSm, blinkDate ? s.blinkField : ''].join(' ')}
+            value={date}
+            onChange={e => setDate(e.target.value)}
+          />
+        </div>
 
-        {/* Todo: optionale Fälligkeit */}
-        {type === 'todo' && (
-          <div className={s.row}>
-            <span className={s.rowLabel}>Fälligkeit</span>
-            <input
-              type="date" className={s.fieldInputSm}
-              value={date} onChange={e => setDate(e.target.value)}
-            />
-          </div>
-        )}
+        {/* Uhrzeit */}
+        <div className={s.row}>
+          <span className={s.rowLabel}>Uhrzeit</span>
+          <input
+            type="time"
+            className={[s.fieldInputSm, blinkTime ? s.blinkField : ''].join(' ')}
+            value={time}
+            onChange={e => setTime(e.target.value)}
+          />
+          {isTermin && (
+            <span style={{ fontSize: '0.68rem', color: 'rgba(251,113,133,0.8)' }}>→ Kalendereintrag</span>
+          )}
+        </div>
 
-        {/* Routine: Takt */}
-        {type === 'routine' && (
-          <>
-            <div className={s.row}>
-              <span className={s.rowLabel}>Takt</span>
-              <div className={s.segControl}>
-                {[['daily','Täglich'],['weekly','Wöchentlich'],['monthly','Monatlich'],['custom','Eigener']].map(([v, l]) => (
-                  <button
-                    key={v}
-                    className={[s.segBtn, freq === v ? s.segBtnActive : ''].join(' ')}
-                    style={freq === v ? { '--tc': '#BF00FF' } : {}}
-                    onClick={() => setFreq(v)}
-                  >{l}</button>
-                ))}
-              </div>
-            </div>
-
-            {freq === 'custom' && (
-              <div className={s.row}>
-                <span className={s.rowLabel}>Alle</span>
-                <input
-                  type="number" min={1} max={999} className={s.durInput}
-                  value={customEvery}
-                  onChange={e => setCustomEvery(Math.max(1, parseInt(e.target.value) || 1))}
-                />
-                <select
-                  className={s.fieldSelect} value={customUnit}
-                  onChange={e => setCustomUnit(e.target.value)}
-                >
-                  <option value="days">Tage</option>
-                  <option value="weeks">Wochen</option>
-                  <option value="months">Monate</option>
-                </select>
-              </div>
-            )}
-
-            {freq === 'weekly' && (
-              <div className={s.row}>
-                <span className={s.rowLabel}>Tag</span>
-                <div className={s.wdayRow}>
-                  {WDAYS.map((d, i) => (
-                    <button
-                      key={i}
-                      className={[s.wdayBtn, weekday === i ? s.wdayBtnActive : ''].join(' ')}
-                      onClick={() => setWeekday(i)}
-                    >{d}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {freq === 'monthly' && (
-              <div className={s.row}>
-                <span className={s.rowLabel}>Am Tag</span>
-                <input
-                  type="number" className={s.durInput} min={1} max={31}
-                  value={monthday} onChange={e => setMonthday(Number(e.target.value))}
-                />
-                <span className={s.rowLabel}>des Monats</span>
-              </div>
-            )}
-
-            <div className={s.row}>
-              <span className={s.rowLabel}>Uhrzeit <span style={{opacity:0.4,fontWeight:400}}>(opt.)</span></span>
-              <select className={s.fieldSelect} value={routineHour} onChange={e => setRoutineHour(Number(e.target.value))}>
-                <option value="">—</option>
-                {ROUTINE_HOURS.map(h => (
-                  <option key={h} value={h}>{String(h).padStart(2,'0')}:00</option>
-                ))}
-              </select>
-            </div>
-          </>
-        )}
-
-        {/* Dauer (alle Typen) */}
+        {/* Dauer */}
         <div className={s.row}>
           <span className={s.rowLabel}>Dauer</span>
           <div className={s.durBtnRow}>
@@ -560,7 +365,7 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           </div>
         </div>
 
-        {/* Schritte (alle Typen) */}
+        {/* Schritte */}
         <div className={s.row} style={{ alignItems: 'flex-start' }}>
           <span className={s.rowLabel} style={{ marginTop: 6 }}>Schritte</span>
           <div className={s.subSection}>
@@ -583,14 +388,13 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           </div>
         </div>
 
-        {/* Submit */}
         <button
           className={s.submitBtn}
-          style={{ '--tc': activeTypeColor }}
+          style={{ '--tc': isTermin ? '#FF2D78' : '#00CFFF' }}
           onClick={handleSubmit}
           disabled={!text.trim()}
         >
-          {submitLabel}
+          {isEdit ? 'Speichern' : (isTermin ? 'Termin eintragen' : 'Hinzufügen')}
         </button>
 
       </div>

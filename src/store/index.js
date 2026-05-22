@@ -17,7 +17,6 @@ function migrateAccent(stored) {
 export const useAppStore = create((set, get) => ({
   // ─── Todos ─────────────────────────────────────────────
   todos:     lv(SK.todos, []),
-  routines:  lv(SK.routines, []),
   todoOrder: lv(SK.todoOrder, []),
   cats:      lv(SK.cats, []),
 
@@ -26,18 +25,12 @@ export const useAppStore = create((set, get) => ({
     set({ todos: next })
     sv(SK.todos, next)
   },
-  setRoutines: (routines) => {
-    const next = typeof routines === 'function' ? routines(get().routines) : routines
-    set({ routines: next })
-    sv(SK.routines, next)
-  },
   setTodoOrder: (order) => { set({ todoOrder: order }); sv(SK.todoOrder, order) },
   setCats: (cats) => { set({ cats }); sv(SK.cats, cats) },
 
   // ─── Calendar ──────────────────────────────────────────
   days:         lv(SK.days, {}),
   doneCounters: lv(SK.doneCounters, {}),
-  templates:    lv(SK.templates, []),
 
   setDays: (days) => {
     const next = typeof days === 'function' ? days(get().days) : days
@@ -49,7 +42,6 @@ export const useAppStore = create((set, get) => ({
     set({ doneCounters: next })
     sv(SK.doneCounters, next)
   },
-  setTemplates: (t) => { set({ templates: t }); sv(SK.templates, t) },
 
   // ─── App ───────────────────────────────────────────────
   settings: lv(SK.settings, { lastBackup: null }),

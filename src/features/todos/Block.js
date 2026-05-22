@@ -6,28 +6,25 @@ export const PRIO = {
 
 export const isTermin      = (b) => !!(b.date && b.time)
 export const isFaelligkeit = (b) => !!(b.date && !b.time)
-export const isRoutine     = (b) => !!b.recurring
-export const isBlockTemplate = (b) => !!b.isTemplate
-export const isTodo        = (b) => !b.date && !b.recurring && !b.isTemplate
+export const isTodo        = (b) => !b.date && !b.time
 
 const genId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 
 export const createBlock = (partial = {}) => ({
-  id: genId(),
-  text: '',
-  color: '#8B5CF6',
-  priority: 3,
-  duration: 30,
-  done: false,
-  doneAt: null,
-  date: null,
-  time: null,
-  recurring: null,
-  isTemplate: false,
-  subItems: [],
-  category: null,
-  notes: null,
-  createdAt: new Date().toISOString(),
+  id:                    genId(),
+  text:                  '',
+  color:                 '#8B5CF6',
+  priority:              3,
+  duration:              null,
+  done:                  false,
+  doneAt:                null,
+  date:                  null,
+  time:                  null,
+  awaitingClockResponse: false,
+  subItems:              [],
+  category:              null,
+  notes:                 null,
+  createdAt:             new Date().toISOString(),
   ...partial,
 })
