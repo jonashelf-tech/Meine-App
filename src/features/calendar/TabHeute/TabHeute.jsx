@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, sk, parseHHMM, ALL_SLOT_KEYS } from '../../../utils'
 import { sv, lv, SK } from '../../../storage'
+import { createBlock } from '../../todos/Block'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan         from '../Zeitplan/Zeitplan'
 import Pool             from '../Pool/Pool'
@@ -59,23 +60,21 @@ export default function TabHeute() {
 
     const existingIds = new Set(todos.map(t => t.id))
     const newTodos = []
-    let idx = 0
 
     Object.entries(days).forEach(([dk, dayData]) => {
       if (dk >= today || !dayData || typeof dayData !== 'object') return
       Object.values(dayData).forEach(slot => {
         if (!slot || slot.done || !slot.text) return
-        // Todo mit todoId existiert noch → bereits im Pool sichtbar
-        if (slot.todoId && existingIds.has(slot.todoId)) return
-        newTodos.push({
-          id:       Date.now() + idx++,
+        // Slots mit todoId überspringen — todo existiert noch (im Pool) oder wurde gelöscht (gewollt)
+        if (slot.todoId) return
+        // Nur text-only Slots zurückbringen, die nicht bereits im Pool sind
+        if (existingIds.has && todos.some(t => t.text === slot.text && !t.done)) return
+        newTodos.push(createBlock({
           text:     slot.text,
-          color:    slot.color  || null,
-          duration: slot.duration || null,
           priority: 3,
-          done:     false,
-          subItems: [],
-        })
+          ...(slot.color    ? { color:    slot.color    } : {}),
+          ...(slot.duration ? { duration: slot.duration } : {}),
+        }))
       })
     })
 
@@ -249,7 +248,7 @@ export default function TabHeute() {
   const startSlotDrag = useCallback((fromKey, e) => {
     const slot = todaySlots[fromKey]
     if (!slot || slot.locked) return
-    startDrag(slot.text, slot.color || '#00CFFF', (toKey) => {
+    startDrag(slot.text, slot.color || '#8B5CF6', (toKey) => {
       if (toKey === fromKey) return
       setTodaySlots(prev => {
         const ns    = { ...prev }

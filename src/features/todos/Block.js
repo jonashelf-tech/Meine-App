@@ -16,7 +16,7 @@ const genId = () =>
 export const createBlock = (partial = {}) => ({
   id: genId(),
   text: '',
-  color: '#00CFFF',
+  color: '#8B5CF6',
   priority: 3,
   duration: 30,
   done: false,

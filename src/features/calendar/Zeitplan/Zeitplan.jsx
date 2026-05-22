@@ -53,7 +53,7 @@ function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit,
     ...(todo ?? {
       id: null,
       text: slot.text || '',
-      color: slot.color || '#00CFFF',
+      color: slot.color || '#8B5CF6',
       priority: slot.priority ?? 3,
       subItems: slot.subItems || [],
       date: null, time: null, category: null,
@@ -93,22 +93,12 @@ function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit,
   }
 
   const handle = (
-    <>
-      <span
-        className={s.slotDone}
-        onClick={(e) => { e.stopPropagation(); onToggleDone?.() }}
-      >
-        <span className={[s.doneCircle, slot.done ? s.doneCircleDone : ''].join(' ')}>
-          {slot.done ? '✓' : ''}
-        </span>
-      </span>
-      <span
-        className={[s.slotHandle, slot.locked ? s.slotHandleLocked : ''].join(' ')}
-        onPointerDown={handlePointerDown}
-      >
-        {slot.locked ? <LockIcon locked={true} /> : DragIcon}
-      </span>
-    </>
+    <span
+      className={[s.slotHandle, slot.locked ? s.slotHandleLocked : ''].join(' ')}
+      onPointerDown={handlePointerDown}
+    >
+      {slot.locked ? <LockIcon locked={true} /> : DragIcon}
+    </span>
   )
 
   return (

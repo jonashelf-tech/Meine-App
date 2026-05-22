@@ -41,6 +41,10 @@
   margin-bottom: 8px;
 }
 
+.accentLabel {
+  margin-top: 16px;
+}
+
 .toggle {
   width: 44px;
   height: 24px;

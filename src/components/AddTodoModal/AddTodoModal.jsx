@@ -139,7 +139,7 @@ function SubItemsSection({ subItems, subItemInput, setSubItemInput, addSubItem, 
 // ─── Main Component ───────────────────────────────────────
 export default function AddTodoModal({ onClose }) {
   const keyboardOffset = useKeyboardOffset()
-  const { todos, setTodos, routines, setRoutines, templates, setTemplates, days, setDays } = useAppStore()
+  const { todos, setTodos, routines, setRoutines, templates, setTemplates, days, setDays, accentColor } = useAppStore()
 
   // Type
   const [type, setType] = useState('todo')
@@ -148,7 +148,7 @@ export default function AddTodoModal({ onClose }) {
   const [text,     setText]     = useState('')
   const [priority, setPriority] = useState(3)
   const [duration, setDuration] = useState(null)
-  const [color,    setColor]    = useState(NEON[todos.length % NEON.length])
+  const [color,    setColor]    = useState(accentColor || '#8B5CF6')
   const [category, setCategory] = useState('')
   const [showMore, setShowMore] = useState(false)
 

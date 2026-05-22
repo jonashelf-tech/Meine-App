@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
 import { isFaelligkeit } from '../../todos/Block'
 import { todayKey } from '../../../utils'
+import { lv, sv, SK } from '../../../storage'
 import s from './Pool.module.css'
 
 // ─── Icons ────────────────────────────────────────────────
@@ -20,7 +21,7 @@ const DragIcon = (
 function sortTodos(list, sort) {
   if (sort === 'alter') {
     return [...list].sort((a, b) =>
-      new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+      new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
     )
   }
   if (sort === 'kategorie') {
@@ -43,7 +44,7 @@ function sortTodos(list, sort) {
 
 // ─── PoolChip ─────────────────────────────────────────────
 function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced }) {
-  const color = todo.color || '#00CFFF'
+  const color = todo.color || '#8B5CF6'
 
   const handlePointerDown = useCallback((e) => {
     e.preventDefault()
@@ -108,8 +109,13 @@ export default function Pool({
   startDrag,
 }) {
   const [collapsed,      setCollapsed]      = useState(false)
-  const [sort,           setSort]           = useState('standard')
+  const [sort,           setSort]           = useState(() => lv(SK.poolSort, 'standard'))
   const [showAll,        setShowAll]        = useState(false)
+
+  const handleSort = useCallback((key) => {
+    setSort(key)
+    sv(SK.poolSort, key)
+  }, [])
   const [pendingDoneIds, setPendingDoneIds] = useState(() => new Set())
 
   // ─── Placed detection ───────────────────────────────────
@@ -121,9 +127,16 @@ export default function Pool({
     }
   }, [todaySlots])
 
+  // Text-Match nur wenn der Text unter allen Todos eindeutig ist (verhindert false positives bei Duplikaten)
+  const uniqueTexts = useMemo(() => {
+    const counts = {}
+    todos.forEach(t => { counts[t.text] = (counts[t.text] || 0) + 1 })
+    return new Set(Object.keys(counts).filter(txt => counts[txt] === 1))
+  }, [todos])
+
   const isPlaced = useCallback(
-    (t) => placedIds.has(t.id) || placedTexts.has(t.text),
-    [placedIds, placedTexts]
+    (t) => placedIds.has(t.id) || (uniqueTexts.has(t.text) && placedTexts.has(t.text)),
+    [placedIds, placedTexts, uniqueTexts]
   )
 
   // ─── Derived lists ──────────────────────────────────────
@@ -200,7 +213,7 @@ export default function Pool({
               <button
                 key={key}
                 className={[s.sortChip, sort === key ? s.sortChipActive : ''].join(' ')}
-                onClick={() => setSort(key)}
+                onClick={() => handleSort(key)}
               >
                 {label}
               </button>

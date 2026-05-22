@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useAppStore } from '../../../store'
-import { TOOL_REGISTRY } from '../toolRegistry'
+import { TOOL_REGISTRY, ToolIcon } from '../toolRegistry'
+import { TOOL_TAB } from '../toolTabs'
 import { getToolColor } from '../../../utils'
 import s from './TabTools.module.css'
 
@@ -8,18 +9,6 @@ const VIEWS = [
   { id: 'mine', label: 'Meine Tools' },
   { id: 'all',  label: 'Alle Tools' },
 ]
-
-const TOOL_TAB = {
-  rad:          11,
-  timer:        5,
-  rezepte:      6,
-  pizza:        7,
-  elvi:         8,
-  gewicht:      9,
-  gamification: 10,
-  geburtstage:  4,
-  reminder:     12,
-}
 
 const allToolsSorted = [...TOOL_REGISTRY].sort((a, b) => a.name.localeCompare(b.name, 'de'))
 
@@ -165,7 +154,7 @@ export default function TabTools() {
             onChange={e => handleColorChange(tool.id, e.target.value)}
             className={s.hidden}
           />
-          <span className={s.listIcon}>{tool.icon}</span>
+          <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
           <div className={s.listText}>
             <span className={s.cardName}>{tool.name}</span>
             <span className={s.cardDesc}>{tool.description}</span>
@@ -224,7 +213,7 @@ export default function TabTools() {
                   onChange={e => handleColorChange(tool.id, e.target.value)}
                   className={s.hidden}
                 />
-                <span className={s.listIcon}>{tool.icon}</span>
+                <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
                 <div className={s.listText}>
                   <span className={s.cardName}>{tool.name}</span>
                   <span className={s.cardDesc}>{tool.description}</span>

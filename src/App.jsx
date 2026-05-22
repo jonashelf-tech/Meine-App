@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAppStore } from './store'
 import { hexToGlow } from './utils'
+import { TOOL_TAB } from './features/tools/toolTabs'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
 import TabKalender     from './features/calendar/TabKalender/TabKalender'
@@ -17,17 +18,57 @@ import TabRad          from './features/tools/rad/TabRad'
 import TabReminder     from './features/tools/reminder/TabReminder'
 import AddTodoModal    from './components/AddTodoModal/AddTodoModal'
 
+// ─── Tab bar SVG icons ────────────────────────────────────
+const IconTagesplaner = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="5" y="3" width="14" height="18" rx="2"/>
+    <polyline points="9 11 11 13 15 9"/>
+    <line x1="9" y1="17" x2="15" y2="17"/>
+  </svg>
+)
+
+const IconKalender = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="17" rx="2"/>
+    <line x1="3" y1="9" x2="21" y2="9"/>
+    <line x1="8" y1="4" x2="8" y2="9"/>
+    <line x1="16" y1="4" x2="16" y2="9"/>
+    <rect x="7" y="13" width="2" height="2" rx="0.3" fill="currentColor" stroke="none"/>
+    <rect x="11" y="13" width="2" height="2" rx="0.3" fill="currentColor" stroke="none"/>
+    <rect x="15" y="13" width="2" height="2" rx="0.3" fill="currentColor" stroke="none"/>
+    <rect x="7" y="17" width="2" height="2" rx="0.3" fill="currentColor" stroke="none"/>
+    <rect x="11" y="17" width="2" height="2" rx="0.3" fill="currentColor" stroke="none"/>
+  </svg>
+)
+
+const IconTools = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+  </svg>
+)
+
+const IconSettings = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="4" y1="6" x2="20" y2="6"/>
+    <line x1="4" y1="12" x2="20" y2="12"/>
+    <line x1="4" y1="18" x2="20" y2="18"/>
+    <circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/>
+    <circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/>
+    <circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/>
+  </svg>
+)
+
 const TABS = [
-  { id: 0, label: 'Tagesplaner', icon: '◈' },
-  { id: 1, label: 'Kalender', icon: '⊞' },
-  { id: 2, label: 'Tools',    icon: '⚙' },
-  { id: 3, label: 'Einstellungen', icon: '≡' },
+  { id: 0, label: 'Tagesplaner', Icon: IconTagesplaner },
+  { id: 1, label: 'Kalender',    Icon: IconKalender    },
+  { id: 2, label: 'Tools',       Icon: IconTools       },
+  { id: 3, label: 'Einst.',      Icon: IconSettings    },
 ]
 
-const TOOL_TABS = [4,5,6,7,8,9,10,11]
+const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 
 export default function App() {
-  const { currentTab, setCurrentTab, accentColor } = useAppStore()
+  const { currentTab, setCurrentTab, accentColor, theme } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
 
   useEffect(() => {
@@ -35,7 +76,12 @@ export default function App() {
     document.documentElement.style.setProperty('--glow-primary', hexToGlow(accentColor))
   }, [accentColor])
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme || 'dark')
+  }, [theme])
+
   const goBack = () => setCurrentTab(2)
+  const isToolTab = TOOL_IDS.has(currentTab)
 
   return (
     <div className={styles.app}>
@@ -44,15 +90,15 @@ export default function App() {
         {currentTab === 1  && <TabKalender />}
         {currentTab === 2  && <TabTools />}
         {currentTab === 3  && <TabSettings />}
-        {currentTab === 4  && <TabGeburtstage     onBack={goBack} />}
-        {currentTab === 5  && <TabTimer        onBack={goBack} />}
-        {currentTab === 6  && <TabRezepte      onBack={goBack} />}
-        {currentTab === 7  && <TabPizza        onBack={goBack} />}
-        {currentTab === 8  && <TabElvi         onBack={goBack} />}
-        {currentTab === 9  && <TabGewicht      onBack={goBack} />}
-        {currentTab === 10 && <TabGamification onBack={goBack} />}
-        {currentTab === 11 && <TabRad          onBack={goBack} />}
-        {currentTab === 12 && <TabReminder     onBack={goBack} />}
+        {currentTab === TOOL_TAB.geburtstage  && <TabGeburtstage  onBack={goBack} />}
+        {currentTab === TOOL_TAB.timer        && <TabTimer        onBack={goBack} />}
+        {currentTab === TOOL_TAB.rezepte      && <TabRezepte      onBack={goBack} />}
+        {currentTab === TOOL_TAB.pizza        && <TabPizza        onBack={goBack} />}
+        {currentTab === TOOL_TAB.elvi         && <TabElvi         onBack={goBack} />}
+        {currentTab === TOOL_TAB.gewicht      && <TabGewicht      onBack={goBack} />}
+        {currentTab === TOOL_TAB.gamification && <TabGamification onBack={goBack} />}
+        {currentTab === TOOL_TAB.rad          && <TabRad          onBack={goBack} />}
+        {currentTab === TOOL_TAB.reminder     && <TabReminder     onBack={goBack} />}
       </div>
 
       <button
@@ -66,16 +112,19 @@ export default function App() {
       {addOpen && <AddTodoModal onClose={() => setAddOpen(false)} />}
 
       <nav className={styles.tabBar}>
-        {TABS.map(t => (
-          <button
-            key={t.id}
-            className={`${styles.tabBtn}${currentTab === t.id ? ' ' + styles.active : ''}`}
-            onClick={() => setCurrentTab(t.id)}
-          >
-            <span className={styles.tabIcon}>{t.icon}</span>
-            <span className={styles.tabLabel}>{t.label}</span>
-          </button>
-        ))}
+        {TABS.map(({ id, label, Icon }) => {
+          const active = currentTab === id || (id === 2 && isToolTab)
+          return (
+            <button
+              key={id}
+              className={`${styles.tabBtn}${active ? ' ' + styles.active : ''}`}
+              onClick={() => setCurrentTab(id)}
+            >
+              <span className={styles.tabIcon}><Icon /></span>
+              <span className={styles.tabLabel}>{label}</span>
+            </button>
+          )
+        })}
       </nav>
     </div>
   )

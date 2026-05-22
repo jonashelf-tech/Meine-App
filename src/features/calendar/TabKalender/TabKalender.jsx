@@ -1,7 +1,9 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor } from '../../../utils'
-import { TOOL_REGISTRY } from '../../tools/toolRegistry'
+import { lv, sv, SK } from '../../../storage'
+import { TOOL_REGISTRY, ToolIcon } from '../../tools/toolRegistry'
+import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
 import s from './TabKalender.module.css'
 
@@ -14,11 +16,6 @@ const MONTH_NAMES = [
 const SLOT_H     = 28
 const GRID_START = 7
 const GRID_END   = 22
-
-const TOOL_TAB = {
-  rad: 11, timer: 5, rezepte: 6, pizza: 7, elvi: 8,
-  gewicht: 9, gamification: 10, geburtstage: 4, reminder: 12,
-}
 
 function getMonday(date) {
   const d = new Date(date)
@@ -44,7 +41,6 @@ function slotToHeight(duration) {
 }
 
 function getToolDots(dk, todos, activeTools, birthdays = []) {
-  const hasDoneTodo = todos.some(t => t.doneAt?.startsWith(dk))
   const [, mm, dd] = dk.split('-')
   return TOOL_REGISTRY
     .filter(t => {
@@ -52,7 +48,12 @@ function getToolDots(dk, todos, activeTools, birthdays = []) {
       if (t.id === 'geburtstage') return birthdays.some(b => b.date === `${mm}-${dd}`)
       return true
     })
-    .map(t => ({ id: t.id, color: t.color, done: hasDoneTodo }))
+    .map(t => ({
+      id:    t.id,
+      color: t.color,
+      // geburtstage-Dot filled = Geburtstag ist heute. Alle anderen Dots immer als Ring (kein per-Tool Completion-State).
+      done:  t.id === 'geburtstage',
+    }))
 }
 
 function getCellBars(dk, days) {
@@ -183,7 +184,7 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
                   }}
                   onDoubleClick={() => tab != null && setCurrentTab(tab)}
                 >
-                  <span className={s.dayPanelToolIcon}>{tool.icon}</span>
+                  <span className={s.dayPanelToolIcon}><ToolIcon id={tool.id} size={16} /></span>
                   <span className={s.dayPanelToolName}>{tool.name}</span>
                 </button>
               )
@@ -197,8 +198,8 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
 
 export default function TabKalender() {
   const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate } = useAppStore()
-  const [view, setView] = useState(() => localStorage.getItem('adhs_cal_view') || 'woche')
-  const handleSetView = (v) => { localStorage.setItem('adhs_cal_view', v); setView(v) }
+  const [view, setView] = useState(() => lv(SK.calView, 'woche'))
+  const handleSetView = (v) => { sv(SK.calView, v); setView(v) }
   const today = useMemo(() => {
     const d = new Date()
     d.setHours(0, 0, 0, 0)

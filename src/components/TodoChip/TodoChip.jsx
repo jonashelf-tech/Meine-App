@@ -103,7 +103,7 @@ export default function TodoChip({
   }, [allItems, todo, updateTodo])
 
 
-  const color = todo.color || '#00CFFF'
+  const color = todo.color || '#8B5CF6'
 
   const metaParts = [
     todo.category,

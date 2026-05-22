@@ -40,6 +40,8 @@ export const SK = {
   visStart:       `${PREFIX}view_vis_start`,
   visEnd:         `${PREFIX}view_vis_end`,
   lastPoolReturn: `${PREFIX}view_last_pool_return`,
+  poolSort:       `${PREFIX}view_pool_sort`,
+  calView:        `${PREFIX}view_cal_view`,
 }
 
 export const exportData = () => {

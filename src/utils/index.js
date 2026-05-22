@@ -77,7 +77,7 @@ export const NEON = [
   '#00B4D8','#FF6EC7',
 ]
 
-export const todoColor = (t) => t?.color || NEON[0]
+export const todoColor = (t) => t?.color || '#8B5CF6'
 
 // ─── Tool color helpers ──────────────────────────────────
 export function hexToGlow(hex) {
