@@ -103,7 +103,7 @@
 
 /* ── Flat grid (v2.7-style) ───────────────────────────── */
 .slotsContainer {
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.07);
   border-radius: var(--r);
   overflow: visible;
   background: rgba(0,0,0,0.1);
@@ -169,15 +169,15 @@
 }
 
 .halfTime {
-  font-size: 0.56rem;
-  color: rgba(255,255,255,0.08);
+  font-size: 0.54rem;
+  color: rgba(255,255,255,0.07);
   font-family: 'Outfit', sans-serif;
   transition: color 0.12s;
   user-select: none;
 }
 
 .sgEmpty:hover .halfTime {
-  color: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.2);
 }
 
 /* Drop hint */
