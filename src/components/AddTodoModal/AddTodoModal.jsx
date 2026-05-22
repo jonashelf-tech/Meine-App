@@ -109,6 +109,33 @@ function ColorRow({ color, setColor }) {
   )
 }
 
+// ─── SubItemsSection ──────────────────────────────────────
+function SubItemsSection({ subItems, subItemInput, setSubItemInput, addSubItem, removeSubItem }) {
+  return (
+    <div className={s.row} style={{ alignItems: 'flex-start' }}>
+      <span className={s.rowLabel} style={{ marginTop: 6 }}>Schritte</span>
+      <div className={s.subSection}>
+        {subItems.map(si => (
+          <div key={si.id} className={s.subRow}>
+            <span className={s.subText}>{si.text}</span>
+            <button className={s.subRm} onClick={() => removeSubItem(si.id)}>✕</button>
+          </div>
+        ))}
+        <div className={s.subAddRow}>
+          <input
+            className={s.subInput}
+            placeholder="Schritt hinzufügen…"
+            value={subItemInput}
+            onChange={e => setSubItemInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSubItem() } }}
+          />
+          <button className={s.subAddBtn} onClick={addSubItem}>+</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Component ───────────────────────────────────────
 export default function AddTodoModal({ onClose }) {
   const keyboardOffset = useKeyboardOffset()
@@ -137,9 +164,20 @@ export default function AddTodoModal({ onClose }) {
   const [customEvery,  setCustomEvery] = useState(2)
   const [customUnit,   setCustomUnit]  = useState('days')
 
+  // Sub-items (Routine + Vorlage)
+  const [subItems,     setSubItems]     = useState([])
+  const [subItemInput, setSubItemInput] = useState('')
+
   // Blink state for Termin validation
   const [blinkDate, setBlinkDate] = useState(false)
   const [blinkTime, setBlinkTime] = useState(false)
+
+  const addSubItem = () => {
+    const txt = subItemInput.trim(); if (!txt) return
+    setSubItems(prev => [...prev, { id: Date.now(), text: txt, done: false }])
+    setSubItemInput('')
+  }
+  const removeSubItem = (id) => setSubItems(prev => prev.filter(si => si.id !== id))
 
   const triggerBlink = (field) => {
     if (field === 'date') { setBlinkDate(true); setTimeout(() => setBlinkDate(false), 1200) }
@@ -225,6 +263,7 @@ export default function AddTodoModal({ onClose }) {
         color,
         duration:    duration || null,
         category:    category.trim() || null,
+        subItems,
       }
       setRoutines(prev => [...prev, routine])
 
@@ -234,6 +273,7 @@ export default function AddTodoModal({ onClose }) {
         color,
         duration:   duration || null,
         isTemplate: true,
+        subItems,
       })
       setTemplates(prev => [...prev, template])
     }
@@ -467,6 +507,13 @@ export default function AddTodoModal({ onClose }) {
                 placeholder="z.B. Gesundheit, Arbeit…"
               />
             </div>
+            <SubItemsSection
+              subItems={subItems}
+              subItemInput={subItemInput}
+              setSubItemInput={setSubItemInput}
+              addSubItem={addSubItem}
+              removeSubItem={removeSubItem}
+            />
           </>
         )}
 
@@ -477,6 +524,13 @@ export default function AddTodoModal({ onClose }) {
           <>
             <DurRow duration={duration} setDuration={setDuration} />
             <ColorRow color={color} setColor={setColor} />
+            <SubItemsSection
+              subItems={subItems}
+              subItemInput={subItemInput}
+              setSubItemInput={setSubItemInput}
+              addSubItem={addSubItem}
+              removeSubItem={removeSubItem}
+            />
           </>
         )}
 

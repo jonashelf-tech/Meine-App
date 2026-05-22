@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import PrioBadge from '../PrioBadge/PrioBadge'
 import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
@@ -18,6 +18,7 @@ export default function TodoChip({
   onRemove,           // fn() — delete
   todos,              // full todos array — for sub-item save
   saveTodos,          // setTodos fn — for sub-item save
+  saveItem,           // fn(upd) — alternative save when no todo (e.g. slot)
   dragHandle,         // JSX — rendered at right edge
   chipStyle,          // extra inline styles for the chip div
   floatExpand,        // true = sub-items as floating overlay (SlotBlock)
@@ -47,9 +48,10 @@ export default function TodoChip({
 
   // ── Sub-item mutations ──────────────────────────────────
   const updateTodo = useCallback((upd) => {
+    if (saveItem) { saveItem(upd); return }
     if (!saveTodos || !todos) return
     saveTodos(todos.map(x => x.id === todo.id ? upd : x))
-  }, [todo.id, todos, saveTodos])
+  }, [saveItem, todo.id, todos, saveTodos])
 
   const toggleItem = useCallback((id) => {
     updateTodo({ ...todo, subItems: allItems.map(si => si.id === id ? { ...si, done: !si.done } : si) })
@@ -100,13 +102,6 @@ export default function TodoChip({
     document.addEventListener('pointerup', up)
   }, [allItems, todo, updateTodo])
 
-  // ── Close float on outside tap ──────────────────────────
-  useEffect(() => {
-    if (!floatExpand || !expanded) return
-    const close = () => { setExpanded(false); onExpandedChange?.(false, 0) }
-    document.addEventListener('click', close)
-    return () => document.removeEventListener('click', close)
-  }, [floatExpand, expanded, onExpandedChange])
 
   const color = todo.color || '#00CFFF'
 
@@ -118,7 +113,17 @@ export default function TodoChip({
   ].filter(Boolean)
 
   return (
-    <div className={s.rowWrap} style={floatExpand ? { position: 'relative' } : {}}>
+    <>
+      {floatExpand && expanded && !disableExpand && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 49 }}
+          onClick={() => { setExpanded(false); onExpandedChange?.(false, 0) }}
+        />
+      )}
+      <div
+        className={s.rowWrap}
+        style={floatExpand ? { position: 'relative', zIndex: expanded ? 51 : undefined } : {}}
+      >
 
       {/* ── Chip ──────────────────────────────────── */}
       <div
@@ -149,12 +154,14 @@ export default function TodoChip({
             }}
           >
             <span className={s.expandArr}>{expanded ? '▾' : '▸'}</span>
-            <span className={[
-              s.expandCount,
-              allItems.length > 0 && doneItems === allItems.length ? s.expandCountDone : ''
-            ].join(' ')}>
-              {doneItems}/{allItems.length}
-            </span>
+            {!todo.done && (
+              <span className={[
+                s.expandCount,
+                allItems.length > 0 && doneItems === allItems.length ? s.expandCountDone : ''
+              ].join(' ')}>
+                {doneItems}/{allItems.length}
+              </span>
+            )}
           </button>
         )}
 
@@ -264,6 +271,7 @@ export default function TodoChip({
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

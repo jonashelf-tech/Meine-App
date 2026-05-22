@@ -35,6 +35,7 @@
   color:       "#8B5CF6",
   duration:    null,
   category:    null,
+  subItems:    [],       // [{ id, text, done }]
 }
 ```
 
@@ -76,6 +77,7 @@ activeTools,  toggleTool
   locked:   false,      // true = nicht verschiebbar (ShiftAll überspringt, ClockPopup ignoriert)
   done:     false,
   todoId:   123,        // optional, Referenz auf todos[]
+  subItems: [],         // optional, [{ id, text, done }] — nur wenn kein todoId
 }
 ```
 

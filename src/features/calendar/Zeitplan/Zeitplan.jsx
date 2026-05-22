@@ -48,14 +48,14 @@ function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
 }
 
 // ─── SlotBlock ────────────────────────────────────────────
-function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart, onToggleLock }) {
+function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart, onToggleLock, onSaveSlot }) {
   const displayTodo = {
     ...(todo ?? {
       id: null,
       text: slot.text || '',
       color: slot.color || '#00CFFF',
       priority: slot.priority ?? 3,
-      subItems: [],
+      subItems: slot.subItems || [],
       date: null, time: null, category: null,
       duration: slot.duration || 30,
     }),
@@ -116,9 +116,10 @@ function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit,
       todo={displayTodo}
       chipStyle={chipStyle}
       floatExpand={true}
-      disableExpand={!todo}
+      disableExpand={false}
       todos={todos}
       saveTodos={setTodos}
+      saveItem={!todo ? (upd) => onSaveSlot?.(slotKey, { ...slot, subItems: upd.subItems }) : undefined}
       onToggleDone={onToggleDone}
       onEdit={onEdit}
       onRemove={onRemove}
@@ -247,6 +248,7 @@ export default function Zeitplan({
                           : undefined
                         }
                         onToggleLock={() => onToggleLock?.(topKey)}
+                        onSaveSlot={onSetSlot}
                       />
                     </div>
                   : <div
@@ -285,6 +287,7 @@ export default function Zeitplan({
                           : undefined
                         }
                         onToggleLock={() => onToggleLock?.(botKey)}
+                        onSaveSlot={onSetSlot}
                       />
                     </div>
                   : <div
