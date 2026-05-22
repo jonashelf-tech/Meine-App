@@ -1,3 +1,4 @@
+/* ─── Pool Container ─────────────────────────────────── */
 .pool {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
@@ -5,11 +6,11 @@
   overflow: hidden;
 }
 
-/* ─── Header ─────────────────────────────────────────────── */
+/* ─── Header ─────────────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border);
 }
@@ -21,83 +22,84 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--primary);
+  flex-shrink: 0;
 }
 
-/* ─── Group ──────────────────────────────────────────────── */
-.group {
-  border-bottom: 1px solid var(--border);
-}
-
-.group:last-child {
-  border-bottom: none;
-}
-
-.groupHeader {
+/* ─── Sort chips ─────────────────────────────────────── */
+.sortRow {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 8px 12px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.12s;
-  -webkit-tap-highlight-color: transparent;
-  text-align: left;
-  min-height: 44px;
-}
-
-.groupHeader:hover {
-  background: rgba(255, 255, 255, 0.035);
-}
-
-.groupLabel {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  flex: 1;
-}
-
-.groupCount {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--text-dim);
-  background: rgba(255, 255, 255, 0.07);
-  padding: 2px 6px;
-  border-radius: 10px;
-}
-
-.groupChevron {
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  transition: transform 0.2s ease;
-  display: inline-block;
-}
-
-.groupChevronOpen {
-  transform: rotate(180deg);
-}
-
-.groupItems {
-  display: flex;
-  flex-direction: column;
   gap: 4px;
-  padding: 4px 8px 6px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sortChip {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.sortChip:hover {
+  color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.sortChipActive {
+  background: rgba(139, 92, 246, 0.13);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: rgba(139, 92, 246, 0.9);
+}
+
+/* ─── Collapse button ────────────────────────────────── */
+.collapseBtn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  padding: 3px 7px;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.collapseBtn:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.chevron {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.28);
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.chevronCollapsed {
+  transform: rotate(-90deg);
+}
+
+/* ─── List area ──────────────────────────────────────── */
+.listArea {
+  padding: 6px 0 4px;
 }
 
 .empty {
   font-size: 0.78rem;
   color: var(--text-dim);
-  padding: 4px 6px;
+  padding: 8px 14px;
   font-style: italic;
 }
 
-/* ─── Drag handle ────────────────────────────────────────── */
+/* ─── Drag handle ────────────────────────────────────── */
 .handle {
   width: 34px;
   min-width: 34px;
@@ -118,9 +120,176 @@
 .handle:hover  { color: rgba(255, 255, 255, 0.45); }
 .handle:active { cursor: grabbing; }
 
-/* ↩ wenn Todo bereits verplant ist */
 .placedIcon {
   font-size: 0.65rem;
   opacity: 0.5;
   line-height: 1;
+}
+
+/* ─── Expand more button ─────────────────────────────── */
+.expandMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 8px 2px;
+  padding: 7px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.32);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  width: calc(100% - 16px);
+}
+
+.expandMore:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.expandCount {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1px 6px;
+  font-size: 0.58rem;
+}
+
+/* ─── Aufräumen ──────────────────────────────────────── */
+.cleanupRow {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 10px 2px;
+}
+
+.cleanupBtn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(16, 185, 129, 0.75);
+  background: rgba(16, 185, 129, 0.07);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cleanupBtn:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.cleanupCount {
+  background: rgba(16, 185, 129, 0.18);
+  border-radius: 10px;
+  padding: 1px 5px;
+  font-size: 0.58rem;
+}
+
+/* ─── Erledigt heute ─────────────────────────────────── */
+.doneSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: 4px;
+}
+
+.doneSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px 3px;
+}
+
+.doneLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(16, 185, 129, 0.65);
+}
+
+.doneHint {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.56rem;
+  color: rgba(255, 255, 255, 0.2);
+  font-style: italic;
+}
+
+.doneEmpty {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.18);
+  padding: 4px 14px 8px;
+  font-style: italic;
+}
+
+.doneList {
+  padding: 0 0 6px;
+}
+
+/* ─── Done chip (Erledigt heute) ─────────────────────── */
+.doneChip {
+  display: flex;
+  align-items: center;
+  margin: 0 8px 4px;
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: var(--r);
+  overflow: hidden;
+  height: 36px;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.doneChip:hover {
+  opacity: 0.7;
+}
+
+.doneStripe {
+  width: 3px;
+  min-width: 3px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.doneCheck {
+  width: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(16, 185, 129, 0.6);
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.doneText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: line-through;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doneMeta {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.56rem;
+  color: rgba(255, 255, 255, 0.2);
+  padding: 0 10px 0 6px;
+  flex-shrink: 0;
 }
