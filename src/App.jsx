@@ -16,7 +16,7 @@ import TabGewicht      from './features/tools/gewicht/TabGewicht'
 import TabGamification from './features/tools/gamification/TabGamification'
 import TabRad          from './features/tools/rad/TabRad'
 import TabReminder     from './features/tools/reminder/TabReminder'
-import AddTodoModal    from './components/AddTodoModal/AddTodoModal'
+import TodoModal       from './components/TodoModal/TodoModal'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
 const IconTagesplaner = () => (
@@ -109,7 +109,7 @@ export default function App() {
         +
       </button>
 
-      {addOpen && <AddTodoModal onClose={() => setAddOpen(false)} />}
+      {addOpen && <TodoModal onClose={() => setAddOpen(false)} />}
 
       <nav className={styles.tabBar}>
         {TABS.map(({ id, label, Icon }) => {

@@ -6,7 +6,7 @@ import { createBlock } from '../../todos/Block'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan         from '../Zeitplan/Zeitplan'
 import Pool             from '../Pool/Pool'
-import EditModal        from '../../../components/EditModal/EditModal'
+import TodoModal        from '../../../components/TodoModal/TodoModal'
 import ReminderSection  from '../../tools/reminder/ReminderSection'
 import ClockPopup       from '../Zeitplan/ClockPopup'
 import DayNav           from '../../../components/DayNav/DayNav'
@@ -266,16 +266,6 @@ export default function TabHeute() {
     if (todo) setEditingTodo(todo)
   }, [todos])
 
-  const handleEditSave = useCallback((updated) => {
-    setTodos(prev => prev.map(t => t.id === updated.id ? updated : t))
-    setEditingTodo(null)
-  }, [setTodos])
-
-  const handleEditDelete = useCallback((id) => {
-    setTodos(prev => prev.filter(t => t.id !== id))
-    setEditingTodo(null)
-  }, [setTodos])
-
   // ─── Clock popup actions ──────────────────────────────────
   const closeClockPopup = useCallback(() => {
     setClockPopup(null)
@@ -338,10 +328,8 @@ export default function TabHeute() {
       {activeTools.includes('reminder') && <ReminderSection />}
 
       {editingTodo && (
-        <EditModal
-          todo={editingTodo}
-          onSave={handleEditSave}
-          onDelete={handleEditDelete}
+        <TodoModal
+          existingTodo={editingTodo}
           onClose={() => setEditingTodo(null)}
         />
       )}
