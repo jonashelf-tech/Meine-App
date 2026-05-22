@@ -4,19 +4,26 @@
 
 ```js
 {
-  id:       Date.now(),
-  text:     "",
-  priority: 3,        // 1=Muss · 2=Sollte · 3=Kann
-  color:    "#8B5CF6",
-  duration: 30,       // Minuten, null = keine Angabe
-  category: null,
-  date:     null,     // "2024-01-15" — Fälligkeit oder Termin
-  time:     null,     // "14:30" — nur bei Terminen
-  done:     false,
-  doneAt:   null,
-  subItems: [],       // [{ id, text, done }]
+  id:         genId(),   // crypto.randomUUID() oder Fallback-String — KEIN Date.now()
+  text:       "",
+  priority:   3,         // 1=Muss · 2=Sollte · 3=Kann
+  color:      "#8B5CF6", // Default = Akzentfarbe, nie '#00CFFF'
+  duration:   30,        // Minuten, null = keine Angabe
+  category:   null,
+  date:       null,      // "2024-01-15" — Fälligkeit oder Termin
+  time:       null,      // "14:30" — nur bei Terminen
+  done:       false,
+  doneAt:     null,
+  recurring:  null,      // Routine-Referenz
+  isTemplate: false,
+  subItems:   [],        // [{ id, text, done }]
+  notes:      null,      // freier Notiztext
+  createdAt:  new Date().toISOString(),
 }
 ```
+
+`createBlock(partial?)` in `src/features/todos/Block.js` erzeugt einen vollständigen Block.
+Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert createdAt + genId.
 
 ---
 
@@ -93,21 +100,44 @@ Slot-Keys: `sk(h)` = ganzeStunde (`"8"`), `sk(h, true)` = halbeStunde (`"8.5"`)
 ## Storage Keys (storage/index.js)
 
 ```js
+// Todos & Routinen
 SK.todos          → 'adhs_todos_list'
 SK.routines       → 'adhs_todos_routines'
 SK.todoOrder      → 'adhs_todos_order'
 SK.cats           → 'adhs_todos_cats'
+
+// Kalender
 SK.days           → 'adhs_calendar_days'
+SK.doneCounters   → 'adhs_calendar_done'
 SK.templates      → 'adhs_calendar_templates'
+
+// App-Config
 SK.settings       → 'adhs_app_settings'
 SK.theme          → 'adhs_app_theme'
-SK.accentColor    → 'adhs_app_accent'
+SK.modules        → 'adhs_app_modules'
 SK.activeTools    → 'adhs_app_active_tools'
+SK.accentColor    → 'adhs_app_accent'
+SK.toolColors     → 'adhs_app_tool_colors'
+
+// View-State (kein Reload nötig — wird beim Tab-Wechsel gelesen)
+SK.visStart       → 'adhs_view_vis_start'      // Zeitplan sichtbarer Start (Stunde)
+SK.visEnd         → 'adhs_view_vis_end'         // Zeitplan sichtbares Ende (Stunde)
+SK.lastPoolReturn → 'adhs_view_last_pool_return'
+SK.poolSort       → 'adhs_view_pool_sort'       // 'standard'|'az'|'za'|'prio'|'new'|'old'
+SK.calView        → 'adhs_view_cal_view'        // 'woche'|'monat'
+
+// Tools
+SK.recipes        → 'adhs_recipes_list'
+SK.shopping       → 'adhs_recipes_shopping'
+SK.shoppingStates → 'adhs_recipes_shopping_states'
+SK.selectedDishes → 'adhs_recipes_selected'
+SK.weight         → 'adhs_health_weight'
+SK.birthdays      → 'adhs_birthdays'
 ```
 
 Lesen/Schreiben:
 ```js
-import { sv, lv } from '../storage'
+import { sv, lv, SK } from '../../../storage'
 sv(SK.todos, nextTodos)
 lv(SK.todos, [])
 ```
@@ -145,7 +175,7 @@ Tab 11 — Zufallsrad
 Tab 12 — Reminder
 ```
 
-Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping in TabTools.jsx und TabKalender.jsx.
+Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **ausschließlich** in `src/features/tools/toolTabs.js` (Single Source of Truth). Alle Consumer importieren von dort.
 
 ---
 

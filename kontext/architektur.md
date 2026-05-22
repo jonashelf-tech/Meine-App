@@ -8,10 +8,12 @@ src/
   features/
     calendar/       TabHeute, TabKalender, Zeitplan, Pool, QuickAdd, KiPlanSection
                     └─ Zeitplan/ClockPopup.jsx  (Clock-Popup wenn Slot-Zeit abläuft)
+                    └─ TabHeute/DayNav.jsx       (Datums-Pille oben im Tagesplaner)
     settings/       TabSettings
-    todos/          Block.js (Datentyp)
-    tools/          TabTools, toolRegistry.js + alle Tool-Unterordner
-  hooks/            useDragDrop.js, useDoubleTap.js
+    todos/          Block.js (Datentyp + createBlock + PRIO)
+    tools/          TabTools, toolRegistry.js (+ ToolIcon), toolTabs.js (TOOL_TAB — Single Source)
+                    + alle Tool-Unterordner
+  hooks/            useDragDrop.js, useDoubleTap.js, useKeyboardOffset.js
   store/            index.js (Zustand)
   storage/          index.js (sv/lv + SK)
   styles/           vars.css (globale CSS-Variablen)
@@ -75,6 +77,14 @@ Max-Width: 480px. Alles zuerst fürs Handy denken.
 
 ---
 
+## Icons
+
+Keine Emojis als strukturelle Icons. Immer SVG (inline oder als Komponente).
+Tool-Icons: `<ToolIcon id={toolId} size={20} />` aus `toolRegistry.js` — nicht `{tool.icon}` (Emoji-Fallback).
+Tab-Bar-Icons: eigene SVG-Komponenten in `App.jsx`.
+
+---
+
 ## Verboten
 
 - Helle Hintergründe
@@ -84,3 +94,7 @@ Max-Width: 480px. Alles zuerst fürs Handy denken.
 - Änderungshistorie im Code
 - Over-Engineering
 - Neue Farb-Hex-Werte direkt in CSS — immer über vars.css Variablen
+- Emojis als Icons in der UI
+- `Date.now()` als ID — immer `createBlock()` verwenden
+- `localStorage` direkt — immer `sv/lv/SK` aus `storage/index.js`
+- TOOL_TAB lokal definieren — immer aus `toolTabs.js` importieren
