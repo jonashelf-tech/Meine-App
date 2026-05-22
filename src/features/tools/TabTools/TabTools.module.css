@@ -64,8 +64,14 @@
 }
 
 .listIcon {
-  font-size: 1.6rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 15%, transparent);
+  color: var(--tool-color, var(--primary));
   flex-shrink: 0;
 }
 

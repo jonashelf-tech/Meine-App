@@ -1,0 +1,208 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', sans-serif; padding: 16px; }
+  h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 0.82rem; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
+
+  .field-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: #0c0c1a;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .field-label {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; color: rgba(255,255,255,0.3);
+    width: 70px; flex-shrink: 0;
+  }
+
+  /* Option A — Select-Dropdown + +-Button */
+  .cat-select-wrap { flex: 1; display: flex; gap: 6px; align-items: center; }
+  .cat-select {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.82rem;
+    font-family: inherit;
+    padding: 6px 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+  .cat-add-btn {
+    width: 32px; height: 32px;
+    background: rgba(139,92,246,0.15);
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 8px;
+    color: #8B5CF6;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+
+  /* Option B — Chip-Auswahl mit + am Ende */
+  .cat-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; flex: 1; }
+  .cat-chip {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cat-chip.selected {
+    background: rgba(139,92,246,0.2);
+    border-color: rgba(139,92,246,0.4);
+    color: #8B5CF6;
+    font-weight: 600;
+  }
+  .cat-chip-add {
+    background: rgba(139,92,246,0.1);
+    border: 1px dashed rgba(139,92,246,0.35);
+    border-radius: 20px;
+    color: rgba(139,92,246,0.7);
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* Mini-dialog für neues Kat */
+  .mini-dialog {
+    background: #101020;
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
+  .mini-input {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 7px;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.82rem;
+    font-family: inherit;
+    padding: 5px 9px;
+  }
+  .mini-confirm {
+    background: rgba(139,92,246,0.25);
+    border: 1px solid rgba(139,92,246,0.4);
+    border-radius: 7px;
+    color: #8B5CF6;
+    font-size: 0.82rem;
+    font-family: inherit;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .option-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 8px;
+  }
+  .block { margin-bottom: 24px; }
+</style>
+
+<h2>Kategorie-Feld</h2>
+<p class="subtitle">Zwei Varianten — Dropdown oder Chips. Welche Logik passt besser?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Dropdown + Verwaltungs-Button</h3>
+      <p>Bestehende Kategorien als Select-Dropdown. Das "+" öffnet ein kleines Eingabefeld direkt darunter um eine neue Kategorie hinzuzufügen.</p>
+
+      <div class="block">
+        <div class="option-label">Normal</div>
+        <div class="field-row">
+          <span class="field-label">Kategorie</span>
+          <div class="cat-select-wrap">
+            <select class="cat-select">
+              <option value="">— keine —</option>
+              <option>Arbeit</option>
+              <option>Privat</option>
+              <option>Gesundheit</option>
+            </select>
+            <button class="cat-add-btn">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="option-label">Nach Klick auf "+"</div>
+        <div class="field-row">
+          <span class="field-label">Kategorie</span>
+          <div class="cat-select-wrap">
+            <select class="cat-select">
+              <option>Arbeit</option>
+            </select>
+            <button class="cat-add-btn" style="background:rgba(139,92,246,0.3)">+</button>
+          </div>
+        </div>
+        <div class="mini-dialog">
+          <input class="mini-input" placeholder="Neue Kategorie…" />
+          <button class="mini-confirm">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Chips + "+" am Ende</h3>
+      <p>Kategorien als tippbare Chips direkt im Feld. Aktive Kategorie leuchtet auf. "+" am Ende fügt neue hinzu. Gut wenn Kategorien wenige und kurz sind.</p>
+
+      <div class="block">
+        <div class="option-label">Keine gewählt</div>
+        <div class="field-row" style="align-items:flex-start; padding-top:12px; padding-bottom:12px">
+          <span class="field-label" style="padding-top:2px">Kategorie</span>
+          <div class="cat-chips">
+            <button class="cat-chip">Arbeit</button>
+            <button class="cat-chip">Privat</button>
+            <button class="cat-chip">Gesundheit</button>
+            <button class="cat-chip-add">+ Neu</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="option-label">Kategorie gewählt</div>
+        <div class="field-row" style="align-items:flex-start; padding-top:12px; padding-bottom:12px">
+          <span class="field-label" style="padding-top:2px">Kategorie</span>
+          <div class="cat-chips">
+            <button class="cat-chip">Arbeit</button>
+            <button class="cat-chip selected">Privat</button>
+            <button class="cat-chip">Gesundheit</button>
+            <button class="cat-chip-add">+ Neu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

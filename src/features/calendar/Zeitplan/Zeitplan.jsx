@@ -219,7 +219,7 @@ export default function Zeitplan({
                       key={`top-${h}`}
                       className={s.sgHalf}
                       style={{ gridRow: topSpan > 1 ? `${rowBase} / span ${topSpan}` : String(rowBase) }}
-                      ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : null)}
+                      ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : 'occupied')}
                     >
                       <SlotBlock
                         slotKey={topKey}
@@ -258,7 +258,7 @@ export default function Zeitplan({
                       key={`bot-${h}`}
                       className={[s.sgHalf, s.sgHalfBot].join(' ')}
                       style={{ gridRow: botSpan > 1 ? `${rowBase + 1} / span ${botSpan}` : String(rowBase + 1) }}
-                      ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : null)}
+                      ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : 'occupied')}
                     >
                       <SlotBlock
                         slotKey={botKey}

@@ -63,7 +63,7 @@ export default function TodoChip({
 
   const addItem = useCallback(() => {
     const txt = itemInput.trim(); if (!txt) return
-    updateTodo({ ...todo, subItems: [...allItems, { id: Date.now(), text: txt, done: false }] })
+    updateTodo({ ...todo, subItems: [...allItems, { id: crypto.randomUUID(), text: txt, done: false }] })
     setItemInput(''); itemRef.current?.focus()
   }, [todo, allItems, itemInput, updateTodo])
 

@@ -1,0 +1,193 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', sans-serif; }
+
+  h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 0.82rem; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
+
+  .pool-demo {
+    background: #0c0c1a;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  /* Option A — Ganzer Header tippbar */
+  .header-a {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    gap: 10px;
+  }
+  .header-a:active { background: rgba(255,255,255,0.07); }
+  .pool-label-a { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); flex: 1; }
+  .count-badge { background: rgba(139,92,246,0.2); color: #8B5CF6; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(139,92,246,0.3); }
+  .chevron-a { color: rgba(255,255,255,0.35); font-size: 0.9rem; transition: transform 0.2s; }
+
+  /* Option B — Label+Chevron tippbar, Chips separat */
+  .header-b {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .label-tap-zone {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .label-tap-zone:active { background: rgba(255,255,255,0.06); }
+  .pool-label-b { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .sort-chips { display: flex; gap: 5px; flex: 1; }
+  .sort-chip { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 3px 9px; font-size: 0.7rem; color: rgba(255,255,255,0.4); cursor: pointer; font-family: inherit; }
+  .sort-chip.active { background: rgba(139,92,246,0.2); color: #8B5CF6; border-color: rgba(139,92,246,0.35); }
+
+  /* Option C — Pille */
+  .header-c {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .pill-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 5px 12px 5px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .pill-toggle:active { background: rgba(255,255,255,0.09); }
+  .pill-count { background: rgba(139,92,246,0.25); color: #8B5CF6; font-size: 0.7rem; font-weight: 700; padding: 1px 6px; border-radius: 20px; }
+  .pill-chevron { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+  .sort-chips-c { display: flex; gap: 5px; }
+
+  /* Shared: todo item preview */
+  .todo-item {
+    display: flex;
+    align-items: center;
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    gap: 10px;
+    font-size: 0.85rem;
+  }
+  .todo-stripe { width: 3px; height: 28px; border-radius: 2px; flex-shrink: 0; }
+  .todo-text { flex: 1; color: rgba(255,255,255,0.85); }
+  .todo-dim { color: rgba(255,255,255,0.3); font-size: 0.75rem; }
+
+  .collapsed-state {
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.3);
+    font-style: italic;
+  }
+
+  .option-wrapper {
+    margin-bottom: 16px;
+  }
+</style>
+
+<h2>B3 — Todos aufklappen/einklappen</h2>
+<p class="subtitle">Wie soll der Header-Bereich die Collapse-Funktion auslösen?</p>
+
+<div class="options">
+
+  <!-- Option A -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Ganzer Header tippbar</h3>
+      <p>Tap irgendwo im Header → collapse. Zeigt "5 offen" Badge wenn zugeklappt. Sort-Chips verschwinden wenn collapsed.</p>
+      <div class="option-wrapper">
+        <div class="pool-demo">
+          <div class="header-a">
+            <span class="pool-label-a">Todos</span>
+            <span class="count-badge">5 offen</span>
+            <span class="chevron-a">▾</span>
+          </div>
+          <div class="todo-item"><div class="todo-stripe" style="background:#8B5CF6"></div><span class="todo-text">Zahnarzt anrufen</span><span class="todo-dim">15min</span></div>
+          <div class="todo-item"><div class="todo-stripe" style="background:#14B8A6"></div><span class="todo-text">Einkaufen</span><span class="todo-dim">30min</span></div>
+          <div class="todo-item"><div class="todo-stripe" style="background:#FB7185"></div><span class="todo-text">Wäsche</span></div>
+        </div>
+        <div class="pool-demo" style="opacity:0.8">
+          <div class="header-a" style="border-bottom:none">
+            <span class="pool-label-a">Todos</span>
+            <span class="count-badge">5 offen</span>
+            <span class="chevron-a" style="transform:rotate(-90deg)">▾</span>
+          </div>
+        </div>
+        <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); text-align:center; margin-top:4px">↑ aufgeklappt &nbsp;&nbsp;&nbsp; ↑ zugeklappt</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Label + Chevron tippbar, Chips separat</h3>
+      <p>Nur der linke Teil des Headers (Label + Chevron) klappt ein/aus. Sort-Chips bleiben immer tippbar — auch wenn collapsed.</p>
+      <div class="option-wrapper">
+        <div class="pool-demo">
+          <div class="header-b">
+            <div class="label-tap-zone">
+              <span class="pool-label-b">Todos</span>
+              <span style="color:rgba(255,255,255,0.3);font-size:0.8rem">▾</span>
+            </div>
+            <div class="sort-chips">
+              <button class="sort-chip active">Standard</button>
+              <button class="sort-chip">Kategorie</button>
+              <button class="sort-chip">Alter</button>
+            </div>
+          </div>
+          <div class="todo-item"><div class="todo-stripe" style="background:#8B5CF6"></div><span class="todo-text">Zahnarzt anrufen</span></div>
+          <div class="todo-item"><div class="todo-stripe" style="background:#14B8A6"></div><span class="todo-text">Einkaufen</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Pille mit Zähler</h3>
+      <p>"Todos (5) ▾" als kompakte Pille links. Sort-Chips bleiben rechts daneben. Einklappen durch Tap auf die Pille.</p>
+      <div class="option-wrapper">
+        <div class="pool-demo">
+          <div class="header-c">
+            <button class="pill-toggle">
+              Todos
+              <span class="pill-count">5</span>
+              <span class="pill-chevron">▾</span>
+            </button>
+            <div class="sort-chips-c">
+              <button class="sort-chip active">Standard</button>
+              <button class="sort-chip">Prio</button>
+            </div>
+          </div>
+          <div class="todo-item"><div class="todo-stripe" style="background:#8B5CF6"></div><span class="todo-text">Zahnarzt anrufen</span></div>
+          <div class="todo-item"><div class="todo-stripe" style="background:#14B8A6"></div><span class="todo-text">Einkaufen</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

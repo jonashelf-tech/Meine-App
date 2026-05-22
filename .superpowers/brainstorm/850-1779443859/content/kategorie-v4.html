@@ -1,0 +1,137 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', sans-serif; padding: 16px; }
+  h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 0.82rem; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
+
+  .field-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px;
+    background: #0c0c1a; border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px; margin-bottom: 4px;
+  }
+  .field-label {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; color: rgba(255,255,255,0.3);
+    width: 70px; flex-shrink: 0; padding-top: 5px;
+  }
+  .cat-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; flex: 1; }
+  .cat-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px; color: rgba(255,255,255,0.45);
+    font-size: 0.75rem; padding: 4px 10px; cursor: pointer; font-family: inherit;
+  }
+  .cat-chip.selected {
+    background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.4);
+    color: #8B5CF6; font-weight: 600;
+  }
+  .cat-chip-del {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px; color: rgba(255,255,255,0.5);
+    font-size: 0.75rem; padding: 4px 6px 4px 10px; font-family: inherit;
+  }
+  .cat-chip-del .rm {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(251,113,133,0.2); border: 1px solid rgba(251,113,133,0.35);
+    color: #FB7185; font-size: 0.6rem;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .edit-btn {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.3); font-size: 0.85rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .edit-btn.active {
+    background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.4); color: #8B5CF6;
+  }
+
+  /* Manage-Erweiterung */
+  .manage-row {
+    display: flex; gap: 6px; align-items: center;
+    padding: 0 14px 12px 14px;
+    background: #0c0c1a;
+    border: 1px solid rgba(255,255,255,0.09); border-top: none;
+    border-radius: 0 0 12px 12px;
+    margin-top: -4px; margin-bottom: 4px;
+  }
+  .new-cat-input {
+    flex: 1; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(139,92,246,0.3); border-radius: 8px;
+    color: rgba(255,255,255,0.85); font-size: 0.82rem;
+    font-family: inherit; padding: 5px 10px;
+  }
+  .add-btn {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.4);
+    color: #8B5CF6; font-size: 1rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+  }
+
+  .state-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: rgba(255,255,255,0.2); margin: 20px 0 8px;
+  }
+  .arrow {
+    text-align: center; color: rgba(255,255,255,0.15); font-size: 0.8rem;
+    margin: 6px 0; letter-spacing: 0.1em;
+  }
+</style>
+
+<h2>Kategorie — nur ✏, alles dahinter</h2>
+<p class="subtitle">Normal: nur Stift sichtbar. Im Edit-Modus: ✕ an Chips + Eingabefeld mit + erscheinen.</p>
+
+<div class="mockup">
+  <div class="mockup-header">Zustände</div>
+  <div class="mockup-body">
+
+    <div class="state-label">1 — Normal (nur ✏ sichtbar)</div>
+    <div class="field-row">
+      <span class="field-label">Kategorie</span>
+      <div class="cat-chips">
+        <button class="cat-chip">Arbeit</button>
+        <button class="cat-chip selected">Privat</button>
+        <button class="cat-chip">Gesundheit</button>
+      </div>
+      <button class="edit-btn">✏</button>
+    </div>
+
+    <div class="arrow">▼ Tipp auf ✏</div>
+
+    <div class="state-label">2 — Edit-Modus aktiv</div>
+    <div class="field-row" style="border-radius:12px 12px 0 0; border-bottom:none; margin-bottom:0">
+      <span class="field-label">Kategorie</span>
+      <div class="cat-chips">
+        <span class="cat-chip-del">Arbeit <span class="rm">✕</span></span>
+        <span class="cat-chip-del" style="border-color:rgba(139,92,246,0.4);color:#8B5CF6">Privat <span class="rm">✕</span></span>
+        <span class="cat-chip-del">Gesundheit <span class="rm">✕</span></span>
+      </div>
+      <button class="edit-btn active">✏</button>
+    </div>
+    <div class="manage-row">
+      <input class="new-cat-input" placeholder="Neue Kategorie…" />
+      <button class="add-btn">+</button>
+    </div>
+
+    <div class="arrow">▼ Tipp auf ✏ nochmal → zurück zu Zustand 1</div>
+
+    <div class="state-label">3 — Keine Kategorien angelegt</div>
+    <div class="field-row" style="border-radius:12px 12px 0 0; border-bottom:none; margin-bottom:0">
+      <span class="field-label">Kategorie</span>
+      <div class="cat-chips" style="color:rgba(255,255,255,0.2); font-size:0.78rem; font-style:italic">
+        Noch keine Kategorien
+      </div>
+      <button class="edit-btn active">✏</button>
+    </div>
+    <div class="manage-row">
+      <input class="new-cat-input" placeholder="Erste Kategorie anlegen…" />
+      <button class="add-btn">+</button>
+    </div>
+
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:12px;text-align:center">Passt das so?</p>

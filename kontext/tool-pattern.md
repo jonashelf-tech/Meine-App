@@ -3,16 +3,44 @@
 ## Bestehende Tools & Tab-Nummern
 
 ```
-Tab 4  — Geburtstage
-Tab 5  — Timer
-Tab 6  — Rezepte
-Tab 7  — Pizza
-Tab 8  — Elvi
-Tab 9  — Gewicht
-Tab 10 — Gamification
-Tab 11 — Zufallsrad
-Tab 12 — Reminder       (src/features/tools/reminder/)
+Tab 4  — Geburtstage   (geburtstage)
+Tab 5  — Timer         (timer)
+Tab 6  — Rezepte       (rezepte)
+Tab 7  — Pizza         (pizza)
+Tab 8  — Elvi          (elvi)
+Tab 9  — Gewicht       (gewicht)
+Tab 10 — Gamification  (gamification)
+Tab 11 — Zufallsrad    (rad)
+Tab 12 — Reminder      (reminder)
 Tab 13 → nächstes Tool
+```
+
+---
+
+## Schritt-für-Schritt Integration
+
+```
+1. Ordner anlegen:         src/features/tools/toolname/
+2. JSX erstellen:          TabToolname.jsx  (CSS Modules, kein Inline-CSS für statische Werte)
+3. CSS erstellen:          TabToolname.module.css
+4. toolRegistry.js:        Eintrag + SVG-Icon ergänzen (kein Emoji)
+5. toolTabs.js:            toolname: 13  ← EINZIGE Stelle für Tab-Nummern
+6. App.jsx:                import + {currentTab === TOOL_TAB.toolname && <TabToolname onBack={goBack} />}
+```
+
+> **TOOL_TAB ausschließlich in `src/features/tools/toolTabs.js` definieren.**  
+> Alle anderen Dateien importieren von dort. Nie lokal redefinieren.
+
+---
+
+## toolTabs.js — Eintrag
+
+```js
+// src/features/tools/toolTabs.js
+export const TOOL_TAB = {
+  // ... bestehende ...
+  toolname: 13,   // ← hier ergänzen
+}
 ```
 
 ---
@@ -21,37 +49,41 @@ Tab 13 → nächstes Tool
 
 ```js
 // src/features/tools/toolRegistry.js
-{ id: 'toolname', name: 'Anzeigename', icon: '🔧', color: '#8B5CF6', standalone: true, integrated: false }
-
-// integrated: true → Tool-Daten erscheinen im Kalender
+{
+  id:         'toolname',
+  name:       'Anzeigename',
+  icon:       '🔧',        // Emoji-Fallback (wird in UI nicht gezeigt — ToolIcon nutzt SVG)
+  color:      '#8B5CF6',
+  standalone: true,
+  integrated: false,       // true → Tool-Daten erscheinen im Kalender
+}
 ```
+
+SVG-Icon für das Tool in `ICONS` in `toolRegistry.js` ergänzen — `ToolIcon` nutzt dieses automatisch.
 
 ---
 
 ## App.jsx — Routing
 
 ```jsx
-// Import oben
 import TabToolname from './features/tools/toolname/TabToolname'
+import { TOOL_TAB } from './features/tools/toolTabs'
 
-// In der Tab-Liste
-{currentTab === 13 && <TabToolname onBack={goBack} />}
+// Im JSX-Block:
+{currentTab === TOOL_TAB.toolname && <TabToolname onBack={goBack} />}
 ```
 
 ---
 
-## TabTools.jsx — TOOL_TAB Mapping
+## Header-Pattern (ToolHeader-Komponente)
 
-```js
-const TOOL_TAB = {
-  // ... bestehende ...
-  toolname: 13,
-}
+```jsx
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+
+<ToolHeader title="Tool" sub="name" onBack={onBack} />
 ```
 
----
-
-## Header-Pattern (CSS Modules)
+Oder manuell mit CSS Modules:
 
 ```jsx
 <div className={s.header}>
@@ -61,15 +93,15 @@ const TOOL_TAB = {
     <div className={s.title}>Tool<em>name</em></div>
   </div>
 </div>
+```
 
-/* CSS:
-.header { display:flex; align-items:center; gap:12px; padding:16px 16px 0; }
-.back { background:none; border:none; color:var(--text-dim); font-size:0.82rem; cursor:pointer; font-family:'Outfit',sans-serif; }
+```css
+.header     { display:flex; align-items:center; gap:12px; padding:16px 16px 0; }
+.back       { background:none; border:none; color:var(--text-dim); font-size:0.82rem; cursor:pointer; font-family:'Outfit',sans-serif; }
 .titleBlock { display:flex; flex-direction:column; }
-.eyebrow { font-size:0.52rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(139,92,246,0.5); font-family:'Outfit',sans-serif; }
-.title { font-size:1.1rem; font-weight:700; font-family:'Outfit',sans-serif; font-weight:700; color:var(--text); }
-.title em { color:var(--primary); font-style:normal; }
-*/
+.eyebrow    { font-size:0.52rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(139,92,246,0.5); font-family:'Outfit',sans-serif; }
+.title      { font-size:1.1rem; font-weight:700; font-family:'Outfit',sans-serif; color:var(--text); }
+.title em   { color:var(--primary); font-style:normal; }
 ```
 
 ---
@@ -77,31 +109,21 @@ const TOOL_TAB = {
 ## Storage-Konvention
 
 ```js
-// Direkt localStorage, kein SK, eigener Prefix
-const KEY = 'adhs_toolname_v1'
-const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) ?? DEFAULT } catch { return DEFAULT } }
-const save = (data) => { try { localStorage.setItem(KEY, JSON.stringify(data)) } catch {} }
-```
+// Immer sv/lv/SK — nie localStorage direkt
+import { sv, lv, SK } from '../../../storage'
 
----
+// SK-Eintrag in storage/index.js ergänzen:
+//   toolname: `${PREFIX}toolname_data`,
 
-## Unterwegs-Tool integrieren
-
-```
-1. JSX liegt in: adhs-app/_incoming/ToolName.jsx
-2. Ordner anlegen: src/features/tools/toolname/
-3. JSX → TabToolname.jsx (Inline Styles → CSS Module umschreiben)
-4. TabToolname.module.css anlegen
-5. toolRegistry.js: Eintrag hinzufügen
-6. TabTools.jsx: TOOL_TAB[toolname] = nächste Nummer
-7. App.jsx: import + Tab-Zeile
+const [data, setData] = useState(() => lv(SK.toolname, DEFAULT))
+const save = (next) => { setData(next); sv(SK.toolname, next) }
 ```
 
 ---
 
 ## Kalender-Integration
 
-Tool-Daten im Kalender sichtbar machen:
+Tool-Daten im Kalender sichtbar machen (`integrated: true` in Registry):
 
 ```js
 import { useAppStore } from '../../../store'
@@ -114,6 +136,6 @@ const writeToCalendar = (date, slotKey, entry) => {
   }))
 }
 
-// entry Format:
+// entry-Format:
 { text: 'Session: Toolname', color: '#8B5CF6', duration: 30, locked: true }
 ```

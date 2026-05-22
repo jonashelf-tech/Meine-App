@@ -1,0 +1,139 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', sans-serif; padding: 16px; }
+  h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 0.82rem; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
+
+  .field-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px;
+    background: #0c0c1a;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .field-label {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; color: rgba(255,255,255,0.3);
+    width: 70px; flex-shrink: 0; padding-top: 4px;
+  }
+  .cat-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; flex: 1; }
+
+  .cat-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px; color: rgba(255,255,255,0.45);
+    font-size: 0.75rem; padding: 4px 10px; cursor: pointer; font-family: inherit;
+  }
+  .cat-chip.selected {
+    background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.4);
+    color: #8B5CF6; font-weight: 600;
+  }
+  .cat-chip-add {
+    background: rgba(139,92,246,0.1); border: 1px dashed rgba(139,92,246,0.35);
+    border-radius: 20px; color: rgba(139,92,246,0.7);
+    font-size: 0.75rem; padding: 4px 10px; cursor: pointer; font-family: inherit;
+  }
+
+  /* Edit-mode chip — mit ✕ */
+  .cat-chip-edit {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px; color: rgba(255,255,255,0.55);
+    font-size: 0.75rem; padding: 4px 6px 4px 10px; cursor: pointer; font-family: inherit;
+  }
+  .cat-chip-edit .rm {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(251,113,133,0.2); border: 1px solid rgba(251,113,133,0.35);
+    color: #FB7185; font-size: 0.6rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Stift-Icon neben den Chips */
+  .edit-icon-btn {
+    background: none; border: none;
+    color: rgba(255,255,255,0.2); cursor: pointer;
+    font-size: 0.8rem; padding: 4px; line-height: 1;
+    flex-shrink: 0; align-self: center;
+  }
+  .edit-icon-btn:hover { color: rgba(255,255,255,0.5); }
+
+  .state-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: rgba(255,255,255,0.2);
+    margin: 16px 0 6px;
+  }
+
+  .hint { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 6px; padding: 0 4px; }
+</style>
+
+<h2>Kategorien entfernen</h2>
+<p class="subtitle">Wie kommt man in den Verwaltungs-Modus?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Stift-Icon → Verwaltungs-Modus</h3>
+      <p>Neben den Chips gibt es ein kleines Stift-Icon. Antippen → alle Chips zeigen ein ✕ zum Löschen. Nochmal tippen → zurück zur Auswahl.</p>
+
+      <div class="state-label">Normal</div>
+      <div class="field-row">
+        <span class="field-label">Kategorie</span>
+        <div class="cat-chips">
+          <button class="cat-chip">Arbeit</button>
+          <button class="cat-chip selected">Privat</button>
+          <button class="cat-chip">Gesundheit</button>
+          <button class="cat-chip-add">+ Neu</button>
+        </div>
+        <button class="edit-icon-btn">✏</button>
+      </div>
+
+      <div class="state-label">Nach Tipp auf Stift</div>
+      <div class="field-row">
+        <span class="field-label">Kategorie</span>
+        <div class="cat-chips">
+          <span class="cat-chip-edit">Arbeit <span class="rm">✕</span></span>
+          <span class="cat-chip-edit">Privat <span class="rm">✕</span></span>
+          <span class="cat-chip-edit">Gesundheit <span class="rm">✕</span></span>
+          <button class="cat-chip-add">+ Neu</button>
+        </div>
+        <button class="edit-icon-btn" style="color:rgba(139,92,246,0.7)">✏</button>
+      </div>
+      <p class="hint">Stift leuchtet lila wenn aktiv. Fertig = nochmal tippen.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Lang-Tipp auf Chip → Löschen</h3>
+      <p>Normaler Tipp = Kategorie auswählen. Lang-Tipp auf einen Chip = dieser Chip bekommt ein ✕ und kann gelöscht werden. Einfacher, aber weniger sichtbar.</p>
+
+      <div class="state-label">Normal</div>
+      <div class="field-row">
+        <span class="field-label">Kategorie</span>
+        <div class="cat-chips">
+          <button class="cat-chip">Arbeit</button>
+          <button class="cat-chip selected">Privat</button>
+          <button class="cat-chip">Gesundheit</button>
+          <button class="cat-chip-add">+ Neu</button>
+        </div>
+      </div>
+
+      <div class="state-label">Nach Lang-Tipp auf "Arbeit"</div>
+      <div class="field-row">
+        <span class="field-label">Kategorie</span>
+        <div class="cat-chips">
+          <span class="cat-chip-edit" style="border-color:rgba(251,113,133,0.4);color:#FB7185">Arbeit <span class="rm">✕</span></span>
+          <button class="cat-chip selected">Privat</button>
+          <button class="cat-chip">Gesundheit</button>
+          <button class="cat-chip-add">+ Neu</button>
+        </div>
+      </div>
+      <p class="hint">Nur der lang-getippte Chip zeigt ✕. Tipp woanders → zurück zum Normalzustand.</p>
+    </div>
+  </div>
+
+</div>

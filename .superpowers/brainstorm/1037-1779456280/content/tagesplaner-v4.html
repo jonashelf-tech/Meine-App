@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tagesplaner v4</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', sans-serif; min-height: 100vh; }
+  .phone { max-width: 390px; margin: 0 auto; padding-bottom: 60px; }
+
+  .section-label { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(139,92,246,0.5); padding: 20px 16px 8px; }
+  .zeitplan-stub { margin: 0 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 12px 14px; display:flex; flex-direction:column; gap:8px; }
+  .slot { display:flex; align-items:center; gap:10px; }
+  .slot-time { font-size:0.72rem; color:rgba(255,255,255,0.3); width:36px; flex-shrink:0; }
+  .slot-bar { height:32px; border-radius:8px; flex:1; display:flex; align-items:center; padding:0 10px; font-size:0.8rem; font-weight:500; }
+  .slot-done { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.2); color:rgba(16,185,129,0.6); text-decoration:line-through; }
+  .slot-active { background:rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.3); }
+  .divider { height:1px; background:rgba(255,255,255,0.06); margin:16px 16px 0; }
+
+  /* CARDS */
+  .cards-wrap { padding:12px 16px 0; display:flex; flex-direction:column; gap:10px; }
+  .ucard { background:rgba(255,255,255,0.045); border:1px solid rgba(255,255,255,0.08); border-radius:14px; overflow:hidden; transition:border-color 0.2s; }
+  .ucard.open { border-color:rgba(255,255,255,0.13); }
+  .ucard-head { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none; }
+  .ucard-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ucard-icon svg { width:14px; height:14px; }
+  .ucard-name { font-size:0.82rem; font-weight:600; color:rgba(255,255,255,0.85); flex:1; }
+  .ucard-name.link::after { content:' ↗'; font-size:0.6rem; opacity:0.28; vertical-align:super; }
+  .ucard-name.link { cursor:pointer; }
+  .ucard-badge { font-size:0.7rem; font-weight:600; padding:2px 8px; border-radius:20px; flex-shrink:0; }
+  .ucard-chevron { color:rgba(255,255,255,0.2); font-size:0.7rem; flex-shrink:0; transition:transform 0.18s; }
+  .ucard.open .ucard-chevron { transform:rotate(180deg); }
+  .ucard-body { display:none; padding:0 14px 14px; flex-direction:column; gap:6px; }
+  .ucard.open .ucard-body { display:flex; }
+
+  /* ═══ TODO CHIP — identisch überall ═══ */
+  @keyframes chipIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+  .chip-wrap { animation:chipIn 0.18s ease both; }
+  .chip {
+    display:flex; align-items:stretch;
+    background:rgba(255,255,255,0.022); border:1px solid rgba(255,255,255,0.065);
+    border-radius:14px; overflow:hidden;
+    transition:background 0.14s,border-color 0.14s; cursor:pointer;
+  }
+  .chip:hover { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); }
+  .chip.done { opacity:0.44; }
+  .chip.done .chip-text { text-decoration:line-through; }
+  .chip-stripe { width:3px; min-width:3px; align-self:stretch; flex-shrink:0; }
+  .chip-expand {
+    width:34px; min-width:34px; align-self:stretch;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    background:none; border:none; border-right:1px solid rgba(255,255,255,0.06);
+    cursor:pointer; padding:0; flex-shrink:0; transition:background 0.12s;
+  }
+  .chip-expand:hover { background:rgba(139,92,246,0.07); }
+  .chip-arr { font-size:0.5rem; color:rgba(255,255,255,0.3); line-height:1; }
+  .chip-count { font-size:0.38rem; font-weight:700; color:rgba(255,255,255,0.2); line-height:1; }
+  .chip-body { flex:1; padding:8px; display:flex; flex-direction:column; justify-content:center; overflow:hidden; min-width:0; }
+  .chip-text { font-size:0.84rem; font-weight:600; color:rgba(255,255,255,0.85); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+  .chip-meta { font-size:0.56rem; font-weight:600; letter-spacing:0.04em; color:rgba(255,255,255,0.22); margin-top:2px; display:block; }
+  .prio { width:5px; min-width:5px; align-self:stretch; flex-shrink:0; border-radius:0 14px 14px 0; }
+  .prio-1 { background:rgba(251,113,133,0.55); }
+  .prio-2 { background:rgba(139,92,246,0.45); }
+  .prio-3 { background:transparent; }
+
+  /* Modes */
+  .mode-row { display:flex; gap:6px; }
+  .mode-chip { flex:1; padding:6px 0; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.4); font-size:0.72rem; font-weight:600; font-family:'Outfit',sans-serif; cursor:pointer; text-align:center; transition:all 0.15s; }
+
+  .btn-add { width:100%; padding:9px 0; border-radius:9px; border:none; font-size:0.8rem; font-weight:600; font-family:'Outfit',sans-serif; cursor:pointer; color:#fff; margin-top:2px; }
+  .btn-ghost { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.09); }
+
+  /* Transfer label */
+  .transfer-note { font-size:0.68rem; color:rgba(255,255,255,0.25); text-align:center; padding:2px 0; }
+  .transfer-note span { color:rgba(20,184,166,0.7); }
+
+  /* Success state */
+  .success-msg { font-size:0.75rem; color:#10B981; text-align:center; padding:6px 0 2px; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="section-label">Zeitplan — heute</div>
+  <div class="zeitplan-stub">
+    <div class="slot"><div class="slot-time">9:00</div><div class="slot-bar slot-done">E-Mails checken</div></div>
+    <div class="slot"><div class="slot-time">10:30</div><div class="slot-bar slot-active">Deep Work — Projekt X</div></div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="cards-wrap">
+
+    <!-- ══ TODOS ══ -->
+    <div class="ucard open" id="card-todos">
+      <div class="ucard-head" onclick="toggle('card-todos')">
+        <div class="ucard-icon" style="background:rgba(139,92,246,0.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <span class="ucard-name">Todos</span>
+        <span class="ucard-badge" style="background:rgba(139,92,246,0.12);color:#8B5CF6">2 offen</span>
+        <span class="ucard-chevron">▼</span>
+      </div>
+      <div class="ucard-body">
+        <div class="chip-wrap"><div class="chip">
+          <span class="chip-stripe" style="background:#fb7185"></span>
+          <button class="chip-expand"><span class="chip-arr">▸</span><span class="chip-count">0/3</span></button>
+          <div class="chip-body"><span class="chip-text">Steuererklärung vorbereiten</span><span class="chip-meta">Finanzen · 13. Mai</span></div>
+          <span class="prio prio-1"></span>
+        </div></div>
+        <div class="chip-wrap"><div class="chip">
+          <span class="chip-stripe" style="background:#8B5CF6"></span>
+          <button class="chip-expand"><span class="chip-arr">▸</span></button>
+          <div class="chip-body"><span class="chip-text">Arzttermin anrufen</span><span class="chip-meta">30min</span></div>
+          <span class="prio prio-2"></span>
+        </div></div>
+        <button class="btn-add btn-ghost">+ Todo hinzufügen</button>
+      </div>
+    </div>
+
+    <!-- ══ REMINDER ══ -->
+    <div class="ucard" id="card-reminder">
+      <div class="ucard-head" onclick="toggle('card-reminder')">
+        <div class="ucard-icon" style="background:rgba(20,184,166,0.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <span class="ucard-name link" onclick="event.stopPropagation()">Reminder</span>
+        <span class="ucard-badge" id="reminder-badge" style="background:rgba(20,184,166,0.12);color:#14B8A6">2 heute</span>
+        <span class="ucard-chevron">▼</span>
+      </div>
+      <div class="ucard-body" id="reminder-body">
+        <!-- Echte TodoChips — identisch zur Todos-Sektion -->
+        <div class="chip-wrap"><div class="chip">
+          <span class="chip-stripe" style="background:#14B8A6"></span>
+          <button class="chip-expand"><span class="chip-arr">▸</span></button>
+          <div class="chip-body"><span class="chip-text">Wasser trinken (2L)</span><span class="chip-meta">täglich</span></div>
+          <span class="prio prio-3"></span>
+        </div></div>
+        <div class="chip-wrap"><div class="chip">
+          <span class="chip-stripe" style="background:#14B8A6"></span>
+          <button class="chip-expand"><span class="chip-arr">▸</span></button>
+          <div class="chip-body"><span class="chip-text">Medikamente — 09:00</span><span class="chip-meta">täglich · mit Uhrzeit → Zeitplan</span></div>
+          <span class="prio prio-3"></span>
+        </div></div>
+        <div class="transfer-note">Ohne Uhrzeit → Pool · Mit Uhrzeit → <span>Zeitplan</span></div>
+        <button class="btn-add" style="background:#14B8A6" onclick="doTransfer('reminder')">Zur Todoliste übertragen</button>
+      </div>
+    </div>
+
+    <!-- ══ HAUSHALT ══ -->
+    <div class="ucard" id="card-haushalt">
+      <div class="ucard-head" onclick="toggle('card-haushalt')">
+        <div class="ucard-icon" style="background:rgba(139,92,246,0.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22l4-4"/><path d="M7 18l9-9-2-2-9 9"/><path d="M14 7l2-4 4 4-2 2"/><path d="M16 5l2 2"/></svg>
+        </div>
+        <span class="ucard-name link" onclick="event.stopPropagation()">Haushalt</span>
+        <span class="ucard-badge" id="haushalt-badge" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.3)">Modus wählen</span>
+        <span class="ucard-chevron">▼</span>
+      </div>
+      <div class="ucard-body" onclick="event.stopPropagation()">
+        <div class="mode-row">
+          <button class="mode-chip" id="mc-s" onclick="selectMode('survival')">🛡 Survival</button>
+          <button class="mode-chip" id="mc-m" onclick="selectMode('maintain')">🔄 Maintain</button>
+          <button class="mode-chip" id="mc-b" onclick="selectMode('boost')">✨ Boost</button>
+        </div>
+        <!-- TodoChips erscheinen hier nach Modusauswahl — selbe Optik -->
+        <div id="haushalt-tasks" style="display:none;flex-direction:column;gap:6px;"></div>
+        <div class="transfer-note" id="haushalt-note" style="display:none">Ohne Uhrzeit → Pool · Mit Uhrzeit → <span>Zeitplan</span></div>
+        <button id="haushalt-btn" class="btn-add" style="display:none" onclick="doTransfer('haushalt')">Zur Todoliste übertragen</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var currentMode = null;
+var MODES = {
+  survival:{ color:'#fb7185', bg:'rgba(251,113,133,0.12)', label:'🛡 Survival',
+    tasks:[{text:'Küche — Basics',meta:'15 min'},{text:'Müll rausbringen',meta:'5 min'}] },
+  maintain:{ color:'#8B5CF6', bg:'rgba(139,92,246,0.12)', label:'🔄 Maintain',
+    tasks:[{text:'Küche aufräumen',meta:'20 min'},{text:'Bad wischen',meta:'15 min'},{text:'Staubsaugen',meta:'10 min'}] },
+  boost:   { color:'#10B981', bg:'rgba(16,185,129,0.12)', label:'✨ Boost',
+    tasks:[{text:'Schlafzimmer putzen',meta:'30 min'},{text:'Fenster putzen',meta:'20 min'},{text:'Boden wischen',meta:'25 min'}] },
+};
+
+function toggle(id){ document.getElementById(id).classList.toggle('open'); }
+
+function chip(color, text, meta) {
+  return '<div class="chip-wrap"><div class="chip">'
+    +'<span class="chip-stripe" style="background:'+color+'"></span>'
+    +'<button class="chip-expand"><span class="chip-arr">▸</span></button>'
+    +'<div class="chip-body"><span class="chip-text">'+text+'</span>'+(meta?'<span class="chip-meta">'+meta+'</span>':'')+'</div>'
+    +'<span class="prio prio-3"></span>'
+    +'</div></div>';
+}
+
+function selectMode(mode) {
+  currentMode = mode;
+  var m = MODES[mode];
+  ['s','m','b'].forEach(function(k){
+    var el=document.getElementById('mc-'+k);
+    el.style.background=''; el.style.borderColor=''; el.style.color='';
+  });
+  var map={survival:'mc-s',maintain:'mc-m',boost:'mc-b'};
+  var el=document.getElementById(map[mode]);
+  el.style.background=m.bg; el.style.borderColor=m.color; el.style.color=m.color;
+
+  var badge=document.getElementById('haushalt-badge');
+  badge.style.background=m.bg; badge.style.color=m.color;
+  badge.textContent=m.label+' · '+m.tasks.length;
+
+  var wrap=document.getElementById('haushalt-tasks');
+  wrap.style.display='flex';
+  // Identische TodoChips wie in Todos-Sektion
+  wrap.innerHTML=m.tasks.map(function(t){ return chip(m.color,t.text,t.meta); }).join('');
+
+  document.getElementById('haushalt-note').style.display='block';
+  var btn=document.getElementById('haushalt-btn');
+  btn.style.display='block'; btn.style.background=m.color;
+}
+
+function doTransfer(source) {
+  var badge, body, btnEl;
+  if(source==='reminder'){
+    badge=document.getElementById('reminder-badge');
+    body=document.getElementById('reminder-body');
+  } else {
+    badge=document.getElementById('haushalt-badge');
+    body=document.querySelector('#card-haushalt .ucard-body');
+  }
+  // Replace content with success message
+  var chips=body.querySelectorAll('.chip-wrap');
+  chips.forEach(function(c){ c.style.opacity='0.35'; });
+  var msg=document.createElement('div');
+  msg.className='success-msg';
+  msg.textContent='✓ '+chips.length+' Todos übertragen';
+  body.appendChild(msg);
+  body.querySelector('.btn-add').disabled=true;
+  body.querySelector('.btn-add').style.opacity='0.35';
+  badge.style.background='rgba(16,185,129,0.12)';
+  badge.style.color='#10B981';
+  badge.textContent='✓ übertragen';
+}
+</script>
+</body>
+</html>

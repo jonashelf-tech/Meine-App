@@ -4,7 +4,7 @@
 
 Nie direkt anfangen zu bauen.
 
-1. Anforderungen des Users klären — was soll das Tool genau tun?
+1. Anforderungen klären — was soll das Tool genau tun?
 2. Offene Fragen stellen — Interaktion, Daten, Kantenfälle
 3. Designentscheidungen kurz skizzieren und bestätigen lassen
 4. Erst dann: vollständige `.jsx` ausgeben
@@ -25,7 +25,7 @@ const C = {
   text:    'rgba(255,255,255,0.92)',
   dim:     'rgba(255,255,255,0.52)',
   primary: '#8B5CF6',   // Violett — Hauptakzent
-  teal:    '#14B8A6',   // Teal — sekundär
+  teal:    '#14B8A6',   // sekundär
   emerald: '#10B981',   // Erfolg / CTA
   rose:    '#FB7185',   // Löschen / Fehler
   r:       '14px',
@@ -33,8 +33,21 @@ const C = {
 }
 ```
 
-**Fonts:** `'Outfit', sans-serif` für UI · `'Orbitron', monospace` für Zahlen & Display
-**Verboten:** Inter, Roboto, Arial, System-UI, helle Hintergründe
+**Fonts:** `'Outfit', sans-serif` für UI · `'Orbitron', monospace` für Zahlen & Display  
+**Verboten:** Inter, Roboto, Arial, System-UI, helle Hintergründe, Emojis als Icons
+
+---
+
+## Icons
+
+Keine Emojis als strukturelle Icons. SVG direkt inline:
+
+```jsx
+// Beispiel — immer Stroke-Icons, currentColor
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <path d="..." />
+</svg>
+```
 
 ---
 
@@ -63,9 +76,13 @@ function Header({ title, sub, accent, onBack }) {
 
 ## Storage
 
+**Im Chat-Tool (standalone JSX):** localStorage direkt erlaubt, da kein Import möglich.  
+**Nach Integration in die App:** auf `sv/lv/SK` aus `storage/index.js` umstellen und SK-Eintrag ergänzen.
+
 ```js
+// Chat-Ansatz (standalone):
 const KEY = 'adhs_[toolname]_v1'
-const DEFAULT = { /* initaler State */ }
+const DEFAULT = { /* initialer State */ }
 
 const [data, setData] = useState(() => {
   try { return JSON.parse(localStorage.getItem(KEY)) ?? DEFAULT }
@@ -75,6 +92,13 @@ const save = (next) => {
   setData(next)
   try { localStorage.setItem(KEY, JSON.stringify(next)) } catch {}
 }
+```
+
+```js
+// Nach Integration — umschreiben auf:
+import { sv, lv, SK } from '../../../storage'
+const [data, setData] = useState(() => lv(SK.toolname, DEFAULT))
+const save = (next) => { setData(next); sv(SK.toolname, next) }
 ```
 
 ---
@@ -113,8 +137,9 @@ export default function Tab[Name]({ onBack }) {
 
 ## Regeln
 
-- Mobile First: 480px denken
-- Orbitron nur für Zahlen/Display, nie für Fließtext
+- Mobile First: 480px
+- Orbitron nur für Zahlen/Display — nie für Fließtext
+- SVG-Icons, keine Emojis
 - Simpelste Lösung die funktioniert
 - Kein auskommentierter Code
 
@@ -122,5 +147,4 @@ export default function Tab[Name]({ onBack }) {
 
 ## Ausgabe
 
-Die fertige JSX als einzelne Datei ausgeben — zum Download bereitstellen.
-Dateiname: `[ToolName].jsx`
+Fertige JSX als einzelne Datei in `Dateien/output/[ToolName].jsx` ablegen.

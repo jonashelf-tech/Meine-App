@@ -1,0 +1,53 @@
+<h2>Was sind die 3 Modi?</h2>
+<p class="subtitle">Du hast „3 Modi" im Tagesplaner erwähnt — was repräsentieren sie? Das beeinflusst Datenhaltung und UX komplett.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Energie-Level</h3>
+      <p>Der Nutzer wählt täglich wie er sich fühlt. Das System passt Aufgaben dynamisch an.</p>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <span style="background:rgba(251,113,133,0.2);border:1px solid rgba(251,113,133,0.4);color:#fb7185;padding:4px 10px;border-radius:20px;font-size:0.8rem">😮‍💨 Überfordert → 1 Mini-Task</span>
+        <span style="background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.4);color:#8B5CF6;padding:4px 10px;border-radius:20px;font-size:0.8rem">😐 Normal → 2–3 Tasks</span>
+        <span style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);color:#10B981;padding:4px 10px;border-radius:20px;font-size:0.8rem">⚡ Motiviert → 5+ Tasks</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Zeit-Budget</h3>
+      <p>Der Nutzer sagt wie viel Zeit er hat. Das System rechnet passende Aufgaben zusammen.</p>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <span style="background:rgba(251,113,133,0.2);border:1px solid rgba(251,113,133,0.4);color:#fb7185;padding:4px 10px;border-radius:20px;font-size:0.8rem">⏱ 5–15 min → Quick Reset</span>
+        <span style="background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.4);color:#8B5CF6;padding:4px 10px;border-radius:20px;font-size:0.8rem">⏱ 30 min → Normal</span>
+        <span style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);color:#10B981;padding:4px 10px;border-radius:20px;font-size:0.8rem">⏱ 1h+ → Boost</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Intensitäts-Preset — empfohlen</h3>
+      <p>Feste, benannte Modi mit klar definierter Erwartungshaltung. Kein Nachdenken, einfach wählen.</p>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <span style="background:rgba(251,113,133,0.2);border:1px solid rgba(251,113,133,0.4);color:#fb7185;padding:4px 10px;border-radius:20px;font-size:0.8rem">🛡 Survival — Wohnung bewohnbar</span>
+        <span style="background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.4);color:#8B5CF6;padding:4px 10px;border-radius:20px;font-size:0.8rem">🔄 Maintenance — Routine halten</span>
+        <span style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);color:#10B981;padding:4px 10px;border-radius:20px;font-size:0.8rem">✨ Boost — Tief sauber</span>
+      </div>
+      <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:8px">Energie + Zeit sind <em>hinterlegte Defaults</em> pro Modus, konfigurierbar.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="d" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Kombination: Modus + Energie</h3>
+      <p>Der Nutzer wählt zuerst den Kontext (<em>Was will ich heute erreichen?</em>), dann optional die Energie. Ergibt präzisere Aufgabenliste.</p>
+      <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);margin-top:8px">Beispiel: Maintenance + niedrige Energie = nur Küche, kein Bad</div>
+    </div>
+  </div>
+</div>

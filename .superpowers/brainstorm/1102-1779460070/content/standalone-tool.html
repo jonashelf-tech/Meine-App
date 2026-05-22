@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haushalt — Standalone Tool</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', sans-serif; min-height: 100vh; }
+  .phone { max-width: 390px; margin: 0 auto; padding-bottom: 60px; }
+
+  .header { display:flex; align-items:center; gap:12px; padding:16px 16px 0; }
+  .back { background:none; border:none; color:rgba(255,255,255,0.35); font-size:0.8rem; cursor:pointer; font-family:'Outfit',sans-serif; padding:0; }
+  .title-block { flex:1; }
+  .eyebrow { font-size:0.5rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:rgba(139,92,246,0.5); }
+  .title { font-size:1.1rem; font-weight:700; }
+  .title em { color:#8B5CF6; font-style:normal; }
+
+  .view-tabs { display:flex; gap:6px; padding:14px 16px 0; }
+  .view-tab { flex:1; padding:7px 0; border-radius:9px; border:1px solid rgba(255,255,255,0.09); background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.4); font-size:0.78rem; font-weight:600; font-family:'Outfit',sans-serif; cursor:pointer; text-align:center; transition:all 0.15s; }
+  .view-tab.active { background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.4); color:#8B5CF6; }
+
+  .queue-view { padding:14px 16px 0; }
+
+  .mode-strip { display:flex; gap:6px; margin-bottom:12px; }
+  .mode-btn { flex:1; padding:9px 0; border-radius:10px; border:1px solid rgba(255,255,255,0.09); background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.4); font-size:0.75rem; font-weight:700; font-family:'Outfit',sans-serif; cursor:pointer; text-align:center; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .mode-btn .mode-icon { font-size:1rem; }
+  .mode-btn .mode-label { font-size:0.62rem; }
+  .mode-btn.sel-s { background:rgba(251,113,133,0.15); border-color:rgba(251,113,133,0.5); color:#fb7185; }
+  .mode-btn.sel-m { background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.5); color:#8B5CF6; }
+  .mode-btn.sel-b { background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.5); color:#10B981; }
+
+  .zeit-label { font-size:0.58rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.25); margin-bottom:6px; }
+  .zeit-strip { display:flex; gap:6px; margin-bottom:14px; }
+  .zeit-btn { flex:1; padding:6px 0; border-radius:8px; border:1px solid rgba(255,255,255,0.09); background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.4); font-size:0.72rem; font-weight:600; font-family:'Outfit',sans-serif; cursor:pointer; text-align:center; transition:all 0.15s; }
+  .zeit-btn:hover { border-color:rgba(139,92,246,0.4); color:#8B5CF6; }
+  .zeit-btn.sel { background:rgba(139,92,246,0.12); border-color:rgba(139,92,246,0.4); color:#8B5CF6; }
+
+  .queue-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .queue-title { font-size:0.58rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.25); }
+
+  @keyframes chipIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+  .chip-wrap { animation:chipIn 0.18s ease both; margin-bottom:6px; }
+  .chip { display:flex; align-items:stretch; background:rgba(255,255,255,0.022); border:1px solid rgba(255,255,255,0.065); border-radius:14px; overflow:hidden; transition:background 0.14s,border-color 0.14s; cursor:pointer; }
+  .chip:hover { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); }
+  .chip-stripe { width:3px; min-width:3px; align-self:stretch; flex-shrink:0; }
+  .chip-expand { width:34px; min-width:34px; align-self:stretch; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; background:none; border:none; border-right:1px solid rgba(255,255,255,0.06); cursor:pointer; padding:0; flex-shrink:0; }
+  .chip-expand:hover { background:rgba(139,92,246,0.07); }
+  .chip-arr { font-size:0.5rem; color:rgba(255,255,255,0.3); line-height:1; }
+  .chip-count { font-size:0.38rem; font-weight:700; color:rgba(255,255,255,0.2); line-height:1; }
+  .chip-body { flex:1; padding:8px; display:flex; flex-direction:column; justify-content:center; overflow:hidden; min-width:0; }
+  .chip-text { font-size:0.84rem; font-weight:600; color:rgba(255,255,255,0.85); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+  .chip-meta { font-size:0.56rem; font-weight:600; letter-spacing:0.04em; color:rgba(255,255,255,0.22); margin-top:2px; display:block; }
+  .prio { width:5px; min-width:5px; align-self:stretch; flex-shrink:0; border-radius:0 14px 14px 0; }
+  .prio-1 { background:rgba(251,113,133,0.55); }
+  .prio-2 { background:rgba(139,92,246,0.45); }
+  .prio-3 { background:transparent; }
+
+  .empty { text-align:center; padding:32px 16px; color:rgba(255,255,255,0.2); font-size:0.82rem; }
+  .empty-icon { font-size:2rem; margin-bottom:8px; opacity:0.4; }
+
+  .rooms-view { padding:14px 16px 0; display:none; flex-direction:column; gap:10px; }
+  .room-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; overflow:hidden; }
+  .room-head { display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer; }
+  .room-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+  .room-name { font-size:0.85rem; font-weight:600; flex:1; }
+  .room-status { font-size:0.68rem; padding:2px 8px; border-radius:20px; }
+  .room-ok   { background:rgba(16,185,129,0.12); color:#10B981; }
+  .room-soon { background:rgba(139,92,246,0.12); color:#8B5CF6; }
+  .room-due  { background:rgba(251,113,133,0.12); color:#fb7185; }
+  .room-chevron { color:rgba(255,255,255,0.2); font-size:0.7rem; transition:transform 0.18s; }
+  .room-card.open .room-chevron { transform:rotate(180deg); }
+  .room-tasks { display:none; padding:0 14px 12px; flex-direction:column; gap:5px; }
+  .room-card.open .room-tasks { display:flex; }
+  .task-item { display:flex; align-items:center; gap:8px; padding:6px 10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); }
+  .task-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .task-name { font-size:0.78rem; color:rgba(255,255,255,0.7); flex:1; }
+  .task-freq { font-size:0.62rem; color:rgba(255,255,255,0.25); }
+  .add-room-btn { display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; border:1px dashed rgba(255,255,255,0.12); border-radius:14px; background:none; color:rgba(255,255,255,0.25); font-size:0.78rem; font-family:'Outfit',sans-serif; cursor:pointer; }
+  .add-room-btn:hover { border-color:rgba(139,92,246,0.3); color:#8B5CF6; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="header">
+    <button class="back">← Tools</button>
+    <div class="title-block">
+      <div class="eyebrow">Tool</div>
+      <div class="title">Haus<em>halt</em></div>
+    </div>
+  </div>
+
+  <div class="view-tabs">
+    <button class="view-tab active" id="tab-queue" onclick="showView('queue')">⚡ Queue</button>
+    <button class="view-tab" id="tab-rooms" onclick="showView('rooms')">🏠 Räume</button>
+  </div>
+
+  <div class="queue-view" id="view-queue">
+    <div class="mode-strip">
+      <button class="mode-btn" id="mb-s" onclick="setMode('survival')"><span class="mode-icon">🛡</span><span class="mode-label">Survival</span></button>
+      <button class="mode-btn sel-m" id="mb-m" onclick="setMode('maintain')"><span class="mode-icon">🔄</span><span class="mode-label">Maintain</span></button>
+      <button class="mode-btn" id="mb-b" onclick="setMode('boost')"><span class="mode-icon">✨</span><span class="mode-label">Boost</span></button>
+    </div>
+    <div class="zeit-label">Ich hab gerade…</div>
+    <div class="zeit-strip">
+      <button class="zeit-btn" onclick="setZeit(this,'5 min')">5 min</button>
+      <button class="zeit-btn sel" onclick="setZeit(this,'15 min')">15 min</button>
+      <button class="zeit-btn" onclick="setZeit(this,'30 min')">30 min</button>
+      <button class="zeit-btn" onclick="setZeit(this,'1h+')">1h+</button>
+    </div>
+    <div class="queue-header">
+      <span class="queue-title" id="queue-title">Maintain · 15 min — 2 Aufgaben</span>
+    </div>
+    <div id="queue-list">
+      <div class="chip-wrap"><div class="chip">
+        <span class="chip-stripe" style="background:#8B5CF6"></span>
+        <button class="chip-expand"><span class="chip-arr">▸</span><span class="chip-count">0/3</span></button>
+        <div class="chip-body"><span class="chip-text">Küche aufräumen</span><span class="chip-meta">Küche · 15 min</span></div>
+        <span class="prio prio-2"></span>
+      </div></div>
+      <div class="chip-wrap"><div class="chip">
+        <span class="chip-stripe" style="background:#8B5CF6"></span>
+        <button class="chip-expand"><span class="chip-arr">▸</span></button>
+        <div class="chip-body"><span class="chip-text">Müll rausbringen</span><span class="chip-meta">Küche · 5 min</span></div>
+        <span class="prio prio-3"></span>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="rooms-view" id="view-rooms">
+    <div class="room-card open" onclick="this.classList.toggle('open')">
+      <div class="room-head">
+        <div class="room-icon" style="background:rgba(251,113,133,0.1)">🍳</div>
+        <span class="room-name">Küche</span>
+        <span class="room-status room-due">jetzt dran</span>
+        <span class="room-chevron">▼</span>
+      </div>
+      <div class="room-tasks">
+        <div class="task-item"><div class="task-dot" style="background:#fb7185"></div><span class="task-name">Abwasch / Spülmaschine</span><span class="task-freq">täglich</span></div>
+        <div class="task-item"><div class="task-dot" style="background:#8B5CF6"></div><span class="task-name">Herd abwischen</span><span class="task-freq">wöchentlich</span></div>
+        <div class="task-item"><div class="task-dot" style="background:#8B5CF6"></div><span class="task-name">Müll rausbringen</span><span class="task-freq">2× wöchentlich</span></div>
+        <div class="task-item"><div class="task-dot" style="background:rgba(255,255,255,0.2)"></div><span class="task-name">Kühlschrank ausräumen</span><span class="task-freq">monatlich</span></div>
+      </div>
+    </div>
+    <div class="room-card" onclick="this.classList.toggle('open')">
+      <div class="room-head">
+        <div class="room-icon" style="background:rgba(20,184,166,0.1)">🛁</div>
+        <span class="room-name">Bad</span>
+        <span class="room-status room-soon">bald dran</span>
+        <span class="room-chevron">▼</span>
+      </div>
+      <div class="room-tasks">
+        <div class="task-item"><div class="task-dot" style="background:#8B5CF6"></div><span class="task-name">WC reinigen</span><span class="task-freq">wöchentlich</span></div>
+        <div class="task-item"><div class="task-dot" style="background:#8B5CF6"></div><span class="task-name">Waschbecken</span><span class="task-freq">wöchentlich</span></div>
+        <div class="task-item"><div class="task-dot" style="background:rgba(255,255,255,0.2)"></div><span class="task-name">Dusche/Wanne</span><span class="task-freq">wöchentlich</span></div>
+      </div>
+    </div>
+    <div class="room-card" onclick="this.classList.toggle('open')">
+      <div class="room-head">
+        <div class="room-icon" style="background:rgba(139,92,246,0.1)">🛏</div>
+        <span class="room-name">Schlafzimmer</span>
+        <span class="room-status room-ok">erledigt</span>
+        <span class="room-chevron">▼</span>
+      </div>
+      <div class="room-tasks">
+        <div class="task-item"><div class="task-dot" style="background:#10B981"></div><span class="task-name">Bett machen</span><span class="task-freq">täglich</span></div>
+        <div class="task-item"><div class="task-dot" style="background:rgba(255,255,255,0.2)"></div><span class="task-name">Staubsaugen</span><span class="task-freq">wöchentlich</span></div>
+      </div>
+    </div>
+    <button class="add-room-btn">+ Raum hinzufügen</button>
+  </div>
+
+</div>
+<script>
+var currentMode='maintain', currentZeit='15 min';
+var QUEUES={
+  survival:{'5 min':[{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3}],'15 min':[{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3},{text:'Küche — Basics',meta:'Küche · 10 min',prio:1}],'30 min':[{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3},{text:'Küche — Basics',meta:'Küche · 10 min',prio:1},{text:'WC reinigen',meta:'Bad · 10 min',prio:2}],'1h+':[{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3},{text:'Küche — Basics',meta:'Küche · 10 min',prio:1},{text:'WC reinigen',meta:'Bad · 10 min',prio:2},{text:'Wohnzimmer freimachen',meta:'Wohnzimmer · 20 min',prio:2}]},
+  maintain:{'5 min':[{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3}],'15 min':[{text:'Küche aufräumen',meta:'Küche · 15 min',prio:2},{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3}],'30 min':[{text:'Küche aufräumen',meta:'Küche · 15 min',prio:2},{text:'Bad wischen',meta:'Bad · 10 min',prio:2},{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3}],'1h+':[{text:'Küche aufräumen',meta:'Küche · 15 min',prio:2},{text:'Bad wischen',meta:'Bad · 10 min',prio:2},{text:'Staubsaugen',meta:'Flur · 10 min',prio:2},{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3},{text:'Boden wischen',meta:'Küche · 15 min',prio:3}]},
+  boost:{'5 min':[{text:'Müll rausbringen',meta:'Küche · 5 min',prio:3}],'15 min':[{text:'Fenster putzen',meta:'Wohnzimmer · 15 min',prio:2}],'30 min':[{text:'Schlafzimmer putzen',meta:'Schlafzimmer · 30 min',prio:2}],'1h+':[{text:'Schlafzimmer putzen',meta:'Schlafzimmer · 30 min',prio:2},{text:'Kühlschrank ausräumen',meta:'Küche · 20 min',prio:2},{text:'Fenster putzen',meta:'Wohnzimmer · 15 min',prio:2}]},
+};
+var COLORS={survival:'#fb7185',maintain:'#8B5CF6',boost:'#10B981'};
+function showView(v){document.getElementById('view-queue').style.display=v==='queue'?'block':'none';document.getElementById('view-rooms').style.display=v==='rooms'?'flex':'none';document.getElementById('tab-queue').classList.toggle('active',v==='queue');document.getElementById('tab-rooms').classList.toggle('active',v==='rooms');}
+function setMode(mode){currentMode=mode;['s','m','b'].forEach(function(k){document.getElementById('mb-'+k).className='mode-btn';});var map={survival:'mb-s',maintain:'mb-m',boost:'mb-b'},cls={survival:'sel-s',maintain:'sel-m',boost:'sel-b'};document.getElementById(map[mode]).classList.add(cls[mode]);renderQueue();}
+function setZeit(btn,zeit){currentZeit=zeit;document.querySelectorAll('.zeit-btn').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');renderQueue();}
+function renderQueue(){var tasks=(QUEUES[currentMode]||{})[currentZeit]||[];var color=COLORS[currentMode];var lbl={survival:'Survival',maintain:'Maintain',boost:'Boost'}[currentMode];document.getElementById('queue-title').textContent=lbl+' · '+currentZeit+' — '+tasks.length+' Aufgabe'+(tasks.length!==1?'n':'');var p={1:'prio-1',2:'prio-2',3:'prio-3'};document.getElementById('queue-list').innerHTML=tasks.length?tasks.map(function(t){return'<div class="chip-wrap"><div class="chip"><span class="chip-stripe" style="background:'+color+'"></span><button class="chip-expand"><span class="chip-arr">▸</span></button><div class="chip-body"><span class="chip-text">'+t.text+'</span><span class="chip-meta">'+t.meta+'</span></div><span class="prio '+p[t.prio]+'"></span></div></div>';}).join(''):'<div class="empty"><div class="empty-icon">✓</div>Nichts für diesen Zeitraum</div>';}
+</script>
+</body>
+</html>

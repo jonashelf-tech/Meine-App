@@ -113,6 +113,39 @@ body::before {
 /* ─── Native form controls — dark mode ─────────────────── */
 select { color-scheme: dark; }
 
+/* ─── Light theme ───────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:        #F0F2F5;
+  --bg2:       #E8EBF0;
+  --bg3:       #DDE1E8;
+  --surface:   rgba(0, 0, 0, 0.055);
+  --border:    rgba(0, 0, 0, 0.10);
+  --text:      rgba(0, 0, 0, 0.88);
+  --text-dim:  rgba(0, 0, 0, 0.50);
+  --shadow-sm: 0 2px 8px  rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.16);
+}
+[data-theme="light"] select { color-scheme: light; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }
+
+@media (prefers-color-scheme: light) {
+  [data-theme="system"] {
+    --bg:        #F0F2F5;
+    --bg2:       #E8EBF0;
+    --bg3:       #DDE1E8;
+    --surface:   rgba(0, 0, 0, 0.055);
+    --border:    rgba(0, 0, 0, 0.10);
+    --text:      rgba(0, 0, 0, 0.88);
+    --text-dim:  rgba(0, 0, 0, 0.50);
+    --shadow-sm: 0 2px 8px  rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.16);
+  }
+  [data-theme="system"] select { color-scheme: light; }
+  [data-theme="system"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }
+}
+
 /* ─── Utility ───────────────────────────────────────────── */
 .animate-in { animation: fadeInUp 0.2s ease both; }
 
