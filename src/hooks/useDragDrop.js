@@ -13,6 +13,22 @@ export function useDragDrop() {
   const startDrag = (text, color, onDrop, e) => {
     e.preventDefault()
 
+    const SCROLL_ZONE = 80
+    const MAX_SPEED   = 10
+    let scrollRafId   = null
+
+    const stopScroll = () => {
+      if (scrollRafId !== null) {
+        cancelAnimationFrame(scrollRafId)
+        scrollRafId = null
+      }
+    }
+
+    const scrollStep = (speed) => {
+      window.scrollBy(0, speed)
+      scrollRafId = requestAnimationFrame(() => scrollStep(speed))
+    }
+
     // Ghost-Element das dem Finger folgt
     const ghost = document.createElement('div')
     ghost.innerHTML =
@@ -35,11 +51,25 @@ export function useDragDrop() {
         const rc   = el.getBoundingClientRect()
         const over = cx >= rc.left && cx <= rc.right && cy >= rc.top && cy <= rc.bottom
         el.classList.remove('dnd-half-over', 'dnd-half-locked')
-        if (over) el.classList.add(type === 'locked' ? 'dnd-half-locked' : 'dnd-half-over')
+        if (over) el.classList.add(type === 'locked' || type === 'occupied' ? 'dnd-half-locked' : 'dnd-half-over')
       })
+
+      const vh = window.innerHeight
+      if (cy < SCROLL_ZONE) {
+        stopScroll()
+        const speed = -Math.round(((SCROLL_ZONE - cy) / SCROLL_ZONE) * MAX_SPEED)
+        scrollStep(speed)
+      } else if (cy > vh - SCROLL_ZONE) {
+        stopScroll()
+        const speed = Math.round(((cy - (vh - SCROLL_ZONE)) / SCROLL_ZONE) * MAX_SPEED)
+        scrollStep(speed)
+      } else {
+        stopScroll()
+      }
     }
 
     const up = ev => {
+      stopScroll()
       const cx = ev.changedTouches ? ev.changedTouches[0].clientX : ev.clientX
       const cy = ev.changedTouches ? ev.changedTouches[0].clientY : ev.clientY
       document.removeEventListener('pointermove', mv)
