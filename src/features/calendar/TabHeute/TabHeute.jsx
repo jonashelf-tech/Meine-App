@@ -8,6 +8,7 @@ import Zeitplan         from '../Zeitplan/Zeitplan'
 import Pool             from '../Pool/Pool'
 import TodoModal        from '../../../components/TodoModal/TodoModal'
 import ReminderSection  from '../../tools/reminder/ReminderSection'
+import HaushaltSection  from '../../tools/haushalt/HaushaltSection'
 import ClockPopup       from '../Zeitplan/ClockPopup'
 import DayNav           from '../../../components/DayNav/DayNav'
 import s from './TabHeute.module.css'
@@ -394,6 +395,7 @@ export default function TabHeute() {
         startDrag={startPoolDrag}
       />
       {activeTools.includes('reminder') && <ReminderSection />}
+      {activeTools.includes('haushalt') && <HaushaltSection />}
 
       {editingTodo && (
         <TodoModal
