@@ -1,8 +1,10 @@
 import { useState, useCallback, useMemo } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
 import { isFaelligkeit } from '../../todos/Block'
+import { todayKey } from '../../../utils'
 import s from './Pool.module.css'
 
+// ─── Icons ────────────────────────────────────────────────
 const DragIcon = (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
     <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
@@ -13,6 +15,31 @@ const DragIcon = (
     <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
   </svg>
 )
+
+// ─── Sort ──────────────────────────────────────────────────
+function sortTodos(list, sort) {
+  if (sort === 'alter') {
+    return [...list].sort((a, b) =>
+      new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    )
+  }
+  if (sort === 'kategorie') {
+    return [...list].sort((a, b) => {
+      const ca = a.category || '￿'
+      const cb = b.category || '￿'
+      return ca.localeCompare(cb) || (a.priority - b.priority)
+    })
+  }
+  // Standard: fällig (heute/vergangen) zuerst → prio → alter
+  const today = todayKey()
+  return [...list].sort((a, b) => {
+    const fa = isFaelligkeit(a) && a.date <= today ? 0 : 1
+    const fb = isFaelligkeit(b) && b.date <= today ? 0 : 1
+    if (fa !== fb) return fa - fb
+    if (a.priority !== b.priority) return a.priority - b.priority
+    return new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+  })
+}
 
 // ─── PoolChip ─────────────────────────────────────────────
 function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced }) {
@@ -49,17 +76,23 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, start
   )
 }
 
-// ─── Group ────────────────────────────────────────────────
-function Group({ label, count, children, defaultOpen = false }) {
-  const [open, setOpen] = useState(defaultOpen)
+// ─── DoneChip ─────────────────────────────────────────────
+function DoneChip({ todo, onUndo }) {
+  const time = todo.doneAt
+    ? new Date(todo.doneAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+    : ''
+
   return (
-    <div className={s.group}>
-      <button className={s.groupHeader} onClick={() => setOpen(v => !v)}>
-        <span className={s.groupLabel}>{label}</span>
-        <span className={s.groupCount}>{count}</span>
-        <span className={[s.groupChevron, open ? s.groupChevronOpen : ''].join(' ')}>▾</span>
-      </button>
-      {open && <div className={s.groupItems}>{children}</div>}
+    <div
+      className={s.doneChip}
+      onClick={onUndo}
+      aria-label={`${todo.text} rückgängig machen`}
+      role="button"
+    >
+      <span className={s.doneStripe} style={{ background: todo.color || 'rgba(16,185,129,0.5)' }} />
+      <span className={s.doneCheck}>✓</span>
+      <span className={s.doneText}>{todo.text || <em>Kein Text</em>}</span>
+      {time && <span className={s.doneMeta}>{time}</span>}
     </div>
   )
 }
@@ -74,7 +107,12 @@ export default function Pool({
   onRemove,
   startDrag,
 }) {
-  // Memoize placed sets — only slots without a todoId use text fallback
+  const [collapsed,      setCollapsed]      = useState(false)
+  const [sort,           setSort]           = useState('standard')
+  const [showAll,        setShowAll]        = useState(false)
+  const [pendingDoneIds, setPendingDoneIds] = useState(() => new Set())
+
+  // ─── Placed detection ───────────────────────────────────
   const { placedIds, placedTexts } = useMemo(() => {
     const slotValues = Object.values(todaySlots).filter(Boolean)
     return {
@@ -88,20 +126,56 @@ export default function Pool({
     [placedIds, placedTexts]
   )
 
-  const pool1 = todos.filter(
-    t => !t.done && (t.priority === 1 || isFaelligkeit(t)) && !isPlaced(t)
-  )
-  const pool2 = todos.filter(
-    t => !t.done && !(t.priority === 1 || isFaelligkeit(t)) && !isPlaced(t)
-  )
+  // ─── Derived lists ──────────────────────────────────────
+  const activePool = useMemo(() => {
+    const undone  = todos.filter(t => !t.done && !isPlaced(t))
+    const pending = todos.filter(t => t.done && pendingDoneIds.has(t.id))
+    return [...sortTodos(undone, sort), ...pending]
+  }, [todos, pendingDoneIds, sort, isPlaced])
 
+  const doneToday = useMemo(() => {
+    const today = todayKey()
+    return todos.filter(t =>
+      t.done &&
+      t.doneAt?.startsWith(today) &&
+      !pendingDoneIds.has(t.id)
+    )
+  }, [todos, pendingDoneIds])
+
+  const visiblePool = showAll ? activePool : activePool.slice(0, 10)
+  const hasMore     = !showAll && activePool.length > 10
+
+  // ─── Handlers ───────────────────────────────────────────
+  const handleToggle = useCallback((id) => {
+    const todo = todos.find(t => t.id === id)
+    if (!todo) return
+    if (!todo.done) {
+      setPendingDoneIds(prev => new Set([...prev, id]))
+    }
+    onToggleDone?.(id)
+  }, [todos, onToggleDone])
+
+  const handleUndo = useCallback((id) => {
+    setPendingDoneIds(prev => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+    onToggleDone?.(id)
+  }, [onToggleDone])
+
+  const handleCleanup = useCallback(() => {
+    setPendingDoneIds(new Set())
+  }, [])
+
+  // ─── Render chip ────────────────────────────────────────
   const renderChip = (t) => (
     <PoolChip
       key={t.id}
       todo={t}
       todos={todos}
       setTodos={setTodos}
-      onToggleDone={() => onToggleDone?.(t.id)}
+      onToggleDone={() => handleToggle(t.id)}
       onEdit={() => onEdit?.(t.id)}
       onRemove={() => onRemove?.(t.id)}
       startDrag={startDrag}
@@ -111,23 +185,91 @@ export default function Pool({
 
   return (
     <div className={s.pool}>
+
+      {/* ── Header ────────────────────────────────────── */}
       <div className={s.header}>
         <span className={s.poolLabel}>Pool</span>
+
+        {!collapsed && (
+          <div className={s.sortRow}>
+            {[
+              { key: 'standard',  label: 'Standard'  },
+              { key: 'kategorie', label: 'Kategorie' },
+              { key: 'alter',     label: 'Alter'     },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                className={[s.sortChip, sort === key ? s.sortChipActive : ''].join(' ')}
+                onClick={() => setSort(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <button
+          className={s.collapseBtn}
+          onClick={() => setCollapsed(v => !v)}
+          aria-label={collapsed ? 'Pool aufklappen' : 'Pool zuklappen'}
+        >
+          <span className={[s.chevron, collapsed ? s.chevronCollapsed : ''].join(' ')}>▾</span>
+        </button>
       </div>
 
-      <Group label="Heute relevant" count={pool1.length} defaultOpen>
-        {pool1.length === 0
-          ? <p className={s.empty}>Alles verplant ✓</p>
-          : pool1.map(renderChip)
-        }
-      </Group>
+      {!collapsed && (
+        <>
+          {/* ── Aktive Liste ──────────────────────────── */}
+          <div className={s.listArea}>
+            {activePool.length === 0 && doneToday.length === 0 && (
+              <p className={s.empty}>Alle Todos verplant ✓</p>
+            )}
 
-      <Group label="Offen" count={pool2.length}>
-        {pool2.length === 0
-          ? <p className={s.empty}>Kein weiteres Todo</p>
-          : pool2.map(renderChip)
-        }
-      </Group>
+            {visiblePool.map(renderChip)}
+
+            {hasMore && (
+              <button className={s.expandMore} onClick={() => setShowAll(true)}>
+                Weitere anzeigen
+                <span className={s.expandCount}>+{activePool.length - 10}</span>
+                ▾
+              </button>
+            )}
+
+            {pendingDoneIds.size > 0 && (
+              <div className={s.cleanupRow}>
+                <button className={s.cleanupBtn} onClick={handleCleanup}>
+                  ✓ Aufräumen
+                  <span className={s.cleanupCount}>{pendingDoneIds.size}</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ── Erledigt heute ────────────────────────── */}
+          <div className={s.doneSection}>
+            <div className={s.doneSectionHead}>
+              <span className={s.doneLabel}>✓ Erledigt heute</span>
+              {doneToday.length > 0 && (
+                <span className={s.doneHint}>Antippen = rückgängig</span>
+              )}
+            </div>
+
+            {doneToday.length === 0 ? (
+              <p className={s.doneEmpty}>Noch nichts erledigt</p>
+            ) : (
+              <div className={s.doneList}>
+                {doneToday.map(t => (
+                  <DoneChip
+                    key={t.id}
+                    todo={t}
+                    onUndo={() => handleUndo(t.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }
