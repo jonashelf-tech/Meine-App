@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createBlocker, formatHour } from './blockerUtils'
+import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
 import { NEON } from '../../../utils'
 import s from './BlockerModal.module.css'
 
@@ -29,6 +30,7 @@ const WEEKDAYS = [
 ]
 
 export default function BlockerModal({ blocker = null, date, onSave, onDelete, onClose }) {
+  const keyboardOffset = useKeyboardOffset()
   const isNew = !blocker
 
   const [text,       setText]       = useState(blocker?.text      ?? '')
@@ -58,7 +60,11 @@ export default function BlockerModal({ blocker = null, date, onSave, onDelete, o
   }
 
   return (
-    <div className={s.overlay} onClick={onClose}>
+    <div
+      className={s.overlay}
+      style={keyboardOffset > 0 ? { paddingBottom: keyboardOffset } : {}}
+      onClick={onClose}
+    >
       <div className={s.modal} onClick={e => e.stopPropagation()}>
 
         {/* Titel + Farb-Dot */}
