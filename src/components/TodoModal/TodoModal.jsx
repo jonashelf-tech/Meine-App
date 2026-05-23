@@ -27,6 +27,20 @@ function parseTodoText(raw) {
   else if (/\b(sollte|bald|soon)\b/i.test(text)) priority = 2
   text = text.replace(/\b(dringend|wichtig|asap|sofort|urgent|sollte|bald|soon)\b/gi, '')
 
+  // Zeitbereich: "15-17" oder "15:00-17:00" oder "15-17uhr" → Startzeit + Dauer
+  const tr = text.match(/\b(\d{1,2})(?::(\d{2}))?-(\d{1,2})(?::(\d{2}))?(?:uhr)?(?=\s|$)/i)
+  if (tr) {
+    const h1 = parseInt(tr[1]), m1 = tr[2] ? parseInt(tr[2]) : 0
+    const h2 = parseInt(tr[3]), m2 = tr[4] ? parseInt(tr[4]) : 0
+    if (h1 >= 0 && h1 <= 23 && m1 >= 0 && m1 <= 59 &&
+        h2 >= 0 && h2 <= 23 && m2 >= 0 && m2 <= 59 &&
+        (h2 * 60 + m2) > (h1 * 60 + m1)) {
+      time     = `${String(h1).padStart(2,'0')}:${String(m1).padStart(2,'0')}`
+      duration = (h2 * 60 + m2) - (h1 * 60 + m1)
+      text = text.replace(tr[0], '')
+    }
+  }
+
   if (/\bmorgen\b/i.test(text)) { const d = new Date(today); d.setDate(d.getDate()+1); date = _dk(d) }
   else if (/\bübermorgen\b/i.test(text)) { const d = new Date(today); d.setDate(d.getDate()+2); date = _dk(d) }
   else if (/\bheute\b/i.test(text)) { date = _dk(today) }
@@ -39,24 +53,36 @@ function parseTodoText(raw) {
     }
   })
 
-  const dm = text.match(/(\d{1,2})\.(\d{1,2})\.?/)
-  if (dm) { const d = new Date(today.getFullYear(), parseInt(dm[2])-1, parseInt(dm[1])); date = _dk(d) }
-
-  text = text.replace(/\b(morgen|übermorgen|heute|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b/gi, '')
-  text = text.replace(/\d{1,2}\.\d{1,2}\.?/g, '')
-
-  const tm = text.match(/(\d{1,2})[:\.](\d{2})\s*(?:uhr)?/i) || text.match(/(\d{1,2})\s*uhr/i)
-  if (tm) {
-    const h = parseInt(tm[1]), m = tm[2] ? parseInt(tm[2]) : 0
-    time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
-    text = text.replace(tm[0], '')
+  // Datum: DD.MM[.YY[YY]] — auch 2-stelliges Jahr
+  const dm = text.match(/(\d{1,2})\.(\d{1,2})\.?(\d{2,4})?/)
+  if (dm) {
+    let year = dm[3] ? parseInt(dm[3]) : today.getFullYear()
+    if (year < 100) year += 2000
+    const d = new Date(year, parseInt(dm[2])-1, parseInt(dm[1]))
+    date = _dk(d)
   }
 
-  const dr = text.match(/(\d+(?:[.,]\d+)?)\s*(h|std|stunden?|min|minuten?)/i)
-  if (dr) {
-    const v = parseFloat(dr[1].replace(',','.')); const u = dr[2].toLowerCase()
-    duration = u.startsWith('h') || u.startsWith('s') ? Math.round(v*60) : Math.round(v)
-    text = text.replace(dr[0], '')
+  text = text.replace(/\b(morgen|übermorgen|heute|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b/gi, '')
+  text = text.replace(/\d{1,2}\.\d{1,2}\.?(?:\d{2,4})?/g, '')
+
+  // Einzeluhrzeit — nur wenn kein Bereich erkannt
+  if (!time) {
+    const tm = text.match(/(\d{1,2})[:\.](\d{2})\s*(?:uhr)?/i) || text.match(/(\d{1,2})\s*uhr/i)
+    if (tm) {
+      const h = parseInt(tm[1]), m = tm[2] ? parseInt(tm[2]) : 0
+      time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
+      text = text.replace(tm[0], '')
+    }
+  }
+
+  // Explizite Dauer — nur wenn nicht aus Bereich berechnet
+  if (!duration) {
+    const dr = text.match(/(\d+(?:[.,]\d+)?)\s*(h|std|stunden?|min|minuten?)/i)
+    if (dr) {
+      const v = parseFloat(dr[1].replace(',','.')); const u = dr[2].toLowerCase()
+      duration = u.startsWith('h') || u.startsWith('s') ? Math.round(v*60) : Math.round(v)
+      text = text.replace(dr[0], '')
+    }
   }
 
   return { text: text.trim().replace(/\s+/g, ' '), date, time, duration, priority }
