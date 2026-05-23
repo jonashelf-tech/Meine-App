@@ -1,16 +1,17 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
-import { todayKey, sk, parseHHMM, ALL_SLOT_KEYS } from '../../../utils'
+import { todayKey, ALL_SLOT_KEYS } from '../../../utils'
 import { sv, lv, SK } from '../../../storage'
-import { createBlock } from '../../todos/Block'
 import { useDragDrop } from '../../../hooks/useDragDrop'
-import Zeitplan         from '../Zeitplan/Zeitplan'
-import Pool             from '../Pool/Pool'
-import TodoModal        from '../../../components/TodoModal/TodoModal'
-import ReminderSection  from '../../tools/reminder/ReminderSection'
-import HaushaltSection  from '../../tools/haushalt/HaushaltSection'
-import ClockPopup       from '../Zeitplan/ClockPopup'
-import DayNav           from '../../../components/DayNav/DayNav'
+import Zeitplan            from '../Zeitplan/Zeitplan'
+import Pool                from '../Pool/Pool'
+import TodoModal           from '../../../components/TodoModal/TodoModal'
+import ReminderSection     from '../../tools/reminder/ReminderSection'
+import HaushaltSection     from '../../tools/haushalt/HaushaltSection'
+import ClockPopup          from '../Zeitplan/ClockPopup'
+import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
+import DayNav              from '../../../components/DayNav/DayNav'
+import { useMissedReview } from './useMissedReview'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
@@ -24,13 +25,15 @@ export default function TabHeute() {
 
   const { registerHalf, startDrag } = useDragDrop()
 
-  const promptedRef    = useRef(new Set())
-  const snoozeRef      = useRef({})
-  const daysRef        = useRef(days)
-  const tickRef        = useRef(null)
-  const missedQueueRef = useRef([])
+  const promptedRef = useRef(new Set())
+  const snoozeRef   = useRef({})
+  const daysRef     = useRef(days)
+  const tickRef     = useRef(null)
 
   const todaySlots = days[viewDate] ?? {}
+
+  const { isOpen: missedOpen, items: missedItems, handleDone: missedDone, handleIgnore: missedIgnore, handleMoveToPool: missedToPool } =
+    useMissedReview({ days, setDays, todos, setTodos })
 
   // ─── Consume dayplanDate on mount ─────────────────────
   useEffect(() => {
@@ -53,55 +56,6 @@ export default function TabHeute() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ─── Auto-Return: unchecked Zeitplan-Einträge vergangener Tage → Pool ──
-  // Läuft einmal pro Tag beim App-Start. Slots ohne todoId (Text-only) werden
-  // als neues Todo angelegt, damit sie im Pool erscheinen.
-  useEffect(() => {
-    const today = todayKey()
-    if (lv(SK.lastPoolReturn, null) === today) return
-
-    const existingIds = new Set(todos.map(t => t.id))
-    const newTodos = []
-
-    Object.entries(days).forEach(([dk, dayData]) => {
-      if (dk >= today || !dayData || typeof dayData !== 'object') return
-      Object.values(dayData).forEach(slot => {
-        if (!slot || slot.done || !slot.text) return
-        // Slots mit todoId überspringen — todo existiert noch (im Pool) oder wurde gelöscht (gewollt)
-        if (slot.todoId) return
-        // Nur text-only Slots zurückbringen, die nicht bereits im Pool sind
-        if (existingIds.has && todos.some(t => t.text === slot.text && !t.done)) return
-        newTodos.push(createBlock({
-          text:     slot.text,
-          priority: 3,
-          ...(slot.color    ? { color:    slot.color    } : {}),
-          ...(slot.duration ? { duration: slot.duration } : {}),
-        }))
-      })
-    })
-
-    if (newTodos.length > 0) setTodos(prev => [...prev, ...newTodos])
-
-    // Verpasste Termine: undone locked Slots aus der Vergangenheit mit awaitingClockResponse
-    const missedTermine = []
-    Object.entries(days).forEach(([dk, dayData]) => {
-      if (dk >= today || !dayData || typeof dayData !== 'object') return
-      Object.entries(dayData).forEach(([slotKey, slot]) => {
-        if (!slot || slot.done || !slot.todoId) return
-        const todo = todos.find(t => t.id === slot.todoId)
-        if (todo && !todo.done && todo.awaitingClockResponse) {
-          missedTermine.push({ slotKey, dateKey: dk, todo })
-        }
-      })
-    })
-    if (missedTermine.length > 0) {
-      missedQueueRef.current = missedTermine
-      setTimeout(() => showNextMissed(), 800)
-    }
-
-    sv(SK.lastPoolReturn, today)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   // ─── Clock interval ───────────────────────────────────
   useEffect(() => {
@@ -134,18 +88,6 @@ export default function TabHeute() {
     return () => clearInterval(id)
   }, [viewDate])
 
-  // ─── Missed-Termin Queue ─────────────────────────────────
-  const showNextMissed = useCallback(() => {
-    const next = missedQueueRef.current.shift()
-    if (!next) return
-    setClockPopup({
-      slotKey:  next.slotKey,
-      slotText: next.todo.text,
-      isMissed: true,
-      dateKey:  next.dateKey,
-      todoId:   next.todo.id,
-    })
-  }, [])
 
   // ─── Helpers ─────────────────────────────────────────────
   const setTodaySlots = useCallback((updater) => {
@@ -312,47 +254,22 @@ export default function TabHeute() {
 
   const handleClockDone = useCallback(() => {
     if (!clockPopup) return
-    if (clockPopup.isMissed) {
+    handleToggleSlotDone(clockPopup.slotKey)
+    const slot = todaySlots[clockPopup.slotKey]
+    if (slot?.todoId) {
       setTodos(prev => prev.map(t =>
-        t.id === clockPopup.todoId
-          ? { ...t, done: true, doneAt: new Date().toISOString(), awaitingClockResponse: false }
-          : t
+        t.id === slot.todoId ? { ...t, awaitingClockResponse: false } : t
       ))
-    } else {
-      handleToggleSlotDone(clockPopup.slotKey)
-      const slot = todaySlots[clockPopup.slotKey]
-      if (slot?.todoId) {
-        setTodos(prev => prev.map(t =>
-          t.id === slot.todoId ? { ...t, awaitingClockResponse: false } : t
-        ))
-      }
     }
     closeClockPopup()
-    if (clockPopup.isMissed) setTimeout(() => showNextMissed(), 300)
-  }, [clockPopup, handleToggleSlotDone, todaySlots, setTodos, closeClockPopup, showNextMissed])
-
-  const handleMissedToPool = useCallback(() => {
-    if (!clockPopup?.isMissed) return
-    setTodos(prev => prev.map(t =>
-      t.id === clockPopup.todoId
-        ? { ...t, awaitingClockResponse: false }
-        : t
-    ))
-    closeClockPopup()
-    setTimeout(() => showNextMissed(), 300)
-  }, [clockPopup, setTodos, closeClockPopup, showNextMissed])
+  }, [clockPopup, handleToggleSlotDone, todaySlots, setTodos, closeClockPopup])
 
   const handleClockSnooze = useCallback(() => {
     if (!clockPopup) return
-    if (clockPopup.isMissed) {
-      closeClockPopup()
-      setTimeout(() => showNextMissed(), 300)
-      return
-    }
     promptedRef.current.delete(clockPopup.slotKey)
     snoozeRef.current[clockPopup.slotKey] = Date.now() + 15 * 60 * 1000
     closeClockPopup()
-  }, [clockPopup, closeClockPopup, showNextMissed])
+  }, [clockPopup, closeClockPopup])
 
   const handleClockShift = useCallback(() => {
     handleShiftAll(1)
@@ -407,12 +324,19 @@ export default function TabHeute() {
       {clockPopup && (
         <ClockPopup
           slotText={clockPopup.slotText}
-          isMissed={clockPopup.isMissed ?? false}
           onDone={handleClockDone}
           onSnooze={handleClockSnooze}
           onShift={handleClockShift}
           onDismiss={closeClockPopup}
-          onToPool={handleMissedToPool}
+        />
+      )}
+
+      {missedOpen && (
+        <MissedReviewModal
+          items={missedItems}
+          onDone={missedDone}
+          onIgnore={missedIgnore}
+          onMoveToPool={missedToPool}
         />
       )}
     </div>
