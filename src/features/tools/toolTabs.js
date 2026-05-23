@@ -11,4 +11,5 @@ export const TOOL_TAB = {
   rad:          11,
   reminder:     12,
   haushalt:     13,
+  wasjetzt:     14,
 }

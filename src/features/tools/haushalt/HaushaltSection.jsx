@@ -1,78 +1,106 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useAppStore } from '../../../store'
 import { createBlock } from '../../todos/Block'
 import { TOOL_TAB } from '../toolTabs'
 import ToolSection from '../../../components/ToolSection/ToolSection'
 import TodoChip from '../../../components/TodoChip/TodoChip'
 import {
-  loadHaushalt, saveHaushalt, buildQueue,
-  MODE_META,
+  loadHaushalt, saveHaushalt, buildSmartQueue,
+  calcZustand, markTaskDone,
+  ENERGIE_META, ZUSTAND_META,
 } from './haushaltData'
 import s from './HaushaltSection.module.css'
+
+function chipColor(zustand, energie) {
+  if (zustand === 'chaos') return '#fb7185'
+  if (zustand === 'knapp') return '#f59e0b'
+  return energie === 'viel' ? '#10B981' : '#8B5CF6'
+}
+
+function buildChips(config, zustand, energie) {
+  const q = buildSmartQueue(config, energie, 60)
+  const color = chipColor(zustand, energie)
+  return q.map(({ task, room }) =>
+    createBlock({
+      text:     task.text,
+      color,
+      priority: 3,
+      duration: task.duration,
+      category: room.name,
+      subItems: (task.subItems ?? []).map(si => ({ ...si })),
+    })
+  )
+}
 
 export default function HaushaltSection() {
   const { setTodos, setCurrentTab } = useAppStore()
 
-  const [config, setConfig]           = useState(() => loadHaushalt())
-  const [chipTodos, setChipTodos]     = useState([])
+  const [config,      setConfig]      = useState(() => loadHaushalt())
+  const [energie,     setEnergie]     = useState(() => loadHaushalt().energie ?? 'normal')
+  const [queueMeta,   setQueueMeta]   = useState(() => {
+    const cfg = loadHaushalt()
+    const en  = cfg.energie ?? 'normal'
+    return buildSmartQueue(cfg, en, 60)
+  })
+  const [chipTodos,   setChipTodos]   = useState(() => {
+    const cfg = loadHaushalt()
+    const en  = cfg.energie ?? 'normal'
+    const zs  = calcZustand(cfg.rooms)
+    return buildChips(cfg, zs, en)
+  })
   const [transferred, setTransferred] = useState(false)
 
-  const selectedMode    = config.selectedMode ?? 'maintain'
-  const hasModeSelected = chipTodos.length > 0
+  const zustand = useMemo(() => calcZustand(config.rooms), [config.rooms])
+  const zm      = ZUSTAND_META[zustand]
 
-  // Badge text + background
-  let badge   = 'Modus wählen'
-  let badgeBg = undefined
-  if (transferred) {
-    badge   = '✓ übertragen'
-    badgeBg = 'rgba(16,185,129,0.15)'
-  } else if (hasModeSelected) {
-    badge   = `${MODE_META[selectedMode].label} · ${chipTodos.length}`
-    badgeBg = MODE_META[selectedMode].bg
-  }
+  // Badge
+  let badge   = zm.label
+  let badgeBg = zm.bg
+  if (transferred) { badge = '✓ übertragen'; badgeBg = 'rgba(16,185,129,0.15)' }
 
-  // Selecting a mode generates the task chips (60 min budget for card preview)
-  const handleModeSelect = useCallback((modus) => {
-    const nextConfig = { ...config, selectedMode: modus }
-    setConfig(nextConfig)
-    saveHaushalt(nextConfig)
+  const updateConfig = useCallback((next) => {
+    setConfig(next)
+    saveHaushalt(next)
+  }, [])
+
+  const regenQueue = useCallback((cfg, en) => {
+    const zs = calcZustand(cfg.rooms)
+    const q  = buildSmartQueue(cfg, en, 60)
+    setQueueMeta(q)
+    setChipTodos(buildChips(cfg, zs, en))
     setTransferred(false)
+  }, [])
 
-    const q = buildQueue(nextConfig, modus, 60)
-    setChipTodos(
-      q.map(({ task, room }) =>
-        createBlock({
-          text:     task.text,
-          color:    MODE_META[modus].color,
-          priority: 3,
-          duration: task.duration,
-          category: room.name,
-          subItems: (task.subItems ?? []).map(si => ({ ...si })),
-        })
-      )
-    )
-  }, [config])
+  const handleEnergieChange = useCallback((en) => {
+    if (transferred) return
+    setEnergie(en)
+    const next = { ...config, energie: en }
+    updateConfig(next)
+    regenQueue(next, en)
+  }, [config, transferred, updateConfig, regenQueue])
 
-  // Transfer writes all non-done chips to the global todo pool
+  const handleToggle = useCallback((id) => {
+    const idx = chipTodos.findIndex(c => c.id === id)
+    setChipTodos(prev => prev.map(c => c.id === id ? { ...c, done: !c.done } : c))
+    if (idx >= 0 && queueMeta[idx]) {
+      const next = markTaskDone(config, queueMeta[idx].task.id)
+      updateConfig(next)
+    }
+  }, [chipTodos, queueMeta, config, updateConfig])
+
+  const handleRemove = useCallback((id) => {
+    const idx = chipTodos.findIndex(c => c.id === id)
+    setChipTodos(prev => prev.filter(c => c.id !== id))
+    setQueueMeta(prev => prev.filter((_, i) => i !== idx))
+  }, [chipTodos])
+
   const handleTransfer = useCallback(() => {
     if (chipTodos.length === 0 || transferred) return
     const toAdd = chipTodos.filter(c => !c.done)
-    if (toAdd.length > 0) {
-      setTodos(prev => [...prev, ...toAdd])
-    }
+    if (toAdd.length > 0) setTodos(prev => [...prev, ...toAdd])
     setTransferred(true)
     setChipTodos(prev => prev.map(c => ({ ...c, done: true })))
   }, [chipTodos, transferred, setTodos])
-
-  // Toggle a chip's done state locally
-  const handleToggle = useCallback((id) => {
-    setChipTodos(prev => prev.map(c => c.id === id ? { ...c, done: !c.done } : c))
-  }, [])
-
-  // Remove a chip from the section
-  const handleRemove = useCallback((id) => {
-    setChipTodos(prev => prev.filter(c => c.id !== id))
-  }, [])
 
   return (
     <ToolSection
@@ -82,26 +110,23 @@ export default function HaushaltSection() {
       badgeBg={badgeBg}
       onTitleClick={() => setCurrentTab(TOOL_TAB.haushalt)}
     >
-      {/* Mode selector chips */}
-      <div className={s.modeRow}>
-        {Object.entries(MODE_META).map(([key, meta]) => (
-          <button
-            key={key}
-            className={[
-              s.modeChip,
-              selectedMode === key && hasModeSelected && !transferred
-                ? s.modeChipActive
-                : '',
-            ].join(' ')}
-            style={{ '--mode-color': meta.color }}
-            onClick={() => { if (!transferred) handleModeSelect(key) }}
-          >
-            {meta.label}
-          </button>
-        ))}
-      </div>
+      {/* Energie-Selector — nur in Ordnung-Modus */}
+      {zustand === 'ordnung' && !transferred && (
+        <div className={s.energieRow}>
+          {Object.entries(ENERGIE_META).map(([key, meta]) => (
+            <button
+              key={key}
+              className={[s.energieChip, energie === key ? s.energieChipActive : ''].join(' ')}
+              style={{ '--e-color': meta.color }}
+              onClick={() => handleEnergieChange(key)}
+            >
+              {meta.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {/* Task list as proper TodoChips */}
+      {/* Task chips */}
       {chipTodos.length > 0 && (
         <div className={s.chips}>
           {chipTodos.map(todo => (
@@ -118,7 +143,13 @@ export default function HaushaltSection() {
         </div>
       )}
 
-      {/* Transfer button — only before transfer */}
+      {chipTodos.length === 0 && !transferred && (
+        <div className={s.empty}>
+          {zustand === 'ordnung' ? '✨ Alles im Griff' : '📋 Mehr Zeit wählen im Haushalt-Tool'}
+        </div>
+      )}
+
+      {/* Transfer button */}
       {chipTodos.length > 0 && !transferred && (
         <button className={s.transferBtn} onClick={handleTransfer}>
           Zur Todoliste übertragen

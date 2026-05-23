@@ -17,6 +17,15 @@ export function useDragDrop() {
     const MAX_SPEED   = 10
     let scrollRafId   = null
 
+    // Scrollbaren Vorfahren finden (statt window — das ist nicht scrollbar)
+    let scrollEl = window
+    let node = e.target
+    while (node && node !== document.body) {
+      const ov = window.getComputedStyle(node).overflowY
+      if (ov === 'auto' || ov === 'scroll') { scrollEl = node; break }
+      node = node.parentElement
+    }
+
     const stopScroll = () => {
       if (scrollRafId !== null) {
         cancelAnimationFrame(scrollRafId)
@@ -25,7 +34,7 @@ export function useDragDrop() {
     }
 
     const scrollStep = (speed) => {
-      window.scrollBy(0, speed)
+      scrollEl.scrollBy(0, speed)
       scrollRafId = requestAnimationFrame(() => scrollStep(speed))
     }
 
@@ -54,14 +63,16 @@ export function useDragDrop() {
         if (over) el.classList.add(type === 'locked' || type === 'occupied' ? 'dnd-half-locked' : 'dnd-half-over')
       })
 
-      const vh = window.innerHeight
-      if (cy < SCROLL_ZONE) {
+      const rc      = scrollEl === window ? { top: 0, bottom: window.innerHeight } : scrollEl.getBoundingClientRect()
+      const zoneTop = rc.top + SCROLL_ZONE
+      const zoneBot = rc.bottom - SCROLL_ZONE
+      if (cy < zoneTop) {
         stopScroll()
-        const speed = -Math.round(((SCROLL_ZONE - cy) / SCROLL_ZONE) * MAX_SPEED)
+        const speed = -Math.round(((zoneTop - cy) / SCROLL_ZONE) * MAX_SPEED)
         scrollStep(speed)
-      } else if (cy > vh - SCROLL_ZONE) {
+      } else if (cy > zoneBot) {
         stopScroll()
-        const speed = Math.round(((cy - (vh - SCROLL_ZONE)) / SCROLL_ZONE) * MAX_SPEED)
+        const speed = Math.round(((cy - zoneBot) / SCROLL_ZONE) * MAX_SPEED)
         scrollStep(speed)
       } else {
         stopScroll()

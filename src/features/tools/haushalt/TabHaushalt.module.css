@@ -46,13 +46,64 @@
   padding: 0 16px 24px;
 }
 
-/* Mode strip — 3 large buttons */
-.modeStrip {
+/* Zustand-Banner (auto-detected) */
+.zustandBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--r);
+  border: 1px solid transparent;
+}
+
+.zustandDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.zustandText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.zustandLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.zustandSub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+
+/* Energie-Selector */
+.energieSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.energieLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.04em;
+}
+
+.energieStrip {
   display: flex;
   gap: 8px;
 }
 
-.modeBtn {
+.energieBtn {
   flex: 1;
   padding: 10px 6px;
   border-radius: var(--r);
@@ -68,14 +119,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.modeBtn:hover {
+.energieBtn:hover {
   border-color: rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.6);
 }
 
-.modeBtnActive {
-  border-color: var(--mode-color);
-  color: var(--mode-color);
+.energieBtnActive {
+  border-color: var(--e-color);
+  color: var(--e-color);
   background: rgba(255, 255, 255, 0.04);
 }
 

@@ -17,6 +17,7 @@ import TabGamification from './features/tools/gamification/TabGamification'
 import TabRad          from './features/tools/rad/TabRad'
 import TabReminder     from './features/tools/reminder/TabReminder'
 import TabHaushalt     from './features/tools/haushalt/TabHaushalt'
+import TabWasJetzt     from './features/tools/wasjetzt/TabWasJetzt'
 import TodoModal       from './components/TodoModal/TodoModal'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
@@ -101,6 +102,7 @@ export default function App() {
         {currentTab === TOOL_TAB.rad          && <TabRad          onBack={goBack} />}
         {currentTab === TOOL_TAB.reminder     && <TabReminder     onBack={goBack} />}
         {currentTab === TOOL_TAB.haushalt     && <TabHaushalt     onBack={goBack} />}
+        {currentTab === TOOL_TAB.wasjetzt     && <TabWasJetzt     onBack={goBack} />}
       </div>
 
       <button
