@@ -68,6 +68,7 @@ activeTools,  toggleTool
   done:     false,
   todoId:   123,        // optional, Referenz auf todos[]
   subItems: [],         // optional, [{ id, text, done }] — nur wenn kein todoId
+  reviewed: false,      // true = wurde im MissedReviewModal behandelt, taucht nicht nochmal auf
 }
 ```
 
@@ -180,3 +181,20 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 - **viewDate:** Lokaler State (`useState(() => store.dayplanDate ?? todayKey())`). Mount-Effect liest `store.dayplanDate`, setzt viewDate, löscht es. Tab verlassen → unmount → automatisch Reset auf heute beim nächsten Mount.
 - **store.dayplanDate:** Flüchtiger Intent-Wert (kein localStorage). DayPanel setzt ihn vor `setCurrentTab(0)`, TabHeute konsumiert ihn einmalig beim Mount.
 - **Pool + Drag & Drop:** Immer sichtbar, funktioniert auf allen Tagen — Slots schreiben auf `viewDate`.
+
+## MissedReviewModal — Logik
+
+Läuft einmal pro Tag beim Mount von TabHeute (`useMissedReview`-Hook in `TabHeute/useMissedReview.js`).
+
+**Trigger:** `SK.lastPoolReturn !== todayKey()` UND es gibt Slots in `days[dk < today]` mit `!slot.done && !slot.reviewed`.
+
+**Item-Typen:**
+- `type: 'text'` — Slot ohne `todoId` (text-only)
+- `type: 'todo'` — Slot mit `todoId` wo `todo.awaitingClockResponse === true`
+
+**Aktionen:**
+- **Erledigt** → `slot.done = true`, `slot.reviewed = true`; Todo: `done = true`, `doneAt = now`, `awaitingClockResponse = false`
+- **Ignorieren** → `slot.reviewed = true`; Todo: `awaitingClockResponse = false` (Todo bleibt im Pool)
+- **In Pool verschieben** → text-type: neues Todo via `createBlock`; todo-type: `awaitingClockResponse = false`; alle Slots: `reviewed = true`; dann `SK.lastPoolReturn = today`
+
+**Auto-close:** Modal schließt automatisch wenn nach Erledigt/Ignorieren keine Items mehr übrig sind.
