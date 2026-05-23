@@ -11,17 +11,22 @@ import HaushaltSection     from '../../tools/haushalt/HaushaltSection'
 import ClockPopup          from '../Zeitplan/ClockPopup'
 import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
 import DayNav              from '../../../components/DayNav/DayNav'
+import BlockerModal        from '../Blocker/BlockerModal'
+import RepeatDeleteSheet   from '../Blocker/RepeatDeleteSheet'
+import { deleteBlockerInstance, deleteBlockerFuture } from '../Blocker/blockerUtils'
 import { useMissedReview } from './useMissedReview'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, blockers, setBlockers } = useAppStore()
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
   const [visEnd,   setVisEnd]   = useState(() => lv(SK.visEnd,   20))
-  const [editingTodo, setEditingTodo] = useState(null)
-  const [clockPopup,  setClockPopup]  = useState(null)
+  const [editingTodo,       setEditingTodo]       = useState(null)
+  const [clockPopup,        setClockPopup]         = useState(null)
+  const [blockerModal,      setBlockerModal]       = useState(null)
+  const [repeatDeleteSheet, setRepeatDeleteSheet]  = useState(null)
 
   const { registerHalf, startDrag } = useDragDrop()
 
@@ -195,6 +200,47 @@ export default function TabHeute() {
     })
   }, [setTodaySlots])
 
+  // ─── Blocker CRUD ──────────────────────────────────────────
+  const handleCreateBlocker = useCallback(() => {
+    setBlockerModal({ blocker: null })
+  }, [])
+
+  const handleEditBlocker = useCallback((blocker) => {
+    setBlockerModal({ blocker })
+  }, [])
+
+  const handleSaveBlocker = useCallback((data) => {
+    setBlockers(prev =>
+      prev.some(b => b.id === data.id)
+        ? prev.map(b => b.id === data.id ? data : b)
+        : [...prev, data]
+    )
+    setBlockerModal(null)
+  }, [setBlockers])
+
+  const handleDeleteBlocker = useCallback((blocker) => {
+    if (blocker.repeat) {
+      setRepeatDeleteSheet({ blocker, dateStr: viewDate })
+    } else {
+      setBlockers(prev => prev.filter(b => b.id !== blocker.id))
+      setBlockerModal(null)
+    }
+  }, [setBlockers, viewDate])
+
+  const handleRepeatDeleteThis = useCallback(() => {
+    const { blocker, dateStr } = repeatDeleteSheet
+    setBlockers(prev => prev.map(b => b.id === blocker.id ? deleteBlockerInstance(b, dateStr) : b))
+    setRepeatDeleteSheet(null)
+    setBlockerModal(null)
+  }, [repeatDeleteSheet, setBlockers])
+
+  const handleRepeatDeleteFuture = useCallback(() => {
+    const { blocker, dateStr } = repeatDeleteSheet
+    setBlockers(prev => prev.map(b => b.id === blocker.id ? deleteBlockerFuture(b, dateStr) : b))
+    setRepeatDeleteSheet(null)
+    setBlockerModal(null)
+  }, [repeatDeleteSheet, setBlockers])
+
   // ─── Drag & Drop (v2.7-Ansatz: Ghost + Koordinaten) ──────
   // Pool-Chip → Zeitplan-Slot
   const startPoolDrag = useCallback((todoId, text, color, duration, e) => {
@@ -301,6 +347,9 @@ export default function TabHeute() {
         onToggleLock={handleToggleLock}
         registerHalf={registerHalf}
         startSlotDrag={startSlotDrag}
+        blockers={blockers}
+        onCreateBlocker={handleCreateBlocker}
+        onEditBlocker={handleEditBlocker}
       />
       <Pool
         todos={todos}
@@ -337,6 +386,24 @@ export default function TabHeute() {
           onDone={missedDone}
           onIgnore={missedIgnore}
           onMoveToPool={missedToPool}
+        />
+      )}
+
+      {blockerModal !== null && (
+        <BlockerModal
+          blocker={blockerModal.blocker}
+          date={viewDate}
+          onSave={handleSaveBlocker}
+          onDelete={handleDeleteBlocker}
+          onClose={() => setBlockerModal(null)}
+        />
+      )}
+
+      {repeatDeleteSheet && (
+        <RepeatDeleteSheet
+          onDeleteThis={handleRepeatDeleteThis}
+          onDeleteFuture={handleRepeatDeleteFuture}
+          onClose={() => setRepeatDeleteSheet(null)}
         />
       )}
     </div>
