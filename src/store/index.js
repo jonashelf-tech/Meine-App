@@ -28,6 +28,14 @@ export const useAppStore = create((set, get) => ({
   setTodoOrder: (order) => { set({ todoOrder: order }); sv(SK.todoOrder, order) },
   setCats: (cats) => { set({ cats }); sv(SK.cats, cats) },
 
+  // ─── Blockers ──────────────────────────────────────────
+  blockers: lv(SK.blockers, []),
+  setBlockers: (blockers) => {
+    const next = typeof blockers === 'function' ? blockers(get().blockers) : blockers
+    set({ blockers: next })
+    sv(SK.blockers, next)
+  },
+
   // ─── Calendar ──────────────────────────────────────────
   days:         lv(SK.days, {}),
   doneCounters: lv(SK.doneCounters, {}),

@@ -43,6 +43,7 @@ export const SK = {
   lastPoolReturn: `${PREFIX}view_last_pool_return`,
   poolSort:       `${PREFIX}view_pool_sort`,
   calView:        `${PREFIX}view_cal_view`,
+  blockers:       `${PREFIX}blockers`,
 }
 
 export const exportData = () => {
