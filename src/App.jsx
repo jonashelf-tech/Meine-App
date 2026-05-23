@@ -70,7 +70,7 @@ const TABS = [
 const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 
 export default function App() {
-  const { currentTab, setCurrentTab, accentColor, theme } = useAppStore()
+  const { currentTab, previousTab, setCurrentTab, accentColor, theme } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme || 'dark')
   }, [theme])
 
-  const goBack = () => setCurrentTab(2)
+  const goBack = () => setCurrentTab(previousTab ?? 2)
   const isToolTab = TOOL_IDS.has(currentTab)
 
   return (

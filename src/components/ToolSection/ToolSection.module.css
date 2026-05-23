@@ -32,7 +32,7 @@
 }
 
 .title {
-  flex: 1;
+  flex: 0 0 auto;
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
@@ -40,7 +40,14 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  min-width: 0;
+}
+
+.titleLink {
+  cursor: pointer;
+}
+
+.spacer {
+  flex: 1;
 }
 
 .linkArr {

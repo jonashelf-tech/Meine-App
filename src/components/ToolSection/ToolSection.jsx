@@ -33,7 +33,7 @@ export default function ToolSection({
         </span>
 
         <span
-          className={s.title}
+          className={[s.title, onTitleClick ? s.titleLink : ''].join(' ')}
           onClick={e => {
             if (onTitleClick) {
               e.stopPropagation()
@@ -44,6 +44,9 @@ export default function ToolSection({
           {title}
           {onTitleClick && <span className={s.linkArr}>↗</span>}
         </span>
+
+        {/* Spacer: füllt den Platz zwischen Titel und Badge — Klicks hier togglen das Accordion */}
+        <span className={s.spacer} />
 
         {badge != null && (
           <span

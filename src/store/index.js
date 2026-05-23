@@ -61,8 +61,9 @@ export const useAppStore = create((set, get) => ({
   },
 
   // ─── Navigation ────────────────────────────────────────
-  currentTab:  0,
-  setCurrentTab: (tab) => set({ currentTab: tab }),
+  currentTab:   0,
+  previousTab:  2,
+  setCurrentTab: (tab) => set((state) => ({ previousTab: state.currentTab, currentTab: tab })),
   heuteModus: 'manuell',
   setHeuteModus: (modus) => set({ heuteModus: modus }),
   dayplanDate: null,
