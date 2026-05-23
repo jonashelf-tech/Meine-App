@@ -1,0 +1,171 @@
+<h2>Blocker als eigenständiges Element</h2>
+<p class="subtitle">Blocker und Todos sind komplett unabhängig — der Blocker ist eine eigene Zeile im Zeitplan</p>
+
+<style>
+  .zeitplan {
+    background: #0c0c1a;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 14px;
+    overflow: hidden;
+    padding: 6px 0;
+    max-width: 320px;
+    margin: 20px auto;
+  }
+
+  .slot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 10px;
+  }
+  .slot-time {
+    font-size: 10px;
+    color: rgba(255,255,255,.28);
+    width: 34px;
+    flex-shrink: 0;
+    font-family: 'Orbitron', monospace;
+  }
+  .slot-content { flex: 1; }
+
+  .todo-chip {
+    background: rgba(139,92,246,.22);
+    border: 1px solid rgba(139,92,246,.38);
+    border-radius: 8px;
+    padding: 5px 9px;
+    font-size: 12px;
+    color: rgba(255,255,255,.88);
+  }
+  .todo-chip.teal {
+    background: rgba(20,184,166,.18);
+    border-color: rgba(20,184,166,.32);
+  }
+
+  .sep {
+    height: 1px;
+    background: rgba(255,255,255,.055);
+    margin: 2px 10px;
+  }
+
+  /* Blocker Row — eigenständig, kein Todo */
+  .blocker-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 4px 8px;
+    background: rgba(59,130,246,.13);
+    border: 1px solid rgba(59,130,246,.3);
+    border-left: 3px solid rgba(59,130,246,.85);
+    border-radius: 9px;
+    padding: 7px 10px;
+    cursor: default;
+  }
+  .blocker-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #3b82f6;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .blocker-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,.9);
+    flex: 1;
+  }
+  .blocker-time {
+    font-size: 10px;
+    color: rgba(59,130,246,.85);
+    font-family: 'Orbitron', monospace;
+    letter-spacing: .03em;
+  }
+  .blocker-edit-icon {
+    margin-left: 8px;
+    opacity: .4;
+    font-size: 11px;
+    color: rgba(255,255,255,.6);
+  }
+
+  /* Subtile Hintergrund-Tinte im Blockerbereich */
+  .in-block {
+    background: rgba(59,130,246,.045);
+  }
+
+  .note {
+    font-size: 11px;
+    color: rgba(255,255,255,.38);
+    text-align: center;
+    margin-top: 12px;
+    font-style: italic;
+  }
+</style>
+
+<div class="zeitplan">
+  <!-- Vor dem Blocker -->
+  <div class="slot-row">
+    <span class="slot-time">13:00</span>
+    <div class="slot-content"><div class="todo-chip">Mittagessen</div></div>
+  </div>
+  <div class="sep"></div>
+
+  <!-- Blocker als eigene Zeile, eigenständig -->
+  <div class="blocker-row">
+    <div class="blocker-dot"></div>
+    <span class="blocker-title">Me-Time</span>
+    <span class="blocker-time">14–17</span>
+    <span class="blocker-edit-icon">✎</span>
+  </div>
+
+  <!-- Slots im Blocker-Zeitraum — normal, unabhängig, leicht getönt -->
+  <div class="slot-row in-block">
+    <span class="slot-time">14:00</span>
+    <div class="slot-content"></div>
+  </div>
+  <div class="slot-row in-block">
+    <span class="slot-time">15:00</span>
+    <div class="slot-content"><div class="todo-chip">Buch lesen</div></div>
+  </div>
+  <div class="slot-row in-block">
+    <span class="slot-time">15:30</span>
+    <div class="slot-content"></div>
+  </div>
+  <div class="slot-row in-block">
+    <span class="slot-time">16:00</span>
+    <div class="slot-content"><div class="todo-chip teal">Spazieren</div></div>
+  </div>
+  <div class="slot-row in-block">
+    <span class="slot-time">16:30</span>
+    <div class="slot-content"></div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- Nach dem Blocker -->
+  <div class="slot-row">
+    <span class="slot-time">17:00</span>
+    <div class="slot-content"></div>
+  </div>
+  <div class="slot-row">
+    <span class="slot-time">18:00</span>
+    <div class="slot-content"></div>
+  </div>
+</div>
+
+<p class="note">Todos werden ganz normal in die Slots gezogen — der Blocker ist nur eine Markierung</p>
+
+<div class="options" style="margin-top:24px;">
+  <div class="option" data-choice="yes" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>Genau so</h3>
+      <p>Blocker als eigene Zeile, Slots darunter leicht getönt, Todos unabhängig</p>
+    </div>
+  </div>
+  <div class="option" data-choice="notint" onclick="toggleSelect(this)">
+    <div class="letter">~</div>
+    <div class="content">
+      <h3>Ohne Tönung</h3>
+      <p>Nur die Blocker-Zeile, keine Hintergrundfarbe in den darunter liegenden Slots</p>
+    </div>
+  </div>
+</div>
