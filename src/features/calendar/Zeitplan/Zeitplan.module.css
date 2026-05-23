@@ -191,43 +191,25 @@
 }
 
 
-/* ── Slot handle ──────────────────────────────────────── */
-.slotHandle {
-  width: 34px;
-  min-width: 34px;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.18);
-  cursor: grab;
-  flex-shrink: 0;
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
-  touch-action: none;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  transition: color 0.15s, filter 0.15s;
-}
-
-.slotHandle:hover  { color: rgba(255, 255, 255, 0.45); }
-.slotHandle:active { cursor: grabbing; }
-
-.slotHandleLocked {
+/* ── Zeitfenster Button ───────────────────────────────────── */
+.blockerBtn {
+  padding: 5px 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 8px;
+  color: rgba(100,180,255,0.7);
   cursor: pointer;
-  color: var(--primary);
-  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.45));
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.slotHandleLocked:hover {
-  color: #c4b5fd;
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.65));
-}
-
-/* ── Drag-hover glow auf gesperrtem Slot ─────────────── */
-:global(.dnd-half-locked) .slotHandle,
-:global(.dnd-half-locked) .slotHandleLocked {
-  color: #c4b5fd;
-  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.9));
+.blockerBtn:hover {
+  background: rgba(59,130,246,0.18);
+  border-color: rgba(59,130,246,0.45);
+  color: rgba(100,180,255,0.95);
 }
 
 /* ─── Remove Dialog ──────────────────────────────────────── */

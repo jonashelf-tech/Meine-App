@@ -1,0 +1,36 @@
+.slotHandle {
+  width: 34px;
+  min-width: 34px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.18);
+  cursor: grab;
+  flex-shrink: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: color 0.15s, filter 0.15s;
+}
+
+.slotHandle:hover  { color: rgba(255, 255, 255, 0.45); }
+.slotHandle:active { cursor: grabbing; }
+
+.slotHandleLocked {
+  cursor: pointer;
+  color: var(--primary);
+  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.45));
+}
+
+.slotHandleLocked:hover {
+  color: #c4b5fd;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.65));
+}
+
+:global(.dnd-half-locked) .slotHandle,
+:global(.dnd-half-locked) .slotHandleLocked {
+  color: #c4b5fd;
+  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.9));
+}

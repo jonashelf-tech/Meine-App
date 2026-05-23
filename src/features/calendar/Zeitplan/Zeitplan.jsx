@@ -1,31 +1,9 @@
-import { useState, useCallback, useRef } from 'react'
-import TodoChip from '../../../components/TodoChip/TodoChip'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import s from './Zeitplan.module.css'
-
-const DragIcon = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
-    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
-    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
-    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
-    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
-    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
-  </svg>
-)
-
-// ─── LockIcon ─────────────────────────────────────────────
-function LockIcon({ locked }) {
-  return (
-    <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-      <rect x="1" y="6" width="10" height="8" rx="2" fill="currentColor"/>
-      {locked
-        ? <path d="M3.5 6V4a2.5 2.5 0 015 0V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-        : <path d="M3.5 5.5V4a2.5 2.5 0 015 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45"/>
-      }
-    </svg>
-  )
-}
+import SlotBlock from './SlotBlock'
+import BlockerCard from '../Blocker/BlockerCard'
+import { getBlockersForDate, getBlockerForHour } from '../Blocker/blockerUtils'
 
 // ─── RemoveDialog ─────────────────────────────────────────
 function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
@@ -47,77 +25,6 @@ function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
   )
 }
 
-// ─── SlotBlock ────────────────────────────────────────────
-function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart, onToggleLock, onSaveSlot }) {
-  const displayTodo = {
-    ...(todo ?? {
-      id: null,
-      text: slot.text || '',
-      color: slot.color || '#8B5CF6',
-      priority: slot.priority ?? 3,
-      subItems: slot.subItems || [],
-      date: null, time: null, category: null,
-      duration: slot.duration || 30,
-    }),
-    done: !!(slot.done),
-  }
-  const chipStyle = { height: '100%', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.09)', margin: 0, flexShrink: 0 }
-
-  const dragRef = useRef(null)
-
-  const handlePointerDown = (e) => {
-    e.preventDefault()
-    const start = { x: e.clientX, y: e.clientY, moved: false, evt: e }
-    dragRef.current = start
-
-    const onMove = (me) => {
-      if (start.moved) return
-      const dx = me.clientX - start.x
-      const dy = me.clientY - start.y
-      if (Math.hypot(dx, dy) > 4 && onDragStart) {
-        start.moved = true
-        document.removeEventListener('pointermove', onMove)
-        document.removeEventListener('pointerup', onUp)
-        onDragStart(start.evt)
-      }
-    }
-
-    const onUp = () => {
-      document.removeEventListener('pointermove', onMove)
-      document.removeEventListener('pointerup', onUp)
-      if (!start.moved) onToggleLock?.()
-    }
-
-    document.addEventListener('pointermove', onMove)
-    document.addEventListener('pointerup', onUp)
-  }
-
-  const handle = (
-    <span
-      className={[s.slotHandle, slot.locked ? s.slotHandleLocked : ''].join(' ')}
-      onPointerDown={handlePointerDown}
-    >
-      {slot.locked ? <LockIcon locked={true} /> : DragIcon}
-    </span>
-  )
-
-  return (
-    <TodoChip
-      todo={displayTodo}
-      chipStyle={chipStyle}
-      floatExpand={true}
-      disableExpand={false}
-      todos={todos}
-      saveTodos={setTodos}
-      saveItem={!todo ? (upd) => onSaveSlot?.(slotKey, { ...slot, subItems: upd.subItems }) : undefined}
-      onToggleDone={onToggleDone}
-      onEdit={onEdit}
-      onRemove={onRemove}
-      dragHandle={handle}
-    />
-  )
-}
-
 // ─── Zeitplan ─────────────────────────────────────────────
 export default function Zeitplan({
   slots = {},
@@ -135,8 +42,11 @@ export default function Zeitplan({
   onExpandDown,
   onRemoveHour,
   onToggleLock,
-  registerHalf,    // (key, el, type) — registriert Drop-Zonen im useDragDrop-Hook
-  startSlotDrag,   // (fromKey, e) — startet Drag eines Zeitplan-Slots
+  registerHalf,
+  startSlotDrag,
+  blockers = [],
+  onCreateBlocker,
+  onEditBlocker,
 }) {
   const [hideEmpty, setHideEmpty]       = useState(false)
   const [removeDialog, setRemoveDialog] = useState(null)
@@ -147,10 +57,19 @@ export default function Zeitplan({
   const now = new Date()
   const isNow = dateLabel === todayKey()
 
-  const fullHours = Array.from({ length: 24 }, (_, i) => i)
+  const fullHours  = Array.from({ length: 24 }, (_, i) => i)
   const rangeHours = Array.from({ length: visibleEnd - visibleStart + 1 }, (_, i) => i + visibleStart)
+
+  // blockersForDate muss vor hours berechnet werden
+  const blockersForDate = useMemo(
+    () => getBlockersForDate(blockers, dateLabel),
+    [blockers, dateLabel]
+  )
+
   const hours = hideEmpty
-    ? fullHours.filter(h => slots[sk(h, false)] || slots[sk(h, true)])
+    ? fullHours.filter(h =>
+        slots[sk(h, false)] || slots[sk(h, true)] || !!getBlockerForHour(h, blockersForDate)
+      )
     : rangeHours
 
   const consumedKeys = new Set()
@@ -163,6 +82,133 @@ export default function Zeitplan({
     for (let i = 1; i < spanned.length; i++) consumedKeys.add(spanned[i])
   }
 
+  // Stunden in Sections aufteilen: normal | blocker
+  const sections = useMemo(() => {
+    const result  = []
+    let normalBuf = []
+    const handled = new Set()
+
+    for (const h of hours) {
+      const blocker = getBlockerForHour(h, blockersForDate)
+      if (blocker) {
+        if (!handled.has(blocker.id)) {
+          if (normalBuf.length) {
+            result.push({ type: 'normal', hours: normalBuf })
+            normalBuf = []
+          }
+          const blockerHours = hours.filter(bh => bh >= blocker.startHour && bh < blocker.endHour)
+          result.push({ type: 'blocker', blocker, hours: blockerHours })
+          handled.add(blocker.id)
+        }
+      } else {
+        normalBuf.push(h)
+      }
+    }
+    if (normalBuf.length) result.push({ type: 'normal', hours: normalBuf })
+    return result
+  }, [hours, blockersForDate])
+
+  // ─── Hour rows renderer (wiederverwendet in normal sections) ──
+  const renderHourRows = (hourList) => hourList.map((h, hi) => {
+    const rowBase = hi * 2 + 1
+    const topKey  = sk(h, false)
+    const botKey  = sk(h, true)
+    const topSlot = slots[topKey]
+    const botSlot = slots[botKey]
+    const isNowHour   = isNow && now.getHours() === h
+    const topConsumed = consumedKeys.has(topKey)
+    const botConsumed = consumedKeys.has(botKey)
+
+    const topSpan = topSlot ? Math.ceil((topSlot.duration || 30) / 30) : 1
+    const botSpan = botSlot ? Math.ceil((botSlot.duration || 30) / 30) : 1
+
+    return [
+      <div
+        key={`lbl-${h}`}
+        className={[s.sgLabel, isNowHour ? s.sgLabelNow : ''].join(' ')}
+        style={{ gridRow: `${rowBase} / span 2` }}
+      >
+        {String(h).padStart(2, '0')}
+      </div>,
+
+      topConsumed
+        ? <div key={`top-${h}`} className={s.sgConsumed} />
+        : topSlot
+          ? <div
+              key={`top-${h}`}
+              className={s.sgHalf}
+              style={{ gridRow: topSpan > 1 ? `${rowBase} / span ${topSpan}` : String(rowBase) }}
+              ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : 'occupied')}
+            >
+              <SlotBlock
+                slotKey={topKey}
+                slot={topSlot}
+                todo={todos.find(t => t.id === topSlot.todoId) || null}
+                todos={todos}
+                setTodos={setTodos}
+                onToggleDone={() => onToggleSlotDone?.(topKey)}
+                onEdit={() => {
+                  const lt = todos.find(t => t.id === topSlot.todoId)
+                  lt ? onEditTodo?.(lt.id) : onEditTodo?.(topKey)
+                }}
+                onRemove={() => openRemove(topKey, topSlot.text)}
+                onDragStart={startSlotDrag && !topSlot.locked
+                  ? (e) => startSlotDrag(topKey, e)
+                  : undefined
+                }
+                onToggleLock={() => onToggleLock?.(topKey)}
+                onSaveSlot={onSetSlot}
+              />
+            </div>
+          : <div
+              key={`top-${h}`}
+              className={[s.sgHalf, s.sgEmpty, isNowHour ? s.sgNow : ''].join(' ')}
+              style={{ gridRow: String(rowBase) }}
+              ref={el => registerHalf?.(topKey, el, 'empty')}
+            >
+              <span className={s.halfTime}>:00</span>
+            </div>,
+
+      botConsumed
+        ? <div key={`bot-${h}`} className={s.sgConsumed} />
+        : botSlot
+          ? <div
+              key={`bot-${h}`}
+              className={[s.sgHalf, s.sgHalfBot].join(' ')}
+              style={{ gridRow: botSpan > 1 ? `${rowBase + 1} / span ${botSpan}` : String(rowBase + 1) }}
+              ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : 'occupied')}
+            >
+              <SlotBlock
+                slotKey={botKey}
+                slot={botSlot}
+                todo={todos.find(t => t.id === botSlot.todoId) || null}
+                todos={todos}
+                setTodos={setTodos}
+                onToggleDone={() => onToggleSlotDone?.(botKey)}
+                onEdit={() => {
+                  const lt = todos.find(t => t.id === botSlot.todoId)
+                  lt ? onEditTodo?.(lt.id) : onEditTodo?.(botKey)
+                }}
+                onRemove={() => openRemove(botKey, botSlot.text)}
+                onDragStart={startSlotDrag && !botSlot.locked
+                  ? (e) => startSlotDrag(botKey, e)
+                  : undefined
+                }
+                onToggleLock={() => onToggleLock?.(botKey)}
+                onSaveSlot={onSetSlot}
+              />
+            </div>
+          : <div
+              key={`bot-${h}`}
+              className={[s.sgHalf, s.sgHalfBot, s.sgEmpty].join(' ')}
+              style={{ gridRow: String(rowBase + 1) }}
+              ref={el => registerHalf?.(botKey, el, 'empty')}
+            >
+              <span className={s.halfTime}>:30</span>
+            </div>,
+    ].filter(Boolean)
+  })
+
   return (
     <div className={s.zeitplan}>
 
@@ -171,6 +217,9 @@ export default function Zeitplan({
         <button className={s.shiftBtn} onClick={() => onShiftAll?.(-1)}>▲ 30min</button>
         <button className={s.shiftBtn} onClick={() => onShiftAll?.(1)}>▼ 30min</button>
         <div style={{ flex: 1 }} />
+        {onCreateBlocker && (
+          <button className={s.blockerBtn} onClick={onCreateBlocker}>+ Fenster</button>
+        )}
         <div className={s.viewToggle}>
           <button className={[s.viewBtn, !hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(false)}>Alles</button>
           <button className={[s.viewBtn,  hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(true)}>Minimal</button>
@@ -185,112 +234,35 @@ export default function Zeitplan({
         )}
       </div>
 
-      {/* Flat grid */}
+      {/* Sections: normal grids + blocker cards */}
       <div className={s.slotsContainer}>
-        <div className={s.sgGrid}>
-          {hours.map((h, hi) => {
-            const rowBase = hi * 2 + 1
-            const topKey  = sk(h, false)
-            const botKey  = sk(h, true)
-            const topSlot = slots[topKey]
-            const botSlot = slots[botKey]
-            const isNowHour    = isNow && now.getHours() === h
-            const topConsumed  = consumedKeys.has(topKey)
-            const botConsumed  = consumedKeys.has(botKey)
-
-            const topSpan = topSlot ? Math.ceil((topSlot.duration || 30) / 30) : 1
-            const botSpan = botSlot ? Math.ceil((botSlot.duration || 30) / 30) : 1
-
-            return [
-              // Hour label
-              <div
-                key={`lbl-${h}`}
-                className={[s.sgLabel, isNowHour ? s.sgLabelNow : ''].join(' ')}
-                style={{ gridRow: `${rowBase} / span 2` }}
-              >
-                {String(h).padStart(2, '0')}
-              </div>,
-
-              // Top half
-              topConsumed
-                ? <div key={`top-${h}`} className={s.sgConsumed} />
-                : topSlot
-                  ? <div
-                      key={`top-${h}`}
-                      className={s.sgHalf}
-                      style={{ gridRow: topSpan > 1 ? `${rowBase} / span ${topSpan}` : String(rowBase) }}
-                      ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : 'occupied')}
-                    >
-                      <SlotBlock
-                        slotKey={topKey}
-                        slot={topSlot}
-                        todo={todos.find(t => t.id === topSlot.todoId) || null}
-                        todos={todos}
-                        setTodos={setTodos}
-                        onToggleDone={() => onToggleSlotDone?.(topKey)}
-                        onEdit={() => {
-                          const lt = todos.find(t => t.id === topSlot.todoId)
-                          lt ? onEditTodo?.(lt.id) : onEditTodo?.(topKey)
-                        }}
-                        onRemove={() => openRemove(topKey, topSlot.text)}
-                        onDragStart={startSlotDrag && !topSlot.locked
-                          ? (e) => startSlotDrag(topKey, e)
-                          : undefined
-                        }
-                        onToggleLock={() => onToggleLock?.(topKey)}
-                        onSaveSlot={onSetSlot}
-                      />
-                    </div>
-                  : <div
-                      key={`top-${h}`}
-                      className={[s.sgHalf, s.sgEmpty, isNowHour ? s.sgNow : ''].join(' ')}
-                      style={{ gridRow: String(rowBase) }}
-                      ref={el => registerHalf?.(topKey, el, 'empty')}
-                    >
-                      <span className={s.halfTime}>:00</span>
-                    </div>,
-
-              // Bot half
-              botConsumed
-                ? <div key={`bot-${h}`} className={s.sgConsumed} />
-                : botSlot
-                  ? <div
-                      key={`bot-${h}`}
-                      className={[s.sgHalf, s.sgHalfBot].join(' ')}
-                      style={{ gridRow: botSpan > 1 ? `${rowBase + 1} / span ${botSpan}` : String(rowBase + 1) }}
-                      ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : 'occupied')}
-                    >
-                      <SlotBlock
-                        slotKey={botKey}
-                        slot={botSlot}
-                        todo={todos.find(t => t.id === botSlot.todoId) || null}
-                        todos={todos}
-                        setTodos={setTodos}
-                        onToggleDone={() => onToggleSlotDone?.(botKey)}
-                        onEdit={() => {
-                          const lt = todos.find(t => t.id === botSlot.todoId)
-                          lt ? onEditTodo?.(lt.id) : onEditTodo?.(botKey)
-                        }}
-                        onRemove={() => openRemove(botKey, botSlot.text)}
-                        onDragStart={startSlotDrag && !botSlot.locked
-                          ? (e) => startSlotDrag(botKey, e)
-                          : undefined
-                        }
-                        onToggleLock={() => onToggleLock?.(botKey)}
-                        onSaveSlot={onSetSlot}
-                      />
-                    </div>
-                  : <div
-                      key={`bot-${h}`}
-                      className={[s.sgHalf, s.sgHalfBot, s.sgEmpty].join(' ')}
-                      style={{ gridRow: String(rowBase + 1) }}
-                      ref={el => registerHalf?.(botKey, el, 'empty')}
-                    >
-                      <span className={s.halfTime}>:30</span>
-                    </div>,
-            ].filter(Boolean)
-          })}
-        </div>
+        {sections.map((sec, si) =>
+          sec.type === 'normal'
+            ? (
+              <div key={`sec-${si}`} className={s.sgGrid}>
+                {renderHourRows(sec.hours)}
+              </div>
+            )
+            : (
+              <BlockerCard
+                key={sec.blocker.id}
+                blocker={sec.blocker}
+                hours={sec.hours}
+                slots={slots}
+                todos={todos}
+                setTodos={setTodos}
+                consumedKeys={consumedKeys}
+                onToggleSlotDone={onToggleSlotDone}
+                onEditTodo={onEditTodo}
+                onRemoveSlot={(key, text) => openRemove(key, text)}
+                onToggleLock={onToggleLock}
+                onSetSlot={onSetSlot}
+                registerHalf={registerHalf}
+                startSlotDrag={startSlotDrag}
+                onEdit={() => onEditBlocker?.(sec.blocker)}
+              />
+            )
+        )}
       </div>
 
       {/* Bottom expand row */}
