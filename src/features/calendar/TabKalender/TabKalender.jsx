@@ -69,7 +69,7 @@ function getCellBars(dk, days) {
 
 // ─── Day Panel ────────────────────────────────────────────
 function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate, setTodos }) {
-  const [open, setOpen] = useState({ zeitplan: true, done: true, tools: true })
+  const [open, setOpen] = useState({ zeitplan: true, done: true, tools: false })
   const [restoreTodo, setRestoreTodo] = useState(null)
 
   const handleRestore = (todo) => {
