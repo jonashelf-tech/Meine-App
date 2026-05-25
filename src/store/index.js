@@ -76,6 +76,8 @@ export const useAppStore = create((set, get) => ({
   setHeuteModus: (modus) => set({ heuteModus: modus }),
   dayplanDate: null,
   setDayplanDate: (dk) => set({ dayplanDate: dk }),
+  calendarDate: null,
+  setCalendarDate: (dk) => set({ calendarDate: dk }),
 
   // ─── Active Tools ──────────────────────────────────────
   activeTools: lv(SK.activeTools, ['timer', 'rad']),
