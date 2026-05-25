@@ -19,33 +19,57 @@ export const createBlocker = (partial = {}) => ({
 })
 
 // ─── Query ────────────────────────────────────────────────
-// Gibt alle Blocker zurück die an dateStr aktiv sind
+function isActiveOn(b, dateStr) {
+  const d   = new Date(dateStr + 'T00:00:00')
+  const dow = d.getDay()
+  if (b.exceptions?.includes(dateStr)) return false
+  if (b.endDate && dateStr >= b.endDate) return false
+  if (!b.repeat) return b.date === dateStr
+  if (b.repeat.type === 'daily')    return true
+  if (b.repeat.type === 'workdays') return dow >= 1 && dow <= 5
+  if (b.repeat.type === 'weekly')   return b.repeat.days?.includes(dow) ?? false
+  if (b.repeat.type === 'monthly') {
+    if (!b.date) return true
+    return d.getDate() === new Date(b.date + 'T00:00:00').getDate()
+  }
+  if (b.repeat.type === 'custom') {
+    if (!b.date) return true
+    const anchor = new Date(b.date + 'T00:00:00')
+    const diff = Math.floor((d - anchor) / 86400000)
+    if (diff < 0) return false
+    const { every: ev = 1, unit = 'days' } = b.repeat
+    const step = unit === 'months' ? ev * 30 : unit === 'weeks' ? ev * 7 : ev
+    return diff % step === 0
+  }
+  return false
+}
+
+// Gibt alle Blocker zurück die an dateStr aktiv sind.
+// Overnight-Blocker (startHour > endHour) werden als zwei normalisierte
+// Objekte geliefert: '_overnight: start' (Starttag bis 24) und
+// '_overnight: end' (Folgetag ab 0), mit _origStart/_origEnd für die Anzeige.
 export function getBlockersForDate(allBlockers, dateStr) {
   if (!dateStr) return []
-  const d   = new Date(dateStr + 'T00:00:00')
-  const dow = d.getDay() // 0=So, 1=Mo, ..., 6=Sa
-  return allBlockers.filter(b => {
-    if (b.exceptions?.includes(dateStr)) return false
-    if (b.endDate && dateStr >= b.endDate) return false
-    if (!b.repeat) return b.date === dateStr
-    if (b.repeat.type === 'daily')    return true
-    if (b.repeat.type === 'workdays') return dow >= 1 && dow <= 5 // backwards compat
-    if (b.repeat.type === 'weekly')   return b.repeat.days?.includes(dow) ?? false
-    if (b.repeat.type === 'monthly') {
-      if (!b.date) return true
-      return d.getDate() === new Date(b.date + 'T00:00:00').getDate()
+
+  const prevD = new Date(dateStr + 'T00:00:00')
+  prevD.setDate(prevD.getDate() - 1)
+  const prevDateStr = prevD.toISOString().slice(0, 10)
+
+  const result = []
+  for (const b of allBlockers) {
+    const overnight = b.startHour > b.endHour
+    if (isActiveOn(b, dateStr)) {
+      if (overnight) {
+        result.push({ ...b, endHour: 24, _overnight: 'start', _origEnd: b.endHour })
+      } else {
+        result.push(b)
+      }
     }
-    if (b.repeat.type === 'custom') {
-      if (!b.date) return true
-      const anchor = new Date(b.date + 'T00:00:00')
-      const diff = Math.floor((d - anchor) / 86400000)
-      if (diff < 0) return false
-      const { every: ev = 1, unit = 'days' } = b.repeat
-      const step = unit === 'months' ? ev * 30 : unit === 'weeks' ? ev * 7 : ev
-      return diff % step === 0
+    if (overnight && isActiveOn(b, prevDateStr)) {
+      result.push({ ...b, startHour: 0, _overnight: 'end', _origStart: b.startHour })
     }
-    return false
-  })
+  }
+  return result
 }
 
 // Gibt den Blocker zurück der die Stunde hour (ganzzahlig) enthält, sonst null

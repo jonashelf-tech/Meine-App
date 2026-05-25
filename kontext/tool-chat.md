@@ -1,8 +1,14 @@
 # ADHS App — Tool Builder (Chat-Ansatz)
 
+## App-Kontext
+
+ADHS-Selbstmanagement-App. Alle Tools: simpel, klar, eine Hauptaktion, keine Informationsüberflutung.
+
+---
+
 ## Arbeitsweise — zwingend
 
-Nie direkt anfangen zu bauen.
+Nie stumm annehmen — immer erst fragen. Nie direkt anfangen zu bauen.
 
 1. Anforderungen klären — was soll das Tool genau tun?
 2. Offene Fragen stellen — Interaktion, Daten, Kantenfälle
@@ -25,15 +31,15 @@ const C = {
   text:    'rgba(255,255,255,0.92)',
   dim:     'rgba(255,255,255,0.52)',
   primary: '#8B5CF6',   // Violett — Hauptakzent
-  teal:    '#14B8A6',   // sekundär
-  emerald: '#10B981',   // Erfolg / CTA
+  teal:    '#14B8A6',   // sekundär / Focus
+  emerald: '#10B981',   // Erfolg / Done-States
   rose:    '#FB7185',   // Löschen / Fehler
   r:       '14px',
   rSm:     '8px',
 }
 ```
 
-**Fonts:** `'Outfit', sans-serif` für UI · `'Orbitron', monospace` für Zahlen & Display  
+**Fonts:** `'Outfit', sans-serif` für UI · `'Orbitron', monospace` für Zahlen & Display
 **Verboten:** Inter, Roboto, Arial, System-UI, helle Hintergründe, Emojis als Icons
 
 ---
@@ -43,10 +49,12 @@ const C = {
 Keine Emojis als strukturelle Icons. SVG direkt inline:
 
 ```jsx
-// Beispiel — immer Stroke-Icons, currentColor
+// Stroke-Icons, currentColor, strokeWidth 1.8
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
   <path d="..." />
 </svg>
+
+// Touch-Targets: primäre Aktionen ≥44×44px, sekundäre ≥36×36px
 ```
 
 ---
@@ -76,7 +84,7 @@ function Header({ title, sub, accent, onBack }) {
 
 ## Storage
 
-**Im Chat-Tool (standalone JSX):** localStorage direkt erlaubt, da kein Import möglich.  
+**Im Chat-Tool (standalone JSX):** localStorage direkt erlaubt, da kein Import möglich.
 **Nach Integration in die App:** auf `sv/lv/SK` aus `storage/index.js` umstellen und SK-Eintrag ergänzen.
 
 ```js

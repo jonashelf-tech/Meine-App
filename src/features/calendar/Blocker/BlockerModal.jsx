@@ -113,15 +113,18 @@ export default function BlockerModal({ blocker = null, date, onSave, onDelete, o
           <div className={s.timeRow}>
             <TimeSelect
               value={startHour}
-              options={HOUR_OPTIONS.filter(h => h < endHour)}
+              options={HOUR_OPTIONS}
               onChange={setStartHour}
             />
             <span className={s.timeSep}>→</span>
             <TimeSelect
               value={endHour}
-              options={HOUR_OPTIONS.filter(h => h > startHour)}
+              options={HOUR_OPTIONS}
               onChange={setEndHour}
             />
+            {endHour <= startHour && (
+              <span className={s.overnightBadge}>+1 Tag</span>
+            )}
           </div>
         </div>
 

@@ -13,12 +13,16 @@ export default function BlockerCard({
   onEditTodo,
   onRemoveSlot,
   onToggleLock,
+  onToggleLocked,
   onSetSlot,
   registerHalf,
   startSlotDrag,
   onEdit,
 }) {
   const col = blocker.color
+
+  const displayStart = blocker._overnight === 'end' ? blocker._origStart : blocker.startHour
+  const displayEnd   = blocker._overnight === 'start' ? blocker._origEnd  : blocker.endHour
 
   const cardStyle = {
     border:          `1px solid ${col}55`,
@@ -33,13 +37,17 @@ export default function BlockerCard({
   return (
     <div className={s.card} style={cardStyle}>
       {/* Header — Tap öffnet Edit */}
-      <div className={s.header} style={headerStyle} onClick={onEdit}>
+      <div className={s.header} style={headerStyle} onDoubleClick={onEdit}>
         <div className={s.dot} style={{ background: col }} />
         <span className={s.name}>{blocker.text || 'Zeitfenster'}</span>
         <span className={s.time} style={{ color: col }}>
-          {formatHour(blocker.startHour)}–{formatHour(blocker.endHour)}
+          {blocker._overnight === 'end' ? '↩ ' : ''}{formatHour(displayStart)}–{formatHour(displayEnd)}{blocker._overnight === 'start' ? ' +1' : ''}
         </span>
-        <span className={[s.pill, blocker.locked ? s.pillLocked : s.pillOpen].join(' ')}>
+        <span
+          className={[s.pill, blocker.locked ? s.pillLocked : s.pillOpen].join(' ')}
+          onClick={e => { e.stopPropagation(); onToggleLocked?.() }}
+          onDoubleClick={e => e.stopPropagation()}
+        >
           {blocker.locked ? 'geblockt' : 'offen'}
         </span>
       </div>
@@ -90,7 +98,7 @@ export default function BlockerCard({
                       }}
                       onRemove={() => onRemoveSlot?.(topKey, topSlot.text)}
                       onDragStart={startSlotDrag && !topSlot.locked ? (e) => startSlotDrag(topKey, e) : undefined}
-                      onToggleLock={() => onToggleLock?.(topKey)}
+                      onToggleLock={blocker.locked ? undefined : () => onToggleLock?.(topKey)}
                       onSaveSlot={onSetSlot}
                     />
                   </div>
@@ -125,7 +133,7 @@ export default function BlockerCard({
                       }}
                       onRemove={() => onRemoveSlot?.(botKey, botSlot.text)}
                       onDragStart={startSlotDrag && !botSlot.locked ? (e) => startSlotDrag(botKey, e) : undefined}
-                      onToggleLock={() => onToggleLock?.(botKey)}
+                      onToggleLock={blocker.locked ? undefined : () => onToggleLock?.(botKey)}
                       onSaveSlot={onSetSlot}
                     />
                   </div>

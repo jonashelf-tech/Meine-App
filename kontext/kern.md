@@ -43,7 +43,7 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
   text:       '',
   color:      '#3b82f6',
   startHour:  9,          // Dezimalstunde: 9 = 09:00, 9.5 = 09:30
-  endHour:    17,
+  endHour:    17,         // startHour > endHour = tagesübergreifend (z.B. 22→6)
   locked:     false,
   date:       null,       // "2026-05-23" — Anker für Wiederholung + einmalige Blocker
   repeat:     null,       // { type: 'daily'|'weekly'|'monthly'|'custom', every?, unit?, days? }
@@ -54,12 +54,16 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 
 **Hilfsfunktionen (blockerUtils.js):**
 - `createBlocker(partial?)` — Factory
-- `getBlockersForDate(allBlockers, dateStr)` — filtert aktive Blocker für einen Tag
+- `getBlockersForDate(allBlockers, dateStr)` — filtert aktive Blocker für einen Tag. Overnight-Blocker (startHour > endHour) liefern zwei normalisierte Objekte: `{ ..., endHour: 24, _overnight: 'start', _origEnd }` für den Starttag und `{ ..., startHour: 0, _overnight: 'end', _origStart }` für den Folgetag.
 - `getBlockerForHour(hour, blockersForDate)` — Blocker der eine Stunde enthält
 - `deleteBlockerInstance(blocker, dateStr)` — nur diese Instanz (adds to exceptions)
 - `deleteBlockerFuture(blocker, dateStr)` — diese + alle zukünftigen (sets endDate)
 - `formatHour(h)` — 9.5 → "09:30"
 - `parseHourStr(str)` — "09:30" → 9.5
+
+**Blocker-UI:**
+- Pill ("offen"/"geblockt") im BlockerCard-Header: Klick toggelt `locked` direkt (kein Modal nötig)
+- Slots innerhalb eines gelockten Blockers: Handle-Tap toggelt NICHT die individuelle Slot-Sperre (verhindert versehentliches Einfrieren). Ziehen raus bleibt möglich.
 
 ---
 

@@ -47,6 +47,7 @@ export default function Zeitplan({
   blockers = [],
   onCreateBlocker,
   onEditBlocker,
+  onToggleBlockerLocked,
 }) {
   const [hideEmpty, setHideEmpty]       = useState(false)
   const [removeDialog, setRemoveDialog] = useState(null)
@@ -256,6 +257,7 @@ export default function Zeitplan({
                 onEditTodo={onEditTodo}
                 onRemoveSlot={(key, text) => openRemove(key, text)}
                 onToggleLock={onToggleLock}
+                onToggleLocked={() => onToggleBlockerLocked?.(sec.blocker.id)}
                 onSetSlot={onSetSlot}
                 registerHalf={registerHalf}
                 startSlotDrag={startSlotDrag}

@@ -47,6 +47,9 @@
   margin-left: 4px;
   border-width: 1px;
   border-style: solid;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .pillOpen {

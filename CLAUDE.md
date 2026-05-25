@@ -9,14 +9,16 @@ Simpel. Ursache nicht Symptom. Dauerhafter Fix. Kein auskommentierter Code. Kein
 ## Tooling
 Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder Bash.
 
-## Arbeitsweise — immer, ohne Ausnahme
+## Arbeitsweise
 
-1. **Verstehen** — Kontext lesen, Unklarheiten aktiv ansprechen, fehlende Infos erfragen
-2. **Planen** — Ziel, betroffene Dateien, Schritte, Risiken, einfachste Lösung vorstellen
-3. **Bestätigung** — nie mit Umsetzung beginnen bevor der Plan abgenickt ist
-4. **Umsetzen** — schrittweise, kleine Änderungen, nichts Unbesprochenes einbauen
-5. **Kontext aktualisieren** — nach jeder Umsetzung sofort betroffene `kontext/`-Dateien updaten
+1. **Unklarheiten** — nie stumm annehmen, immer zuerst fragen
+2. **Planen** — betroffene Dateien, Schritte, einfachste Lösung vorstellen
+3. **Bestätigung** — dann erst umsetzen
+4. **Umsetzen** — schrittweise, kleine Änderungen, nichts Unbesprochenes
+5. **Kontext-Queue** — nach relevanten Änderungen eine Zeile in `Dateien/kontext-queue.md` eintragen. Befehl "kontext update" → Queue verarbeiten → Queue leeren.
 6. **Kritisch bleiben** — schlechte Ideen offen benennen, Komplexität aktiv stoppen
+
+**Ausnahme:** "kurzer fix" / "kleiner bug" / "direkt" → Schritte 2+3 entfallen, Schritt 1 gilt immer.
 
 ---
 
@@ -24,15 +26,7 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 
 Freie Beschreibung reicht — ich erkenne den Typ selbst und lese die relevanten Kontext-Dateien.
 
-Beispiele die alle funktionieren:
-- "bugfix: stunden im tagesplaner werden beim tab-wechsel zurückgesetzt"
-- "neues tool: schlaf-tracker"
-- "im kalender sollen routinen automatisch eingeplant werden"
-- "integriere _incoming/TabTraining.jsx"
-
-Ich kategorisiere, lese was nötig ist, plane zuerst — und fange nie ohne Bestätigung an.
-
-**Zur Orientierung welche Kontext-Dateien existieren:**
+**Kontext-Dateien:**
 
 | Bereich | Datei |
 |---|---|

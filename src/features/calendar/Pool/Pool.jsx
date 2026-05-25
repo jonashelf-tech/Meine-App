@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
-import { isFaelligkeit } from '../../todos/Block'
+import { isFaelligkeit, isTermin } from '../../todos/Block'
 import { todayKey } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
 import s from './Pool.module.css'
@@ -137,7 +137,7 @@ export default function Pool({
 
   // ─── Derived lists ──────────────────────────────────────
   const activePool = useMemo(() => {
-    const undone = todos.filter(t => !t.done).filter(t => !isPlaced(t))
+    const undone = todos.filter(t => !t.done).filter(t => !isTermin(t)).filter(t => !isPlaced(t))
     const pending = todos.filter(t => t.done && pendingDoneIds.has(t.id))
     return [...sortTodos(undone, sort), ...pending]
   }, [todos, pendingDoneIds, sort, isPlaced])
