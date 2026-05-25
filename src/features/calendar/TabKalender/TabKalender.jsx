@@ -68,8 +68,18 @@ function getCellBars(dk, days) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate }) {
+function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate, setTodos }) {
   const [open, setOpen] = useState({ zeitplan: true, done: true, tools: true })
+  const [restoreTodo, setRestoreTodo] = useState(null)
+
+  const handleRestore = (todo) => {
+    setTodos(prev => prev.map(t =>
+      t.id === todo.id
+        ? { ...t, done: false, doneAt: null, date: null, time: null }
+        : t
+    ))
+    setRestoreTodo(null)
+  }
 
   const slots = days[dateKey] ?? {}
   const sortedSlots = Object.entries(slots)
@@ -147,7 +157,7 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
                 key={t.id}
                 className={s.dayPanelTodoEntry}
                 style={{ borderLeftColor: t.color || 'var(--primary)' }}
-                onDoubleClick={() => { setDayplanDate(dateKey); setCurrentTab(0) }}
+                onClick={() => setRestoreTodo(t)}
               >
                 <span className={s.dayPanelCheck}>✓</span>
                 <span className={s.dayPanelEntryText}>{t.text}</span>
@@ -192,12 +202,30 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
           </div>
         )}
       </div>
+
+      {/* Restore-Modal */}
+      {restoreTodo && (
+        <div className={s.restoreOverlay} onClick={() => setRestoreTodo(null)}>
+          <div className={s.restoreModal} onClick={e => e.stopPropagation()}>
+            <p className={s.restoreTitle}>Wiederherstellen?</p>
+            <p className={s.restoreText}>{restoreTodo.text}</p>
+            <div className={s.restoreActions}>
+              <button className={s.restoreBtnYes} onClick={() => handleRestore(restoreTodo)}>
+                Ja
+              </button>
+              <button className={s.restoreBtnNo} onClick={() => setRestoreTodo(null)}>
+                Nein
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos } = useAppStore()
   const [view, setView] = useState(() => lv(SK.calView, 'woche'))
   const handleSetView = (v) => { sv(SK.calView, v); setView(v) }
   const today = useMemo(() => {
@@ -466,6 +494,7 @@ export default function TabKalender() {
               toolColors={toolColors}
               setCurrentTab={setCurrentTab}
               setDayplanDate={setDayplanDate}
+              setTodos={setTodos}
             />
           )}
         </>
