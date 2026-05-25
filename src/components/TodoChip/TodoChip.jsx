@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import PrioBadge from '../PrioBadge/PrioBadge'
 import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
+import { useAppStore } from '../../store'
 import s from './TodoChip.module.css'
 
 const SubDragIcon = () => (
@@ -125,7 +126,9 @@ export default function TodoChip({
   }, [allItems, todo, updateTodo])
 
 
-  const color = todo.color || '#8B5CF6'
+  const { toolColors } = useAppStore()
+  const color     = todo.color || '#8B5CF6'
+  const glowColor = todo.toolId ? (toolColors?.[todo.toolId] ?? '#8B5CF6') : null
 
   const metaParts = [
     todo.category,
@@ -155,7 +158,13 @@ export default function TodoChip({
           todo.done ? s.chipDone  : '',
           className || ''
         ].join(' ').trim()}
-        style={{ '--chip-color': todo.done ? 'rgba(0,255,148,0.15)' : color, ...(chipStyle || {}) }}
+        style={{
+          '--chip-color': todo.done ? 'rgba(0,255,148,0.15)' : color,
+          ...(glowColor && !todo.done ? {
+            boxShadow: `0 0 0 1.5px ${glowColor}, 0 0 14px ${glowColor}44`,
+          } : {}),
+          ...(chipStyle || {}),
+        }}
       >
         {/* Stripe */}
         <span className={s.stripe} />
