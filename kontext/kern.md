@@ -14,7 +14,7 @@
   time:                  null,      // "14:30" — nur bei Terminen (date+time = Kalender-Termin)
   done:                  false,
   doneAt:                null,
-  awaitingClockResponse: false,     // true = Termin-Zeit abgelaufen, ClockPopup noch nicht beantwortet
+  awaitingClockResponse: false,     // DEPRECATED — nicht mehr setzen; ClockPopup wurde entfernt
   subItems:              [],        // [{ id, text, done }]
   notes:                 null,
   createdAt:             new Date().toISOString(),
@@ -64,11 +64,12 @@ activeTools,  toggleTool
   text:     "Todo-Text",
   color:    "#8B5CF6",
   duration: 30,         // Minuten
-  locked:   false,      // true = nicht verschiebbar (ShiftAll überspringt, ClockPopup ignoriert)
+  locked:   false,      // true = nicht verschiebbar (ShiftAll überspringt)
   done:     false,
   todoId:   123,        // optional, Referenz auf todos[]
   subItems: [],         // optional, [{ id, text, done }] — nur wenn kein todoId
-  reviewed: false,      // true = wurde im MissedReviewModal behandelt, taucht nicht nochmal auf
+  reviewed: false,      // true = endgültig behandelt, taucht nie wieder auf
+  ignored:  false,      // true = in Variante 1 ignoriert; kommt bei Variante 2 (neuer Tag) wieder
 }
 ```
 
@@ -77,7 +78,7 @@ Slot-Keys: `sk(h)` = ganzeStunde (`"8"`), `sk(h, true)` = halbeStunde (`"8.5"`)
 **Lock-Verhalten:**
 - Todos mit `time`-Feld werden beim Drop automatisch auf `locked: true` gesetzt
 - Per UI (Schloss-Icon am Slot) jederzeit umschaltbar
-- `handleShiftAll` und `ClockPopup` überspringen locked Slots
+- `handleShiftAll` überspringt locked Slots
 
 ---
 
@@ -173,9 +174,9 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 - **DayPanel:** erscheint unterhalb des Grids wenn Monatskachel angeklickt
   - Sektionen: Zeitplan · Erledigt · Tools — alle einzeln klappbar
   - Daten: `days[dk]` · `todos.filter(t => t.doneAt?.startsWith(dk))` · `activeTools`
-  - Doppelklick Termin/Todo → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
+  - Doppelklick Zeitplan-Eintrag → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
+  - Einzelklick erledigtes Todo → Restore-Modal ("Wiederherstellen?" Ja/Nein) → stellt als datumsloses Todo wieder her
   - Doppelklick Tool-Chip → direkt ins Tool
-  - Read-only, keine Bearbeitung
 
 ## TabHeute — Features
 
@@ -184,19 +185,23 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 - **store.dayplanDate:** Flüchtiger Intent-Wert (kein localStorage). DayPanel setzt ihn vor `setCurrentTab(0)`, TabHeute konsumiert ihn einmalig beim Mount.
 - **Pool + Drag & Drop:** Immer sichtbar, funktioniert auf allen Tagen — Slots schreiben auf `viewDate`.
 
-## MissedReviewModal — Logik
+## TimeEvents — Logik
 
-Läuft einmal pro Tag beim Mount von TabHeute (`useMissedReview`-Hook in `TabHeute/useMissedReview.js`).
+Läuft beim Mount von TabHeute (`useTimeEvents`-Hook in `TabHeute/useTimeEvents.js`).
+Variante 2 hat Priorität — nie beide gleichzeitig aktiv.
 
-**Trigger:** `SK.lastPoolReturn !== todayKey()` UND es gibt Slots in `days[dk < today]` mit `!slot.done && !slot.reviewed`.
+**Variante 1 — selber Tag (abgelaufene Slots):**
+- Trigger: `viewDate === today` UND Slots heute mit `endzeit ≤ jetzt` + `!done && !ignored && !reviewed`
+- Aktionen (jeweils auf aktuelle Auswahl):
+  - **Erledigt** → `slot.done = true, slot.reviewed = true`; Todo: `done=true, doneAt=now`
+  - **Ignorieren** → `slot.ignored = true` *(kommt bei Variante 2 wieder)*
+  - **In Pool** → Slot löschen; text-only: neues Todo via `createBlock`; todo-type: bleibt im Pool
 
-**Item-Typen:**
-- `type: 'text'` — Slot ohne `todoId` (text-only)
-- `type: 'todo'` — Slot mit `todoId` wo `todo.awaitingClockResponse === true`
+**Variante 2 — neuer Tag:**
+- Trigger: `SK.lastPoolReturn !== todayKey()`
+- Zeigt: alle Slots aus `days[dk < heute]` mit `!done && !reviewed` — **inkl. `ignored: true`**
+- Aktionen identisch, aber **Ignorieren** → `slot.reviewed = true` *(endgültig weg)*
+- Abschluss: `sv(SK.lastPoolReturn, today)`
 
-**Aktionen:**
-- **Erledigt** → `slot.done = true`, `slot.reviewed = true`; Todo: `done = true`, `doneAt = now`, `awaitingClockResponse = false`
-- **Ignorieren** → `slot.reviewed = true`; Todo: `awaitingClockResponse = false` (Todo bleibt im Pool)
-- **In Pool verschieben** → text-type: neues Todo via `createBlock`; todo-type: `awaitingClockResponse = false`; alle Slots: `reviewed = true`; dann `SK.lastPoolReturn = today`
-
-**Auto-close:** Modal schließt automatisch wenn nach Erledigt/Ignorieren keine Items mehr übrig sind.
+**Item-Typen:** `type: 'text'` (Slot ohne todoId) · `type: 'todo'` (Slot mit todoId)
+**Auto-close:** Modal schließt wenn Liste leer. Alle Items sind beim Öffnen vorausgewählt.
