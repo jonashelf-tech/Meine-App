@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { todayKey } from '../../../utils'
 import { sv, lv, SK } from '../../../storage'
 import { createBlock } from '../../todos/Block'
+import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '../../tools/haushalt/haushaltData'
 
 /**
  * Zwei Varianten der Zeitereignis-Abfrage:
@@ -13,7 +14,7 @@ import { createBlock } from '../../todos/Block'
  *   inkl. bisher ignorierter Items.
  *   Ignorieren → slot.reviewed = true (endgültig weg)
  */
-export function useTimeEvents({ days, setDays, setTodos }) {
+export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
   const [items,   setItems]   = useState([])
   const [isOpen,  setIsOpen]  = useState(false)
   const [variant, setVariant] = useState(null) // 'same-day' | 'new-day'
@@ -118,6 +119,15 @@ export function useTimeEvents({ days, setDays, setTodos }) {
     const todoIds = new Set(sel.filter(i => i.type === 'todo').map(i => i.todoId))
 
     if (todoIds.size > 0) {
+      const haushaltIds = todos
+        .filter(t => todoIds.has(t.id) && t.haushaltTaskIds?.length > 0)
+        .flatMap(t => t.haushaltTaskIds)
+      if (haushaltIds.length > 0) {
+        const cfg     = loadHaushalt()
+        const updated = haushaltIds.reduce((c, tid) => haushaltMarkDone(c, tid), cfg)
+        saveHaushalt(updated)
+      }
+
       setTodos(prev => prev.map(t =>
         todoIds.has(t.id)
           ? { ...t, done: true, doneAt: new Date().toISOString(), awaitingClockResponse: false }
@@ -129,7 +139,7 @@ export function useTimeEvents({ days, setDays, setTodos }) {
       patch: { done: true, reviewed: true },
     })))
     finish(items.filter(i => !selectedIds.has(i.id)))
-  }, [items, setTodos, applyDaysUpdates, finish])
+  }, [items, todos, setTodos, applyDaysUpdates, finish])
 
   // ── Ignorieren ───────────────────────────────────────────
   const handleIgnore = useCallback((selectedIds) => {
