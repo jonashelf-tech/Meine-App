@@ -438,6 +438,15 @@
   color: var(--primary);
 }
 
+.dayPanelDateLink {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.dayPanelDateLink:hover {
+  color: var(--teal);
+}
+
 .dayPanelSection {
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }

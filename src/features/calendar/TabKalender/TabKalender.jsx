@@ -68,18 +68,8 @@ function getCellBars(dk, days) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate, setTodos }) {
+function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
   const [open, setOpen] = useState({ zeitplan: true, done: true, tools: false })
-  const [restoreTodo, setRestoreTodo] = useState(null)
-
-  const handleRestore = (todo) => {
-    setTodos(prev => prev.map(t =>
-      t.id === todo.id
-        ? { ...t, done: false, doneAt: null, date: null, time: null }
-        : t
-    ))
-    setRestoreTodo(null)
-  }
 
   const slots = days[dateKey] ?? {}
   const sortedSlots = Object.entries(slots)
@@ -101,7 +91,12 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
   return (
     <div className={s.dayPanel}>
       <div className={s.dayPanelHeader}>
-        <span className={s.dayPanelDate}>{label}</span>
+        <span
+          className={[s.dayPanelDate, s.dayPanelDateLink].join(' ')}
+          onClick={() => { setDayplanDate(dateKey); setCurrentTab(0) }}
+        >
+          {label}
+        </span>
       </div>
 
       {/* Zeitplan */}
@@ -127,7 +122,6 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
                   key={key}
                   className={[s.dayPanelEntry, isTodo ? s.dayPanelEntryTodo : ''].join(' ')}
                   style={{ borderLeftColor: color }}
-                  onDoubleClick={() => { setDayplanDate(dateKey); setCurrentTab(0) }}
                 >
                   <span className={s.dayPanelEntryTime} style={{ color }}>{hh}:{mm}</span>
                   <span className={s.dayPanelEntryText}>{slot.text}</span>
@@ -225,7 +219,7 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
 }
 
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos, calendarDate, setCalendarDate } = useAppStore()
   const [view, setView] = useState(() => lv(SK.calView, 'woche'))
   const handleSetView = (v) => { sv(SK.calView, v); setView(v) }
   const today = useMemo(() => {
@@ -237,10 +231,11 @@ export default function TabKalender() {
 
   const [weekStart, setWeekStart]     = useState(() => getMonday(today))
   const [monthRef, setMonthRef]       = useState(() => ({ year: today.getFullYear(), month: today.getMonth() }))
-  const [selectedDay, setSelectedDay] = useState(null)
+  const [selectedDay, setSelectedDay] = useState(todayKey)
   const [showTermine, setShowTermine] = useState(true)
   const [showTodos,   setShowTodos]   = useState(true)
   const [showTools,   setShowTools]   = useState(true)
+  const [restoreTodo, setRestoreTodo] = useState(null)
   const weekScrollRef = useRef(null)
 
   useEffect(() => {
@@ -249,12 +244,35 @@ export default function TabKalender() {
     weekScrollRef.current.scrollTop = scrollTo
   }, [view])
 
+  useEffect(() => {
+    if (!calendarDate) return
+    const [yr, mo, d] = calendarDate.split('-').map(Number)
+    if (view === 'monat') {
+      setMonthRef({ year: yr, month: mo - 1 })
+    } else {
+      setWeekStart(getMonday(new Date(yr, mo - 1, d)))
+    }
+    setSelectedDay(calendarDate)
+    setCalendarDate(null)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleRestore = (todo) => {
+    setTodos(prev => prev.map(t =>
+      t.id === todo.id
+        ? { ...t, done: false, doneAt: null, date: null, time: null }
+        : t
+    ))
+    setRestoreTodo(null)
+  }
+
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek  = weekDays.some(d => toDateKey(d) === todayKey)
   const isCurrentMonth = monthRef.year === today.getFullYear() && monthRef.month === today.getMonth()
 
   const handleDayClick = (dateKey) => {
-    setSelectedDay(prev => prev === dateKey ? null : dateKey)
+    if (restoreTodo) return
+    setSelectedDay(dateKey)
   }
 
   const monthCells = useMemo(() => {
@@ -495,6 +513,9 @@ export default function TabKalender() {
               setCurrentTab={setCurrentTab}
               setDayplanDate={setDayplanDate}
               setTodos={setTodos}
+              restoreTodo={restoreTodo}
+              setRestoreTodo={setRestoreTodo}
+              handleRestore={handleRestore}
             />
           )}
         </>
