@@ -11,8 +11,8 @@ export const createBlocker = (partial = {}) => ({
   startHour:  9,
   endHour:    17,
   locked:     false,
-  date:       null,       // "2026-05-23" — für einmalige Blocker
-  repeat:     null,       // { type: 'daily'|'workdays'|'weekly', days: [0-6] }
+  date:       null,       // "2026-05-23" — Anker für Wiederholung + einmalige Blocker
+  repeat:     null,       // { type: 'daily'|'weekly'|'monthly'|'custom', every?, unit?, days? }
   endDate:    null,       // "2026-05-23" — Abschneidedatum für wiederkehrende
   exceptions: [],         // ["2026-05-23"] — übersprungene Instanzen
   ...partial,

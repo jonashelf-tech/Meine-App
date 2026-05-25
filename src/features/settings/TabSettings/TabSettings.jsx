@@ -63,6 +63,14 @@ export default function TabSettings() {
     reader.readAsText(file)
   }
 
+  const handleCacheReset = async () => {
+    const regs = await navigator.serviceWorker.getRegistrations()
+    await Promise.all(regs.map(r => r.unregister()))
+    const keys = await caches.keys()
+    await Promise.all(keys.map(k => caches.delete(k)))
+    window.location.reload()
+  }
+
   const handleReset = () => {
     if (!confirmReset) {
       setConfirmReset(true)
@@ -165,6 +173,9 @@ export default function TabSettings() {
           </button>
           <button className={s.actionBtn} onClick={() => fileRef.current?.click()}>
             ↑ Daten importieren
+          </button>
+          <button className={s.actionBtn} onClick={handleCacheReset}>
+            ↺ Cache leeren & neu laden
           </button>
           <input
             ref={fileRef}

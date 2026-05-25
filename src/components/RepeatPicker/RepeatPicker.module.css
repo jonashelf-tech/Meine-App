@@ -1,0 +1,67 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chipActive {
+  background: rgba(139,92,246,0.18);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.customRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.customLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+  flex-shrink: 0;
+}
+
+.customNum {
+  width: 56px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  padding: 5px 8px;
+  text-align: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.15s;
+}
+
+.customNum:focus { border-color: var(--primary); }
+
+.unitChips {
+  display: flex;
+  gap: 5px;
+}
