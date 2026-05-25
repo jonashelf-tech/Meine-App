@@ -1,68 +1,195 @@
-.empty {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.28);
-  text-align: center;
-  padding: 8px 0;
-}
-
-.list {
+/* ── Energie-Strip ──────────────────────────────────────── */
+.energieStrip {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.row {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.rowTop {
+.energieBtn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 7px;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.energieBtnActive {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Raum-Chips ─────────────────────────────────────────── */
+.rooms {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.roomChip {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.chipHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+}
+
+.chipHeader:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .roomIcon {
-  font-size: 0.9rem;
+  font-size: 1rem;
   flex-shrink: 0;
 }
 
-.taskText {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.82);
+.roomName {
   flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.doneBtn {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: 5px;
-  color: var(--emerald);
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 3px 7px;
+.duration {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 600;
   flex-shrink: 0;
-  transition: background 0.15s;
+}
+
+.roomDoneBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.06);
+  color: rgba(16, 185, 129, 0.7);
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.roomDoneBtn:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.6);
+  color: var(--emerald);
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+/* ── Task-Liste (expandiert) ────────────────────────────── */
+.taskList {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.taskRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   -webkit-tap-highlight-color: transparent;
 }
 
-.doneBtn:hover {
-  background: rgba(16, 185, 129, 0.22);
+.taskRow:last-child {
+  border-bottom: none;
 }
 
-.segBar {
-  display: flex;
-  gap: 2px;
-}
-
-.seg {
+.taskText {
   flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.65);
   min-width: 0;
-  height: 5px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.09);
+  word-break: break-word;
+}
+
+.taskDuration {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.64rem;
+  color: rgba(255, 255, 255, 0.28);
+  flex-shrink: 0;
+}
+
+.taskDoneBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  background: none;
+  color: rgba(16, 185, 129, 0.6);
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.taskDoneBtn:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+/* ── Alle-Button ────────────────────────────────────────── */
+.addAllBtn {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.addAllBtn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Empty ──────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 12px 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'Outfit', sans-serif;
 }
