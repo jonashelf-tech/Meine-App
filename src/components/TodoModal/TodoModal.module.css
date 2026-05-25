@@ -563,6 +563,77 @@
 }
 .subAddBtn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); }
 
+/* ─── Details Dropdown ───────────────────────────────────── */
+.detailsToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 10px 0 2px;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.detailsLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.detailsSummary {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.summaryChip {
+  font-size: 0.68rem;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 20px;
+  color: var(--primary);
+  padding: 2px 8px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.terminBadge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: rgba(251, 113, 133, 0.12);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+  border-radius: 20px;
+  color: rgba(251, 113, 133, 0.85);
+  padding: 2px 8px;
+  font-family: 'Outfit', sans-serif;
+  flex-shrink: 0;
+}
+
+.detailsChevron {
+  margin-left: auto;
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.detailsBody {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
 /* ─── Submit button ──────────────────────────────────────── */
 .submitBtn {
   background: linear-gradient(

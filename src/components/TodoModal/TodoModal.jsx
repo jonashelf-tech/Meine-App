@@ -34,7 +34,6 @@ function parseTodoText(raw) {
   else if (/\b(sollte|bald|soon)\b/i.test(text)) priority = 2
   text = text.replace(/\b(dringend|wichtig|asap|sofort|urgent|sollte|bald|soon)\b/gi, '')
 
-  // Zeitbereich: "15-17" oder "15:00-17:00" oder "15-17uhr" → Startzeit + Dauer
   const tr = text.match(/\b(\d{1,2})(?::(\d{2}))?-(\d{1,2})(?::(\d{2}))?(?:uhr)?(?=\s|$)/i)
   if (tr) {
     const h1 = parseInt(tr[1]), m1 = tr[2] ? parseInt(tr[2]) : 0
@@ -60,7 +59,6 @@ function parseTodoText(raw) {
     }
   })
 
-  // Datum: DD.MM[.YY[YY]] — auch 2-stelliges Jahr
   const dm = text.match(/(\d{1,2})\.(\d{1,2})\.?(\d{2,4})?/)
   if (dm) {
     let year = dm[3] ? parseInt(dm[3]) : today.getFullYear()
@@ -72,7 +70,6 @@ function parseTodoText(raw) {
   text = text.replace(/\b(morgen|übermorgen|heute|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b/gi, '')
   text = text.replace(/\d{1,2}\.\d{1,2}\.?(?:\d{2,4})?/g, '')
 
-  // Einzeluhrzeit — nur wenn kein Bereich erkannt
   if (!time) {
     const tm = text.match(/(\d{1,2})[:\.](\d{2})\s*(?:uhr)?/i) || text.match(/(\d{1,2})\s*uhr/i)
     if (tm) {
@@ -82,7 +79,6 @@ function parseTodoText(raw) {
     }
   }
 
-  // Explizite Dauer — nur wenn nicht aus Bereich berechnet
   if (!duration) {
     const dr = text.match(/(\d+(?:[.,]\d+)?)\s*(h|std|stunden?|min|minuten?)/i)
     if (dr) {
@@ -93,6 +89,14 @@ function parseTodoText(raw) {
   }
 
   return { text: text.trim().replace(/\s+/g, ' '), date, time, duration, priority }
+}
+
+function formatSummaryDate(dateStr) {
+  if (!dateStr) return null
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  const days = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
+  return `${days[date.getDay()]} ${d}.${String(m).padStart(2,'0')}`
 }
 
 export default function TodoModal({ onClose, existingTodo = null }) {
@@ -117,15 +121,18 @@ export default function TodoModal({ onClose, existingTodo = null }) {
   const [blinkTime,   setBlinkTime]   = useState(false)
   const [catEditMode, setCatEditMode] = useState(false)
   const [catNewInput, setCatNewInput] = useState('')
+  const [detailsOpen, setDetailsOpen] = useState(() =>
+    isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category)
+  )
 
   const handleAuto = () => {
     if (!text.trim()) return
     const p = parseTodoText(text.trim())
-    if (p.text)             setText(p.text)
-    if (p.priority !== 3)   setPriority(p.priority)
+    if (p.text)           setText(p.text)
+    if (p.priority !== 3) setPriority(p.priority)
     if (p.duration != null) setDuration(p.duration)
-    if (p.date)             setDate(p.date)
-    if (p.time)             setTime(p.time)
+    if (p.date) { setDate(p.date); setDetailsOpen(true) }
+    if (p.time) { setTime(p.time); setDetailsOpen(true) }
   }
 
   const addSubItem = () => {
@@ -157,7 +164,7 @@ export default function TodoModal({ onClose, existingTodo = null }) {
 
   const handleSubmit = () => {
     if (!text.trim()) return
-    if (time && !date) { triggerBlink('date'); return }
+    if (time && !date) { setDetailsOpen(true); triggerBlink('date'); return }
 
     if (isEdit) {
       const wasTermin = !!(existingTodo.date && existingTodo.time)
@@ -256,11 +263,13 @@ export default function TodoModal({ onClose, existingTodo = null }) {
     >
       <div className={s.modal}>
 
+        {/* Header */}
         <div className={s.header}>
           <span className={s.title}>{isEdit ? 'Bearbeiten' : 'Hinzufügen'}</span>
           <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">✕</button>
         </div>
 
+        {/* Text + Auto */}
         <div className={s.textRow}>
           <input
             className={s.textInput}
@@ -274,45 +283,18 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           <button className={s.autoBtn} onClick={handleAuto} disabled={!text.trim()}>Auto</button>
         </div>
 
-        {/* Prio — nur wenn kein time */}
-        {!time && (
-          <div className={s.row}>
-            <span className={s.rowLabel}>Prio</span>
-            <div className={s.segControl}>
-              {[[1,'! Wichtig'],[2,'· Sollte'],[3,'Kann']].map(([v, l]) => (
-                <button
-                  key={v}
-                  className={[s.segBtn, priority === v ? s.segBtnActive : ''].join(' ')}
-                  onClick={() => setPriority(v)}
-                >{l}</button>
-              ))}
-            </div>
+        {/* Prio — immer */}
+        <div className={s.row}>
+          <span className={s.rowLabel}>Prio</span>
+          <div className={s.segControl}>
+            {[[1,'! Wichtig'],[2,'· Sollte'],[3,'Kann']].map(([v, l]) => (
+              <button
+                key={v}
+                className={[s.segBtn, priority === v ? s.segBtnActive : ''].join(' ')}
+                onClick={() => setPriority(v)}
+              >{l}</button>
+            ))}
           </div>
-        )}
-
-        {/* Datum */}
-        <div className={s.row}>
-          <span className={s.rowLabel}>Datum</span>
-          <input
-            type="date"
-            className={[s.fieldInputSm, blinkDate ? s.blinkField : ''].join(' ')}
-            value={date}
-            onChange={e => setDate(e.target.value)}
-          />
-        </div>
-
-        {/* Uhrzeit */}
-        <div className={s.row}>
-          <span className={s.rowLabel}>Uhrzeit</span>
-          <input
-            type="time"
-            className={[s.fieldInputSm, blinkTime ? s.blinkField : ''].join(' ')}
-            value={time}
-            onChange={e => setTime(e.target.value)}
-          />
-          {isTermin && (
-            <span style={{ fontSize: '0.68rem', color: 'rgba(251,113,133,0.8)' }}>→ Kalendereintrag</span>
-          )}
         </div>
 
         {/* Dauer */}
@@ -338,75 +320,6 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           </div>
         </div>
 
-        {/* Wiederholung */}
-        <div className={s.row} style={{ alignItems: 'flex-start' }}>
-          <span className={s.rowLabel} style={{ marginTop: 6 }}>Wiederholen</span>
-          <div style={{ flex: 1 }}>
-            <RepeatPicker value={repeat} onChange={setRepeat} />
-          </div>
-        </div>
-
-        {/* Farbe */}
-        <div className={s.row}>
-          <span className={s.rowLabel}>Farbe</span>
-          <div className={s.colorRow}>
-            {NEON.map(c => (
-              <button
-                key={c}
-                className={[s.colorCircle, color === c ? s.colorCircleActive : ''].join(' ')}
-                style={{ background: c }}
-                onClick={() => setColor(c)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Kategorie */}
-        <div className={s.row} style={{ alignItems: 'flex-start' }}>
-          <span className={s.rowLabel} style={{ marginTop: 6 }}>Kategorie</span>
-          <div className={s.catWrap}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              <div className={s.catChips}>
-                {cats.length === 0 && !catEditMode && (
-                  <span className={s.catEmpty}>Noch keine Kategorien</span>
-                )}
-                {catEditMode
-                  ? cats.map(name => (
-                      <span key={name} className={s.catChipDel}>
-                        {name}
-                        <button className={s.catChipRm} onClick={() => removeCat(name)}>✕</button>
-                      </span>
-                    ))
-                  : cats.map(name => (
-                      <button
-                        key={name}
-                        className={[s.catChip, category === name ? s.catChipActive : ''].join(' ')}
-                        onClick={() => setCategory(prev => prev === name ? null : name)}
-                      >{name}</button>
-                    ))
-                }
-              </div>
-              <button
-                className={[s.catEditBtn, catEditMode ? s.catEditBtnActive : ''].join(' ')}
-                onClick={() => { setCatEditMode(v => !v); setCatNewInput('') }}
-                aria-label={catEditMode ? 'Fertig' : 'Kategorien bearbeiten'}
-              ><EditIcon /></button>
-            </div>
-            {catEditMode && (
-              <div className={s.catManageRow}>
-                <input
-                  className={s.catNewInput}
-                  placeholder={cats.length === 0 ? 'Erste Kategorie anlegen…' : 'Neue Kategorie…'}
-                  value={catNewInput}
-                  onChange={e => setCatNewInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCat() } }}
-                />
-                <button className={s.catAddBtn} onClick={addCat}>+</button>
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Schritte */}
         <div className={s.row} style={{ alignItems: 'flex-start' }}>
           <span className={s.rowLabel} style={{ marginTop: 6 }}>Schritte</span>
@@ -429,6 +342,125 @@ export default function TodoModal({ onClose, existingTodo = null }) {
             </div>
           </div>
         </div>
+
+        {/* Details Dropdown */}
+        <button
+          className={s.detailsToggle}
+          onClick={() => setDetailsOpen(v => !v)}
+        >
+          <span className={s.detailsLabel}>Details</span>
+          {!detailsOpen && (date || time || category) && (
+            <span className={s.detailsSummary}>
+              {date && <span className={s.summaryChip}>{formatSummaryDate(date)}</span>}
+              {time && <span className={s.summaryChip}>{time}</span>}
+              {category && <span className={s.summaryChip}>{category}</span>}
+            </span>
+          )}
+          {isTermin && !detailsOpen && (
+            <span className={s.terminBadge}>Termin</span>
+          )}
+          <span className={[s.detailsChevron, detailsOpen ? s.chevronOpen : ''].join(' ')}>▾</span>
+        </button>
+
+        {detailsOpen && (
+          <div className={s.detailsBody}>
+
+            {/* Datum */}
+            <div className={s.row}>
+              <span className={s.rowLabel}>Datum</span>
+              <input
+                type="date"
+                className={[s.fieldInputSm, blinkDate ? s.blinkField : ''].join(' ')}
+                value={date}
+                onChange={e => setDate(e.target.value)}
+              />
+            </div>
+
+            {/* Uhrzeit */}
+            <div className={s.row}>
+              <span className={s.rowLabel}>Uhrzeit</span>
+              <input
+                type="time"
+                className={[s.fieldInputSm, blinkTime ? s.blinkField : ''].join(' ')}
+                value={time}
+                onChange={e => setTime(e.target.value)}
+              />
+              {isTermin && (
+                <span style={{ fontSize: '0.68rem', color: 'rgba(251,113,133,0.8)' }}>→ Kalendereintrag</span>
+              )}
+            </div>
+
+            {/* Farbe */}
+            <div className={s.row}>
+              <span className={s.rowLabel}>Farbe</span>
+              <div className={s.colorRow}>
+                {NEON.map(c => (
+                  <button
+                    key={c}
+                    className={[s.colorCircle, color === c ? s.colorCircleActive : ''].join(' ')}
+                    style={{ background: c }}
+                    onClick={() => setColor(c)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Kategorie */}
+            <div className={s.row} style={{ alignItems: 'flex-start' }}>
+              <span className={s.rowLabel} style={{ marginTop: 6 }}>Kategorie</span>
+              <div className={s.catWrap}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <div className={s.catChips}>
+                    {cats.length === 0 && !catEditMode && (
+                      <span className={s.catEmpty}>Noch keine Kategorien</span>
+                    )}
+                    {catEditMode
+                      ? cats.map(name => (
+                          <span key={name} className={s.catChipDel}>
+                            {name}
+                            <button className={s.catChipRm} onClick={() => removeCat(name)}>✕</button>
+                          </span>
+                        ))
+                      : cats.map(name => (
+                          <button
+                            key={name}
+                            className={[s.catChip, category === name ? s.catChipActive : ''].join(' ')}
+                            onClick={() => setCategory(prev => prev === name ? null : name)}
+                          >{name}</button>
+                        ))
+                    }
+                  </div>
+                  <button
+                    className={[s.catEditBtn, catEditMode ? s.catEditBtnActive : ''].join(' ')}
+                    onClick={() => { setCatEditMode(v => !v); setCatNewInput('') }}
+                    aria-label={catEditMode ? 'Fertig' : 'Kategorien bearbeiten'}
+                  ><EditIcon /></button>
+                </div>
+                {catEditMode && (
+                  <div className={s.catManageRow}>
+                    <input
+                      className={s.catNewInput}
+                      placeholder={cats.length === 0 ? 'Erste Kategorie anlegen…' : 'Neue Kategorie…'}
+                      value={catNewInput}
+                      onChange={e => setCatNewInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCat() } }}
+                    />
+                    <button className={s.catAddBtn} onClick={addCat}>+</button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Wiederholung */}
+            <div className={s.row} style={{ alignItems: 'flex-start' }}>
+              <span className={s.rowLabel} style={{ marginTop: 6 }}>Wiederholen</span>
+              <div style={{ flex: 1 }}>
+                <RepeatPicker value={repeat} onChange={setRepeat} />
+              </div>
+            </div>
+
+          </div>
+        )}
 
         <button
           className={s.submitBtn}
