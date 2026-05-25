@@ -13,7 +13,7 @@ import { createBlock } from '../../todos/Block'
  *   inkl. bisher ignorierter Items.
  *   Ignorieren → slot.reviewed = true (endgültig weg)
  */
-export function useTimeEvents({ days, setDays, todos, setTodos }) {
+export function useTimeEvents({ days, setDays, setTodos }) {
   const [items,   setItems]   = useState([])
   const [isOpen,  setIsOpen]  = useState(false)
   const [variant, setVariant] = useState(null) // 'same-day' | 'new-day'
