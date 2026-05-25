@@ -117,6 +117,8 @@ SK.shoppingStates → 'adhs_recipes_shopping_states'
 SK.selectedDishes → 'adhs_recipes_selected'
 SK.weight         → 'adhs_health_weight'
 SK.birthdays      → 'adhs_birthdays'
+SK.haushalt       → 'adhs_haushalt_v1'
+SK.haushaltEnergie→ 'adhs_haushalt_energie'   // lokaler UI-State (Normal/Low Energy)
 ```
 
 Lesen/Schreiben:

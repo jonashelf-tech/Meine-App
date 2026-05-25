@@ -1,433 +1,360 @@
-import { useState, useCallback, useMemo } from 'react'
-import { useAppStore } from '../../../store'
-import { createBlock } from '../../todos/Block'
+import { useState, useCallback } from 'react'
+import { sv, lv, SK } from '../../../storage'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
-import TodoChip from '../../../components/TodoChip/TodoChip'
+import HaushaltBriefing from './HaushaltBriefing'
 import {
-  loadHaushalt, saveHaushalt, buildSmartQueue, markTaskDone,
-  calcZustand, roomStatus,
+  loadHaushalt, saveHaushalt,
+  taskSegments, calcRingScore, roomStatus, STATUS_META, FREQ_LABELS,
+  markTaskDone, resetTaskDone,
   addRoom, updateRoom, deleteRoom,
-  addTask, updateTask, deleteTask, resetToDefaults,
-  ENERGIE_META, ZUSTAND_META, FREQ_LABELS,
+  addTask, updateTask, deleteTask,
+  resetToDefaults,
 } from './haushaltData'
 import s from './TabHaushalt.module.css'
 
-// ─── SVG Icon ────────────────────────────────────────────
+// ─── Icons ────────────────────────────────────────────────
 const HausIcon = () => (
-  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-    <polyline points="9 22 9 12 15 12 15 22"/>
+  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    <polyline points="9 22 9 12 15 12 15 22" />
   </svg>
 )
 
-// ─── Zeit-Budget-Optionen ─────────────────────────────────
-const ZEIT_OPTIONS = [
-  { label: '5 min',  mins: 5  },
-  { label: '15 min', mins: 15 },
-  { label: '30 min', mins: 30 },
-  { label: '1h+',    mins: 90 },
-]
+const PencilIcon = () => (
+  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+)
 
-// ─── Status badge colors ──────────────────────────────────
-const STATUS_META = {
-  now:  { label: 'jetzt dran', color: '#fb7185', bg: 'rgba(251,113,133,0.12)' },
-  soon: { label: 'bald dran',  color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)'  },
-  ok:   { label: 'ok',         color: '#10B981', bg: 'rgba(16,185,129,0.12)'  },
-}
+const CheckIcon = () => (
+  <svg width={12} height={12} viewBox="0 0 12 12" fill="none">
+    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
 
-const FREQ_OPTIONS  = ['daily', 'biweekly', 'weekly', 'monthly', 'custom']
-const MODE_OPTIONS  = ['survival', 'maintain', 'boost']
-const MODE_LABELS   = { survival: 'Survival', maintain: 'Maintain', boost: 'Boost' }
-
-// ─── Chip color ───────────────────────────────────────────
-function chipColor(zustand, energie) {
-  if (zustand === 'chaos')   return '#fb7185'
-  if (zustand === 'knapp')   return '#f59e0b'
-  return energie === 'viel' ? '#10B981' : '#8B5CF6'
-}
-
-// ─── Build chips from queue ───────────────────────────────
-function queueToChips(queue, zustand, energie) {
-  const color = chipColor(zustand, energie)
-  return queue.map(({ task, room }) =>
-    createBlock({
-      text:     task.text,
-      color,
-      priority: 3,
-      duration: task.duration,
-      category: room.name,
-      subItems: (task.subItems ?? []).map(si => ({ ...si })),
-    })
-  )
-}
-
-// ═══════════════════════════════════════════════════════════
-// RäumeView
-// ═══════════════════════════════════════════════════════════
-function RäumeView({ config, updateConfig }) {
-  const [openRooms,   setOpenRooms]   = useState({})
-  const [editRooms,   setEditRooms]   = useState({})
-  const [newTaskText, setNewTaskText] = useState({})
-  const [showAddRoom, setShowAddRoom] = useState(false)
-  const [newRoomName, setNewRoomName] = useState('')
-  const [newRoomIcon, setNewRoomIcon] = useState('🏠')
-  const [confirmReset, setConfirmReset] = useState(false)
-
-  const toggleRoom = (id) => setOpenRooms(p => ({ ...p, [id]: !p[id] }))
-  const toggleEdit = (id) => setEditRooms(p => ({ ...p, [id]: !p[id] }))
-
-  const handleAddTask = (roomId) => {
-    const text = (newTaskText[roomId] ?? '').trim()
-    if (!text) return
-    const task = {
-      id: crypto.randomUUID(), text,
-      duration: 15, freq: 'weekly', customDays: null,
-      minMode: 'maintain', lastDone: null, subItems: [],
-    }
-    updateConfig(addTask(config, roomId, task))
-    setNewTaskText(p => ({ ...p, [roomId]: '' }))
-  }
-
-  const handleAddRoom = () => {
-    const name = newRoomName.trim()
-    if (!name) return
-    const room = { id: crypto.randomUUID(), name, icon: newRoomIcon || '🏠', tasks: [] }
-    updateConfig(addRoom(config, room))
-    setNewRoomName('')
-    setNewRoomIcon('🏠')
-    setShowAddRoom(false)
-  }
-
-  const handleReset = () => {
-    if (!confirmReset) { setConfirmReset(true); return }
-    updateConfig(resetToDefaults(config))
-    setConfirmReset(false)
-  }
+// ─── Ring Score SVG ───────────────────────────────────────
+function RingScore({ score }) {
+  const r     = 28
+  const circ  = 2 * Math.PI * r
+  const dash  = (Math.min(score, 100) / 100) * circ
+  const color = score >= 70 ? 'var(--emerald)' : score >= 40 ? '#f59e0b' : 'var(--rose)'
+  const label = score >= 70 ? 'Wohnung im Griff' : score >= 40 ? 'Einiges liegt noch' : 'Chaos-Modus'
 
   return (
-    <div className={s.roomsView}>
-      {config.rooms.map(room => {
-        const isOpen    = !!openRooms[room.id]
-        const isEditing = !!editRooms[room.id]
-        const status    = roomStatus(room)
-        const sm        = STATUS_META[status]
-
-        return (
-          <div key={room.id} className={s.roomCard}>
-            <div className={s.roomHeader} onClick={() => toggleRoom(room.id)}>
-              <span className={s.roomIcon}>{room.icon}</span>
-
-              {isEditing ? (
-                <input
-                  className={s.roomNameInput}
-                  value={room.name}
-                  onChange={e => updateConfig(updateRoom(config, room.id, { name: e.target.value }))}
-                  onClick={e => e.stopPropagation()}
-                />
-              ) : (
-                <span className={s.roomName}>{room.name}</span>
-              )}
-
-              <span className={s.statusBadge} style={{ color: sm.color, background: sm.bg }}>
-                {sm.label}
-              </span>
-
-              <button
-                className={s.editRoomBtn}
-                onClick={e => { e.stopPropagation(); toggleEdit(room.id) }}
-              >
-                {isEditing ? '✓' : '✎'}
-              </button>
-              <span className={s.roomChevron}>{isOpen ? '▾' : '▸'}</span>
-            </div>
-
-            {isOpen && (
-              <div className={s.roomBody}>
-                {room.tasks.map(task => (
-                  <div key={task.id} className={s.taskRow}>
-                    <div className={s.taskInfo}>
-                      <span className={s.taskText}>{task.text}</span>
-                      <span className={s.taskMeta}>
-                        {FREQ_LABELS[task.freq] ?? task.freq}
-                        {' · '}{task.duration}min
-                        {' · '}{MODE_LABELS[task.minMode] ?? task.minMode}
-                      </span>
-                    </div>
-                    {isEditing && (
-                      <div className={s.taskEditRow}>
-                        <select
-                          className={s.taskSelect}
-                          value={task.freq}
-                          onChange={e => updateConfig(updateTask(config, room.id, task.id, { freq: e.target.value }))}
-                        >
-                          {FREQ_OPTIONS.map(f => <option key={f} value={f}>{FREQ_LABELS[f]}</option>)}
-                        </select>
-                        <select
-                          className={s.taskSelect}
-                          value={task.minMode}
-                          onChange={e => updateConfig(updateTask(config, room.id, task.id, { minMode: e.target.value }))}
-                        >
-                          {MODE_OPTIONS.map(m => <option key={m} value={m}>{MODE_LABELS[m]}</option>)}
-                        </select>
-                        <button
-                          className={s.deleteTaskBtn}
-                          onClick={() => updateConfig(deleteTask(config, room.id, task.id))}
-                        >✕</button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {isEditing && (
-                  <div className={s.addTaskRow}>
-                    <input
-                      className={s.addTaskInput}
-                      placeholder="Neue Aufgabe…"
-                      value={newTaskText[room.id] ?? ''}
-                      onChange={e => setNewTaskText(p => ({ ...p, [room.id]: e.target.value }))}
-                      onKeyDown={e => e.key === 'Enter' && handleAddTask(room.id)}
-                    />
-                    <button className={s.addTaskBtn} onClick={() => handleAddTask(room.id)}>+</button>
-                  </div>
-                )}
-
-                {isEditing && (
-                  <button
-                    className={s.deleteRoomBtn}
-                    onClick={() => updateConfig(deleteRoom(config, room.id))}
-                  >
-                    Raum löschen
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )
-      })}
-
-      {showAddRoom ? (
-        <div className={s.addRoomForm}>
-          <div className={s.addRoomInputRow}>
-            <input
-              className={s.addRoomInput}
-              placeholder="Raum-Name"
-              value={newRoomName}
-              onChange={e => setNewRoomName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAddRoom()}
-            />
-            <input
-              className={s.addRoomIconInput}
-              placeholder="🏠"
-              value={newRoomIcon}
-              onChange={e => setNewRoomIcon(e.target.value)}
-              maxLength={2}
-            />
-          </div>
-          <button className={s.addRoomConfirmBtn} onClick={handleAddRoom}>Hinzufügen</button>
-          <button className={s.cancelBtn} onClick={() => setShowAddRoom(false)}>Abbrechen</button>
-        </div>
-      ) : (
-        <button className={s.addRoomBtn} onClick={() => setShowAddRoom(true)}>
-          + Raum hinzufügen
-        </button>
-      )}
-
-      <button
-        className={[s.resetBtn, confirmReset ? s.resetBtnConfirm : ''].join(' ')}
-        onClick={handleReset}
-      >
-        {confirmReset ? 'Wirklich zurücksetzen?' : 'Auf Standard zurücksetzen'}
-      </button>
+    <div className={s.scoreRow}>
+      <svg width={70} height={70} viewBox="0 0 70 70" className={s.ringsvg}>
+        <circle cx={35} cy={35} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={5} />
+        <circle
+          cx={35} cy={35} r={r} fill="none"
+          stroke={color} strokeWidth={5}
+          strokeDasharray={`${dash} ${circ}`}
+          strokeLinecap="round"
+          transform="rotate(-90 35 35)"
+          style={{ transition: 'stroke-dasharray 0.4s ease' }}
+        />
+        <text x={35} y={40} textAnchor="middle" fill={color} fontSize={13} fontWeight={800} fontFamily="Outfit, sans-serif">
+          {score}%
+        </text>
+      </svg>
+      <div className={s.scoreText}>
+        <span className={s.scoreLabel} style={{ color }}>{label}</span>
+        <span className={s.scoreSub}>
+          {score < 100
+            ? `${Math.round((1 - score / 100) * 100)}% der Tasks fällig`
+            : 'Alles erledigt ✨'}
+        </span>
+      </div>
     </div>
   )
 }
 
-// ═══════════════════════════════════════════════════════════
-// TabHaushalt
-// ═══════════════════════════════════════════════════════════
+// ─── Segment Bar ──────────────────────────────────────────
+function SegmentBar({ task }) {
+  const { filled, total, color, overdue } = taskSegments(task)
+  return (
+    <div className={s.segBar}>
+      {Array.from({ length: total }, (_, i) => (
+        <div
+          key={i}
+          className={s.seg}
+          style={{
+            background: i < filled ? color : undefined,
+            boxShadow: overdue && i < filled ? `0 0 3px ${color}` : undefined,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// ─── Task Row ─────────────────────────────────────────────
+const FREQ_OPTIONS = ['daily', 'biweekly', 'weekly', 'monthly', 'custom']
+
+function TaskRow({ task, editing, dimmed, onDone, onReset, onUpdate, onDelete }) {
+  const { color, overdue } = taskSegments(task)
+  const since = (() => {
+    if (!task.lastDone) return 'noch nie erledigt'
+    const days = Math.floor((Date.now() - new Date(task.lastDone + 'T00:00:00').getTime()) / 86_400_000)
+    if (days === 0) return 'heute erledigt'
+    if (days === 1) return 'gestern erledigt'
+    const freq = task.freq === 'custom' ? (task.customDays ?? 7) : { daily: 1, biweekly: 3, weekly: 7, monthly: 30 }[task.freq] ?? 7
+    const left = freq - days
+    if (left <= 0) return `${Math.abs(left)} ${Math.abs(left) === 1 ? 'Tag' : 'Tage'} überfällig`
+    if (left === 1) return 'morgen fällig'
+    return `in ${left} Tagen`
+  })()
+
+  return (
+    <div className={[s.taskRow, dimmed ? s.taskRowDimmed : ''].join(' ')}>
+      {editing ? (
+        <div className={s.taskEditContent}>
+          <input
+            className={s.taskEditInput}
+            value={task.text}
+            onChange={e => onUpdate({ text: e.target.value })}
+          />
+          <div className={s.taskEditControls}>
+            <select
+              className={s.taskSelect}
+              value={task.freq}
+              onChange={e => onUpdate({ freq: e.target.value })}
+            >
+              {FREQ_OPTIONS.map(f => <option key={f} value={f}>{FREQ_LABELS[f]}</option>)}
+            </select>
+            <label className={s.lowToggle}>
+              <input
+                type="checkbox"
+                checked={!!task.lowEnergy}
+                onChange={e => onUpdate({ lowEnergy: e.target.checked })}
+                className={s.hiddenCheck}
+              />
+              <span className={[s.lowPill, task.lowEnergy ? s.lowPillActive : ''].join(' ')}>
+                🪫 Low
+              </span>
+            </label>
+            <button className={s.deleteTaskBtn} onClick={onDelete}>✕</button>
+          </div>
+          {editing && (
+            <button className={s.resetBtn} onClick={onReset}>↺ Reset</button>
+          )}
+        </div>
+      ) : (
+        <div className={s.taskViewContent}>
+          <div className={s.taskTop}>
+            <span className={s.taskText}>
+              {task.text}
+              {task.lowEnergy && <span className={s.lowBadge}>🪫</span>}
+            </span>
+            <span className={s.taskDue} style={{ color: overdue ? 'var(--rose)' : color }}>
+              {since}
+            </span>
+            {!dimmed && (
+              <button className={s.doneBtn} onClick={onDone} title="Erledigt">
+                <CheckIcon />
+              </button>
+            )}
+          </div>
+          <SegmentBar task={task} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Raum Karte ───────────────────────────────────────────
+function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTaskDone, onTaskReset, onUpdateTask, onAddTask, onDeleteTask, onUpdateRoom, onDeleteRoom }) {
+  const [newTaskText, setNewTaskText] = useState('')
+  const status = roomStatus(room)
+  const sm     = STATUS_META[status]
+
+  const handleAddTask = () => {
+    const text = newTaskText.trim()
+    if (!text) return
+    onAddTask({
+      id: crypto.randomUUID(), text,
+      duration: 15, freq: 'weekly', customDays: null,
+      lowEnergy: false, lastDone: null, subItems: [],
+    })
+    setNewTaskText('')
+  }
+
+  return (
+    <div className={s.roomCard}>
+      <div className={s.roomHeader} onClick={onToggle}>
+        <span className={s.roomIcon}>{room.icon}</span>
+        {editing ? (
+          <input
+            className={s.roomNameInput}
+            value={room.name}
+            onChange={e => onUpdateRoom({ name: e.target.value })}
+            onClick={e => e.stopPropagation()}
+          />
+        ) : (
+          <span className={s.roomName}>{room.name}</span>
+        )}
+        <span className={s.statusBadge} style={{ color: sm.color }}>{sm.label}</span>
+        <button
+          className={s.editBtn}
+          onClick={e => { e.stopPropagation(); onToggleEdit() }}
+          title={editing ? 'Fertig' : 'Bearbeiten'}
+        >
+          {editing ? <CheckIcon /> : <PencilIcon />}
+        </button>
+        <span className={s.chevron}>{open ? '▾' : '▸'}</span>
+      </div>
+
+      {open && (
+        <div className={s.roomBody}>
+          {room.tasks.length === 0 && !editing && (
+            <div className={s.emptyRoom}>Keine Tasks — Stift-Icon zum Hinzufügen</div>
+          )}
+
+          {room.tasks.map(task => {
+            const dimmed = energie === 'low' && !task.lowEnergy
+            return (
+              <TaskRow
+                key={task.id}
+                task={task}
+                editing={editing}
+                dimmed={dimmed}
+                onDone={() => onTaskDone(task.id)}
+                onReset={() => onTaskReset(task.id)}
+                onUpdate={patch => onUpdateTask(task.id, patch)}
+                onDelete={() => onDeleteTask(task.id)}
+              />
+            )
+          })}
+
+          {/* Hidden tasks indicator in low energy mode */}
+          {!editing && energie === 'low' && (
+            (() => {
+              const hidden = room.tasks.filter(t => !t.lowEnergy).length
+              return hidden > 0 ? (
+                <div className={s.hiddenHint}>
+                  {hidden} {hidden === 1 ? 'Task' : 'Tasks'} ausgeblendet — Normal für alle
+                </div>
+              ) : null
+            })()
+          )}
+
+          {editing && (
+            <>
+              <div className={s.addTaskRow}>
+                <input
+                  className={s.addTaskInput}
+                  placeholder="Neue Aufgabe…"
+                  value={newTaskText}
+                  onChange={e => setNewTaskText(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleAddTask()}
+                />
+                <button className={s.addTaskBtn} onClick={handleAddTask}>+</button>
+              </div>
+              <button className={s.deleteRoomBtn} onClick={onDeleteRoom}>
+                Raum löschen
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── TabHaushalt ──────────────────────────────────────────
 export default function TabHaushalt({ onBack }) {
-  const { setTodos } = useAppStore()
-
-  const [config,      setConfig]      = useState(() => loadHaushalt())
-  const [view,        setView]        = useState('queue')
-  const [energie,     setEnergie]     = useState(() => loadHaushalt().energie ?? 'normal')
-  const [zeitBudget,  setZeitBudget]  = useState(30)
-  const [queueMeta,   setQueueMeta]   = useState(() => {
-    const cfg = loadHaushalt()
-    return buildSmartQueue(cfg, cfg.energie ?? 'normal', 30)
-  })
-  const [chipTodos,   setChipTodos]   = useState(() => {
-    const cfg = loadHaushalt()
-    const en  = cfg.energie ?? 'normal'
-    const q   = buildSmartQueue(cfg, en, 30)
-    return queueToChips(q, calcZustand(cfg.rooms), en)
-  })
-  const [transferred, setTransferred] = useState(false)
-
-  // Auto-detected Zustand — derived from current config
-  const zustand = useMemo(() => calcZustand(config.rooms), [config.rooms])
-  const zm      = ZUSTAND_META[zustand]
+  const [config,    setConfig]    = useState(() => loadHaushalt())
+  const [energie,   setEnergie]   = useState(() => lv(SK.haushaltEnergie, 'normal'))
+  const [openRooms, setOpenRooms] = useState({})
+  const [editRooms, setEditRooms] = useState({})
 
   const updateConfig = useCallback((next) => {
     setConfig(next)
     saveHaushalt(next)
   }, [])
 
-  const regenQueue = useCallback((cfg, en, zeit) => {
-    const q  = buildSmartQueue(cfg, en, zeit)
-    const zs = calcZustand(cfg.rooms)
-    setQueueMeta(q)
-    setChipTodos(queueToChips(q, zs, en))
-    setTransferred(false)
-  }, [])
+  const handleEnergieChange = (val) => {
+    setEnergie(val)
+    sv(SK.haushaltEnergie, val)
+  }
 
-  const handleEnergieChange = useCallback((en) => {
-    setEnergie(en)
-    const next = { ...config, energie: en }
-    updateConfig(next)
-    regenQueue(next, en, zeitBudget)
-  }, [config, zeitBudget, updateConfig, regenQueue])
+  const toggleRoom  = (id) => setOpenRooms(p => ({ ...p, [id]: !p[id] }))
+  const toggleEdit  = (id) => setEditRooms(p => ({ ...p, [id]: !p[id] }))
 
-  const handleZeitChange = useCallback((mins) => {
-    setZeitBudget(mins)
-    regenQueue(config, energie, mins)
-  }, [config, energie, regenQueue])
+  const handleAddRoom = () => {
+    const room = { id: crypto.randomUUID(), name: 'Neuer Raum', icon: '🏠', tasks: [] }
+    updateConfig(addRoom(config, room))
+    setOpenRooms(p => ({ ...p, [room.id]: true }))
+    setEditRooms(p => ({ ...p, [room.id]: true }))
+  }
 
-  // Regen queue after config changes (e.g. task marked done)
-  const handleConfigUpdate = useCallback((next) => {
-    updateConfig(next)
-    regenQueue(next, energie, zeitBudget)
-  }, [energie, zeitBudget, updateConfig, regenQueue])
+  // Show briefing overlay if not done
+  if (!config.briefingDone) {
+    return <HaushaltBriefing config={config} onComplete={updateConfig} />
+  }
 
-  const handleChipToggle = useCallback((id) => {
-    const chipIdx = chipTodos.findIndex(c => c.id === id)
-    setChipTodos(prev => prev.map(c => c.id === id ? { ...c, done: !c.done } : c))
-    if (chipIdx >= 0 && queueMeta[chipIdx]) {
-      handleConfigUpdate(markTaskDone(config, queueMeta[chipIdx].task.id))
-    }
-  }, [chipTodos, queueMeta, config, handleConfigUpdate])
-
-  const handleChipRemove = useCallback((id) => {
-    const idx = chipTodos.findIndex(c => c.id === id)
-    setChipTodos(prev => prev.filter(c => c.id !== id))
-    setQueueMeta(prev => prev.filter((_, i) => i !== idx))
-  }, [chipTodos])
-
-  const handleTransfer = useCallback(() => {
-    if (transferred) return
-    const toAdd = chipTodos.filter(c => !c.done)
-    if (toAdd.length > 0) setTodos(prev => [...prev, ...toAdd])
-    setTransferred(true)
-    setChipTodos(prev => prev.map(c => ({ ...c, done: true })))
-  }, [chipTodos, transferred, setTodos])
+  const score = calcRingScore(config.rooms)
 
   return (
     <div className={s.page}>
       <ToolHeader onBack={onBack} icon={<HausIcon />} eyebrow="Tool" title="Haushalt" />
 
-      {/* View tab strip */}
-      <div className={s.tabStrip}>
+      {/* Energie selector */}
+      <div className={s.energieStrip}>
         <button
-          className={[s.tabBtn, view === 'queue' ? s.tabBtnActive : ''].join(' ')}
-          onClick={() => setView('queue')}
-        >Queue</button>
+          className={[s.energieBtn, energie === 'normal' ? s.energieBtnActive : ''].join(' ')}
+          onClick={() => handleEnergieChange('normal')}
+        >
+          ⚡ Normal
+        </button>
         <button
-          className={[s.tabBtn, view === 'rooms' ? s.tabBtnActive : ''].join(' ')}
-          onClick={() => setView('rooms')}
-        >Räume</button>
+          className={[s.energieBtn, energie === 'low' ? s.energieBtnActive : ''].join(' ')}
+          onClick={() => handleEnergieChange('low')}
+        >
+          🪫 Low Energy
+        </button>
       </div>
 
-      {/* ── Queue View ── */}
-      {view === 'queue' && (
-        <div className={s.queueView}>
+      {/* Ring score */}
+      <RingScore score={score} />
 
-          {/* Zustand-Banner (auto-detected) */}
-          <div className={s.zustandBanner} style={{ background: zm.bg, borderColor: zm.color + '33' }}>
-            <div className={s.zustandDot} style={{ background: zm.color }} />
-            <div className={s.zustandText}>
-              <span className={s.zustandLabel} style={{ color: zm.color }}>{zm.label}</span>
-              <span className={s.zustandSub}>{zm.sub}</span>
-            </div>
-          </div>
+      {/* Room cards */}
+      <div className={s.rooms}>
+        {config.rooms.map(room => (
+          <RaumKarte
+            key={room.id}
+            room={room}
+            energie={energie}
+            open={!!openRooms[room.id]}
+            editing={!!editRooms[room.id]}
+            onToggle={() => toggleRoom(room.id)}
+            onToggleEdit={() => toggleEdit(room.id)}
+            onTaskDone={taskId => updateConfig(markTaskDone(config, taskId))}
+            onTaskReset={taskId => updateConfig(resetTaskDone(config, taskId))}
+            onUpdateTask={(taskId, patch) => updateConfig(updateTask(config, room.id, taskId, patch))}
+            onAddTask={task => updateConfig(addTask(config, room.id, task))}
+            onDeleteTask={taskId => updateConfig(deleteTask(config, room.id, taskId))}
+            onUpdateRoom={patch => updateConfig(updateRoom(config, room.id, patch))}
+            onDeleteRoom={() => {
+              updateConfig(deleteRoom(config, room.id))
+              setOpenRooms(p => { const n = { ...p }; delete n[room.id]; return n })
+              setEditRooms(p => { const n = { ...p }; delete n[room.id]; return n })
+            }}
+          />
+        ))}
 
-          {/* Energie-Selector — nur bei Ordnung sichtbar */}
-          {zustand === 'ordnung' && (
-            <div className={s.energieSection}>
-              <span className={s.energieLabel}>Energie heute…</span>
-              <div className={s.energieStrip}>
-                {Object.entries(ENERGIE_META).map(([key, meta]) => (
-                  <button
-                    key={key}
-                    className={[s.energieBtn, energie === key ? s.energieBtnActive : ''].join(' ')}
-                    style={{ '--e-color': meta.color }}
-                    onClick={() => handleEnergieChange(key)}
-                  >
-                    {meta.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+        <button className={s.addRoomBtn} onClick={handleAddRoom}>
+          + Raum hinzufügen
+        </button>
+      </div>
 
-          {/* Zeit-Schnellwahl */}
-          <div className={s.zeitSection}>
-            <span className={s.zeitLabel}>Ich hab gerade…</span>
-            <div className={s.zeitBtns}>
-              {ZEIT_OPTIONS.map(opt => (
-                <button
-                  key={opt.mins}
-                  className={[s.zeitBtn, zeitBudget === opt.mins ? s.zeitBtnActive : ''].join(' ')}
-                  onClick={() => handleZeitChange(opt.mins)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Task chip list */}
-          <div className={s.chipList}>
-            {chipTodos.length === 0 ? (
-              <div className={s.emptyState}>
-                <span className={s.emptyEmoji}>{zustand === 'ordnung' ? '✨' : '🔍'}</span>
-                <span className={s.emptyText}>
-                  {zustand === 'ordnung'
-                    ? 'Alles erledigt!'
-                    : 'Keine Tasks im Zeitrahmen — mehr Zeit wählen'}
-                </span>
-              </div>
-            ) : (
-              chipTodos.map(todo => (
-                <TodoChip
-                  key={todo.id}
-                  todo={todo}
-                  todos={chipTodos}
-                  saveTodos={setChipTodos}
-                  onToggleDone={() => handleChipToggle(todo.id)}
-                  onRemove={() => handleChipRemove(todo.id)}
-                  disableExpand={!todo.subItems?.length}
-                />
-              ))
-            )}
-          </div>
-
-          {/* Transfer button */}
-          {chipTodos.length > 0 && (
-            <button
-              className={[s.transferBtn, transferred ? s.transferBtnDone : ''].join(' ')}
-              onClick={handleTransfer}
-              disabled={transferred}
-            >
-              {transferred ? '✓ Zur Todoliste übertragen' : 'Zur Todoliste übertragen'}
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* ── Räume View ── */}
-      {view === 'rooms' && (
-        <RäumeView config={config} updateConfig={updateConfig} />
-      )}
+      {/* Setup restart */}
+      <button
+        className={s.setupLink}
+        onClick={() => updateConfig({ ...config, briefingDone: false })}
+      >
+        Setup neu starten
+      </button>
     </div>
   )
 }

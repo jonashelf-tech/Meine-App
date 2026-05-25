@@ -1,36 +1,3 @@
-.energieRow {
-  display: flex;
-  gap: 6px;
-}
-
-.energieChip {
-  flex: 1;
-  padding: 7px 6px;
-  border-radius: var(--r-lg);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  background: none;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition: all 0.14s;
-  white-space: nowrap;
-  text-align: center;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.energieChip:hover {
-  border-color: rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.energieChipActive {
-  border-color: var(--e-color);
-  color: var(--e-color);
-  background: rgba(255, 255, 255, 0.04);
-}
-
 .empty {
   font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
@@ -39,28 +6,63 @@
   padding: 8px 0;
 }
 
-.chips {
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.transferBtn {
-  width: 100%;
-  padding: 9px;
-  border-radius: var(--r);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.55);
+.rowTop {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.roomIcon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.taskText {
   font-family: 'Outfit', sans-serif;
   font-size: 0.78rem;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+  flex: 1;
+}
+
+.doneBtn {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 5px;
+  color: var(--emerald);
+  font-size: 0.72rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.14s;
+  padding: 3px 7px;
+  flex-shrink: 0;
+  transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.transferBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.85);
+.doneBtn:hover {
+  background: rgba(16, 185, 129, 0.22);
+}
+
+.segBar {
+  display: flex;
+  gap: 2px;
+}
+
+.seg {
+  flex: 1;
+  min-width: 0;
+  height: 5px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.09);
 }

@@ -36,6 +36,7 @@ export const SK = {
   activeTools:    `${PREFIX}app_active_tools`,
   birthdays:      `${PREFIX}birthdays`,
   haushalt:       `${PREFIX}haushalt_v1`,
+  haushaltEnergie:`${PREFIX}haushalt_energie`,
   accentColor:    `${PREFIX}app_accent`,
   toolColors:     `${PREFIX}app_tool_colors`,
   visStart:       `${PREFIX}view_vis_start`,

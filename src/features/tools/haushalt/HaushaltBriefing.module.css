@@ -1,0 +1,404 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 16px 0 40px;
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Progress dots ── */
+.progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 0 20px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.2s;
+}
+
+.dotActive {
+  background: var(--primary);
+}
+
+/* ── Body ── */
+.body {
+  flex: 1;
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.welcomeIcon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.stepTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  text-align: center;
+}
+
+.stepText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.87rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+
+.stepHint {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--r-sm);
+}
+
+/* ── Example card (step 1) ── */
+.exampleCard {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+}
+
+.exampleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.exampleLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.exampleDue {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.exampleBar {
+  display: flex;
+  gap: 3px;
+}
+
+.exampleSeg {
+  flex: 1;
+  height: 7px;
+  border-radius: 3px;
+}
+
+.lowBadge {
+  font-size: 0.72rem;
+  margin-left: 4px;
+}
+
+/* ── Step 2: Room list ── */
+.roomList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.roomChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.roomChipIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.roomChipName {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.roomChipCount {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.removeBtn:hover {
+  color: var(--rose);
+}
+
+.addRoomRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.addInput {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  outline: none;
+}
+
+.addInput:focus {
+  border-color: var(--primary);
+}
+
+.addIconInput {
+  width: 44px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px 8px;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--text);
+  outline: none;
+}
+
+.addIconInput:focus {
+  border-color: var(--primary);
+}
+
+.addBtn {
+  background: var(--primary);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 40px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Step 3: Checklist ── */
+.checkGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checkGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-top: 4px;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.checkRow:hover {
+  border-color: var(--primary);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.checkboxChecked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  flex: 1;
+}
+
+.checkFreq {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.hiddenCheck {
+  display: none;
+}
+
+.emptyRoom {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  padding: 6px 0;
+  font-style: italic;
+}
+
+.emptyState {
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  padding: 24px;
+}
+
+/* ── Step 4: Distribution ── */
+.distOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.distBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px;
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.distBtnActive {
+  border-color: var(--primary);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.distIcon {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.distLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.distSub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* ── Navigation ── */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0 0;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.87rem;
+  cursor: pointer;
+  padding: 10px 0;
+}
+
+.nextBtn {
+  background: var(--primary);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 11px 24px;
+  cursor: pointer;
+}
+
+.finishBtn {
+  background: var(--emerald);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 11px 24px;
+  cursor: pointer;
+}
