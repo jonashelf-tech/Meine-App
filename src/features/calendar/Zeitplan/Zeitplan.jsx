@@ -228,10 +228,10 @@ export default function Zeitplan({
 
       {/* Top expand row */}
       <div className={s.expandRow}>
-        <button className={[s.xBtn, s.xBtnAdd].join(' ')} onClick={() => onExpandUp?.()}>+ früher</button>
         {visibleStart < visibleEnd - 1 && (
           <button className={[s.xBtn, s.xBtnRm].join(' ')} onClick={() => onRemoveHour?.(visibleStart)}>− früh</button>
         )}
+        <button className={[s.xBtn, s.xBtnAdd].join(' ')} onClick={() => onExpandUp?.()}>+ früher</button>
       </div>
 
       {/* Sections: normal grids + blocker cards */}

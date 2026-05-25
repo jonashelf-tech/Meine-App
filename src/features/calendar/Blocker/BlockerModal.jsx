@@ -1,10 +1,54 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createBlocker, formatHour } from './blockerUtils'
 import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
 import { NEON } from '../../../utils'
+import RepeatPicker from '../../../components/RepeatPicker/RepeatPicker'
 import s from './BlockerModal.module.css'
 
 const HOUR_OPTIONS = Array.from({ length: 48 }, (_, i) => i * 0.5)
+
+function TimeSelect({ value, options, onChange }) {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef(null)
+  const listRef = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const active = listRef.current?.querySelector('[data-active]')
+    active?.scrollIntoView({ block: 'nearest' })
+    const handler = (e) => { if (!wrapRef.current?.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  return (
+    <div ref={wrapRef} className={s.dropdown}>
+      <button
+        type="button"
+        className={s.dropTrigger}
+        onClick={() => setOpen(o => !o)}
+      >
+        {formatHour(value)}
+        <span className={s.dropArrow}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div ref={listRef} className={s.dropList}>
+          {options.map(h => (
+            <button
+              key={h}
+              type="button"
+              className={[s.dropItem, h === value ? s.dropItemActive : ''].join(' ')}
+              {...(h === value ? { 'data-active': '' } : {})}
+              onClick={() => { onChange(h); setOpen(false) }}
+            >
+              {formatHour(h)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 const BLOCKER_COLORS = [
   '#3b82f6', '#8B5CF6', '#10b981', '#f59e0b',
@@ -12,49 +56,31 @@ const BLOCKER_COLORS = [
   ...NEON.slice(0, 4),
 ]
 
-const REPEAT_OPTS = [
-  { key: null,       label: 'Nie' },
-  { key: 'daily',    label: 'Täglich' },
-  { key: 'workdays', label: 'Werktags' },
-  { key: 'weekly',   label: 'Wöchentlich' },
-]
-
-const WEEKDAYS = [
-  { dow: 1, label: 'Mo' },
-  { dow: 2, label: 'Di' },
-  { dow: 3, label: 'Mi' },
-  { dow: 4, label: 'Do' },
-  { dow: 5, label: 'Fr' },
-  { dow: 6, label: 'Sa' },
-  { dow: 0, label: 'So' },
-]
+const initRepeat = (r) => {
+  if (!r) return null
+  if (r.type === 'workdays') return { type: 'daily' } // backwards compat
+  if (r.type === 'weekly')   return { type: 'weekly', days: r.days ?? [] }
+  if (r.type === 'custom')   return { type: 'custom', every: r.every ?? 2, unit: r.unit ?? 'weeks' }
+  return { type: r.type }
+}
 
 export default function BlockerModal({ blocker = null, date, onSave, onDelete, onClose }) {
   const keyboardOffset = useKeyboardOffset()
   const isNew = !blocker
 
-  const [text,       setText]       = useState(blocker?.text      ?? '')
-  const [startHour,  setStartHour]  = useState(blocker?.startHour ?? 9)
-  const [endHour,    setEndHour]    = useState(blocker?.endHour   ?? 17)
-  const [color,      setColor]      = useState(blocker?.color     ?? '#3b82f6')
-  const [locked,     setLocked]     = useState(blocker?.locked    ?? false)
-  const [repeatType, setRepeatType] = useState(blocker?.repeat?.type ?? null)
-  const [repeatDays, setRepeatDays] = useState(blocker?.repeat?.days ?? [])
-
-  const toggleDay = (dow) => {
-    setRepeatDays(prev =>
-      prev.includes(dow) ? prev.filter(d => d !== dow) : [...prev, dow]
-    )
-  }
+  const [text,       setText]      = useState(blocker?.text      ?? '')
+  const [startHour,  setStartHour] = useState(blocker?.startHour ?? 9)
+  const [endHour,    setEndHour]   = useState(blocker?.endHour   ?? 17)
+  const [color,      setColor]     = useState(blocker?.color     ?? '#3b82f6')
+  const [locked,     setLocked]    = useState(blocker?.locked    ?? false)
+  const [repeat, setRepeat] = useState(() => initRepeat(blocker?.repeat))
 
   const handleSave = () => {
     if (!text.trim()) return
-    const repeat = repeatType
-      ? { type: repeatType, days: repeatType === 'weekly' ? repeatDays : [] }
-      : null
+    const repeatOut = repeat ? { ...repeat } : null
     const data = isNew
-      ? createBlocker({ text: text.trim(), startHour, endHour, color, locked, date, repeat })
-      : { ...blocker, text: text.trim(), startHour, endHour, color, locked, repeat }
+      ? createBlocker({ text: text.trim(), startHour, endHour, color, locked, date, repeat: repeatOut })
+      : { ...blocker, text: text.trim(), startHour, endHour, color, locked, repeat: repeatOut }
     onSave(data)
     onClose()
   }
@@ -85,25 +111,17 @@ export default function BlockerModal({ blocker = null, date, onSave, onDelete, o
         <div className={s.row}>
           <span className={s.rowLabel}>Zeitraum</span>
           <div className={s.timeRow}>
-            <select
-              className={s.timeSelect}
+            <TimeSelect
               value={startHour}
-              onChange={e => setStartHour(Number(e.target.value))}
-            >
-              {HOUR_OPTIONS.filter(h => h < endHour).map(h => (
-                <option key={h} value={h}>{formatHour(h)}</option>
-              ))}
-            </select>
+              options={HOUR_OPTIONS.filter(h => h < endHour)}
+              onChange={setStartHour}
+            />
             <span className={s.timeSep}>→</span>
-            <select
-              className={s.timeSelect}
+            <TimeSelect
               value={endHour}
-              onChange={e => setEndHour(Number(e.target.value))}
-            >
-              {HOUR_OPTIONS.filter(h => h > startHour).map(h => (
-                <option key={h} value={h}>{formatHour(h)}</option>
-              ))}
-            </select>
+              options={HOUR_OPTIONS.filter(h => h > startHour)}
+              onChange={setEndHour}
+            />
           </div>
         </div>
 
@@ -144,30 +162,7 @@ export default function BlockerModal({ blocker = null, date, onSave, onDelete, o
         {/* Wiederholung */}
         <div className={s.row}>
           <span className={s.rowLabel}>Wiederholung</span>
-          <div className={s.chips}>
-            {REPEAT_OPTS.map(opt => (
-              <button
-                key={String(opt.key)}
-                className={[s.chip, repeatType === opt.key ? s.chipActive : ''].join(' ')}
-                onClick={() => setRepeatType(opt.key)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-          {repeatType === 'weekly' && (
-            <div className={s.weekdays}>
-              {WEEKDAYS.map(wd => (
-                <button
-                  key={wd.dow}
-                  className={[s.dayBtn, repeatDays.includes(wd.dow) ? s.dayBtnActive : ''].join(' ')}
-                  onClick={() => toggleDay(wd.dow)}
-                >
-                  {wd.label}
-                </button>
-              ))}
-            </div>
-          )}
+          <RepeatPicker value={repeat} onChange={setRepeat} />
         </div>
 
         {/* Aktionen */}

@@ -3,6 +3,7 @@ import { useAppStore } from '../../store'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
 import { parseHHMM, minutesToSk, NEON } from '../../utils'
+import RepeatPicker from '../RepeatPicker/RepeatPicker'
 import s from './TodoModal.module.css'
 
 const DUR_PRESETS = [
@@ -101,6 +102,7 @@ export default function TodoModal({ onClose, existingTodo = null }) {
   const [category, setCategory] = useState(existingTodo?.category ?? null)
   const [date,     setDate]     = useState(existingTodo?.date     ?? '')
   const [time,     setTime]     = useState(existingTodo?.time     ?? '')
+  const [repeat,   setRepeat]   = useState(existingTodo?.repeat   ?? null)
   const [subItems, setSubItems] = useState(() =>
     (existingTodo?.subItems ?? []).map(si => ({ ...si }))
   )
@@ -162,6 +164,7 @@ export default function TodoModal({ onClose, existingTodo = null }) {
         color,
         duration:              duration || null,
         category:              category || null,
+        repeat:                repeat || null,
         subItems,
         date:                  date || null,
         time:                  time || null,
@@ -211,6 +214,7 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           duration: duration || 30,
           date, time,
           category: category || null,
+          repeat: repeat || null,
           subItems,
           awaitingClockResponse: true,
         })
@@ -233,6 +237,7 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           duration: duration || null,
           date: date || null,
           category: category || null,
+          repeat: repeat || null,
           subItems,
         })])
       }
@@ -328,6 +333,14 @@ export default function TodoModal({ onClose, existingTodo = null }) {
               onChange={handleDurFree}
             />
             <span className={s.durUnit}>min</span>
+          </div>
+        </div>
+
+        {/* Wiederholung */}
+        <div className={s.row} style={{ alignItems: 'flex-start' }}>
+          <span className={s.rowLabel} style={{ marginTop: 6 }}>Wiederholen</span>
+          <div style={{ flex: 1 }}>
+            <RepeatPicker value={repeat} onChange={setRepeat} />
           </div>
         </div>
 

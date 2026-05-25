@@ -31,7 +31,7 @@
   color: var(--text-dim);
 }
 .iconBtn {
-  background: rgba(255,255,255,0.05);
+  background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 8px;
@@ -135,7 +135,7 @@
   flex: 1;
 }
 .stepBtn {
-  background: rgba(255,255,255,0.05);
+  background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: 6px;
   width: 28px;
@@ -257,7 +257,7 @@
 .tag {
   font-family: 'Outfit', sans-serif;
   font-size: 0.65rem;
-  background: rgba(255,255,255,0.06);
+  background: var(--border-dim);
   border-radius: 50px;
   padding: 2px 7px;
   color: var(--text-dim);
@@ -343,7 +343,7 @@
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
-.einkaufAlt { background: rgba(255,255,255,0.02); }
+.einkaufAlt { background: var(--surface-low); }
 .einkaufChecked { opacity: 0.45; text-decoration: line-through; }
 .einkaufDeleted { opacity: 0.25; }
 .itemName { font-family: 'Outfit', sans-serif; font-size: 0.84rem; color: var(--text); }
@@ -430,7 +430,7 @@
   padding: 7px 10px;
   border-radius: 4px;
 }
-.ingAlt { background: rgba(255,255,255,0.03); }
+.ingAlt { background: var(--surface-low); }
 .ingAmount { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--tool-color, var(--cyan)); }
 .nutritionGrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
 .nutCell {

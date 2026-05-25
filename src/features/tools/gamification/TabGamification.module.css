@@ -57,7 +57,7 @@
 .progressTrack {
   height: 6px;
   border-radius: 3px;
-  background: rgba(255,255,255,0.08);
+  background: var(--border-dim);
   overflow: hidden;
 }
 .progressFill {
@@ -93,7 +93,7 @@
   transition: all 0.15s;
 }
 .catBtn:hover {
-  background: rgba(255,255,255,0.06);
+  background: var(--border-dim);
   border-color: var(--cat-color);
   transform: scale(1.01);
 }
@@ -152,7 +152,7 @@
   flex: 1;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255,255,255,0.08);
+  background: var(--border-dim);
   overflow: hidden;
 }
 .bdFill {

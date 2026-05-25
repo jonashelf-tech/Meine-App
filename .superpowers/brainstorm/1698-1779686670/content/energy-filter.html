@@ -1,0 +1,139 @@
+<h2>Energie-Filter in der Übersicht</h2>
+<p class="subtitle">Normal = alles aktiv. Low Energy = nur markierte Tasks leuchten, Rest gedimmt.</p>
+
+<div class="split">
+
+  <!-- Normal Mode -->
+  <div class="mockup">
+    <div class="mockup-header">⚡ Normal</div>
+    <div class="mockup-body" style="padding:10px;display:flex;flex-direction:column;gap:8px;font-family:system-ui">
+
+      <!-- Energie toggle -->
+      <div style="display:flex;gap:6px;margin-bottom:2px">
+        <div style="flex:1;padding:6px;background:#8B5CF6;border-radius:8px;text-align:center;font-size:0.68rem;font-weight:700;color:#fff">⚡ Normal</div>
+        <div style="flex:1;padding:6px;background:rgba(255,255,255,0.06);border-radius:8px;text-align:center;font-size:0.68rem;color:rgba(255,255,255,0.35)">🪫 Low Energy</div>
+      </div>
+
+      <!-- Score -->
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,0.04);border-radius:10px">
+        <div style="width:40px;height:40px;border-radius:50%;border:3px solid #10B981;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="font-size:0.65rem;font-weight:800;color:#10B981">72%</span>
+        </div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.8)">Wohnung im Griff</div>
+      </div>
+
+      <!-- Bad — expanded, alle Tasks normal aktiv -->
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.06)">
+          <span style="font-size:0.9rem">🚿</span>
+          <span style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.9)">Bad</span>
+          <span style="margin-left:auto;font-size:0.6rem;color:#fb7185">● 2 überfällig</span>
+        </div>
+        <div style="padding:8px 10px;display:flex;flex-direction:column;gap:7px">
+          <!-- WC — überfällig, low energy -->
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:0.68rem;color:rgba(255,255,255,0.85)">WC reinigen <span style="font-size:0.58rem;color:#8B5CF6;background:rgba(139,92,246,0.15);padding:1px 5px;border-radius:4px">🪫</span></span>
+              <div style="display:flex;gap:4px">
+                <span style="font-size:0.62rem;color:#fb7185">überfällig</span>
+                <button style="font-size:0.6rem;background:rgba(16,185,129,0.15);border:none;color:#10B981;border-radius:4px;padding:1px 5px;cursor:pointer">✓</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:2px">
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+            </div>
+          </div>
+          <!-- Dusche — überfällig, normal -->
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:0.68rem;color:rgba(255,255,255,0.85)">Dusche reinigen</span>
+              <div style="display:flex;gap:4px">
+                <span style="font-size:0.62rem;color:#fb7185">überfällig</span>
+                <button style="font-size:0.6rem;background:rgba(16,185,129,0.15);border:none;color:#10B981;border-radius:4px;padding:1px 5px;cursor:pointer">✓</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:2px">
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Low Energy Mode -->
+  <div class="mockup">
+    <div class="mockup-header">🪫 Low Energy</div>
+    <div class="mockup-body" style="padding:10px;display:flex;flex-direction:column;gap:8px;font-family:system-ui">
+
+      <!-- Energie toggle -->
+      <div style="display:flex;gap:6px;margin-bottom:2px">
+        <div style="flex:1;padding:6px;background:rgba(255,255,255,0.06);border-radius:8px;text-align:center;font-size:0.68rem;color:rgba(255,255,255,0.35)">⚡ Normal</div>
+        <div style="flex:1;padding:6px;background:#8B5CF6;border-radius:8px;text-align:center;font-size:0.68rem;font-weight:700;color:#fff">🪫 Low Energy</div>
+      </div>
+
+      <!-- Score -->
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,0.04);border-radius:10px">
+        <div style="width:40px;height:40px;border-radius:50%;border:3px solid #10B981;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="font-size:0.65rem;font-weight:800;color:#10B981">72%</span>
+        </div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.8)">Wohnung im Griff</div>
+      </div>
+
+      <!-- Bad — Low Energy aktiv, Dusche gedimmt -->
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.06)">
+          <span style="font-size:0.9rem">🚿</span>
+          <span style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.9)">Bad</span>
+          <span style="margin-left:auto;font-size:0.6rem;color:#fb7185">● 2 überfällig</span>
+        </div>
+        <div style="padding:8px 10px;display:flex;flex-direction:column;gap:7px">
+          <!-- WC — low energy → AKTIV, leuchtet -->
+          <div style="display:flex;flex-direction:column;gap:3px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:6px 8px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:0.68rem;color:rgba(255,255,255,0.95);font-weight:600">WC reinigen <span style="font-size:0.58rem;color:#8B5CF6;background:rgba(139,92,246,0.2);padding:1px 5px;border-radius:4px">🪫</span></span>
+              <div style="display:flex;gap:4px">
+                <span style="font-size:0.62rem;color:#fb7185">überfällig</span>
+                <button style="font-size:0.6rem;background:rgba(16,185,129,0.2);border:none;color:#10B981;border-radius:4px;padding:1px 5px;cursor:pointer">✓</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:2px">
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185;box-shadow:0 0 4px rgba(251,113,133,0.5)"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185;box-shadow:0 0 4px rgba(251,113,133,0.5)"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185;box-shadow:0 0 4px rgba(251,113,133,0.5)"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185;box-shadow:0 0 4px rgba(251,113,133,0.5)"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185;box-shadow:0 0 4px rgba(251,113,133,0.5)"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185;box-shadow:0 0 4px rgba(251,113,133,0.5)"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185;box-shadow:0 0 4px rgba(251,113,133,0.5)"></div>
+            </div>
+          </div>
+          <!-- Dusche — NICHT low energy → gedimmt -->
+          <div style="display:flex;flex-direction:column;gap:3px;opacity:0.3">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:0.68rem;color:rgba(255,255,255,0.85)">Dusche reinigen</span>
+              <span style="font-size:0.62rem;color:#fb7185">überfällig</span>
+            </div>
+            <div style="display:flex;gap:2px">
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+              <div style="flex:1;height:6px;border-radius:2px;background:#fb7185"></div>
+            </div>
+          </div>
+          <!-- Hinweis auf gedimmte Tasks -->
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);padding-top:2px">1 Task ausgeblendet — Normal für alle</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

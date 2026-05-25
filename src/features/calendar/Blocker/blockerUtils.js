@@ -29,8 +29,21 @@ export function getBlockersForDate(allBlockers, dateStr) {
     if (b.endDate && dateStr >= b.endDate) return false
     if (!b.repeat) return b.date === dateStr
     if (b.repeat.type === 'daily')    return true
-    if (b.repeat.type === 'workdays') return dow >= 1 && dow <= 5
+    if (b.repeat.type === 'workdays') return dow >= 1 && dow <= 5 // backwards compat
     if (b.repeat.type === 'weekly')   return b.repeat.days?.includes(dow) ?? false
+    if (b.repeat.type === 'monthly') {
+      if (!b.date) return true
+      return d.getDate() === new Date(b.date + 'T00:00:00').getDate()
+    }
+    if (b.repeat.type === 'custom') {
+      if (!b.date) return true
+      const anchor = new Date(b.date + 'T00:00:00')
+      const diff = Math.floor((d - anchor) / 86400000)
+      if (diff < 0) return false
+      const { every: ev = 1, unit = 'days' } = b.repeat
+      const step = unit === 'months' ? ev * 30 : unit === 'weeks' ? ev * 7 : ev
+      return diff % step === 0
+    }
     return false
   })
 }

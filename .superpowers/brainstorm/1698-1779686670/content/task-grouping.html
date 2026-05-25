@@ -1,0 +1,92 @@
+<h2>Tasks im Tagesplaner — wie sollen sie erscheinen?</h2>
+<p class="subtitle">Wenn du Tasks aus der Haushalt-Queue in den Tagesplaner überträgst — als Einzelaufgaben oder als Block?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="single" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Einzelne Tasks</h3>
+      <p>Jede Putzaufgabe erscheint als eigener Todo-Chip. Flexibel, einzeln abhakbar, einzeln verschiebbar.</p>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(139,92,246,0.6);flex-shrink:0"></div>
+          <div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.85);font-weight:600">WC reinigen</div>
+            <div style="font-size:0.62rem;color:rgba(255,255,255,0.35)">Bad · 10 min</div>
+          </div>
+        </div>
+        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(139,92,246,0.6);flex-shrink:0"></div>
+          <div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.85);font-weight:600">Abwasch</div>
+            <div style="font-size:0.62rem;color:rgba(255,255,255,0.35)">Küche · 15 min</div>
+          </div>
+        </div>
+        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px">
+          <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(139,92,246,0.6);flex-shrink:0"></div>
+          <div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.85);font-weight:600">Staubsaugen Wohnzimmer</div>
+            <div style="font-size:0.62rem;color:rgba(255,255,255,0.35)">Wohnzimmer · 15 min</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="block" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>1 Block mit Sub-Todos</h3>
+      <p>Alle fälligen Tasks kommen als ein Haushalt-Block mit Sub-Todos. Ein Ziel, viele Häkchen. Gesamtdauer berechnet sich automatisch.</p>
+      <div style="margin-top:12px">
+        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:10px;overflow:hidden">
+          <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(139,92,246,0.15)">
+            <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(139,92,246,0.6);flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:0.75rem;color:rgba(255,255,255,0.85);font-weight:600">🏠 Haushalt heute</div>
+              <div style="font-size:0.62rem;color:rgba(255,255,255,0.35)">3 Tasks · 40 min gesamt</div>
+            </div>
+            <span style="font-size:0.65rem;color:rgba(255,255,255,0.25)">▾</span>
+          </div>
+          <div style="padding:6px 10px 8px;display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;align-items:center;gap:7px">
+              <div style="width:11px;height:11px;border-radius:3px;border:1.5px solid rgba(255,255,255,0.2);flex-shrink:0"></div>
+              <span style="font-size:0.68rem;color:rgba(255,255,255,0.6)">WC reinigen · Bad · 10 min</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px">
+              <div style="width:11px;height:11px;border-radius:3px;border:1.5px solid rgba(255,255,255,0.2);flex-shrink:0"></div>
+              <span style="font-size:0.68rem;color:rgba(255,255,255,0.6)">Abwasch · Küche · 15 min</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px">
+              <div style="width:11px;height:11px;border-radius:3px;border:1.5px solid rgba(255,255,255,0.2);flex-shrink:0"></div>
+              <span style="font-size:0.68rem;color:rgba(255,255,255,0.6)">Staubsaugen · Wohnzimmer · 15 min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="both" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Wählbar beim Übertragen</h3>
+      <p>Beim "In Tagesplaner"-Button kurz fragen: Als Block oder einzeln? Einmalige Auswahl, danach gemerkt.</p>
+      <div style="margin-top:12px;background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px">
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:8px">In Tagesplaner übertragen als…</div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;padding:7px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.35);border-radius:8px;text-align:center">
+            <div style="font-size:0.68rem;font-weight:700;color:#8B5CF6">1 Block</div>
+            <div style="font-size:0.58rem;color:rgba(255,255,255,0.35);margin-top:2px">mit Sub-Todos</div>
+          </div>
+          <div style="flex:1;padding:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;text-align:center">
+            <div style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.6)">Einzeln</div>
+            <div style="font-size:0.58rem;color:rgba(255,255,255,0.35);margin-top:2px">separate Chips</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

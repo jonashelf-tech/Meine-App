@@ -6,55 +6,25 @@ import {
   loadReminderItems, saveReminderItems,
 } from './reminderData'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import RepeatPicker from '../../../components/RepeatPicker/RepeatPicker'
 import s from './TabReminder.module.css'
 
-// ─── IntervalPicker ───────────────────────────────────────
-function IntervalPicker({ interval, onChange }) {
+// Konvertierung zwischen Reminder-Intervall und RepeatPicker-Format
+function intervalToRepeat(interval) {
+  if (!interval) return null
   const { every, unit } = interval
-  const isPreset = every === 1 && (unit === 'days' || unit === 'weeks' || unit === 'months')
-  const [custom, setCustom] = useState(!isPreset)
+  if (every === 1 && unit === 'days')   return { type: 'daily' }
+  if (every === 1 && unit === 'weeks')  return { type: 'weekly' }
+  if (every === 1 && unit === 'months') return { type: 'monthly' }
+  return { type: 'custom', every, unit }
+}
 
-  const PRESETS = [
-    { label: 'Täglich',       every: 1, unit: 'days'   },
-    { label: 'Wöchentlich',   every: 1, unit: 'weeks'  },
-    { label: 'Monatlich',     every: 1, unit: 'months' },
-  ]
-
-  return (
-    <div className={s.intervalWrap}>
-      <div className={s.presetRow}>
-        {PRESETS.map(p => (
-          <button
-            key={p.label}
-            className={[s.presetBtn, !custom && every === p.every && unit === p.unit ? s.presetBtnActive : ''].join(' ')}
-            onClick={() => { setCustom(false); onChange({ every: p.every, unit: p.unit }) }}
-          >{p.label}</button>
-        ))}
-        <button
-          className={[s.presetBtn, custom ? s.presetBtnActive : ''].join(' ')}
-          onClick={() => setCustom(true)}
-        >Eigener</button>
-      </div>
-      {custom && (
-        <div className={s.customRow}>
-          <span className={s.customLabel}>Alle</span>
-          <input
-            type="number" min={1} max={999} className={s.customInput}
-            value={every}
-            onChange={e => onChange({ every: Math.max(1, parseInt(e.target.value) || 1), unit })}
-          />
-          <select
-            className={s.customSelect} value={unit}
-            onChange={e => onChange({ every, unit: e.target.value })}
-          >
-            <option value="days">Tage</option>
-            <option value="weeks">Wochen</option>
-            <option value="months">Monate</option>
-          </select>
-        </div>
-      )}
-    </div>
-  )
+function repeatToInterval(repeat) {
+  if (!repeat) return null
+  if (repeat.type === 'daily')   return { every: 1, unit: 'days' }
+  if (repeat.type === 'weekly')  return { every: 1, unit: 'weeks' }
+  if (repeat.type === 'monthly') return { every: 1, unit: 'months' }
+  return { every: repeat.every ?? 2, unit: repeat.unit ?? 'weeks' }
 }
 
 // ─── ItemRow ──────────────────────────────────────────────
@@ -87,9 +57,9 @@ function ItemRow({ item, onUpdate, onDelete }) {
       {open && (
         <div className={s.itemEdit}>
           <span className={s.editLabel}>Intervall</span>
-          <IntervalPicker
-            interval={item.interval}
-            onChange={interval => onUpdate({ ...item, interval })}
+          <RepeatPicker
+            value={intervalToRepeat(item.interval)}
+            onChange={r => onUpdate({ ...item, interval: repeatToInterval(r) })}
           />
           <span className={s.editLabel}>Uhrzeit <span className={s.optional}>(optional)</span></span>
           <input
@@ -153,7 +123,7 @@ function AddForm({ onAdd, onCancel }) {
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
         />
       </div>
-      <IntervalPicker interval={interval} onChange={setInterval} />
+      <RepeatPicker value={intervalToRepeat(interval)} onChange={r => setInterval(repeatToInterval(r) ?? { every: 1, unit: 'days' })} />
       <div className={s.addFormRow}>
         <input
           type="time" className={s.editInput} value={time}

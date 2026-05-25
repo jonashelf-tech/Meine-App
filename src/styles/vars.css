@@ -22,6 +22,12 @@
   --text:    rgba(255, 255, 255, 0.92);
   --text-dim: rgba(255, 255, 255, 0.52);   /* war 0.38 — Accessibility-Fix */
 
+  /* ─── Adaptive (wechseln mit Light/Dark) ────────────── */
+  --surface-low: rgba(255,255,255,0.035);
+  --border-dim:  rgba(255,255,255,0.06);
+  --text-ghost:  rgba(255,255,255,0.20);
+  --text-faint:  rgba(255,255,255,0.32);
+
   /* ─── Border Radius ──────────────────────────────────── */
   --r:       14px;
   --r-sm:    8px;
@@ -125,6 +131,10 @@ select { color-scheme: dark; }
   --shadow-sm: 0 2px 8px  rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.16);
+  --surface-low: rgba(0,0,0,0.04);
+  --border-dim:  rgba(0,0,0,0.07);
+  --text-ghost:  rgba(0,0,0,0.22);
+  --text-faint:  rgba(0,0,0,0.38);
 }
 [data-theme="light"] select { color-scheme: light; }
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }
@@ -141,6 +151,10 @@ select { color-scheme: dark; }
     --shadow-sm: 0 2px 8px  rgba(0, 0, 0, 0.08);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
     --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.16);
+    --surface-low: rgba(0,0,0,0.04);
+    --border-dim:  rgba(0,0,0,0.07);
+    --text-ghost:  rgba(0,0,0,0.22);
+    --text-faint:  rgba(0,0,0,0.38);
   }
   [data-theme="system"] select { color-scheme: light; }
   [data-theme="system"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }

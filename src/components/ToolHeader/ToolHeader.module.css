@@ -11,10 +11,10 @@
   gap: 5px;
   padding: 5px 10px 5px 8px;
   border-radius: 20px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: var(--border-dim);
+  border: 1px solid var(--border);
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.5);
+  color: var(--text-dim);
   font-family: 'Outfit', sans-serif;
   white-space: nowrap;
   flex-shrink: 0;
@@ -62,7 +62,7 @@
 .name {
   font-size: 1.0rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.92);
+  color: var(--text);
   line-height: 1.1;
   font-family: 'Outfit', sans-serif;
 }

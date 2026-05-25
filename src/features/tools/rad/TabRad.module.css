@@ -54,8 +54,8 @@
 
 .filterBtn {
   padding: 6px 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
   border-radius: 50px;
   color: var(--text-dim);
   font-family: 'Outfit', sans-serif;
@@ -79,8 +79,8 @@
 
 /* ─── Manual input ────────────────────────────────────────── */
 .manualWrap {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
   border-radius: var(--r);
   padding: 12px;
   display: flex;
@@ -98,8 +98,8 @@
 .manInput {
   flex: 1;
   min-width: 120px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
@@ -116,8 +116,8 @@
 
 .prioBtn {
   padding: 6px 8px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text-dim);
   font-family: 'Outfit', sans-serif;
@@ -127,7 +127,7 @@
   transition: all 0.15s;
 }
 .prioBtnActive {
-  background: rgba(255,255,255,0.06);
+  background: var(--border-dim);
 }
 
 .manAddBtn {
@@ -152,7 +152,7 @@
 .manChip {
   display: flex;
   align-items: center;
-  background: rgba(255,255,255,0.03);
+  background: var(--surface-low);
   border: 1px solid;
   border-radius: var(--r-sm);
   overflow: hidden;
@@ -308,14 +308,14 @@
   font-size: 0.74rem;
   font-weight: 700;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.28);
+  border: 1px solid var(--border);
+  color: var(--text-faint);
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.2s;
   text-transform: uppercase;
 }
-.btnSkip:hover { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.6); }
+.btnSkip:hover { border-color: var(--text-faint); color: var(--text-dim); }
 
 /* ─── Confetti ────────────────────────────────────────────── */
 .confettiWrap {

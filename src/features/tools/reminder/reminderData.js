@@ -15,7 +15,9 @@ export const CURATED = [
 ]
 
 // ─── Helpers ──────────────────────────────────────────────
-export function intervalLabel({ every, unit }) {
+export function intervalLabel(interval) {
+  if (!interval) return 'Nie'
+  const { every, unit } = interval
   if (every === 1 && unit === 'days')   return 'Täglich'
   if (every === 1 && unit === 'weeks')  return 'Wöchentlich'
   if (every === 1 && unit === 'months') return 'Monatlich'
@@ -24,7 +26,7 @@ export function intervalLabel({ every, unit }) {
 }
 
 export function isDueToday(item) {
-  if (!item.active) return false
+  if (!item.active || !item.interval) return false
   if (!item.lastAdded) return true
   const diffDays = Math.floor((Date.now() - new Date(item.lastAdded)) / 86400000)
   const { every, unit } = item.interval

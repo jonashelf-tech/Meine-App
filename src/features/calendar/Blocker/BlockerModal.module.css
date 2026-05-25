@@ -84,8 +84,13 @@
   gap: 10px;
 }
 
-.timeSelect {
+.dropdown {
   flex: 1;
+  position: relative;
+}
+
+.dropTrigger {
+  width: 100%;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
@@ -93,14 +98,56 @@
   font-family: 'Orbitron', monospace;
   font-size: 0.9rem;
   padding: 9px 10px;
-  outline: none;
   cursor: pointer;
-  appearance: none;
-  text-align: center;
-  color-scheme: dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.timeSelect:focus { border-color: var(--primary); }
+.dropTrigger:focus { border-color: var(--primary); outline: none; }
+
+.dropArrow {
+  font-size: 0.55rem;
+  opacity: 0.45;
+}
+
+.dropList {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: rgba(12,12,26,0.98);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  overflow-y: auto;
+  max-height: 220px;
+  z-index: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.dropItem {
+  width: 100%;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dropItem:hover { background: rgba(255,255,255,0.06); }
+
+.dropItemActive {
+  color: var(--primary);
+  background: rgba(139,92,246,0.12);
+}
 
 .timeSep {
   color: rgba(255,255,255,0.3);

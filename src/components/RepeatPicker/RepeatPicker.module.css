@@ -11,10 +11,10 @@
 }
 
 .chip {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  color: rgba(255,255,255,0.55);
+  color: var(--text-dim);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.78rem;
@@ -40,14 +40,14 @@
 .customLabel {
   font-family: 'Outfit', sans-serif;
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--text-dim);
   flex-shrink: 0;
 }
 
 .customNum {
   width: 56px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
   font-family: 'Orbitron', monospace;
@@ -64,4 +64,31 @@
 .unitChips {
   display: flex;
   gap: 5px;
+}
+
+.weekdays {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.dayBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dayBtnActive {
+  background: rgba(139,92,246,0.2);
+  border-color: var(--primary);
+  color: var(--primary);
 }
