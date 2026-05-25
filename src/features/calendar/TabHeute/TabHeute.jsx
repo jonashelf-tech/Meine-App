@@ -17,7 +17,7 @@ import { useTimeEvents } from './useTimeEvents'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, blockers, setBlockers } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers } = useAppStore()
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
@@ -149,8 +149,9 @@ export default function TabHeute() {
 
   // ─── Kalender-Link ────────────────────────────────────────
   const handleDoneCalendar = useCallback(() => {
+    setCalendarDate(viewDate)
     setCurrentTab(1)
-  }, [setCurrentTab])
+  }, [setCurrentTab, setCalendarDate, viewDate])
 
   // ─── Blocker CRUD ──────────────────────────────────────────
   const handleCreateBlocker = useCallback(() => {
@@ -245,7 +246,7 @@ export default function TabHeute() {
       <DayNav
         date={viewDate}
         onChange={setViewDate}
-        onCalendarOpen={() => setCurrentTab(1)}
+        onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
       />
       <Zeitplan
         slots={todaySlots}
