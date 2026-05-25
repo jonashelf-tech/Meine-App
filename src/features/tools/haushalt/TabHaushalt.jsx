@@ -33,6 +33,31 @@ const CheckIcon = () => (
   </svg>
 )
 
+const BoltIcon = () => (
+  <svg width={13} height={13} viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </svg>
+)
+
+const BatteryLowIcon = () => (
+  <svg width={16} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="16" height="10" rx="2"/>
+    <line x1="22" y1="11" x2="22" y2="13"/>
+    <line x1="6" y1="12" x2="8" y2="12" strokeWidth={3}/>
+  </svg>
+)
+
+const ChevronIcon = ({ open }) => (
+  <svg
+    width={10} height={10} viewBox="0 0 10 10"
+    fill="none" stroke="currentColor" strokeWidth={1.8}
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: open ? 'none' : 'rotate(-90deg)', transition: 'transform 0.2s ease' }}
+  >
+    <polyline points="2 3 5 7 8 3"/>
+  </svg>
+)
+
 // ─── Ring Score SVG ───────────────────────────────────────
 function RingScore({ score }) {
   const r     = 28
@@ -130,7 +155,7 @@ function TaskRow({ task, editing, dimmed, onDone, onReset, onUpdate, onDelete })
                 className={s.hiddenCheck}
               />
               <span className={[s.lowPill, task.lowEnergy ? s.lowPillActive : ''].join(' ')}>
-                🪫 Low
+                <BatteryLowIcon /> Low
               </span>
             </label>
             <button className={s.deleteTaskBtn} onClick={onDelete}>✕</button>
@@ -144,7 +169,7 @@ function TaskRow({ task, editing, dimmed, onDone, onReset, onUpdate, onDelete })
           <div className={s.taskTop}>
             <span className={s.taskText}>
               {task.text}
-              {task.lowEnergy && <span className={s.lowBadge}>🪫</span>}
+              {task.lowEnergy && <span className={s.lowBadge}><BatteryLowIcon /></span>}
             </span>
             <span className={s.taskDue} style={{ color: overdue ? 'var(--rose)' : color }}>
               {since}
@@ -201,7 +226,7 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
         >
           {editing ? <CheckIcon /> : <PencilIcon />}
         </button>
-        <span className={s.chevron}>{open ? '▾' : '▸'}</span>
+        <span className={s.chevron}><ChevronIcon open={open} /></span>
       </div>
 
       {open && (
@@ -305,13 +330,13 @@ export default function TabHaushalt({ onBack }) {
           className={[s.energieBtn, energie === 'normal' ? s.energieBtnActive : ''].join(' ')}
           onClick={() => handleEnergieChange('normal')}
         >
-          ⚡ Normal
+          <BoltIcon /> Normal
         </button>
         <button
           className={[s.energieBtn, energie === 'low' ? s.energieBtnActive : ''].join(' ')}
           onClick={() => handleEnergieChange('low')}
         >
-          🪫 Low Energy
+          <BatteryLowIcon /> Low Energy
         </button>
       </div>
 

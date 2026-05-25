@@ -17,6 +17,24 @@ const DragIcon = (
   </svg>
 )
 
+const PlacedIcon = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+    <polyline points="9 14 4 9 9 4"/>
+    <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+  </svg>
+)
+
+const ChevronIcon = ({ collapsed }) => (
+  <svg
+    width="10" height="10" viewBox="0 0 10 10"
+    fill="none" stroke="currentColor" strokeWidth="1.8"
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: collapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 0.2s ease' }}
+  >
+    <polyline points="2 3 5 7 8 3"/>
+  </svg>
+)
+
 // ─── Sort ──────────────────────────────────────────────────
 function sortTodos(list, sort) {
   if (sort === 'alter') {
@@ -57,10 +75,7 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, start
       onPointerDown={handlePointerDown}
       aria-label="Ziehen"
     >
-      {isPlaced
-        ? <span className={s.placedIcon}>↩</span>
-        : DragIcon
-      }
+      {isPlaced ? PlacedIcon : DragIcon}
     </span>
   )
 
@@ -202,7 +217,7 @@ export default function Pool({
           </div>
         )}
 
-        <span className={[s.chevron, collapsed ? s.chevronCollapsed : ''].join(' ')}>▾</span>
+        <span className={s.chevron}><ChevronIcon collapsed={collapsed} /></span>
       </div>
 
       {!collapsed && (

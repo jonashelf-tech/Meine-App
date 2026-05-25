@@ -13,7 +13,8 @@
 
 .energieBtn {
   flex: 1;
-  padding: 9px 12px;
+  padding: 10px 12px;
+  min-height: 44px;
   background: rgba(255, 255, 255, 0.05);
   border: 1.5px solid var(--border);
   border-radius: var(--r-sm);
@@ -24,6 +25,10 @@
   cursor: pointer;
   transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .energieBtnActive {
@@ -139,9 +144,10 @@
 }
 
 .chevron {
-  font-size: 0.72rem;
   color: var(--text-dim);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 /* ── Room body ── */
@@ -192,8 +198,11 @@
 }
 
 .lowBadge {
-  font-size: 0.72rem;
   margin-left: 5px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  color: var(--text-dim);
 }
 
 .taskDue {
@@ -207,10 +216,11 @@
 .doneBtn {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 5px;
+  border-radius: 6px;
   color: var(--emerald);
   cursor: pointer;
-  padding: 4px 6px;
+  padding: 8px 10px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -301,7 +311,9 @@
   color: var(--text-dim);
   transition: all 0.15s;
   white-space: nowrap;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .lowPillActive {

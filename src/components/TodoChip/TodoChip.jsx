@@ -4,6 +4,28 @@ import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
 import s from './TodoChip.module.css'
 
+const SubDragIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+  </svg>
+)
+
+const ChevronIcon = ({ down }) => (
+  <svg
+    width="10" height="10" viewBox="0 0 10 10"
+    fill="none" stroke="currentColor" strokeWidth="1.8"
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: down ? 'none' : 'rotate(-90deg)', transition: 'transform 0.18s ease' }}
+  >
+    <polyline points="2 3 5 7 8 3"/>
+  </svg>
+)
+
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
@@ -153,7 +175,7 @@ export default function TodoChip({
               })
             }}
           >
-            <span className={s.expandArr}>{expanded ? '▾' : '▸'}</span>
+            <ChevronIcon down={expanded} />
             {!todo.done && (
               <span className={[
                 s.expandCount,
@@ -183,6 +205,7 @@ export default function TodoChip({
           <button
             className={s.removeBtn}
             onClick={e => { e.stopPropagation(); onRemove() }}
+            aria-label="Entfernen"
           >✕</button>
         )}
 
@@ -246,7 +269,8 @@ export default function TodoChip({
               <span
                 className={s.itemDragHandle}
                 onPointerDown={e => startSubDrag(idx, e)}
-              >⠿</span>
+                aria-label="Ziehen"
+              ><SubDragIcon /></span>
             </div>
           ))}
 

@@ -11,7 +11,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 10px 12px;
+  min-height: 44px;
   border-bottom: 1px solid var(--border);
   cursor: pointer;
   user-select: none;
@@ -75,16 +76,11 @@
 }
 
 .chevron {
-  font-size: 0.6rem;
   color: rgba(255, 255, 255, 0.28);
-  display: inline-block;
-  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
   margin-left: auto;
   flex-shrink: 0;
-}
-
-.chevronCollapsed {
-  transform: rotate(-90deg);
 }
 
 /* ─── List area ──────────────────────────────────────── */
@@ -121,9 +117,9 @@
 .handle:active { cursor: grabbing; }
 
 .placedIcon {
-  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
   opacity: 0.5;
-  line-height: 1;
 }
 
 /* ─── Expand more button ─────────────────────────────── */

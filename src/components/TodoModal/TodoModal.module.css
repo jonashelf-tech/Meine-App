@@ -62,7 +62,12 @@
   cursor: pointer;
   color: var(--text-dim);
   font-size: 1rem;
-  padding: 4px 6px;
+  padding: 8px 10px;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.15s;
   -webkit-tap-highlight-color: transparent;
   line-height: 1;
@@ -335,8 +340,8 @@
 }
 
 .colorCircle {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
@@ -344,8 +349,8 @@
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
-.colorCircle:hover { transform: scale(1.18); }
-.colorCircleActive { border-color: #fff; transform: scale(1.18); }
+.colorCircle:hover { transform: scale(1.15); }
+.colorCircleActive { border-color: #fff; transform: scale(1.15); }
 
 /* ─── Kategorie ──────────────────────────────────────────── */
 .catWrap {
@@ -395,13 +400,13 @@
 }
 
 .catChipRm {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: rgba(251, 113, 133, 0.2);
   border: 1px solid rgba(251, 113, 133, 0.35);
   color: #FB7185;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -413,8 +418,8 @@
 }
 
 .catEditBtn {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -457,8 +462,8 @@
 .catNewInput:focus { border-color: rgba(139, 92, 246, 0.6); }
 
 .catAddBtn {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   background: rgba(139, 92, 246, 0.2);
   border: 1px solid rgba(139, 92, 246, 0.4);
@@ -540,8 +545,8 @@
 .subInput:focus { border-color: var(--primary); }
 
 .subAddBtn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--r-sm);

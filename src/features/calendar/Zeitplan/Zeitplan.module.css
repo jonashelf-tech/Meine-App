@@ -13,9 +13,9 @@
 }
 
 .shiftBtn {
-  padding: 5px 10px;
+  padding: 8px 13px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 700;
   background: var(--surface-low);
   border: 1px solid var(--border-dim);
@@ -169,7 +169,7 @@
 }
 
 .halfTime {
-  font-size: 0.54rem;
+  font-size: 0.65rem;
   color: var(--text-ghost);
   font-family: 'Outfit', sans-serif;
   transition: color 0.12s;

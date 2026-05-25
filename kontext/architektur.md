@@ -7,7 +7,6 @@ src/
   components/       Globale Komponenten (AddTodoModal, TodoChip, Toast, EditModal, PrioBadge, ToolHeader)
   features/
     calendar/       TabHeute, TabKalender, Zeitplan, Pool, QuickAdd, KiPlanSection
-                    └─ Zeitplan/ClockPopup.jsx  (Clock-Popup wenn Slot-Zeit abläuft)
                     └─ TabHeute/DayNav.jsx       (Datums-Pille oben im Tagesplaner)
     settings/       TabSettings
     todos/          Block.js (Datentyp + createBlock + PRIO)

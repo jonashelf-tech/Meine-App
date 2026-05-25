@@ -6,6 +6,12 @@ import { parseHHMM, minutesToSk, NEON } from '../../utils'
 import RepeatPicker from '../RepeatPicker/RepeatPicker'
 import s from './TodoModal.module.css'
 
+const EditIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+  </svg>
+)
+
 const DUR_PRESETS = [
   { label: '5',  value: 5  },
   { label: '10', value: 10 },
@@ -159,18 +165,15 @@ export default function TodoModal({ onClose, existingTodo = null }) {
 
       const updated = {
         ...existingTodo,
-        text:                  text.trim(),
+        text:     text.trim(),
         priority,
         color,
-        duration:              duration || null,
-        category:              category || null,
-        repeat:                repeat || null,
+        duration: duration || null,
+        category: category || null,
+        repeat:   repeat || null,
         subItems,
-        date:                  date || null,
-        time:                  time || null,
-        awaitingClockResponse: nowTermin
-          ? (wasTermin ? existingTodo.awaitingClockResponse : true)
-          : false,
+        date:     date || null,
+        time:     time || null,
       }
 
       setDays(prev => {
@@ -216,7 +219,6 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           category: category || null,
           repeat: repeat || null,
           subItems,
-          awaitingClockResponse: true,
         })
         const mins    = parseHHMM(time)
         const slotKey = minutesToSk(mins)
@@ -387,7 +389,8 @@ export default function TodoModal({ onClose, existingTodo = null }) {
               <button
                 className={[s.catEditBtn, catEditMode ? s.catEditBtnActive : ''].join(' ')}
                 onClick={() => { setCatEditMode(v => !v); setCatNewInput('') }}
-              >✏</button>
+                aria-label={catEditMode ? 'Fertig' : 'Kategorien bearbeiten'}
+              ><EditIcon /></button>
             </div>
             {catEditMode && (
               <div className={s.catManageRow}>
@@ -429,7 +432,7 @@ export default function TodoModal({ onClose, existingTodo = null }) {
 
         <button
           className={s.submitBtn}
-          style={{ '--tc': isTermin ? '#FF2D78' : '#00CFFF' }}
+          style={{ '--tc': isTermin ? 'var(--teal)' : 'var(--primary)' }}
           onClick={handleSubmit}
           disabled={!text.trim()}
         >
