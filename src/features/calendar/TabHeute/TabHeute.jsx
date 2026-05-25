@@ -201,6 +201,10 @@ export default function TabHeute() {
   }, [setTodaySlots])
 
   // ─── Blocker CRUD ──────────────────────────────────────────
+  const handleDoneCalendar = useCallback(() => {
+    setCurrentTab(1)
+  }, [setCurrentTab])
+
   const handleCreateBlocker = useCallback(() => {
     setBlockerModal({ blocker: null })
   }, [])
@@ -359,6 +363,7 @@ export default function TabHeute() {
         onEdit={handleEdit}
         onRemove={handleRemove}
         startDrag={startPoolDrag}
+        onDoneCalendar={handleDoneCalendar}
       />
       {activeTools.includes('reminder') && <ReminderSection />}
       {activeTools.includes('haushalt') && <HaushaltSection />}
