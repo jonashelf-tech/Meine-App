@@ -4,19 +4,71 @@
 
 ```
 src/
-  components/       Globale Komponenten (AddTodoModal, TodoChip, Toast, EditModal, PrioBadge, ToolHeader)
+  components/
+    DayNav/           DayNav.jsx              — Datums-Pille oben im Tagesplaner
+    NavPill/          NavPill.jsx
+    PrioBadge/        PrioBadge.jsx
+    RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
+    Toast/            Toast.jsx
+    TodoChip/         TodoChip.jsx + .module.css
+    TodoModal/        TodoModal.jsx + .module.css
+    ToolHeader/       ToolHeader.jsx          — Standard-Header für alle Tools
+    ToolSection/      ToolSection.jsx
+
   features/
-    calendar/       TabHeute, TabKalender, Zeitplan, Pool, QuickAdd, KiPlanSection
-                    └─ TabHeute/DayNav.jsx       (Datums-Pille oben im Tagesplaner)
-    settings/       TabSettings
-    todos/          Block.js (Datentyp + createBlock + PRIO)
-    tools/          TabTools, toolRegistry.js (+ ToolIcon), toolTabs.js (TOOL_TAB — Single Source)
-                    + alle Tool-Unterordner
-  hooks/            useDragDrop.js, useDoubleTap.js, useKeyboardOffset.js
-  store/            index.js (Zustand)
-  storage/          index.js (sv/lv + SK)
-  styles/           vars.css (globale CSS-Variablen)
-  utils/            index.js (sk, dateKey, slotPx, todayKey, parseHHMM, ALL_SLOT_KEYS)
+    calendar/
+      Blocker/
+        BlockerCard.jsx         — Blocker-Karte im Zeitplan
+        BlockerModal.jsx        — Blocker erstellen/bearbeiten
+        RepeatDeleteSheet.jsx   — "Nur diese" / "Diese und zukünftige" löschen
+        blockerUtils.js         — Factory + Query + Mutation Helpers
+      KiPlanSection/  KiPlanSection.jsx
+      Pool/           Pool.jsx + Pool.module.css
+      QuickAdd/       QuickAdd.jsx
+      TabHeute/
+        TabHeute.jsx            — Tagesplaner (DayNav + Zeitplan + Pool + Sections)
+        useTimeEvents.js        — Hook: abgelaufene/verpasste Slots behandeln
+      TabKalender/    TabKalender.jsx
+      Zeitplan/
+        MissedReviewModal.jsx   — Modal für TimeEvents (abgelaufene/verpasste Slots)
+        SlotBlock.jsx           — Einzelner Slot im Zeitplan
+        Zeitplan.jsx + .module.css
+
+    settings/         TabSettings/TabSettings.jsx
+
+    todos/            Block.js  — createBlock(), isTermin(), isFaelligkeit(), isTodo()
+
+    tools/
+      TabTools/       TabTools.jsx            — Meine Tools / Alle Tools
+      toolRegistry.jsx                        — TOOL_REGISTRY + ToolIcon (SVG)
+      toolTabs.js                             — TOOL_TAB — Single Source of Truth
+      elvi/           TabElvi.jsx
+      gamification/   TabGamification.jsx
+      geburtstage/    TabGeburtstage.jsx
+      gewicht/        TabGewicht.jsx
+      haushalt/
+        HaushaltBriefing.jsx
+        HaushaltSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
+        TabHaushalt.jsx + .module.css
+        haushaltData.js
+      pizza/          TabPizza.jsx
+      rad/            TabRad.jsx
+      reminder/
+        ReminderSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
+        TabReminder.jsx
+      rezepte/        TabRezepte.jsx
+      timer/          TabTimer.jsx
+      wasjetzt/       TabWasJetzt.jsx
+
+  hooks/
+    useDragDrop.js
+    useDoubleTap.js
+    useKeyboardOffset.js
+
+  store/            index.js    — Zustand Store
+  storage/          index.js    — sv / lv / SK / exportData / importData
+  styles/           vars.css    — Globale CSS-Variablen + Keyframes
+  utils/            index.js    — sk, dateKey, todayKey, parseHHMM, ALL_SLOT_KEYS …
 ```
 
 ---
@@ -40,10 +92,10 @@ Globale Variablen nur in `styles/vars.css`.
 ## CSS-Variablen (vars.css) — Stand: Calm Dark Violet
 
 **Hauptpalette:**
-- `--primary`  #8B5CF6  (Violett — Hauptakzent, ersetzt --cyan)
+- `--primary`  #8B5CF6  (Violett — Hauptakzent)
 - `--teal`     #14B8A6  (Teal — sekundärer Akzent / Focus)
-- `--emerald`  #10B981  (Grün — Erfolg, CTA, ersetzt --green)
-- `--rose`     #FB7185  (Rose — nur Löschen/Fehler, ersetzt --pink)
+- `--emerald`  #10B981  (Grün — Erfolg, Done-States)
+- `--rose`     #FB7185  (Rose — nur Löschen/Fehler)
 
 **Backwards-Compat-Aliases (nicht mehr direkt verwenden):**
 - `--cyan`   → var(--primary)
@@ -79,8 +131,21 @@ Max-Width: 480px. Alles zuerst fürs Handy denken.
 ## Icons
 
 Keine Emojis als strukturelle Icons. Immer SVG (inline oder als Komponente).
-Tool-Icons: `<ToolIcon id={toolId} size={20} />` aus `toolRegistry.js` — nicht `{tool.icon}` (Emoji-Fallback).
-Tab-Bar-Icons: eigene SVG-Komponenten in `App.jsx`.
+- Tool-Icons: `<ToolIcon id={toolId} size={20} />` aus `toolRegistry.jsx` — nicht `{tool.icon}` (Emoji-Fallback)
+- Tab-Bar-Icons: eigene SVG-Komponenten in `App.jsx`
+- Alle interaktiven Buttons: SVG-Komponenten, nie Text-Sonderzeichen oder Emojis
+- Touch-Targets: min 44×44px für primäre Aktionen, min 36×36px für sekundäre
+
+---
+
+## ToolHeader-Komponente
+
+Standard-Header für alle Tools:
+
+```jsx
+import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+<ToolHeader onBack={onBack} icon={<MyIcon />} eyebrow="Tool" title="Toolname" />
+```
 
 ---
 
@@ -97,3 +162,4 @@ Tab-Bar-Icons: eigene SVG-Komponenten in `App.jsx`.
 - `Date.now()` als ID — immer `createBlock()` verwenden
 - `localStorage` direkt — immer `sv/lv/SK` aus `storage/index.js`
 - TOOL_TAB lokal definieren — immer aus `toolTabs.js` importieren
+- `awaitingClockResponse` setzen — deprecated, ClockPopup entfernt

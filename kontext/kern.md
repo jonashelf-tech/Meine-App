@@ -4,22 +4,23 @@
 
 ```js
 {
-  id:                    genId(),   // crypto.randomUUID() oder Fallback-String — KEIN Date.now()
-  text:                  "",
-  priority:              3,         // 1=Wichtig · 2=Sollte · 3=Kann
-  color:                 "#8B5CF6", // Default = Akzentfarbe
-  duration:              null,      // Minuten, null = keine Angabe (Default war früher 30 — jetzt null)
-  category:              null,
-  date:                  null,      // "2024-01-15" — Fälligkeit oder Termin
-  time:                  null,      // "14:30" — nur bei Terminen (date+time = Kalender-Termin)
-  done:                  false,
-  doneAt:                null,
-  awaitingClockResponse: false,     // DEPRECATED — nicht mehr setzen; ClockPopup wurde entfernt
-  subItems:              [],        // [{ id, text, done }]
-  notes:                 null,
-  createdAt:             new Date().toISOString(),
+  id:        genId(),   // crypto.randomUUID() oder Fallback-String — KEIN Date.now()
+  text:      "",
+  priority:  3,         // 1=Wichtig · 2=Sollte · 3=Kann
+  color:     "#8B5CF6", // Default = Akzentfarbe
+  duration:  null,      // Minuten, null = keine Angabe
+  category:  null,
+  date:      null,      // "2024-01-15" — Fälligkeit oder Termin
+  time:      null,      // "14:30" — nur bei Terminen (date+time = Kalender-Termin)
+  done:      false,
+  doneAt:    null,
+  subItems:  [],        // [{ id, text, done }]
+  notes:     null,
+  createdAt: new Date().toISOString(),
 }
 ```
+
+> `awaitingClockResponse` ist **DEPRECATED** — niemals setzen. ClockPopup wurde entfernt.
 
 `createBlock(partial?)` in `src/features/todos/Block.js` erzeugt einen vollständigen Block.
 Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert createdAt + genId.
@@ -33,25 +34,63 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 
 ---
 
+## Blocker (Zeitplan-Blocker)
+
+```js
+// createBlocker(partial?) in src/features/calendar/Blocker/blockerUtils.js
+{
+  id:         genId(),
+  text:       '',
+  color:      '#3b82f6',
+  startHour:  9,          // Dezimalstunde: 9 = 09:00, 9.5 = 09:30
+  endHour:    17,
+  locked:     false,
+  date:       null,       // "2026-05-23" — Anker für Wiederholung + einmalige Blocker
+  repeat:     null,       // { type: 'daily'|'weekly'|'monthly'|'custom', every?, unit?, days? }
+  endDate:    null,       // "2026-05-23" — Abschneidedatum für wiederkehrende
+  exceptions: [],         // ["2026-05-23"] — übersprungene Instanzen
+}
+```
+
+**Hilfsfunktionen (blockerUtils.js):**
+- `createBlocker(partial?)` — Factory
+- `getBlockersForDate(allBlockers, dateStr)` — filtert aktive Blocker für einen Tag
+- `getBlockerForHour(hour, blockersForDate)` — Blocker der eine Stunde enthält
+- `deleteBlockerInstance(blocker, dateStr)` — nur diese Instanz (adds to exceptions)
+- `deleteBlockerFuture(blocker, dateStr)` — diese + alle zukünftigen (sets endDate)
+- `formatHour(h)` — 9.5 → "09:30"
+- `parseHourStr(str)` — "09:30" → 9.5
+
+---
+
 ## Zustand Store (store/index.js)
 
 ```js
-// Kern
+// Todos
 todos,        setTodos
 todoOrder,    setTodoOrder
 cats,         setCats
 
 // Kalender
 days,         setDays       // { "2024-01-15": { "8": SlotEntry, "8.5": SlotEntry } }
+doneCounters, setDoneCounters
+blockers,     setBlockers   // Blocker[] — persistiert via SK.blockers
 
 // App
 settings,     setSettings
 theme,        setTheme
-accentColor,  setAccentColor
-toolColors,   setToolColors  // { [toolId]: "#hexcolor" } — überschreibt TOOL_REGISTRY.color
-currentTab,   setCurrentTab
 modules,      setModules
-activeTools,  toggleTool
+activeTools,  toggleTool    // string[] — aktive Tool-IDs
+accentColor,  setAccentColor
+toolColors,   setToolColors  // { [toolId]: "#hexcolor" }
+
+// Navigation
+currentTab,   previousTab,  setCurrentTab
+dayplanDate,  setDayplanDate // Flüchtiger Intent-Wert (kein localStorage)
+heuteModus,   setHeuteModus  // 'manuell'
+
+// Geburtstage
+birthdays,    setBirthdays
 ```
 
 ---
@@ -85,7 +124,7 @@ Slot-Keys: `sk(h)` = ganzeStunde (`"8"`), `sk(h, true)` = halbeStunde (`"8.5"`)
 ## Storage Keys (storage/index.js)
 
 ```js
-// Todos & Routinen
+// Todos
 SK.todos          → 'adhs_todos_list'
 SK.routines       → 'adhs_todos_routines'
 SK.todoOrder      → 'adhs_todos_order'
@@ -95,6 +134,7 @@ SK.cats           → 'adhs_todos_cats'
 SK.days           → 'adhs_calendar_days'
 SK.doneCounters   → 'adhs_calendar_done'
 SK.templates      → 'adhs_calendar_templates'
+SK.blockers       → 'adhs_blockers'
 
 // App-Config
 SK.settings       → 'adhs_app_settings'
@@ -105,11 +145,11 @@ SK.accentColor    → 'adhs_app_accent'
 SK.toolColors     → 'adhs_app_tool_colors'
 
 // View-State (kein Reload nötig — wird beim Tab-Wechsel gelesen)
-SK.visStart       → 'adhs_view_vis_start'      // Zeitplan sichtbarer Start (Stunde)
-SK.visEnd         → 'adhs_view_vis_end'         // Zeitplan sichtbares Ende (Stunde)
+SK.visStart       → 'adhs_view_vis_start'       // Zeitplan sichtbarer Start (Stunde)
+SK.visEnd         → 'adhs_view_vis_end'          // Zeitplan sichtbares Ende (Stunde)
 SK.lastPoolReturn → 'adhs_view_last_pool_return'
-SK.poolSort       → 'adhs_view_pool_sort'       // 'standard'|'az'|'za'|'prio'|'new'|'old'
-SK.calView        → 'adhs_view_cal_view'        // 'woche'|'monat'
+SK.poolSort       → 'adhs_view_pool_sort'        // 'standard'|'kategorie'|'alter'
+SK.calView        → 'adhs_view_cal_view'         // 'woche'|'monat'
 
 // Tools
 SK.recipes        → 'adhs_recipes_list'
@@ -119,7 +159,7 @@ SK.selectedDishes → 'adhs_recipes_selected'
 SK.weight         → 'adhs_health_weight'
 SK.birthdays      → 'adhs_birthdays'
 SK.haushalt       → 'adhs_haushalt_v1'
-SK.haushaltEnergie→ 'adhs_haushalt_energie'   // lokaler UI-State (Normal/Low Energy)
+SK.haushaltEnergie→ 'adhs_haushalt_energie'    // lokaler UI-State (Normal/Low Energy)
 ```
 
 Lesen/Schreiben:
@@ -151,15 +191,19 @@ Tab 0  — Tagesplaner    (TabHeute: DayNav + Zeitplan + Pool)
 Tab 1  — Kalender       (TabKalender: Woche/Monat + DayPanel)
 Tab 2  — Tools          (TabTools: Meine Tools / Alle Tools)
 Tab 3  — Einstellungen
-Tab 4  — Geburtstage
-Tab 5  — Fokus-Timer
-Tab 6  — Rezepte
-Tab 7  — Pizza-Rechner
-Tab 8  — Elvi
-Tab 9  — Gewicht
-Tab 10 — XP & Level
-Tab 11 — Zufallsrad
-Tab 12 — Reminder
+--- Tools (via TOOL_TAB) ---
+Tab 4  — Geburtstage    (geburtstage)
+Tab 5  — Fokus-Timer    (timer)
+Tab 6  — Rezepte        (rezepte)
+Tab 7  — Pizza-Rechner  (pizza)
+Tab 8  — Elvi           (elvi)
+Tab 9  — Gewicht        (gewicht)
+Tab 10 — XP & Level     (gamification)
+Tab 11 — Zufallsrad     (rad)
+Tab 12 — Reminder       (reminder)
+Tab 13 — Haushalt       (haushalt)
+Tab 14 — Was jetzt?     (wasjetzt)
+Tab 15 → nächstes Tool
 ```
 
 Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **ausschließlich** in `src/features/tools/toolTabs.js` (Single Source of Truth). Alle Consumer importieren von dort.
@@ -178,12 +222,18 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
   - Einzelklick erledigtes Todo → Restore-Modal ("Wiederherstellen?" Ja/Nein) → stellt als datumsloses Todo wieder her
   - Doppelklick Tool-Chip → direkt ins Tool
 
+---
+
 ## TabHeute — Features
 
 - **DayNav:** Kompakte Pille oben — `‹ Datum ›`. Datum cyan+glow = heute, weiß = anderer Tag. Pfeil Richtung heute leuchtet cyan wenn nicht auf heute. Klick auf Datum → Tab 1 (Kalender).
 - **viewDate:** Lokaler State (`useState(() => store.dayplanDate ?? todayKey())`). Mount-Effect liest `store.dayplanDate`, setzt viewDate, löscht es. Tab verlassen → unmount → automatisch Reset auf heute beim nächsten Mount.
 - **store.dayplanDate:** Flüchtiger Intent-Wert (kein localStorage). DayPanel setzt ihn vor `setCurrentTab(0)`, TabHeute konsumiert ihn einmalig beim Mount.
 - **Pool + Drag & Drop:** Immer sichtbar, funktioniert auf allen Tagen — Slots schreiben auf `viewDate`.
+- **Eingebettete Sektionen:** `<ReminderSection />` (wenn reminder aktiv) und `<HaushaltSection />` (wenn haushalt aktiv) erscheinen unter dem Pool.
+- **Blocker:** `BlockerModal` + `RepeatDeleteSheet` — Blocker im Zeitplan erstellen/bearbeiten/löschen. Löschen wiederkehrender Blocker: "Nur diese" (exception) oder "Diese und alle zukünftigen" (endDate).
+
+---
 
 ## TimeEvents — Logik
 
