@@ -13,6 +13,7 @@ import DayNav              from '../../../components/DayNav/DayNav'
 import BlockerModal        from '../Blocker/BlockerModal'
 import RepeatDeleteSheet   from '../Blocker/RepeatDeleteSheet'
 import { deleteBlockerInstance, deleteBlockerFuture } from '../Blocker/blockerUtils'
+import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '../../tools/haushalt/haushaltData'
 import { useTimeEvents } from './useTimeEvents'
 import s from './TabHeute.module.css'
 
@@ -53,16 +54,22 @@ export default function TabHeute() {
 
   // ─── Todo mutations ───────────────────────────────────────
   const handleToggleDone = useCallback((id) => {
-    setTodos(prev =>
-      prev.map(t => t.id === id
-        ? {
-            ...t,
-            done:   !t.done,
-            doneAt: !t.done ? new Date().toISOString() : null,
-          }
-        : t
+    setTodos(prev => {
+      const todo    = prev.find(t => t.id === id)
+      const nowDone = !todo?.done
+      if (nowDone && todo?.haushaltTaskIds?.length > 0) {
+        const cfg     = loadHaushalt()
+        const updated = todo.haushaltTaskIds.reduce(
+          (c, tid) => haushaltMarkDone(c, tid), cfg
+        )
+        saveHaushalt(updated)
+      }
+      return prev.map(t =>
+        t.id === id
+          ? { ...t, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null }
+          : t
       )
-    )
+    })
   }, [setTodos])
 
   const handleRemove = useCallback((id) => {
@@ -194,6 +201,10 @@ export default function TabHeute() {
     setBlockerModal(null)
   }, [repeatDeleteSheet, setBlockers])
 
+  const handleToggleBlockerLocked = useCallback((blockerId) => {
+    setBlockers(prev => prev.map(b => b.id === blockerId ? { ...b, locked: !b.locked } : b))
+  }, [setBlockers])
+
   // ─── Drag & Drop ──────────────────────────────────────────
   const startPoolDrag = useCallback((todoId, text, color, duration, e) => {
     startDrag(text, color, (dropKey) => {
@@ -269,6 +280,7 @@ export default function TabHeute() {
         blockers={blockers}
         onCreateBlocker={handleCreateBlocker}
         onEditBlocker={handleEditBlocker}
+        onToggleBlockerLocked={handleToggleBlockerLocked}
       />
       <Pool
         todos={todos}
