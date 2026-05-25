@@ -1,0 +1,108 @@
+<h2>Fortschrittsdiagramm — welcher Stil motiviert dich?</h2>
+<p class="subtitle">So könnte die Übersicht aussehen — klick an was am besten passt</p>
+
+<div class="options">
+
+  <div class="option" data-choice="health-bars" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Raum-Healthbars</h3>
+      <p>Pro Raum ein "Sauberkeits-Balken" der sich leert je näher die Tasks an ihrem Fälligkeitsdatum sind. Farbkodiert: grün → gelb → rot.</p>
+      <!-- Mockup -->
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.1rem">🍳</span>
+          <div style="flex:1">
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:3px">Küche</div>
+            <div style="height:8px;border-radius:4px;background:rgba(255,255,255,0.1);overflow:hidden">
+              <div style="width:85%;height:100%;border-radius:4px;background:linear-gradient(90deg,#10B981,#34d399)"></div>
+            </div>
+          </div>
+          <span style="font-size:0.72rem;color:#10B981;font-weight:700">85%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.1rem">🚿</span>
+          <div style="flex:1">
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:3px">Bad</div>
+            <div style="height:8px;border-radius:4px;background:rgba(255,255,255,0.1);overflow:hidden">
+              <div style="width:45%;height:100%;border-radius:4px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+            </div>
+          </div>
+          <span style="font-size:0.72rem;color:#f59e0b;font-weight:700">45%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.1rem">🛋</span>
+          <div style="flex:1">
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:3px">Wohnzimmer</div>
+            <div style="height:8px;border-radius:4px;background:rgba(255,255,255,0.1);overflow:hidden">
+              <div style="width:20%;height:100%;border-radius:4px;background:linear-gradient(90deg,#fb7185,#f43f5e)"></div>
+            </div>
+          </div>
+          <span style="font-size:0.72rem;color:#fb7185;font-weight:700">20%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="room-cards" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Raum-Karten mit nächster Fälligkeit</h3>
+      <p>Karten-Grid pro Raum. Jede Karte zeigt wie viele Tasks fällig/bald fällig sind und wann der nächste Task dran ist. Direktes Abhaken möglich.</p>
+      <!-- Mockup -->
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:10px">
+          <div style="font-size:1.1rem">🍳</div>
+          <div style="font-size:0.8rem;font-weight:700;margin:4px 0 2px;color:rgba(255,255,255,0.9)">Küche</div>
+          <div style="font-size:0.68rem;color:#10B981">✓ Alles ok</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:4px">nächstes: Abwasch morgen</div>
+        </div>
+        <div style="background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.25);border-radius:10px;padding:10px">
+          <div style="font-size:1.1rem">🚿</div>
+          <div style="font-size:0.8rem;font-weight:700;margin:4px 0 2px;color:rgba(255,255,255,0.9)">Bad</div>
+          <div style="font-size:0.68rem;color:#fb7185">2 überfällig</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:4px">WC seit 8 Tagen</div>
+        </div>
+        <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:10px">
+          <div style="font-size:1.1rem">🛋</div>
+          <div style="font-size:0.8rem;font-weight:700;margin:4px 0 2px;color:rgba(255,255,255,0.9)">Wohnzimmer</div>
+          <div style="font-size:0.68rem;color:#f59e0b">1 bald fällig</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:4px">Staubsaugen in 2d</div>
+        </div>
+        <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:10px">
+          <div style="font-size:1.1rem">🛏</div>
+          <div style="font-size:0.8rem;font-weight:700;margin:4px 0 2px;color:rgba(255,255,255,0.9)">Schlafzimmer</div>
+          <div style="font-size:0.68rem;color:#8B5CF6">✓ Im Griff</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:4px">nächstes: Wäsche Sa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="combo" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Kombination: Gesamt-Score + Raum-Detail</h3>
+      <p>Oben ein großer "Wohnung-Score" (z.B. Kreis oder Ring). Darunter die Räume aufgeklappt mit ihren Tasks und wann sie fällig sind.</p>
+      <!-- Mockup -->
+      <div style="margin-top:14px;text-align:center">
+        <div style="width:70px;height:70px;border-radius:50%;border:5px solid #10B981;display:inline-flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 0 16px rgba(16,185,129,0.3)">
+          <span style="font-size:1.1rem;font-weight:800;color:#10B981">72%</span>
+        </div>
+        <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin:6px 0 12px">Wohnung im Griff</div>
+        <div style="text-align:left;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;padding:6px 10px;background:rgba(255,255,255,0.05);border-radius:8px">
+            <span>🍳 Küche</span><span style="color:#10B981">●●●●○</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;padding:6px 10px;background:rgba(255,255,255,0.05);border-radius:8px">
+            <span>🚿 Bad</span><span style="color:#fb7185">●●○○○</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;padding:6px 10px;background:rgba(255,255,255,0.05);border-radius:8px">
+            <span>🛋 Wohnzimmer</span><span style="color:#f59e0b">●●●○○</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

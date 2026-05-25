@@ -97,6 +97,7 @@
   cursor: pointer;
   appearance: none;
   text-align: center;
+  color-scheme: dark;
 }
 
 .timeSelect:focus { border-color: var(--primary); }
