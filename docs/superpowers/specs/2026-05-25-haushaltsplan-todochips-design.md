@@ -135,12 +135,17 @@ Analog: in `src/features/calendar/TabHeute/useTimeEvents.js` — dort wo `todo.d
 
 **Datei:** `src/components/TodoChip/TodoChip.jsx` (und `.module.css`)
 
-Wenn `block.toolId` gesetzt ist: der Chip bekommt einen `2px solid` Border in `toolColors[block.toolId]`.
+Wenn `block.toolId` gesetzt ist: der Chip bekommt einen Glow-Effekt in `toolColors[block.toolId]` — **Option B (Glow)**, bestätigt vom User.
 
 ```jsx
 const toolBorderColor = block.toolId ? (toolColors[block.toolId] ?? '#8B5CF6') : null
 // style auf dem Chip-Container:
-border: toolBorderColor ? `2px solid ${toolBorderColor}` : undefined
+boxShadow: toolBorderColor
+  ? `0 0 0 1.5px ${toolBorderColor}, 0 0 14px ${toolBorderColor}44`
+  : undefined,
+border: toolBorderColor
+  ? `1px solid rgba(255,255,255,0.065)`  // bestehender Border bleibt
+  : undefined,
 ```
 
 `toolColors` kommt aus dem Zustand-Store (`useAppStore`).
