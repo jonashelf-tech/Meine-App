@@ -77,27 +77,6 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, start
   )
 }
 
-// ─── DoneChip ─────────────────────────────────────────────
-function DoneChip({ todo, onUndo }) {
-  const time = todo.doneAt
-    ? new Date(todo.doneAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-    : ''
-
-  return (
-    <div
-      className={s.doneChip}
-      onClick={onUndo}
-      aria-label={`${todo.text} rückgängig machen`}
-      role="button"
-    >
-      <span className={s.doneStripe} style={{ background: todo.color || 'rgba(16,185,129,0.5)' }} />
-      <span className={s.doneCheck}>✓</span>
-      <span className={s.doneText}>{todo.text || <em>Kein Text</em>}</span>
-      {time && <span className={s.doneMeta}>{time}</span>}
-    </div>
-  )
-}
-
 // ─── Pool ─────────────────────────────────────────────────
 export default function Pool({
   todos = [],
@@ -107,6 +86,7 @@ export default function Pool({
   onEdit,
   onRemove,
   startDrag,
+  onDoneCalendar,
 }) {
   const [collapsed,      setCollapsed]      = useState(false)
   const [sort,           setSort]           = useState(() => lv(SK.poolSort, 'standard'))
@@ -144,20 +124,19 @@ export default function Pool({
   const activePool = useMemo(() => {
     const undone = todos.filter(t => {
       if (t.done) return false
-      if (t.awaitingClockResponse) return false
       return true
     }).filter(t => !isPlaced(t))
     const pending = todos.filter(t => t.done && pendingDoneIds.has(t.id))
     return [...sortTodos(undone, sort), ...pending]
   }, [todos, pendingDoneIds, sort, isPlaced])
 
-  const doneToday = useMemo(() => {
+  const doneCount = useMemo(() => {
     const today = todayKey()
     return todos.filter(t =>
       t.done &&
       t.doneAt?.startsWith(today) &&
       !pendingDoneIds.has(t.id)
-    )
+    ).length
   }, [todos, pendingDoneIds])
 
   const visiblePool = showAll ? activePool : activePool.slice(0, 10)
@@ -172,15 +151,6 @@ export default function Pool({
     }
     onToggleDone?.(id)
   }, [todos, onToggleDone])
-
-  const handleUndo = useCallback((id) => {
-    setPendingDoneIds(prev => {
-      const next = new Set(prev)
-      next.delete(id)
-      return next
-    })
-    onToggleDone?.(id)
-  }, [onToggleDone])
 
   const handleCleanup = useCallback(() => {
     setPendingDoneIds(new Set())
@@ -242,7 +212,7 @@ export default function Pool({
         <>
           {/* ── Aktive Liste ──────────────────────────── */}
           <div className={s.listArea}>
-            {activePool.length === 0 && doneToday.length === 0 && (
+            {activePool.length === 0 && (
               <p className={s.empty}>Alle Todos verplant ✓</p>
             )}
 
@@ -266,29 +236,12 @@ export default function Pool({
             )}
           </div>
 
-          {/* ── Erledigt heute ────────────────────────── */}
-          <div className={s.doneSection}>
-            <div className={s.doneSectionHead}>
-              <span className={s.doneLabel}>✓ Erledigt heute</span>
-              {doneToday.length > 0 && (
-                <span className={s.doneHint}>Antippen = rückgängig</span>
-              )}
-            </div>
-
-            {doneToday.length === 0 ? (
-              <p className={s.doneEmpty}>Noch nichts erledigt</p>
-            ) : (
-              <div className={s.doneList}>
-                {doneToday.map(t => (
-                  <DoneChip
-                    key={t.id}
-                    todo={t}
-                    onUndo={() => handleUndo(t.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          {/* ── Kalender-Link ─────────────────────────── */}
+          {doneCount > 0 && (
+            <button className={s.calLink} onClick={onDoneCalendar}>
+              {doneCount} erledigt · <span className={s.calLinkAccent}>Kalender →</span>
+            </button>
+          )}
         </>
       )}
 

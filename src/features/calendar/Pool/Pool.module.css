@@ -362,3 +362,22 @@
 }
 
 .dialogBtnCancel:hover { background: var(--surface); }
+
+/* ─── Kalender-Link ──────────────────────────────────── */
+.calLink {
+  display: block;
+  width: 100%;
+  padding: 9px 16px;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  font-family: inherit;
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+.calLinkAccent {
+  color: var(--primary);
+}
