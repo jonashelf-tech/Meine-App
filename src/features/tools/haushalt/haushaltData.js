@@ -217,3 +217,17 @@ export function deleteTask(config, roomId, taskId) {
 export function resetToDefaults(config) {
   return { ...config, rooms: DEFAULT_ROOMS, briefingDone: false }
 }
+
+// Räume mit mindestens einer wirklich fälligen Task (urgency >= 1.0).
+// energie: 'normal' | 'low' — bei 'low' nur lowEnergy-Tasks.
+export function getDueRooms(config, energie) {
+  return config.rooms
+    .map(room => ({
+      room,
+      dueTasks: room.tasks.filter(t =>
+        taskUrgency(t) >= 1.0 &&
+        (energie !== 'low' || t.lowEnergy)
+      ),
+    }))
+    .filter(({ dueTasks }) => dueTasks.length > 0)
+}
