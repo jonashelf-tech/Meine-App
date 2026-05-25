@@ -23,8 +23,8 @@ function formatSlotLabel(dateKey, slotKey) {
 }
 
 // ─── MissedReviewModal ────────────────────────────────────
-export default function MissedReviewModal({ items, onDone, onIgnore, onMoveToPool }) {
-  const [selected, setSelected] = useState(new Set())
+export default function MissedReviewModal({ items, variant, onDone, onIgnore, onMoveToPool }) {
+  const [selected, setSelected] = useState(() => new Set(items.map(i => i.id)))
 
   const toggle = useCallback((id) => {
     setSelected(prev => {
@@ -49,6 +49,12 @@ export default function MissedReviewModal({ items, onDone, onIgnore, onMoveToPoo
     setSelected(new Set())
   }, [selected, onIgnore])
 
+  const handleMoveToPool = useCallback(() => {
+    if (selected.size === 0) return
+    onMoveToPool(selected)
+    setSelected(new Set())
+  }, [selected, onMoveToPool])
+
   if (!items.length) return null
 
   return (
@@ -59,9 +65,11 @@ export default function MissedReviewModal({ items, onDone, onIgnore, onMoveToPoo
         <div className={s.head}>
           <span className={s.icon}>{CalendarIcon}</span>
           <div>
-            <p className={s.title}>Vergangene Ereignisse</p>
+            <p className={s.title}>
+              {variant === 'new-day' ? 'Offene Ereignisse — gestern' : 'Abgelaufene Ereignisse'}
+            </p>
             <p className={s.subtitle}>
-              {items.length} {items.length === 1 ? 'Eintrag' : 'Einträge'} nicht erledigt
+              {items.length} {items.length === 1 ? 'Eintrag' : 'Einträge'} offen
             </p>
           </div>
         </div>
@@ -110,12 +118,14 @@ export default function MissedReviewModal({ items, onDone, onIgnore, onMoveToPoo
           >
             ✕ Ignorieren
           </button>
+          <button
+            className={[s.btn, s.btnPool].join(' ')}
+            onClick={handleMoveToPool}
+            disabled={selected.size === 0}
+          >
+            ↩ In Pool
+          </button>
         </div>
-
-        {/* Footer */}
-        <button className={s.poolBtn} onClick={onMoveToPool}>
-          → In Pool verschieben
-        </button>
 
       </div>
     </div>
