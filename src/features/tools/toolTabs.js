@@ -7,7 +7,7 @@ export const TOOL_TAB = {
   pizza:        7,
   elvi:         8,
   gewicht:      9,
-  gamification: 10,
+  erfolge:      10,
   rad:          11,
   reminder:     12,
   haushalt:     13,
