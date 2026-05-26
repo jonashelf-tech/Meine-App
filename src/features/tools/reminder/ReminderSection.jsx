@@ -102,6 +102,7 @@ export default function ReminderSection() {
       toolId="reminder"
       title="Reminder"
       badge={dueItems.length}
+      color={toolColor}
       onTitleClick={() => setCurrentTab(TOOL_TAB.reminder)}
     >
       <div className={s.items}>

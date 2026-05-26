@@ -19,14 +19,20 @@ export default function ToolSection({
   title,
   badge = null,
   badgeBg,
+  color,
   defaultOpen = false,
   onTitleClick,
   children,
 }) {
   const [open, setOpen] = useState(defaultOpen)
 
+  const sectionStyle = color ? {
+    border: `1.5px solid ${color}55`,
+    boxShadow: `0 0 10px ${color}22`,
+  } : undefined
+
   return (
-    <div className={s.section}>
+    <div className={s.section} style={sectionStyle}>
       <button className={s.header} onClick={() => setOpen(v => !v)}>
         <span className={s.iconWrap}>
           <ToolIcon id={toolId} size={16} />

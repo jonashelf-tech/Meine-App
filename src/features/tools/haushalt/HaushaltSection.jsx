@@ -125,6 +125,7 @@ export default function HaushaltSection() {
       title="Haushalt"
       badge={`${score}%`}
       badgeBg={badgeBg}
+      color={toolColor}
       onTitleClick={() => setCurrentTab(TOOL_TAB.haushalt)}
     >
       <div className={s.energieStrip}>
