@@ -99,6 +99,7 @@ export function getToolColor(toolId, toolColors) {
     geburtstage:  '#FF2D78',
     gamification: '#FFD700',
     reminder:     '#00FF94',
+    haushalt:     '#10B981',
   }
   return DEFAULTS[toolId] ?? '#8B5CF6'
 }

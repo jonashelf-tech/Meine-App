@@ -5,6 +5,13 @@ import { TOOL_TAB } from '../toolTabs'
 import { getToolColor } from '../../../utils'
 import s from './TabTools.module.css'
 
+const SWATCHES = [
+  '#8B5CF6', '#6366F1', '#3B82F6', '#00CFFF',
+  '#06B6D4', '#10B981', '#00FF94', '#84CC16',
+  '#EAB308', '#FF9F43', '#F97316', '#EF4444',
+  '#FF2D78', '#EC4899', '#BF00FF', '#FF6B6B',
+]
+
 const VIEWS = [
   { id: 'mine', label: 'Meine Tools' },
   { id: 'all',  label: 'Alle Tools' },
@@ -16,10 +23,10 @@ export default function TabTools() {
   const [view, setView] = useState('mine')
   const { activeTools, toggleTool, setCurrentTab, setToolColors, toolColors } = useAppStore()
 
-  const [dragId,         setDragId]         = useState(null)
-  const [insertAfterIdx, setInsertAfterIdx] = useState(null)
-  const cardRefs      = useRef({})
-  const colorInputRefs = useRef({})
+  const [dragId,           setDragId]           = useState(null)
+  const [insertAfterIdx,   setInsertAfterIdx]   = useState(null)
+  const [openColorPicker,  setOpenColorPicker]  = useState(null)
+  const cardRefs = useRef({})
 
   const myTools = activeTools
     .map(id => TOOL_REGISTRY.find(t => t.id === id))
@@ -134,35 +141,40 @@ export default function TabTools() {
       }
 
       items.push(
-        <div
-          key={tool.id}
-          ref={el => { cardRefs.current[tool.id] = el }}
-          className={[s.listCard, isDragging ? s.listCardDragging : ''].join(' ')}
-          style={{ '--tool-color': toolColor }}
-          onClick={() => !isDragging && openTool(tool)}
-        >
-          <button
-            className={s.colorBar}
-            onClick={e => { e.stopPropagation(); colorInputRefs.current[tool.id]?.click() }}
-            title="Farbe ändern"
-          />
-          <input
-            ref={el => { colorInputRefs.current[tool.id] = el }}
-            type="color"
-            value={toolColor}
-            onClick={e => e.stopPropagation()}
-            onChange={e => handleColorChange(tool.id, e.target.value)}
-            className={s.hidden}
-          />
-          <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
-          <div className={s.listText}>
-            <span className={s.cardName}>{tool.name}</span>
-            <span className={s.cardDesc}>{tool.description}</span>
+        <div key={tool.id}>
+          <div
+            ref={el => { cardRefs.current[tool.id] = el }}
+            className={[s.listCard, isDragging ? s.listCardDragging : ''].join(' ')}
+            style={{ '--tool-color': toolColor }}
+            onClick={() => !isDragging && openTool(tool)}
+          >
+            <button
+              className={s.colorBar}
+              onClick={e => { e.stopPropagation(); setOpenColorPicker(prev => prev === tool.id ? null : tool.id) }}
+              title="Farbe ändern"
+            />
+            <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
+            <div className={s.listText}>
+              <span className={s.cardName}>{tool.name}</span>
+              <span className={s.cardDesc}>{tool.description}</span>
+            </div>
+            <span
+              className={s.dragHandle}
+              onPointerDown={e => startPointerDrag(e, tool.id)}
+            >⠿</span>
           </div>
-          <span
-            className={s.dragHandle}
-            onPointerDown={e => startPointerDrag(e, tool.id)}
-          >⠿</span>
+          {openColorPicker === tool.id && (
+            <div className={s.swatchPanel}>
+              {SWATCHES.map(hex => (
+                <button
+                  key={hex}
+                  className={[s.swatch, toolColor === hex ? s.swatchActive : ''].join(' ')}
+                  style={{ '--sw': hex }}
+                  onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )
     })
@@ -194,36 +206,41 @@ export default function TabTools() {
             const isActive  = activeTools.includes(tool.id)
             const toolColor = getToolColor(tool.id, toolColors)
             return (
-              <div
-                key={tool.id}
-                className={[s.allChip, isActive ? '' : s.allChipInactive].join(' ')}
-                style={{ '--tool-color': toolColor }}
-                onClick={() => isActive && openTool(tool)}
-              >
-                <button
-                  className={s.colorBar}
-                  onClick={e => { e.stopPropagation(); colorInputRefs.current[tool.id]?.click() }}
-                  title="Farbe ändern"
-                />
-                <input
-                  ref={el => { colorInputRefs.current[tool.id] = el }}
-                  type="color"
-                  value={toolColor}
-                  onClick={e => e.stopPropagation()}
-                  onChange={e => handleColorChange(tool.id, e.target.value)}
-                  className={s.hidden}
-                />
-                <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
-                <div className={s.listText}>
-                  <span className={s.cardName}>{tool.name}</span>
-                  <span className={s.cardDesc}>{tool.description}</span>
-                </div>
-                <button
-                  className={[s.addBtn, isActive ? s.addBtnActive : ''].join(' ')}
-                  onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
+              <div key={tool.id}>
+                <div
+                  className={[s.allChip, isActive ? '' : s.allChipInactive].join(' ')}
+                  style={{ '--tool-color': toolColor }}
+                  onClick={() => isActive && openTool(tool)}
                 >
-                  {isActive ? '✓' : '+'}
-                </button>
+                  <button
+                    className={s.colorBar}
+                    onClick={e => { e.stopPropagation(); setOpenColorPicker(prev => prev === tool.id ? null : tool.id) }}
+                    title="Farbe ändern"
+                  />
+                  <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
+                  <div className={s.listText}>
+                    <span className={s.cardName}>{tool.name}</span>
+                    <span className={s.cardDesc}>{tool.description}</span>
+                  </div>
+                  <button
+                    className={[s.addBtn, isActive ? s.addBtnActive : ''].join(' ')}
+                    onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
+                  >
+                    {isActive ? '✓' : '+'}
+                  </button>
+                </div>
+                {openColorPicker === tool.id && (
+                  <div className={s.swatchPanel}>
+                    {SWATCHES.map(hex => (
+                      <button
+                        key={hex}
+                        className={[s.swatch, toolColor === hex ? s.swatchActive : ''].join(' ')}
+                        style={{ '--sw': hex }}
+                        onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )
           })}

@@ -1,6 +1,7 @@
 import { useAppStore } from '../../../store'
 import { sv, lv, SK } from '../../../storage'
 import { TOOL_TAB } from '../toolTabs'
+import { getToolColor } from '../../../utils'
 import ToolSection from '../../../components/ToolSection/ToolSection'
 import TodoChip from '../../../components/TodoChip/TodoChip'
 import { createBlock } from '../../todos/Block'
@@ -54,7 +55,7 @@ export default function HaushaltSection() {
     sv(SK.haushaltEnergie, val)
   }
 
-  const toolColor = toolColors?.['haushalt'] ?? '#10B981'
+  const toolColor = getToolColor('haushalt', toolColors)
   const dueRooms  = getDueRooms(config, energie)
   const score     = calcRingScore(config.rooms)
   const badgeBg   = score >= 70

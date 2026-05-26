@@ -83,7 +83,38 @@
   min-width: 0;
 }
 
-.hidden { display: none; }
+/* ─── Swatch Panel ──────────────────────────────────────── */
+.swatchPanel {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--r) var(--r);
+  margin-top: -4px;
+}
+
+.swatch {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: var(--sw);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 36px;
+}
+
+.swatch:active {
+  transform: scale(0.9);
+}
+
+.swatchActive {
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 8px var(--sw);
+}
 
 /* ─── Color Bar ─────────────────────────────────────────── */
 .colorBar {

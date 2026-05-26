@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useAppStore } from '../../../store'
-import { todayKey, minutesToSk, parseHHMM, ALL_SLOT_KEYS, sk } from '../../../utils'
+import { todayKey, minutesToSk, parseHHMM, ALL_SLOT_KEYS, sk, getToolColor } from '../../../utils'
 import { TOOL_TAB } from '../toolTabs'
 import ToolSection from '../../../components/ToolSection/ToolSection'
 import { createBlock } from '../../todos/Block'
@@ -15,7 +15,7 @@ export default function ReminderSection() {
   const { todos, setTodos, days, setDays, setCurrentTab, toolColors } = useAppStore()
   const today      = todayKey()
   const todaySlots = days[today] ?? {}
-  const toolColor  = toolColors?.['reminder'] ?? '#00FF94'
+  const toolColor  = getToolColor('reminder', toolColors)
 
   const [items,      setItems]      = useState(() => mergeWithCurated(loadReminderItems()))
   const [dismissed,  setDismissed]  = useState(() => loadDismissed())
