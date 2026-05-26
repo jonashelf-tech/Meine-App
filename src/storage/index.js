@@ -44,7 +44,9 @@ export const SK = {
   lastPoolReturn: `${PREFIX}view_last_pool_return`,
   poolSort:       `${PREFIX}view_pool_sort`,
   calView:        `${PREFIX}view_cal_view`,
-  blockers:       `${PREFIX}blockers`,
+  blockers:        `${PREFIX}blockers`,
+  erfolgeTracking: `${PREFIX}erfolge_tracking_v1`,
+  erfolge:         `${PREFIX}erfolge_v1`,
 }
 
 export const exportData = () => {
