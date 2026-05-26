@@ -8,7 +8,7 @@ import {
   loadHaushalt, saveHaushalt,
   markTaskDone, getDueRooms, calcRingScore,
 } from './haushaltData'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import s from './HaushaltSection.module.css'
 
 const BoltIcon = () => (
@@ -29,6 +29,13 @@ export default function HaushaltSection() {
   const { todos, setTodos, setCurrentTab, toolColors } = useAppStore()
   const [config,  setConfig]  = useState(() => loadHaushalt())
   const [energie, setEnergie] = useState(() => lv(SK.haushaltEnergie, 'normal'))
+
+  // Re-sync wenn Haushalt-Pool-Todos ihren done-State ändern (TabHeute schreibt direkt in localStorage)
+  const haushaltDoneKey = todos
+    .filter(t => t.toolId === 'haushalt')
+    .map(t => `${t.id}:${t.done}`)
+    .join(',')
+  useEffect(() => { setConfig(loadHaushalt()) }, [haushaltDoneKey])
 
   const updateConfig = (next) => { setConfig(next); saveHaushalt(next) }
 
