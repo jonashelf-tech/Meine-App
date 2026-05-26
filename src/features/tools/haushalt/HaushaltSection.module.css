@@ -35,6 +35,44 @@
   gap: 6px;
 }
 
+/* ── Raum-Selektion ─────────────────────────────────────── */
+.roomRow {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.roomChipWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.roomSelectBtn {
+  width: 28px;
+  min-width: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: none;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.72rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.roomSelectBtnOn {
+  color: var(--emerald);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.roomRowDeselected {
+  opacity: 0.4;
+}
+
 /* ── Raum-Done-Button (dragHandle im TodoChip) ──────────── */
 .roomDoneBtn {
   width: 30px;
@@ -77,9 +115,14 @@
   text-align: center;
 }
 
-.addAllBtn:hover {
+.addAllBtn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.07);
   color: rgba(255, 255, 255, 0.85);
+}
+
+.addAllBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 /* ── Empty ──────────────────────────────────────────────── */

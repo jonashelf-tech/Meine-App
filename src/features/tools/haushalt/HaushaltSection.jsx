@@ -8,7 +8,7 @@ import {
   loadHaushalt, saveHaushalt,
   markTaskDone, getDueRooms, calcRingScore,
 } from './haushaltData'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import s from './HaushaltSection.module.css'
 
 const BoltIcon = () => (
@@ -36,6 +36,16 @@ export default function HaushaltSection() {
     .map(t => `${t.id}:${t.done}`)
     .join(',')
   useEffect(() => { setConfig(loadHaushalt()) }, [haushaltDoneKey])
+
+  const [deselected, setDeselected] = useState(() => new Set())
+
+  const toggleSelectRoom = useCallback((roomId) => {
+    setDeselected(prev => {
+      const next = new Set(prev)
+      if (next.has(roomId)) next.delete(roomId); else next.add(roomId)
+      return next
+    })
+  }, [])
 
   const updateConfig = (next) => { setConfig(next); saveHaushalt(next) }
 
@@ -79,21 +89,20 @@ export default function HaushaltSection() {
     })
   }
 
-  const handleAddAll = () => {
+  const handleAddSelected = () => {
+    const roomsToAdd = visibleDueRooms.filter(({ room }) => !deselected.has(room.id))
     setTodos(prev => {
       const updated = [...prev]
 
-      visibleDueRooms.forEach(({ room, dueTasks }) => {
+      roomsToAdd.forEach(({ room, dueTasks }) => {
         const newTasks = dueTasks.filter(t => !poolTaskIds.has(t.id))
         if (newTasks.length === 0) return
 
-        // Bestehendes Haushalt-Todo für diesen Raum suchen (auch wenn im Zeitplan)
         const existingIdx = updated.findIndex(t =>
           t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done
         )
 
         if (existingIdx >= 0) {
-          // Merge: fehlende Tasks + Dauer hinzufügen
           const existing = updated[existingIdx]
           updated[existingIdx] = {
             ...existing,
@@ -102,7 +111,6 @@ export default function HaushaltSection() {
             subItems:        [...(existing.subItems || []), ...newTasks.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false }))],
           }
         } else {
-          // Neues Block erstellen
           updated.push(createBlock({
             text:            `${room.icon} ${room.name}`,
             duration:        newTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
@@ -150,6 +158,7 @@ export default function HaushaltSection() {
           <div className={s.rooms}>
             {visibleDueRooms.map(({ room, dueTasks }) => {
               const uncoveredTasks = dueTasks.filter(t => !poolTaskIds.has(t.id))
+              const isSelected = !deselected.has(room.id)
               const fakeTodo = {
                 id:       room.id,
                 text:     `${room.icon} ${room.name}`,
@@ -171,18 +180,37 @@ export default function HaushaltSection() {
                 >✓</button>
               )
               return (
-                <TodoChip
-                  key={room.id}
-                  todo={fakeTodo}
-                  saveItem={makeSaveItem(uncoveredTasks)}
-                  dragHandle={doneBtn}
-                />
+                <div key={room.id} className={[s.roomRow, !isSelected ? s.roomRowDeselected : ''].join(' ')}>
+                  <button
+                    className={[s.roomSelectBtn, isSelected ? s.roomSelectBtnOn : ''].join(' ')}
+                    onClick={() => toggleSelectRoom(room.id)}
+                    title={isSelected ? 'Abwählen' : 'Auswählen'}
+                  >
+                    {isSelected ? '✓' : '○'}
+                  </button>
+                  <div className={s.roomChipWrap}>
+                    <TodoChip
+                      todo={fakeTodo}
+                      saveItem={makeSaveItem(uncoveredTasks)}
+                      dragHandle={doneBtn}
+                    />
+                  </div>
+                </div>
               )
             })}
           </div>
-          <button className={s.addAllBtn} onClick={handleAddAll}>
-            + Alle zur Todoliste
-          </button>
+          {(() => {
+            const selectedCount = visibleDueRooms.filter(({ room }) => !deselected.has(room.id)).length
+            return (
+              <button
+                className={s.addAllBtn}
+                onClick={handleAddSelected}
+                disabled={selectedCount === 0}
+              >
+                + {selectedCount === visibleDueRooms.length ? 'Alle zur Todoliste' : `${selectedCount} zur Todoliste`}
+              </button>
+            )
+          })()}
         </>
       )}
     </ToolSection>
