@@ -1,134 +1,159 @@
-.section {
-  margin: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-
-/* ─── Header ─────────────────────────────────────────────── */
-.header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 14px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  text-align: left;
-}
-
-.label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
-  flex: 1;
-}
-
-.badge {
-  font-size: 0.62rem;
-  font-weight: 800;
-  font-family: 'Orbitron', monospace;
-  color: var(--tool-color, var(--cyan));
-  background: rgba(139, 92, 246, 0.1);
-  border-radius: 10px;
-  padding: 2px 7px;
-  min-width: 20px;
-  text-align: center;
-}
-
-@keyframes badgePulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-
-.badgeBlink { animation: badgePulse 1.6s ease-in-out infinite; }
-
-.chevron {
-  font-size: 0.65rem;
-  color: var(--text-dim);
-}
-
-/* ─── Items ──────────────────────────────────────────────── */
+/* ─── Items container ─────────────────────────────────────── */
 .items {
   display: flex;
   flex-direction: column;
-  padding: 0 10px 10px;
-  gap: 6px;
+  gap: 5px;
 }
 
-.item {
+/* ─── Chip (TodoChip-style) ───────────────────────────────── */
+.chip {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 8px 10px;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: var(--r);
+  overflow: hidden;
+  min-height: 40px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.itemIcon { font-size: 1rem; flex-shrink: 0; }
+.stripe {
+  width: 3px;
+  min-width: 3px;
+  align-self: stretch;
+  background: var(--chip-color, var(--primary));
+  flex-shrink: 0;
+}
 
-.itemBody {
+.chipIcon {
   display: flex;
   align-items: center;
-  gap: 8px;
+  padding: 0 8px 0 10px;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.chipBody {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px 8px 0;
   min-width: 0;
 }
 
-.itemText {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text);
+.chipText {
   font-family: 'Outfit', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.itemTime {
-  font-size: 0.65rem;
+.chipTime {
   font-family: 'Orbitron', monospace;
-  color: var(--text-dim);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
 }
 
-.addAllBtn {
-  width: 100%;
-  background: rgba(139, 92, 246, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: var(--r-sm);
-  color: var(--tool-color, var(--cyan));
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 7px 12px;
-  cursor: pointer;
-  text-align: center;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
-}
-
-.addAllBtn:hover {
-  background: rgba(139, 92, 246, 0.14);
-}
-
-.dismissBtn {
+/* ─── Add button (+) ──────────────────────────────────────── */
+.addBtn {
   background: none;
   border: none;
-  color: var(--text-dim);
-  font-size: 0.75rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--chip-color, var(--primary));
+  font-size: 1.2rem;
+  font-weight: 700;
   cursor: pointer;
-  padding: 4px 6px;
+  padding: 0 13px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
+  transition: background 0.12s;
   -webkit-tap-highlight-color: transparent;
   line-height: 1;
 }
 
-.dismissBtn:hover { color: var(--text); }
+.addBtn:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* ─── Dismiss button (✕) ──────────────────────────────────── */
+.dismissBtn {
+  background: none;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.12);
+  font-size: 0.62rem;
+  cursor: pointer;
+  padding: 0 8px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 28px;
+  transition: color 0.12s, background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dismissBtn:hover {
+  color: var(--rose);
+  background: rgba(251, 113, 133, 0.07);
+}
+
+/* ─── Select toggle ──────────────────────────────────────── */
+.selectBtn {
+  width: 28px;
+  min-width: 28px;
+  align-self: stretch;
+  background: none;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.72rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.selectBtnOn {
+  color: var(--chip-color, var(--primary));
+}
+
+.chipDeselected {
+  opacity: 0.4;
+}
+
+/* ─── Alle hinzufügen ─────────────────────────────────────── */
+.addAllBtn {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.addAllBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.addAllBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}

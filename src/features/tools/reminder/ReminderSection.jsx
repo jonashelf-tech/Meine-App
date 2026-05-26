@@ -17,8 +17,17 @@ export default function ReminderSection() {
   const todaySlots = days[today] ?? {}
   const toolColor  = toolColors?.['reminder'] ?? '#00FF94'
 
-  const [items,     setItems]     = useState(() => mergeWithCurated(loadReminderItems()))
-  const [dismissed, setDismissed] = useState(() => loadDismissed())
+  const [items,      setItems]      = useState(() => mergeWithCurated(loadReminderItems()))
+  const [dismissed,  setDismissed]  = useState(() => loadDismissed())
+  const [deselected, setDeselected] = useState(() => new Set())
+
+  const toggleSelect = useCallback((id) => {
+    setDeselected(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }, [])
 
   // Re-sync items wenn ein Reminder-Todo abgehakt wird (TabHeute setzt lastAdded in localStorage)
   const reminderDoneKey = todos
@@ -78,10 +87,11 @@ export default function ReminderSection() {
     // pendingReminderIds versteckt das Item automatisch — kein dismiss nötig
   }, [today, todaySlots, buildResult, setDays, setTodos])
 
-  const handleAddAll = useCallback(() => {
+  const handleAddSelected = useCallback(() => {
+    const toAdd = dueItems.filter(i => !deselected.has(i.id))
     let slotsAccum = { ...todaySlots }
     const newTodos = []
-    dueItems.forEach(item => {
+    toAdd.forEach(item => {
       const result = buildResult(item, slotsAccum)
       if (result.type === 'slot') {
         slotsAccum = { ...slotsAccum, [result.slotKey]: result.data }
@@ -93,7 +103,7 @@ export default function ReminderSection() {
       setDays(prev => ({ ...prev, [today]: slotsAccum }))
     }
     if (newTodos.length > 0) setTodos(prev => [...prev, ...newTodos])
-  }, [dueItems, today, todaySlots, buildResult, setDays, setTodos])
+  }, [dueItems, deselected, today, todaySlots, buildResult, setDays, setTodos])
 
   if (dueItems.length === 0) return null
 
@@ -106,19 +116,44 @@ export default function ReminderSection() {
       onTitleClick={() => setCurrentTab(TOOL_TAB.reminder)}
     >
       <div className={s.items}>
-        {dueItems.map(item => (
-          <div key={item.id} className={s.chip} style={{ '--chip-color': item.color ?? '#00FF94' }}>
-            <span className={s.stripe} />
-            <span className={s.chipIcon}>{item.icon || '🔔'}</span>
-            <div className={s.chipBody}>
-              <span className={s.chipText}>{item.text}</span>
-              {item.time && <span className={s.chipTime}>{item.time}</span>}
+        {dueItems.map(item => {
+          const isSelected = !deselected.has(item.id)
+          return (
+            <div
+              key={item.id}
+              className={[s.chip, !isSelected ? s.chipDeselected : ''].join(' ')}
+              style={{ '--chip-color': item.color ?? '#00FF94' }}
+            >
+              <button
+                className={[s.selectBtn, isSelected ? s.selectBtnOn : ''].join(' ')}
+                onClick={() => toggleSelect(item.id)}
+                title={isSelected ? 'Abwählen' : 'Auswählen'}
+              >
+                {isSelected ? '✓' : '○'}
+              </button>
+              <span className={s.stripe} />
+              <span className={s.chipIcon}>{item.icon || '🔔'}</span>
+              <div className={s.chipBody}>
+                <span className={s.chipText}>{item.text}</span>
+                {item.time && <span className={s.chipTime}>{item.time}</span>}
+              </div>
+              <button className={s.addBtn} onClick={() => handleAddSingle(item)} title="Einzeln hinzufügen">+</button>
+              <button className={s.dismissBtn} onClick={() => dismiss(item.id)} title="Für heute ignorieren">✕</button>
             </div>
-            <button className={s.addBtn} onClick={() => handleAddSingle(item)} title="Hinzufügen">+</button>
-            <button className={s.dismissBtn} onClick={() => dismiss(item.id)} title="Für heute ignorieren">✕</button>
-          </div>
-        ))}
-        <button className={s.addAllBtn} onClick={handleAddAll}>+ Alle hinzufügen</button>
+          )
+        })}
+        {(() => {
+          const selectedCount = dueItems.filter(i => !deselected.has(i.id)).length
+          return (
+            <button
+              className={s.addAllBtn}
+              onClick={handleAddSelected}
+              disabled={selectedCount === 0}
+            >
+              + {selectedCount === dueItems.length ? 'Alle hinzufügen' : `${selectedCount} hinzufügen`}
+            </button>
+          )
+        })()}
       </div>
     </ToolSection>
   )
