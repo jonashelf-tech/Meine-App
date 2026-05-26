@@ -8,6 +8,7 @@ import Pool                from '../Pool/Pool'
 import TodoModal           from '../../../components/TodoModal/TodoModal'
 import ReminderSection     from '../../tools/reminder/ReminderSection'
 import HaushaltSection     from '../../tools/haushalt/HaushaltSection'
+import ErfolgeSection      from '../../tools/erfolge/ErfolgeSection'
 import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
 import DayNav              from '../../../components/DayNav/DayNav'
 import BlockerModal        from '../Blocker/BlockerModal'
@@ -40,6 +41,19 @@ export default function TabHeute() {
     if (dayplanDate) {
       setViewDate(dayplanDate)
       setDayplanDate(null)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ─── Tagesplaner-Öffnung tracken (einmalig pro Tag) ───
+  useEffect(() => {
+    const tracking = lv(SK.erfolgeTracking, { tagesplanerDates: [] })
+    const today    = todayKey()
+    if (!tracking.tagesplanerDates.includes(today)) {
+      sv(SK.erfolgeTracking, {
+        ...tracking,
+        tagesplanerDates: [...tracking.tagesplanerDates, today].slice(-1000),
+      })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -218,7 +232,10 @@ export default function TabHeute() {
     const dur    = duration || 30
     const curKey = Object.keys(todaySlots).find(k => todaySlots[k]?.todoId === todoId)
     const canDrop = dur > 30
-      ? (key) => !getDurationKeys(key, dur).slice(1).some(k => k !== curKey && todaySlots[k])
+      ? (key) => {
+          const blocking = getDurationKeys(key, dur).slice(1).filter(k => k !== curKey && todaySlots[k])
+          return blocking.length === 0 ? true : blocking
+        }
       : null
     startDrag(text, color, (dropKey) => {
       if (curKey) {
@@ -248,7 +265,10 @@ export default function TabHeute() {
     if (!slot || slot.locked) return
     const dur = slot.duration || 30
     const canDrop = dur > 30
-      ? (toKey) => !getDurationKeys(toKey, dur).slice(1).some(k => k !== fromKey && todaySlots[k])
+      ? (toKey) => {
+          const blocking = getDurationKeys(toKey, dur).slice(1).filter(k => k !== fromKey && todaySlots[k])
+          return blocking.length === 0 ? true : blocking
+        }
       : null
     startDrag(slot.text, slot.color || '#8B5CF6', (toKey) => {
       if (toKey === fromKey) return
@@ -309,7 +329,7 @@ export default function TabHeute() {
         onDoneCalendar={handleDoneCalendar}
       />
       {(() => {
-        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection }
+        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection }
         return activeTools
           .filter(id => SECTIONS[id])
           .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} /> })
