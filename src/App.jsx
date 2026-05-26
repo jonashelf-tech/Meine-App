@@ -13,7 +13,7 @@ import TabRezepte      from './features/tools/rezepte/TabRezepte'
 import TabPizza        from './features/tools/pizza/TabPizza'
 import TabElvi         from './features/tools/elvi/TabElvi'
 import TabGewicht      from './features/tools/gewicht/TabGewicht'
-import TabGamification from './features/tools/gamification/TabGamification'
+import TabErfolge      from './features/tools/erfolge/TabErfolge'
 import TabRad          from './features/tools/rad/TabRad'
 import TabReminder     from './features/tools/reminder/TabReminder'
 import TabHaushalt     from './features/tools/haushalt/TabHaushalt'
@@ -98,7 +98,7 @@ export default function App() {
         {currentTab === TOOL_TAB.pizza        && <TabPizza        onBack={goBack} />}
         {currentTab === TOOL_TAB.elvi         && <TabElvi         onBack={goBack} />}
         {currentTab === TOOL_TAB.gewicht      && <TabGewicht      onBack={goBack} />}
-        {currentTab === TOOL_TAB.gamification && <TabGamification onBack={goBack} />}
+        {currentTab === TOOL_TAB.erfolge      && <TabErfolge      onBack={goBack} />}
         {currentTab === TOOL_TAB.rad          && <TabRad          onBack={goBack} />}
         {currentTab === TOOL_TAB.reminder     && <TabReminder     onBack={goBack} />}
         {currentTab === TOOL_TAB.haushalt     && <TabHaushalt     onBack={goBack} />}
