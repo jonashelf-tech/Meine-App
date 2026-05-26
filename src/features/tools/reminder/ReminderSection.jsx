@@ -1,6 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, minutesToSk, parseHHMM, ALL_SLOT_KEYS, sk } from '../../../utils'
+import { TOOL_TAB } from '../toolTabs'
+import ToolSection from '../../../components/ToolSection/ToolSection'
 import { createBlock } from '../../todos/Block'
 import {
   isDueToday, mergeWithCurated,
@@ -10,16 +12,33 @@ import {
 import s from './ReminderSection.module.css'
 
 export default function ReminderSection() {
-  const { todos, setTodos, days, setDays } = useAppStore()
-  const today     = todayKey()
+  const { todos, setTodos, days, setDays, setCurrentTab, toolColors } = useAppStore()
+  const today      = todayKey()
   const todaySlots = days[today] ?? {}
+  const toolColor  = toolColors?.['reminder'] ?? '#00FF94'
 
   const [items,     setItems]     = useState(() => mergeWithCurated(loadReminderItems()))
   const [dismissed, setDismissed] = useState(() => loadDismissed())
-  const [open,      setOpen]      = useState(false)
+
+  // Re-sync items wenn ein Reminder-Todo abgehakt wird (TabHeute setzt lastAdded in localStorage)
+  const reminderDoneKey = todos
+    .filter(t => t.reminderItemId)
+    .map(t => `${t.id}:${t.done}`)
+    .join(',')
+  useEffect(() => { setItems(mergeWithCurated(loadReminderItems())) }, [reminderDoneKey])
 
   const todayDismissed = dismissed[today] ?? []
-  const dueItems = items.filter(item => isDueToday(item) && !todayDismissed.includes(item.id))
+
+  // Items verstecken die bereits ein offenes Todo/Slot haben — sichtbar erst wieder wenn done
+  const pendingReminderIds = new Set(
+    todos.filter(t => t.reminderItemId && !t.done).map(t => t.reminderItemId)
+  )
+
+  const dueItems = items.filter(item =>
+    isDueToday(item) &&
+    !todayDismissed.includes(item.id) &&
+    !pendingReminderIds.has(item.id)
+  )
 
   const dismiss = useCallback((id) => {
     const next = { ...dismissed, [today]: [...todayDismissed, id] }
@@ -27,88 +46,79 @@ export default function ReminderSection() {
     saveDismissed(next)
   }, [dismissed, today, todayDismissed])
 
-  const addItem = useCallback((item, currentSlots) => {
+  const buildResult = useCallback((item, currentSlots) => {
     if (item.actionType === 'slot') {
-      let slotKey
-      if (item.time) {
-        const mins = parseHHMM(item.time)
-        slotKey = minutesToSk(mins)
-      } else {
-        slotKey = ALL_SLOT_KEYS.find(k => !currentSlots[k]) ?? sk(9)
-      }
+      let slotKey = item.time
+        ? minutesToSk(parseHHMM(item.time))
+        : ALL_SLOT_KEYS.find(k => !currentSlots[k]) ?? sk(9)
       if (currentSlots[slotKey]) {
         const free = ALL_SLOT_KEYS.find(k => !currentSlots[k])
         if (free) slotKey = free
       }
-      return { type: 'slot', slotKey, data: { text: item.text, color: item.color, duration: 30, locked: false, done: false } }
-    } else {
-      return { type: 'todo', block: createBlock({ text: item.text, priority: 2, color: item.color, category: 'Selfcare' }) }
+      return {
+        type: 'slot',
+        slotKey,
+        data: { text: item.text, color: item.color, duration: 30, locked: false, done: false, reminderItemId: item.id },
+      }
+    }
+    return {
+      type: 'todo',
+      block: createBlock({ text: item.text, priority: 2, color: item.color, category: 'Selfcare', reminderItemId: item.id }),
     }
   }, [])
 
-  const handleAddAll = useCallback(() => {
-    // Mark all as lastAdded
-    const nextItems = items.map(i =>
-      dueItems.some(d => d.id === i.id) ? { ...i, lastAdded: today } : i
-    )
-    setItems(nextItems)
-    saveReminderItems(nextItems)
+  // Kein lastAdded-Update beim Hinzufügen — passiert erst wenn Todo/Slot abgehakt wird
+  const handleAddSingle = useCallback((item) => {
+    const result = buildResult(item, todaySlots)
+    if (result.type === 'slot') {
+      setDays(prev => ({ ...prev, [today]: { ...(prev[today] ?? {}), [result.slotKey]: result.data } }))
+    } else {
+      setTodos(prev => [...prev, result.block])
+    }
+    // pendingReminderIds versteckt das Item automatisch — kein dismiss nötig
+  }, [today, todaySlots, buildResult, setDays, setTodos])
 
-    // Collect slot updates and todos
+  const handleAddAll = useCallback(() => {
     let slotsAccum = { ...todaySlots }
     const newTodos = []
-
     dueItems.forEach(item => {
-      const result = addItem(item, slotsAccum)
+      const result = buildResult(item, slotsAccum)
       if (result.type === 'slot') {
         slotsAccum = { ...slotsAccum, [result.slotKey]: result.data }
       } else {
         newTodos.push(result.block)
       }
     })
-
     if (Object.keys(slotsAccum).length > Object.keys(todaySlots).length) {
       setDays(prev => ({ ...prev, [today]: slotsAccum }))
     }
-    if (newTodos.length > 0) {
-      setTodos(prev => [...prev, ...newTodos])
-    }
-
-    // Dismiss all
-    const next = { ...dismissed, [today]: [...todayDismissed, ...dueItems.map(i => i.id)] }
-    setDismissed(next)
-    saveDismissed(next)
-  }, [items, dueItems, today, todaySlots, dismissed, todayDismissed, addItem, setDays, setTodos])
+    if (newTodos.length > 0) setTodos(prev => [...prev, ...newTodos])
+  }, [dueItems, today, todaySlots, buildResult, setDays, setTodos])
 
   if (dueItems.length === 0) return null
 
   return (
-    <div className={s.section}>
-      <button className={s.header} onClick={() => setOpen(v => !v)}>
-        <span className={s.label}>Reminder</span>
-        <span className={[s.badge, dueItems.length > 0 ? s.badgeBlink : ''].join(' ')}>
-          {dueItems.length}
-        </span>
-        <span className={s.chevron}>{open ? '▾' : '▸'}</span>
-      </button>
-
-      {open && (
-        <div className={s.items}>
-          <button className={s.addAllBtn} onClick={handleAddAll}>
-            + Alle hinzufügen
-          </button>
-          {dueItems.map(item => (
-            <div key={item.id} className={s.item}>
-              <span className={s.itemIcon}>{item.icon || '🔔'}</span>
-              <div className={s.itemBody}>
-                <span className={s.itemText}>{item.text}</span>
-                {item.time && <span className={s.itemTime}>{item.time}</span>}
-              </div>
-              <button className={s.dismissBtn} onClick={() => dismiss(item.id)}>✕</button>
+    <ToolSection
+      toolId="reminder"
+      title="Reminder"
+      badge={dueItems.length}
+      onTitleClick={() => setCurrentTab(TOOL_TAB.reminder)}
+    >
+      <div className={s.items}>
+        {dueItems.map(item => (
+          <div key={item.id} className={s.chip} style={{ '--chip-color': item.color ?? '#00FF94' }}>
+            <span className={s.stripe} />
+            <span className={s.chipIcon}>{item.icon || '🔔'}</span>
+            <div className={s.chipBody}>
+              <span className={s.chipText}>{item.text}</span>
+              {item.time && <span className={s.chipTime}>{item.time}</span>}
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+            <button className={s.addBtn} onClick={() => handleAddSingle(item)} title="Hinzufügen">+</button>
+            <button className={s.dismissBtn} onClick={() => dismiss(item.id)} title="Für heute ignorieren">✕</button>
+          </div>
+        ))}
+        <button className={s.addAllBtn} onClick={handleAddAll}>+ Alle hinzufügen</button>
+      </div>
+    </ToolSection>
   )
 }

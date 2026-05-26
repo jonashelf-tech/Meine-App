@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useAppStore } from '../../../store'
-import { todayKey, ALL_SLOT_KEYS } from '../../../utils'
+import { todayKey, ALL_SLOT_KEYS, getDurationKeys } from '../../../utils'
 import { sv, lv, SK } from '../../../storage'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan            from '../Zeitplan/Zeitplan'
@@ -14,6 +14,7 @@ import BlockerModal        from '../Blocker/BlockerModal'
 import RepeatDeleteSheet   from '../Blocker/RepeatDeleteSheet'
 import { deleteBlockerInstance, deleteBlockerFuture } from '../Blocker/blockerUtils'
 import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '../../tools/haushalt/haushaltData'
+import { setReminderLastAdded } from '../../tools/reminder/reminderData'
 import { useTimeEvents } from './useTimeEvents'
 import s from './TabHeute.module.css'
 
@@ -64,6 +65,9 @@ export default function TabHeute() {
         )
         saveHaushalt(updated)
       }
+      if (nowDone && todo?.reminderItemId) {
+        setReminderLastAdded(todo.reminderItemId, new Date().toISOString().slice(0, 10))
+      }
       return prev.map(t =>
         t.id === id
           ? { ...t, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null }
@@ -81,7 +85,11 @@ export default function TabHeute() {
     setTodaySlots(prev => {
       const slot = prev[slotKey]
       if (!slot) return prev
-      return { ...prev, [slotKey]: { ...slot, done: !slot.done } }
+      const nowDone = !slot.done
+      if (nowDone && slot.reminderItemId) {
+        setReminderLastAdded(slot.reminderItemId, new Date().toISOString().slice(0, 10))
+      }
+      return { ...prev, [slotKey]: { ...slot, done: nowDone } }
     })
   }, [setTodaySlots])
 
@@ -207,8 +215,12 @@ export default function TabHeute() {
 
   // ─── Drag & Drop ──────────────────────────────────────────
   const startPoolDrag = useCallback((todoId, text, color, duration, e) => {
+    const dur    = duration || 30
+    const curKey = Object.keys(todaySlots).find(k => todaySlots[k]?.todoId === todoId)
+    const canDrop = dur > 30
+      ? (key) => !getDurationKeys(key, dur).slice(1).some(k => k !== curKey && todaySlots[k])
+      : null
     startDrag(text, color, (dropKey) => {
-      const curKey = Object.keys(todaySlots).find(k => todaySlots[k]?.todoId === todoId)
       if (curKey) {
         if (dropKey === curKey) return
         setTodaySlots(prev => {
@@ -228,12 +240,16 @@ export default function TabHeute() {
           done:     false,
         })
       }
-    }, e)
+    }, e, canDrop)
   }, [startDrag, todaySlots, setTodaySlots, handleSetSlot])
 
   const startSlotDrag = useCallback((fromKey, e) => {
     const slot = todaySlots[fromKey]
     if (!slot || slot.locked) return
+    const dur = slot.duration || 30
+    const canDrop = dur > 30
+      ? (toKey) => !getDurationKeys(toKey, dur).slice(1).some(k => k !== fromKey && todaySlots[k])
+      : null
     startDrag(slot.text, slot.color || '#8B5CF6', (toKey) => {
       if (toKey === fromKey) return
       setTodaySlots(prev => {
@@ -243,7 +259,7 @@ export default function TabHeute() {
         ns[toKey] = entry
         return ns
       })
-    }, e)
+    }, e, canDrop)
   }, [startDrag, todaySlots, setTodaySlots])
 
   // ─── Edit modal ───────────────────────────────────────────
@@ -292,8 +308,12 @@ export default function TabHeute() {
         startDrag={startPoolDrag}
         onDoneCalendar={handleDoneCalendar}
       />
-      {activeTools.includes('reminder') && <ReminderSection />}
-      {activeTools.includes('haushalt') && <HaushaltSection />}
+      {(() => {
+        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection }
+        return activeTools
+          .filter(id => SECTIONS[id])
+          .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} /> })
+      })()}
 
       {editingTodo && (
         <TodoModal
