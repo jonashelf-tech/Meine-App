@@ -1,13 +1,14 @@
-import { useState } from 'react'
 import { useAppStore } from '../../../store'
 import { sv, lv, SK } from '../../../storage'
 import { TOOL_TAB } from '../toolTabs'
 import ToolSection from '../../../components/ToolSection/ToolSection'
+import TodoChip from '../../../components/TodoChip/TodoChip'
 import { createBlock } from '../../todos/Block'
 import {
   loadHaushalt, saveHaushalt,
   markTaskDone, getDueRooms, calcRingScore,
 } from './haushaltData'
+import { useState } from 'react'
 import s from './HaushaltSection.module.css'
 
 const BoltIcon = () => (
@@ -24,22 +25,10 @@ const BatteryLowIcon = () => (
   </svg>
 )
 
-const ChevronIcon = ({ open }) => (
-  <svg
-    width={10} height={10} viewBox="0 0 10 10"
-    fill="none" stroke="currentColor" strokeWidth={1.8}
-    strokeLinecap="round" strokeLinejoin="round"
-    style={{ transform: open ? 'none' : 'rotate(-90deg)', transition: 'transform 0.2s ease' }}
-  >
-    <polyline points="2 3 5 7 8 3"/>
-  </svg>
-)
-
 export default function HaushaltSection() {
-  const { setCurrentTab, setTodos, toolColors } = useAppStore()
-  const [config,   setConfig]   = useState(() => loadHaushalt())
-  const [energie,  setEnergie]  = useState(() => lv(SK.haushaltEnergie, 'normal'))
-  const [expanded, setExpanded] = useState({})
+  const { todos, setTodos, setCurrentTab, toolColors } = useAppStore()
+  const [config,  setConfig]  = useState(() => loadHaushalt())
+  const [energie, setEnergie] = useState(() => lv(SK.haushaltEnergie, 'normal'))
 
   const updateConfig = (next) => { setConfig(next); saveHaushalt(next) }
 
@@ -48,40 +37,80 @@ export default function HaushaltSection() {
     sv(SK.haushaltEnergie, val)
   }
 
-  const dueRooms = getDueRooms(config, energie)
-  const score    = calcRingScore(config.rooms)
-  const badgeBg  = score >= 70
+  const toolColor = toolColors?.['haushalt'] ?? '#10B981'
+  const dueRooms  = getDueRooms(config, energie)
+  const score     = calcRingScore(config.rooms)
+  const badgeBg   = score >= 70
     ? 'rgba(16,185,129,0.12)'
     : score >= 40 ? 'rgba(245,158,11,0.12)' : 'rgba(251,113,133,0.12)'
+
+  // Task-IDs die schon in nicht-done Haushalt-Pool-Todos stecken (inkl. Zeitplan)
+  const poolTaskIds = new Set(
+    todos
+      .filter(t => t.toolId === 'haushalt' && !t.done)
+      .flatMap(t => t.haushaltTaskIds ?? [])
+  )
+
+  // Nur Räume anzeigen die noch mindestens eine nicht-abgedeckte Task haben
+  const visibleDueRooms = dueRooms.filter(({ dueTasks }) =>
+    dueTasks.some(t => !poolTaskIds.has(t.id))
+  )
 
   const handleTaskDone = (taskId) => updateConfig(markTaskDone(config, taskId))
 
   const handleRoomDone = (roomId) => {
     const entry = dueRooms.find(e => e.room.id === roomId)
     if (!entry) return
-    const next = entry.dueTasks.reduce(
-      (cfg, t) => markTaskDone(cfg, t.id), config
-    )
+    const next = entry.dueTasks.reduce((cfg, t) => markTaskDone(cfg, t.id), config)
     updateConfig(next)
   }
 
-  const handleAddAll = () => {
-    const toolColor = toolColors?.['haushalt'] ?? '#10B981'
-    const blocks = dueRooms.map(({ room, dueTasks }) =>
-      createBlock({
-        text:            `${room.icon} ${room.name}`,
-        duration:        dueTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
-        subItems:        dueTasks.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false })),
-        color:           toolColor,
-        toolId:          'haushalt',
-        haushaltTaskIds: dueTasks.map(t => t.id),
-      })
-    )
-    setTodos(prev => [...prev, ...blocks])
+  // saveItem-Handler für TodoChip: wenn ein subItem done → Haushalt-Task abhaken
+  const makeSaveItem = (uncoveredTasks) => (updatedTodo) => {
+    updatedTodo.subItems.forEach(si => {
+      if (si.done) handleTaskDone(si.id)
+    })
   }
 
-  const toggleExpand = (roomId) =>
-    setExpanded(p => ({ ...p, [roomId]: !p[roomId] }))
+  const handleAddAll = () => {
+    setTodos(prev => {
+      const updated = [...prev]
+
+      visibleDueRooms.forEach(({ room, dueTasks }) => {
+        const newTasks = dueTasks.filter(t => !poolTaskIds.has(t.id))
+        if (newTasks.length === 0) return
+
+        // Bestehendes Haushalt-Todo für diesen Raum suchen (auch wenn im Zeitplan)
+        const existingIdx = updated.findIndex(t =>
+          t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done
+        )
+
+        if (existingIdx >= 0) {
+          // Merge: fehlende Tasks + Dauer hinzufügen
+          const existing = updated[existingIdx]
+          updated[existingIdx] = {
+            ...existing,
+            duration:        (existing.duration || 0) + newTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
+            haushaltTaskIds: [...existing.haushaltTaskIds, ...newTasks.map(t => t.id)],
+            subItems:        [...(existing.subItems || []), ...newTasks.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false }))],
+          }
+        } else {
+          // Neues Block erstellen
+          updated.push(createBlock({
+            text:            `${room.icon} ${room.name}`,
+            duration:        newTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
+            subItems:        newTasks.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false })),
+            color:           toolColor,
+            toolId:          'haushalt',
+            haushaltRoomId:  room.id,
+            haushaltTaskIds: newTasks.map(t => t.id),
+          }))
+        }
+      })
+
+      return updated
+    })
+  }
 
   return (
     <ToolSection
@@ -106,48 +135,40 @@ export default function HaushaltSection() {
         </button>
       </div>
 
-      {dueRooms.length === 0 ? (
+      {visibleDueRooms.length === 0 ? (
         <div className={s.empty}>✨ Alles im Griff</div>
       ) : (
         <>
           <div className={s.rooms}>
-            {dueRooms.map(({ room, dueTasks }) => {
-              const totalMin = dueTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0)
-              const isOpen   = !!expanded[room.id]
+            {visibleDueRooms.map(({ room, dueTasks }) => {
+              const uncoveredTasks = dueTasks.filter(t => !poolTaskIds.has(t.id))
+              const fakeTodo = {
+                id:       room.id,
+                text:     `${room.icon} ${room.name}`,
+                color:    toolColor,
+                toolId:   'haushalt',
+                done:     false,
+                priority: null,
+                duration: uncoveredTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
+                subItems: uncoveredTasks.map(t => ({ id: t.id, text: t.text, done: false })),
+                category: null,
+                date:     null,
+                time:     null,
+              }
+              const doneBtn = (
+                <button
+                  className={s.roomDoneBtn}
+                  onClick={e => { e.stopPropagation(); handleRoomDone(room.id) }}
+                  title="Alle erledigt"
+                >✓</button>
+              )
               return (
-                <div key={room.id} className={s.roomChip}>
-                  <div className={s.chipHeader} onClick={() => toggleExpand(room.id)}>
-                    <span className={s.roomIcon}>{room.icon}</span>
-                    <span className={s.roomName}>{room.name}</span>
-                    {totalMin > 0 && (
-                      <span className={s.duration}>{totalMin} min</span>
-                    )}
-                    <button
-                      className={s.roomDoneBtn}
-                      onClick={e => { e.stopPropagation(); handleRoomDone(room.id) }}
-                      title="Alle erledigt"
-                    >✓</button>
-                    <span className={s.chevron}><ChevronIcon open={isOpen} /></span>
-                  </div>
-
-                  {isOpen && (
-                    <div className={s.taskList}>
-                      {dueTasks.map(task => (
-                        <div key={task.id} className={s.taskRow}>
-                          <span className={s.taskText}>{task.text}</span>
-                          {task.duration > 0 && (
-                            <span className={s.taskDuration}>{task.duration}min</span>
-                          )}
-                          <button
-                            className={s.taskDoneBtn}
-                            onClick={() => handleTaskDone(task.id)}
-                            title="Erledigt"
-                          >✓</button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <TodoChip
+                  key={room.id}
+                  todo={fakeTodo}
+                  saveItem={makeSaveItem(uncoveredTasks)}
+                  dragHandle={doneBtn}
+                />
               )
             })}
           </div>

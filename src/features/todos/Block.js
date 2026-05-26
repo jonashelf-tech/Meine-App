@@ -29,5 +29,6 @@ export const createBlock = (partial = {}) => ({
   createdAt:             new Date().toISOString(),
   toolId:                null,
   haushaltTaskIds:       [],
+  haushaltRoomId:        null,
   ...partial,
 })

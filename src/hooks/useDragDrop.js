@@ -10,7 +10,7 @@ export function useDragDrop() {
     else delete halfRefs.current[key]
   }
 
-  const startDrag = (text, color, onDrop, e) => {
+  const startDrag = (text, color, onDrop, e, canDrop) => {
     e.preventDefault()
 
     const SCROLL_ZONE = 80
@@ -60,7 +60,10 @@ export function useDragDrop() {
         const rc   = el.getBoundingClientRect()
         const over = cx >= rc.left && cx <= rc.right && cy >= rc.top && cy <= rc.bottom
         el.classList.remove('dnd-half-over', 'dnd-half-locked')
-        if (over) el.classList.add(type === 'locked' || type === 'occupied' ? 'dnd-half-locked' : 'dnd-half-over')
+        if (over) {
+          const blocked = type === 'locked' || type === 'occupied' || (type === 'empty' && canDrop && !canDrop(key))
+          el.classList.add(blocked ? 'dnd-half-locked' : 'dnd-half-over')
+        }
       })
 
       const rc      = scrollEl === window ? { top: 0, bottom: window.innerHeight } : scrollEl.getBoundingClientRect()

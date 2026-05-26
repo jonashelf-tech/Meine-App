@@ -2,7 +2,6 @@
 .energieStrip {
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
 }
 
 .energieBtn {
@@ -29,65 +28,26 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* ── Raum-Chips ─────────────────────────────────────────── */
+/* ── Raum-Liste ─────────────────────────────────────────── */
 .rooms {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 10px;
 }
 
-.roomChip {
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-}
-
-.chipHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.12s;
-}
-
-.chipHeader:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.roomIcon {
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.roomName {
-  flex: 1;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.duration {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.35);
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
+/* ── Raum-Done-Button (dragHandle im TodoChip) ──────────── */
 .roomDoneBtn {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(16, 185, 129, 0.35);
-  background: rgba(16, 185, 129, 0.06);
-  color: rgba(16, 185, 129, 0.7);
-  font-size: 0.7rem;
+  width: 30px;
+  min-width: 30px;
+  align-self: stretch;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  background: none;
+  color: rgba(16, 185, 129, 0.55);
+  font-size: 0.72rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -97,71 +57,8 @@
 }
 
 .roomDoneBtn:hover {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.6);
-  color: var(--emerald);
-}
-
-.chevron {
-  display: flex;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.3);
-  flex-shrink: 0;
-}
-
-/* ── Task-Liste (expandiert) ────────────────────────────── */
-.taskList {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.taskRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px 8px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.taskRow:last-child {
-  border-bottom: none;
-}
-
-.taskText {
-  flex: 1;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.65);
-  min-width: 0;
-  word-break: break-word;
-}
-
-.taskDuration {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.64rem;
-  color: rgba(255, 255, 255, 0.28);
-  flex-shrink: 0;
-}
-
-.taskDoneBtn {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(16, 185, 129, 0.3);
-  background: none;
-  color: rgba(16, 185, 129, 0.6);
-  font-size: 0.65rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.15s;
-}
-
-.taskDoneBtn:hover {
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.1);
+  color: rgba(16, 185, 129, 0.9);
 }
 
 /* ── Alle-Button ────────────────────────────────────────── */

@@ -166,8 +166,8 @@ export default function TodoChip({
           ...(chipStyle || {}),
         }}
       >
-        {/* Stripe */}
-        <span className={s.stripe} />
+        {/* Stripe — only when no tool glow active */}
+        {!glowColor && <span className={s.stripe} />}
 
         {/* Expand button */}
         {!disableExpand && (
