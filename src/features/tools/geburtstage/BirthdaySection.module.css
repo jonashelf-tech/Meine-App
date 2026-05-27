@@ -1,0 +1,54 @@
+/* BirthdaySection.module.css */
+.items { display: flex; flex-direction: column; gap: 6px; }
+.row { display: flex; align-items: stretch; gap: 4px; }
+.chipWrap { flex: 1; min-width: 0; }
+.rowDeselected { opacity: 0.4; }
+
+.selectBtn {
+  width: 28px;
+  min-width: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: none;
+  color: rgba(255,255,255,0.2);
+  font-size: 0.72rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.selectBtnOn { color: var(--emerald); border-color: rgba(16,185,129,0.3); }
+
+.dragHandle {
+  width: 30px;
+  min-width: 30px;
+  align-self: stretch;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.25);
+  cursor: grab;
+  touch-action: none;
+  transition: color 0.15s;
+}
+.dragHandle:hover { color: rgba(255,255,255,0.55); }
+
+.addAllBtn {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.6);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.addAllBtn:disabled { opacity: 0.35; cursor: default; }
