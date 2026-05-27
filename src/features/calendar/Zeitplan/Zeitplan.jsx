@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useMemo } from 'react'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
+import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import s from './Zeitplan.module.css'
 import SlotBlock from './SlotBlock'
 import BlockerCard from '../Blocker/BlockerCard'
@@ -43,7 +44,7 @@ function SlotChipPreview({ slotKey, slot, onTap }) {
 }
 
 // ─── PillStrip ────────────────────────────────────────────
-function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink, onExpandTo }) {
+function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink, onExpandTo, birthdayPills = [] }) {
   const outSlots = Object.entries(slots)
     .filter(([k, v]) => {
       if (!v) return false
@@ -52,10 +53,25 @@ function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink,
     })
     .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
 
+  const showBirthdays = isTop && birthdayPills.length > 0
+
   return (
     <div className={s.pillStrip}>
       <button className={[s.pillBtn, s.pillBtnMinus].join(' ')} onClick={onShrink}>−</button>
       <div className={s.pillChips}>
+        {showBirthdays && birthdayPills.map(b => (
+          <div
+            key={b.id}
+            className={s.pillChip}
+            style={{ borderLeft: `3px solid ${b._color || 'var(--primary)'}`, cursor: 'default', opacity: 0.85 }}
+            title={`${b.name} hat heute Geburtstag`}
+          >
+            <div className={s.pillChipBody}>
+              <span className={s.pillChipText}>{b.name}</span>
+              <span className={s.pillChipMeta}>Geburtstag</span>
+            </div>
+          </div>
+        ))}
         {outSlots.map(([k, slot]) => (
           <SlotChipPreview key={k} slotKey={k} slot={slot} onTap={onExpandTo} />
         ))}
@@ -90,6 +106,8 @@ export default function Zeitplan({
   onCreateBlocker,
   onEditBlocker,
   onToggleBlockerLocked,
+  birthdayPills = [],
+  birthdayPillsDate = null,
 }) {
   const [hideEmpty, setHideEmpty]       = useState(false)
   const [removeDialog, setRemoveDialog] = useState(null)
@@ -108,6 +126,14 @@ export default function Zeitplan({
     () => getBlockersForDate(blockers, dateLabel),
     [blockers, dateLabel]
   )
+
+  // Birthday-Pills für PillStrip: kalender:true + kein wichtig am Datumstag
+  const activeBirthdayPills = useMemo(() => {
+    if (!birthdayPillsDate) return []
+    return getBirthdaysForCalendarDate(birthdayPills, birthdayPillsDate)
+      .filter(b => !b.wichtig)
+      .map(b => ({ ...b, _color: 'var(--primary)' }))
+  }, [birthdayPills, birthdayPillsDate])
 
   const hours = hideEmpty
     ? fullHours.filter(h =>
@@ -278,6 +304,7 @@ export default function Zeitplan({
         onExpand={() => onExpandUp?.()}
         onShrink={() => onRemoveHour?.(visibleStart)}
         onExpandTo={(h) => onExpandUpTo?.(h)}
+        birthdayPills={activeBirthdayPills}
       />
 
       {/* Sections: normal grids + blocker cards */}
