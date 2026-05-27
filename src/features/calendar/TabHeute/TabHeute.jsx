@@ -10,6 +10,7 @@ import ReminderSection     from '../../tools/reminder/ReminderSection'
 import HaushaltSection     from '../../tools/haushalt/HaushaltSection'
 import ErfolgeSection      from '../../tools/erfolge/ErfolgeSection'
 import GewichtSection     from '../../tools/gewicht/GewichtSection'
+import BirthdaySection    from '../../tools/geburtstage/BirthdaySection'
 import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
 import DayNav              from '../../../components/DayNav/DayNav'
 import BlockerModal        from '../Blocker/BlockerModal'
@@ -23,7 +24,7 @@ import { useTimeEvents } from './useTimeEvents'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays } = useAppStore()
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
@@ -319,6 +320,48 @@ export default function TabHeute() {
     }, e, null)
   }, [startDrag, setTodos, handleSetSlot])
 
+  const startBirthdayDrag = useCallback((chip, chipColor, e, bulkChips) => {
+    // Bulk-Add in Pool (Masse-Hinzufügen-Button)
+    if (!chip && bulkChips) {
+      const newTodos = bulkChips.map(c =>
+        createBlock({ text: c.text, priority: c.type === 'birthday' ? 2 : 3, color: c.color, toolId: 'geburtstage' })
+      )
+      setTodos(prev => [...prev, ...newTodos])
+      // Geburtstags-Chips: plannedYear setzen
+      const currentYear = new Date().getFullYear()
+      const bChips = bulkChips.filter(c => c.type === 'birthday')
+      if (bChips.length > 0) {
+        setBirthdays(prev => prev.map(b => {
+          const hit = bChips.find(c => c.birthday.id === b.id)
+          return hit ? { ...b, plannedYear: currentYear } : b
+        }))
+      }
+      return
+    }
+
+    const duration = 30
+    startDrag(chip.text, chipColor, (dropKey) => {
+      const newTodo = createBlock({
+        text: chip.text,
+        priority: chip.type === 'birthday' ? 2 : 3,
+        color: chipColor,
+        toolId: 'geburtstage',
+        duration,
+      })
+      setTodos(prev => [...prev, newTodo])
+      if (dropKey !== 'pool') {
+        handleSetSlot(dropKey, { text: chip.text, todoId: newTodo.id, color: chipColor, duration, locked: false, done: false })
+        // Geburtstags-Chip in Zeitplan platziert → Kalender-Entry ausblenden
+        if (chip.type === 'birthday') {
+          const currentYear = new Date().getFullYear()
+          setBirthdays(prev => prev.map(b =>
+            b.id === chip.birthday.id ? { ...b, plannedYear: currentYear } : b
+          ))
+        }
+      }
+    }, e, null)
+  }, [startDrag, setTodos, handleSetSlot, setBirthdays])
+
   const startSlotDrag = useCallback((fromKey, e) => {
     const slot = todaySlots[fromKey]
     if (!slot || slot.locked) return
@@ -383,6 +426,8 @@ export default function TabHeute() {
         onCreateBlocker={handleCreateBlocker}
         onEditBlocker={handleEditBlocker}
         onToggleBlockerLocked={handleToggleBlockerLocked}
+        birthdayPills={birthdays}
+        birthdayPillsDate={viewDate}
       />
       <Pool
         todos={todos}
@@ -397,10 +442,11 @@ export default function TabHeute() {
         registerHalf={registerHalf}
       />
       {(() => {
-        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection, gewicht: GewichtSection }
+        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection, gewicht: GewichtSection, geburtstage: BirthdaySection }
         const SECTION_PROPS = {
-          haushalt: { onStartDrag: startHaushaltDrag },
-          reminder: { onStartDrag: startReminderDrag },
+          haushalt:    { onStartDrag: startHaushaltDrag },
+          reminder:    { onStartDrag: startReminderDrag },
+          geburtstage: { onStartDrag: startBirthdayDrag },
         }
         return activeTools
           .filter(id => SECTIONS[id])
