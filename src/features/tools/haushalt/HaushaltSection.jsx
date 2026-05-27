@@ -88,34 +88,10 @@ export default function HaushaltSection({ onStartDrag }) {
   const handleTaskDone = (taskId) => updateConfig(markTaskDone(config, taskId))
 
   const handleRoomDragStart = useCallback((room, dueTasks, e) => {
-    const existing = todos.find(t => t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done)
-    let todoId, text, color, duration
-    if (existing) {
-      todoId   = existing.id
-      text     = existing.text
-      color    = existing.color
-      duration = existing.duration
-    } else {
-      const covered    = new Set(todos.filter(t => t.toolId === 'haushalt' && !t.done).flatMap(t => t.haushaltTaskIds ?? []))
-      const uncovered  = dueTasks.filter(t => !covered.has(t.id))
-      const newTodo    = createBlock({
-        text:            `${room.icon} ${room.name}`,
-        duration:        uncovered.reduce((sum, t) => sum + (t.duration ?? 0), 0),
-        subItems:        uncovered.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false })),
-        color:           toolColor,
-        toolId:          'haushalt',
-        haushaltRoomId:  room.id,
-        haushaltTaskIds: uncovered.map(t => t.id),
-        priority:        room.priority ?? 3,
-      })
-      setTodos(prev => [...prev, newTodo])
-      todoId   = newTodo.id
-      text     = newTodo.text
-      color    = toolColor
-      duration = newTodo.duration
-    }
-    onStartDrag?.(todoId, text, color, duration, e)
-  }, [todos, setTodos, toolColor, onStartDrag])
+    const covered   = new Set(todos.filter(t => t.toolId === 'haushalt' && !t.done).flatMap(t => t.haushaltTaskIds ?? []))
+    const uncovered = dueTasks.filter(t => !covered.has(t.id))
+    onStartDrag?.(room, uncovered, toolColor, e)
+  }, [todos, toolColor, onStartDrag])
 
   const handleRoomDone = (roomId) => {
     const entry = dueRooms.find(e => e.room.id === roomId)

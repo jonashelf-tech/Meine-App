@@ -16,6 +16,7 @@ import KlaerenModal        from '../../tools/klaeren/KlaerenModal'
 import RepeatDeleteSheet   from '../Blocker/RepeatDeleteSheet'
 import { deleteBlockerInstance, deleteBlockerFuture } from '../Blocker/blockerUtils'
 import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '../../tools/haushalt/haushaltData'
+import { createBlock } from '../../todos/Block'
 import { setReminderLastAdded } from '../../tools/reminder/reminderData'
 import { useTimeEvents } from './useTimeEvents'
 import s from './TabHeute.module.css'
@@ -262,6 +263,37 @@ export default function TabHeute() {
     }, e, canDrop)
   }, [startDrag, todaySlots, setTodaySlots, handleSetSlot])
 
+  const startHaushaltDrag = useCallback((room, uncoveredTasks, haushaltColor, e) => {
+    const existing = todos.find(t => t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done)
+    if (existing) {
+      startPoolDrag(existing.id, existing.text, existing.color, existing.duration, e)
+      return
+    }
+    const text     = `${room.icon} ${room.name}`
+    const duration = Math.max(uncoveredTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0), 30)
+    const canDrop  = duration > 30
+      ? (key) => {
+          if (key === 'pool') return true
+          const blocking = getDurationKeys(key, duration).slice(1).filter(k => todaySlots[k])
+          return blocking.length === 0 ? true : blocking
+        }
+      : null
+    startDrag(text, haushaltColor, (dropKey) => {
+      const newTodo = createBlock({
+        text,
+        duration,
+        subItems:        uncoveredTasks.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false })),
+        color:           haushaltColor,
+        toolId:          'haushalt',
+        haushaltRoomId:  room.id,
+        haushaltTaskIds: uncoveredTasks.map(t => t.id),
+        priority:        room.priority ?? 3,
+      })
+      setTodos(prev => [...prev, newTodo])
+      handleSetSlot(dropKey, { text, todoId: newTodo.id, color: haushaltColor, duration, locked: false, done: false })
+    }, e, canDrop)
+  }, [todos, todaySlots, startDrag, startPoolDrag, setTodos, handleSetSlot])
+
   const startSlotDrag = useCallback((fromKey, e) => {
     const slot = todaySlots[fromKey]
     if (!slot || slot.locked) return
@@ -339,7 +371,7 @@ export default function TabHeute() {
       />
       {(() => {
         const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection }
-        const SECTION_PROPS = { haushalt: { onStartDrag: startPoolDrag } }
+        const SECTION_PROPS = { haushalt: { onStartDrag: startHaushaltDrag } }
         return activeTools
           .filter(id => SECTIONS[id])
           .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
