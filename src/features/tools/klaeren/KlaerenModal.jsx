@@ -95,7 +95,7 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
             <div className={s.questionSub}>Kurz und ehrlich. Kein perfekter Satz nötig.</div>
             <textarea
               className={s.textarea}
-              placeholder="z.B. „Ich weiß nicht wo ich anfangen soll""
+              placeholder={'z.B. "Ich weiß nicht wo ich anfangen soll"'}
               value={hindernis}
               onChange={e => setHindernis(e.target.value)}
               rows={3}
@@ -122,7 +122,7 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
             <div className={s.questionSub}>Nicht was es kostet — was du gewinnst.</div>
             <textarea
               className={s.textarea}
-              placeholder="z.B. „Weniger Stress, Geld zurück""
+              placeholder={'z.B. "Weniger Stress, Geld zurück"'}
               value={wert}
               onChange={e => setWert(e.target.value)}
               rows={3}
