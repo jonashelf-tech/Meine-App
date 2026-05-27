@@ -66,11 +66,12 @@
 
 /* ── Flat grid (v2.7-style) ───────────────────────────── */
 .slotsContainer {
-  border: 1px solid var(--border-dim);
+  border: 1px solid var(--border);
+  border-left: 2px solid rgba(139,92,246,0.28);
   border-radius: var(--r);
   overflow: visible;
-  background: rgba(0,0,0,0.1);
-  margin-bottom: 4px;
+  background: rgba(0,0,0,0.08);
+  margin-bottom: 8px;
 }
 
 .sgGrid {
@@ -89,26 +90,26 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.62rem;
   font-weight: 700;
-  color: var(--text-faint);
-  border-right: 1px solid var(--border-dim);
-  border-bottom: 1px solid var(--border-dim);
+  color: var(--text-dim);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   user-select: none;
 }
 
 .sgLabelNow {
   color: var(--primary);
-  font-size: 0.65rem;
+  font-size: 0.67rem;
+  font-weight: 800;
 }
 
 .sgHalf {
   grid-column: 2;
-  border-bottom: 1px solid var(--border-dim);
+  border-bottom: 1px solid var(--border);
   position: relative;
   overflow: visible;
   transition: background 0.12s;
   padding: 2px 3px 2px 2px;
 }
-
 
 .sgHalfBot {
   border-bottom: 1px dashed var(--border-dim);
@@ -119,12 +120,11 @@
   align-items: center;
   padding-left: 6px;
   cursor: default;
-  background: rgba(255,255,255,0.008);
   height: 100%;
 }
 
 .sgNow {
-  background: rgba(139,92,246,0.016);
+  background: rgba(139,92,246,0.048);
 }
 
 .sgConsumed {
@@ -264,6 +264,7 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.07);
   background: var(--surface-low);
+  margin-bottom: 8px;
 }
 
 .pillBtn {
