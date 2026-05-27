@@ -115,7 +115,8 @@
   border-bottom: 1px dashed var(--border-dim);
 }
 
-.sgGrid > :last-child {
+.sgGrid > :last-child,
+.sgGrid > :nth-last-child(3) {
   border-bottom: none;
 }
 

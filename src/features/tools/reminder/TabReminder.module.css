@@ -309,6 +309,46 @@
   outline: none;
 }
 
+/* ─── Done / Reset ───────────────────────────────────────── */
+.doneBtn {
+  background: none;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  padding: 0 10px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.doneBtn:hover {
+  color: var(--emerald);
+  background: rgba(16, 185, 129, 0.07);
+}
+
+.resetBtn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  align-self: flex-start;
+}
+
+.resetBtn:hover {
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
 /* ─── Delete ─────────────────────────────────────────────── */
 .deleteBtn {
   background: none;

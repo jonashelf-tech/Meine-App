@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../../store'
-import { getToolColor } from '../../../utils'
+import { getToolColor, todayKey } from '../../../utils'
 import {
   CURATED, intervalLabel, mergeWithCurated,
   loadReminderItems, saveReminderItems,
@@ -9,6 +9,12 @@ import {
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import RepeatPicker from '../../../components/RepeatPicker/RepeatPicker'
 import s from './TabReminder.module.css'
+
+const CheckIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
+    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
 
 // Konvertierung zwischen Reminder-Intervall und RepeatPicker-Format
 function intervalToRepeat(interval) {
@@ -82,6 +88,13 @@ function ItemRow({ item, onUpdate, onDelete }) {
           </div>
           <span className={s.chevron}>{open ? '▾' : '▸'}</span>
         </button>
+        <button
+          className={s.doneBtn}
+          onClick={() => onUpdate({ ...item, lastAdded: todayKey() })}
+          title="Jetzt abhaken"
+        >
+          <CheckIcon />
+        </button>
       </div>
 
       {open && (
@@ -107,6 +120,7 @@ function ItemRow({ item, onUpdate, onDelete }) {
               >{l}</button>
             ))}
           </div>
+          <button className={s.resetBtn} onClick={() => onUpdate({ ...item, lastAdded: null })}>↺ Reset</button>
           {!item.curated && onDelete && (
             <button className={s.deleteBtn} onClick={onDelete}>Entfernen</button>
           )}

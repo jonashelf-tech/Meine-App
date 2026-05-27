@@ -68,7 +68,7 @@ function getCellBars(dk, days) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
+function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
   const [open, setOpen] = useState({ zeitplan: true, done: true, tools: false })
 
   const slots = days[dateKey] ?? {}
@@ -97,6 +97,7 @@ function DayPanel({ dateKey, days, todos, activeTools, toolColors, setCurrentTab
         >
           {label}
         </span>
+        {dateKey === todayKey && <span className={s.todayBadge}>heute</span>}
       </div>
 
       {/* Zeitplan */}
@@ -506,6 +507,7 @@ export default function TabKalender() {
           {selectedDay && (
             <DayPanel
               dateKey={selectedDay}
+              todayKey={todayKey}
               days={days}
               todos={todos}
               activeTools={activeTools}

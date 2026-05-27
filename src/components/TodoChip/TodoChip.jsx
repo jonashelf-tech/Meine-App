@@ -310,7 +310,9 @@ export default function TodoChip({
         )}
 
         {/* PrioBadge */}
-        <PrioBadge priority={todo.priority} />
+        <span className={s.prioBadgeWrap}>
+          <PrioBadge priority={todo.priority} />
+        </span>
 
         {/* Drag handle — passed in as JSX */}
         {dragHandle}

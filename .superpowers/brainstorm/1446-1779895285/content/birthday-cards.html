@@ -1,0 +1,87 @@
+<h2>Geburtstags-Karten — wie soll jeder Eintrag aussehen?</h2>
+<p class="subtitle">Verschiedene Zustände: normal, wichtig (Krone), heute, mit aktivierten Buttons</p>
+
+<div style="max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:10px;">
+
+  <!-- Normaler Eintrag -->
+  <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.07em;text-transform:uppercase;padding-left:2px;margin-top:4px;">Normal</div>
+  <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;font-family:'system-ui',sans-serif;">
+    <!-- Avatar-Kreis -->
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,0.15);border:1.5px solid rgba(139,92,246,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#8B5CF6;flex-shrink:0;">T</div>
+    <!-- Info -->
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:2px;">Tobi Bauer</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);">15. März · 28 Jahre</div>
+    </div>
+    <!-- Rechts: Tage + Kalender-Dot -->
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:4px 8px;font-size:11px;color:#8B5CF6;font-family:monospace;font-weight:600;">in 28d</div>
+    </div>
+  </div>
+
+  <!-- Wichtig (Krone) + Kalender + Geschenk aktiv -->
+  <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.07em;text-transform:uppercase;padding-left:2px;margin-top:8px;">Wichtig · alle Buttons aktiv</div>
+  <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;font-family:'system-ui',sans-serif;">
+    <!-- Avatar mit Krone -->
+    <div style="position:relative;flex-shrink:0;">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(251,191,36,0.12);border:1.5px solid rgba(251,191,36,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#FBBF24;">A</div>
+      <!-- Krone oben rechts -->
+      <div style="position:absolute;top:-6px;right:-5px;font-size:11px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#FBBF24" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+    </div>
+    <!-- Info -->
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:3px;">Anna Schmidt</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:5px;">3. April · 31 Jahre</div>
+      <!-- Aktive Button-Indikatoren -->
+      <div style="display:flex;gap:5px;">
+        <div style="background:rgba(20,184,166,0.12);border:1px solid rgba(20,184,166,0.3);border-radius:5px;padding:2px 7px;font-size:10px;color:#14B8A6;display:flex;align-items:center;gap:3px;">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Kalender
+        </div>
+        <div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:5px;padding:2px 7px;font-size:10px;color:#FBBF24;display:flex;align-items:center;gap:3px;">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          7d
+        </div>
+        <div style="background:rgba(20,184,166,0.12);border:1px solid rgba(20,184,166,0.3);border-radius:5px;padding:2px 7px;font-size:10px;color:#14B8A6;display:flex;align-items:center;gap:3px;">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/></svg>
+          14d
+        </div>
+      </div>
+    </div>
+    <!-- Rechts -->
+    <div style="flex-shrink:0;">
+      <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:4px 8px;font-size:11px;color:#8B5CF6;font-family:monospace;font-weight:600;">in 36d</div>
+    </div>
+  </div>
+
+  <!-- Heute -->
+  <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.07em;text-transform:uppercase;padding-left:2px;margin-top:8px;">Heute 🎂</div>
+  <div style="background:rgba(139,92,246,0.08);border:1.5px solid rgba(139,92,246,0.4);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;font-family:'system-ui',sans-serif;box-shadow:0 0 16px rgba(139,92,246,0.12);">
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,0.2);border:1.5px solid rgba(139,92,246,0.5);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#8B5CF6;flex-shrink:0;">M</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.95);margin-bottom:2px;">Max Müller</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);">27. Mai · wird 34</div>
+    </div>
+    <div style="flex-shrink:0;">
+      <div style="background:rgba(139,92,246,0.2);border:1.5px solid rgba(139,92,246,0.5);border-radius:6px;padding:4px 10px;font-size:11px;color:#8B5CF6;font-weight:700;box-shadow:0 0 8px rgba(139,92,246,0.3);">Heute!</div>
+    </div>
+  </div>
+
+  <!-- Bald (in 3 Tagen) -->
+  <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.07em;text-transform:uppercase;padding-left:2px;margin-top:8px;">Bald (≤ 7 Tage)</div>
+  <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(20,184,166,0.2);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;font-family:'system-ui',sans-serif;">
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(20,184,166,0.1);border:1.5px solid rgba(20,184,166,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#14B8A6;flex-shrink:0;">L</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:2px;">Lisa Koch</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);">30. Mai</div>
+    </div>
+    <div style="flex-shrink:0;">
+      <div style="background:rgba(20,184,166,0.12);border:1px solid rgba(20,184,166,0.35);border-radius:6px;padding:4px 8px;font-size:11px;color:#14B8A6;font-family:monospace;font-weight:600;">in 3d</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Avatar-Kreis mit Initiale · Krone-Icon bei Wichtig · kleine Status-Badges (Kalender/Wichtig-Tage/Geschenk-Tage) · Tippen = Sheet öffnet zum Bearbeiten</p>

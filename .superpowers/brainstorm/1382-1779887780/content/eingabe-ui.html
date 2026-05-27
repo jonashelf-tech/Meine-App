@@ -1,0 +1,108 @@
+<h2>Eingabe-UI: Welcher Ansatz passt?</h2>
+<p class="subtitle">Drei Wege, einen Geburtstag hinzuzufügen — mobile-first, Dark Mode</p>
+
+<div class="cards">
+
+  <!-- OPTION A: Bottom Sheet Modal -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0c0c1a; padding:16px; font-family:'system-ui',sans-serif;">
+      <!-- Dimmed background hint -->
+      <div style="background:rgba(0,0,0,0.5);border-radius:8px;padding:8px 10px;margin-bottom:8px;opacity:0.4;font-size:11px;color:#aaa;">
+        🎂 Geburtstage · 3 Einträge...
+      </div>
+      <!-- Bottom sheet -->
+      <div style="background:#101020;border:1px solid rgba(255,255,255,0.1);border-radius:16px 16px 0 0;padding:16px;margin:-4px -4px -4px -4px;">
+        <div style="width:32px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 14px;"></div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">Neuer Geburtstag</div>
+        <!-- Name input -->
+        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px;color:rgba(255,255,255,0.9);">Max Mustermann</div>
+        <!-- Date row -->
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <div style="background:rgba(255,255,255,0.06);border:1.5px solid #8B5CF6;border-radius:10px;padding:10px;text-align:center;width:44px;font-size:13px;color:#fff;font-family:monospace;">15</div>
+          <div style="padding:10px 2px;color:rgba(255,255,255,0.4);font-size:13px;">.</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px;text-align:center;width:44px;font-size:13px;color:#fff;font-family:monospace;">03</div>
+          <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;padding:10px;flex:1;font-size:11px;color:rgba(255,255,255,0.3);text-align:center;">Jahr (optional)</div>
+        </div>
+        <!-- Optional fields toggle -->
+        <div style="display:flex;gap:6px;margin-bottom:12px;">
+          <div style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.35);border-radius:8px;padding:6px 10px;font-size:11px;color:#8B5CF6;display:flex;align-items:center;gap:4px;">⭐ Wichtig</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;font-size:11px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:4px;">🎁 Geschenk</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;font-size:11px;color:rgba(255,255,255,0.4);">···</div>
+        </div>
+        <!-- Add button -->
+        <div style="background:#8B5CF6;border-radius:10px;padding:11px;text-align:center;font-size:13px;font-weight:700;color:#fff;box-shadow:0 0 14px rgba(139,92,246,0.4);">Hinzufügen</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Bottom Sheet Modal</h3>
+      <p>Schiebt von unten rein. Pflichtfelder sofort sichtbar, optionale Felder als Toggle-Pills (Wichtig / Geschenk / ···). Fühlt sich native an.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B: Inline Expandable (verbessert) -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0c0c1a; padding:12px; font-family:'system-ui',sans-serif;">
+      <!-- List item above -->
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;margin-bottom:6px;opacity:0.5;font-size:12px;color:#aaa;display:flex;justify-content:space-between;">
+        <span>Anna Schmidt</span><span style="color:#8B5CF6;font-family:monospace;font-size:11px;">in 12d</span>
+      </div>
+      <!-- Inline form (expanded) -->
+      <div style="background:#101020;border:1.5px solid rgba(139,92,246,0.4);border-radius:12px;padding:12px;margin-bottom:6px;box-shadow:0 0 16px rgba(139,92,246,0.1);">
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px;">+ Geburtstag hinzufügen</div>
+        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:9px 11px;margin-bottom:7px;font-size:12px;color:rgba(255,255,255,0.9);">Name eingeben...</div>
+        <div style="display:flex;gap:5px;margin-bottom:8px;">
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:9px;text-align:center;width:42px;font-size:12px;color:rgba(255,255,255,0.4);font-family:monospace;">TT</div>
+          <div style="padding:9px 2px;color:rgba(255,255,255,0.3);font-size:12px;">.</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:9px;text-align:center;width:42px;font-size:12px;color:rgba(255,255,255,0.4);font-family:monospace;">MM</div>
+          <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.08);border-radius:8px;padding:9px 8px;flex:1;font-size:11px;color:rgba(255,255,255,0.25);text-align:center;">JJJJ</div>
+        </div>
+        <!-- Mehr-Button öffnet optionale Felder -->
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div style="background:#8B5CF6;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:700;color:#fff;flex:1;text-align:center;">Speichern</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 12px;font-size:11px;color:rgba(255,255,255,0.4);">Mehr ▾</div>
+        </div>
+      </div>
+      <!-- List item below -->
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;opacity:0.5;font-size:12px;color:#aaa;display:flex;justify-content:space-between;">
+        <span>Tom Bauer</span><span style="color:#8B5CF6;font-family:monospace;font-size:11px;">in 28d</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Inline Quick-Add (verbessert)</h3>
+      <p>Klappt direkt in der Liste auf. Nur Pflichtfelder + "Mehr ▾" für optionale Felder. Kontext bleibt sichtbar, kein Modalwechsel.</p>
+    </div>
+  </div>
+
+  <!-- OPTION C: Two-Step (Quick → Detail) -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0c0c1a; padding:14px; font-family:'system-ui',sans-serif;">
+      <!-- Step indicator -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#8B5CF6;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;">1</div>
+        <div style="height:2px;flex:1;background:rgba(255,255,255,0.1);position:relative;"><div style="position:absolute;left:0;top:0;height:100%;width:50%;background:#8B5CF6;border-radius:1px;"></div></div>
+        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;">2</div>
+      </div>
+      <!-- Step 1: Quick add -->
+      <div style="background:#101020;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;">Schritt 1 — Wer?</div>
+        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:13px;color:rgba(255,255,255,0.9);">Max Mustermann</div>
+        <div style="display:flex;gap:5px;margin-bottom:12px;">
+          <div style="background:rgba(255,255,255,0.06);border:1.5px solid #8B5CF6;border-radius:8px;padding:9px;text-align:center;width:40px;font-size:12px;color:#fff;font-family:monospace;">15</div>
+          <div style="padding:9px 1px;color:rgba(255,255,255,0.4);font-size:12px;">.</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:9px;text-align:center;width:40px;font-size:12px;color:#fff;font-family:monospace;">03</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div style="background:#8B5CF6;border-radius:8px;padding:9px;flex:1;text-align:center;font-size:12px;font-weight:700;color:#fff;">Speichern</div>
+          <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);border-radius:8px;padding:9px 12px;font-size:11px;color:#8B5CF6;">+ Details</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Quick-Add + optionaler Detail-Schritt</h3>
+      <p>Schritt 1: nur Name + Datum. "Speichern" schließt sofort. "+ Details" öffnet Schritt 2 mit allen optionalen Feldern. Maximale Flexibilität.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Klick auf eine Karte zum Auswählen — oder sag mir was du denkst.</p>

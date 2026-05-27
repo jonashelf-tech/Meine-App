@@ -116,6 +116,34 @@
   box-shadow: 0 0 8px var(--sw);
 }
 
+.swatchDimmed {
+  opacity: 0.28;
+}
+
+.swatchCustom {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1.5px dashed rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.swatchCustom:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.hidden {
+  display: none;
+}
+
 /* ─── Color Bar ─────────────────────────────────────────── */
 .colorBar {
   position: absolute;

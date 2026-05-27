@@ -10,6 +10,8 @@ const SWATCHES = [
   '#06B6D4', '#10B981', '#00FF94', '#84CC16',
   '#EAB308', '#FF9F43', '#F97316', '#EF4444',
   '#FF2D78', '#EC4899', '#BF00FF', '#FF6B6B',
+  '#A78BFA', '#818CF8', '#38BDF8', '#34D399',
+  '#FCD34D', '#FB923C', '#F87171', '#E879F9',
 ]
 
 const VIEWS = [
@@ -26,7 +28,9 @@ export default function TabTools() {
   const [dragId,           setDragId]           = useState(null)
   const [insertAfterIdx,   setInsertAfterIdx]   = useState(null)
   const [openColorPicker,  setOpenColorPicker]  = useState(null)
-  const cardRefs = useRef({})
+  const [colorPickerTool,  setColorPickerTool]  = useState(null)
+  const cardRefs     = useRef({})
+  const colorInputRef = useRef(null)
 
   const myTools = activeTools
     .map(id => TOOL_REGISTRY.find(t => t.id === id))
@@ -40,6 +44,18 @@ export default function TabTools() {
   const handleColorChange = (toolId, hex) => {
     setToolColors(prev => ({ ...prev, [toolId]: hex }))
   }
+
+  const handleCustomColorClick = (toolId, currentColor, e) => {
+    e.stopPropagation()
+    setColorPickerTool(toolId)
+    if (colorInputRef.current) colorInputRef.current.value = currentColor
+    colorInputRef.current?.click()
+  }
+
+  const getUsedByOthers = (toolId) =>
+    Object.entries(toolColors)
+      .filter(([id]) => id !== toolId)
+      .map(([, c]) => c.toLowerCase())
 
   // ── Pointer-Drag für Meine Tools ─────────────────────────
   const startPointerDrag = useCallback((e, toolId) => {
@@ -165,14 +181,23 @@ export default function TabTools() {
           </div>
           {openColorPicker === tool.id && (
             <div className={s.swatchPanel}>
-              {SWATCHES.map(hex => (
-                <button
-                  key={hex}
-                  className={[s.swatch, toolColor === hex ? s.swatchActive : ''].join(' ')}
-                  style={{ '--sw': hex }}
-                  onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
-                />
-              ))}
+              {SWATCHES.map(hex => {
+                const isActive = toolColor.toLowerCase() === hex.toLowerCase()
+                const isDimmed = !isActive && getUsedByOthers(tool.id).includes(hex.toLowerCase())
+                return (
+                  <button
+                    key={hex}
+                    className={[s.swatch, isActive ? s.swatchActive : '', isDimmed ? s.swatchDimmed : ''].join(' ')}
+                    style={{ '--sw': hex }}
+                    onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
+                  />
+                )
+              })}
+              <button
+                className={s.swatchCustom}
+                onClick={e => handleCustomColorClick(tool.id, toolColor, e)}
+                title="Eigene Farbe"
+              >+</button>
             </div>
           )}
         </div>
@@ -188,6 +213,12 @@ export default function TabTools() {
 
   return (
     <div className={s.page}>
+      <input
+        ref={colorInputRef}
+        type="color"
+        className={s.hidden}
+        onChange={e => { if (colorPickerTool) handleColorChange(colorPickerTool, e.target.value) }}
+      />
       <div className={s.segmented}>
         {VIEWS.map(v => (
           <button
@@ -231,14 +262,23 @@ export default function TabTools() {
                 </div>
                 {openColorPicker === tool.id && (
                   <div className={s.swatchPanel}>
-                    {SWATCHES.map(hex => (
-                      <button
-                        key={hex}
-                        className={[s.swatch, toolColor === hex ? s.swatchActive : ''].join(' ')}
-                        style={{ '--sw': hex }}
-                        onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
-                      />
-                    ))}
+                    {SWATCHES.map(hex => {
+                      const isActive = toolColor.toLowerCase() === hex.toLowerCase()
+                      const isDimmed = !isActive && getUsedByOthers(tool.id).includes(hex.toLowerCase())
+                      return (
+                        <button
+                          key={hex}
+                          className={[s.swatch, isActive ? s.swatchActive : '', isDimmed ? s.swatchDimmed : ''].join(' ')}
+                          style={{ '--sw': hex }}
+                          onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
+                        />
+                      )
+                    })}
+                    <button
+                      className={s.swatchCustom}
+                      onClick={e => handleCustomColorClick(tool.id, toolColor, e)}
+                      title="Eigene Farbe"
+                    >+</button>
                   </div>
                 )}
               </div>

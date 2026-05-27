@@ -1,0 +1,112 @@
+<h2>Option A — v2: Kompaktere Proportionen</h2>
+<p class="subtitle">Datum schlanker, Notizen als sichtbares Textfeld, Geschenk-Erinnerung unverändert.</p>
+
+<div class="split" style="gap:12px;">
+
+  <!-- LEFT: Default -->
+  <div class="mockup">
+    <div class="mockup-header">Standard</div>
+    <div class="mockup-body" style="background:#0c0c1a; padding:14px; font-family:'system-ui',sans-serif;">
+      <div style="background:#101020;border:1px solid rgba(255,255,255,0.1);border-radius:16px 16px 0 0;padding:14px;">
+        <div style="width:28px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 12px;"></div>
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Neuer Geburtstag</div>
+
+        <!-- Name -->
+        <div style="background:rgba(255,255,255,0.06);border:1.5px solid #8B5CF6;border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:13px;color:rgba(255,255,255,0.9);">Max Mustermann</div>
+
+        <!-- Date row — schlanker, alle drei in einer Zeile als kleine Pills -->
+        <div style="display:flex;gap:4px;align-items:center;margin-bottom:10px;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-right:2px;white-space:nowrap;">Datum</div>
+          <!-- TT -->
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:7px 0;text-align:center;width:38px;font-size:13px;color:rgba(255,255,255,0.5);font-family:monospace;flex-shrink:0;">TT</div>
+          <div style="color:rgba(255,255,255,0.25);font-size:12px;">.</div>
+          <!-- MM -->
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:7px 0;text-align:center;width:38px;font-size:13px;color:rgba(255,255,255,0.5);font-family:monospace;flex-shrink:0;">MM</div>
+          <div style="color:rgba(255,255,255,0.15);font-size:11px;margin:0 2px;">·</div>
+          <!-- Jahr — kleiner, subtiler -->
+          <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.15);border-radius:8px;padding:7px 8px;font-size:11px;color:rgba(255,255,255,0.35);white-space:nowrap;flex-shrink:0;">Jahr?</div>
+        </div>
+
+        <!-- Pills row: Wichtig + Geschenk -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 11px;font-size:11px;color:rgba(255,255,255,0.55);display:flex;align-items:center;gap:5px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Wichtig
+          </div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 11px;font-size:11px;color:rgba(255,255,255,0.55);display:flex;align-items:center;gap:5px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            Geschenk
+          </div>
+        </div>
+
+        <!-- Notizen — immer sichtbares Textfeld -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;padding-left:2px;">Notizen</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:9px 12px;font-size:12px;color:rgba(255,255,255,0.25);min-height:52px;line-height:1.5;">z.B. Verhältnis, Vorlieben…</div>
+        </div>
+
+        <div style="background:#8B5CF6;border-radius:10px;padding:11px;text-align:center;font-size:13px;font-weight:700;color:#fff;box-shadow:0 0 14px rgba(139,92,246,0.4);">Hinzufügen</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Geschenk aktiv -->
+  <div class="mockup">
+    <div class="mockup-header">Geschenk aktiv ✓</div>
+    <div class="mockup-body" style="background:#0c0c1a; padding:14px; font-family:'system-ui',sans-serif;">
+      <div style="background:#101020;border:1px solid rgba(255,255,255,0.1);border-radius:16px 16px 0 0;padding:14px;">
+        <div style="width:28px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 12px;"></div>
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Neuer Geburtstag</div>
+
+        <!-- Name -->
+        <div style="background:rgba(255,255,255,0.06);border:1.5px solid #8B5CF6;border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:13px;color:rgba(255,255,255,0.9);">Max Mustermann</div>
+
+        <!-- Date row -->
+        <div style="display:flex;gap:4px;align-items:center;margin-bottom:10px;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-right:2px;white-space:nowrap;">Datum</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:7px 0;text-align:center;width:38px;font-size:13px;color:rgba(255,255,255,0.5);font-family:monospace;flex-shrink:0;">TT</div>
+          <div style="color:rgba(255,255,255,0.25);font-size:12px;">.</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:7px 0;text-align:center;width:38px;font-size:13px;color:rgba(255,255,255,0.5);font-family:monospace;flex-shrink:0;">MM</div>
+          <div style="color:rgba(255,255,255,0.15);font-size:11px;margin:0 2px;">·</div>
+          <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.15);border-radius:8px;padding:7px 8px;font-size:11px;color:rgba(255,255,255,0.35);white-space:nowrap;flex-shrink:0;">Jahr?</div>
+        </div>
+
+        <!-- Pills row -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 11px;font-size:11px;color:rgba(255,255,255,0.55);display:flex;align-items:center;gap:5px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Wichtig
+          </div>
+          <!-- Geschenk aktiv -->
+          <div style="background:rgba(20,184,166,0.15);border:1.5px solid rgba(20,184,166,0.5);border-radius:8px;padding:6px 11px;font-size:11px;color:#14B8A6;display:flex;align-items:center;gap:5px;box-shadow:0 0 8px rgba(20,184,166,0.2);">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            Geschenk ✓
+          </div>
+        </div>
+
+        <!-- Erinnerung (erscheint bei Geschenk aktiv) — unverändert bewährt -->
+        <div style="background:rgba(20,184,166,0.07);border:1px solid rgba(20,184,166,0.22);border-radius:10px;padding:9px 12px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2" style="flex-shrink:0;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span style="font-size:11px;color:rgba(255,255,255,0.5);flex-shrink:0;">Erinnerung</span>
+          <div style="display:flex;gap:4px;">
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:4px 7px;font-size:11px;color:rgba(255,255,255,0.4);">7d</div>
+            <div style="background:rgba(20,184,166,0.2);border:1.5px solid rgba(20,184,166,0.5);border-radius:6px;padding:4px 7px;font-size:11px;color:#14B8A6;font-weight:700;">14d</div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:4px 7px;font-size:11px;color:rgba(255,255,255,0.4);">21d</div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:4px 7px;font-size:11px;color:rgba(255,255,255,0.4);">30d</div>
+          </div>
+        </div>
+
+        <!-- Notizen -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;padding-left:2px;">Notizen</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:9px 12px;font-size:12px;color:rgba(255,255,255,0.25);min-height:52px;line-height:1.5;">z.B. Verhältnis, Vorlieben…</div>
+        </div>
+
+        <div style="background:#8B5CF6;border-radius:10px;padding:11px;text-align:center;font-size:13px;font-weight:700;color:#fff;box-shadow:0 0 14px rgba(139,92,246,0.4);">Hinzufügen</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:12px;">Passt das so — oder soll das Datum noch anders (z.B. als ein Feld "15.03" statt getrennte Boxen)?</p>
