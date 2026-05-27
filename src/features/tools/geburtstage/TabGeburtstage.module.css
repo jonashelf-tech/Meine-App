@@ -1,218 +1,177 @@
-.page {
-  padding-bottom: 32px;
-}
+/* TabGeburtstage.module.css */
 
-.header {
+.page { padding-bottom: 40px; }
+
+/* ─── Sort Bar ─────────────────────────────────────────── */
+.sortBar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 5px;
+  margin: 0 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
 }
+.sortBar::-webkit-scrollbar { display: none; }
 
-.title {
-  font-family: 'Orbitron', monospace;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.fab {
-  width: 36px;
-  height: 36px;
-  background: var(--pink);
-  border: none;
-  border-radius: 50%;
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 700;
+.sortPill {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.15s, transform 0.15s;
-  box-shadow: 0 0 12px rgba(255,45,120,0.35);
-  font-family: 'Outfit', sans-serif;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.sortPillActive {
+  background: rgba(139,92,246,0.15);
+  border-color: rgba(139,92,246,0.4);
+  color: var(--primary);
 }
 
-.fab:hover { opacity: 0.85; transform: scale(1.05); }
-
-.form {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 14px;
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  animation: fadeIn 0.15s ease both;
-}
-
-.input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.88rem;
-  padding: 10px 12px;
-  outline: none;
-  width: 100%;
-  transition: border-color 0.15s;
-}
-
-.input:focus { border-color: var(--pink); }
-
-.dateRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.inputSmall {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text);
-  font-family: 'Orbitron', monospace;
-  font-size: 0.88rem;
-  padding: 10px 8px;
-  text-align: center;
-  width: 48px;
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.inputSmall:focus { border-color: var(--pink); }
-
-.dateSep {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  color: var(--text-dim);
-}
-
-.inputYear {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
-  padding: 10px 10px;
-  outline: none;
-  flex: 1;
-  transition: border-color 0.15s;
-}
-
-.inputYear:focus { border-color: var(--pink); }
-
-.addBtn {
-  background: var(--pink);
-  border: none;
-  border-radius: var(--r-sm);
-  color: #fff;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 700;
-  padding: 10px;
-  cursor: pointer;
-  transition: opacity 0.15s;
-  box-shadow: 0 0 12px rgba(255,45,120,0.25);
-}
-
-.addBtn:hover { opacity: 0.85; }
-
+/* ─── Sektion ──────────────────────────────────────────── */
 .sectionLabel {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: rgba(255,255,255,0.35);
   margin: 12px 0 8px;
 }
 
-.row {
+/* ─── Karte (Swipe-Wrapper) ────────────────────────────── */
+.cardWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-sm);
+  margin-bottom: 6px;
+}
+
+.deleteReveal {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 72px;
+  background: var(--rose);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+
+.deleteRevealIcon {
+  color: #fff;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 12px 14px;
-  margin-bottom: 6px;
-  transition: border-color 0.15s;
+  padding: 11px 14px;
+  transition: transform 0.2s ease, border-color 0.15s;
+  cursor: pointer;
+  position: relative;
+  touch-action: pan-y;
+  user-select: none;
 }
 
-.rowToday {
-  border-color: var(--pink);
-  box-shadow: 0 0 10px rgba(255,45,120,0.15);
+.cardSoon { border-color: rgba(20,184,166,0.35); }
+.cardToday {
+  border-color: rgba(139,92,246,0.5);
+  box-shadow: 0 0 14px rgba(139,92,246,0.12);
+  background: rgba(139,92,246,0.06);
 }
 
-.rowLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* ─── Avatar ───────────────────────────────────────────── */
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
 }
 
-.rowName {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.rowDate {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.75rem;
-  color: var(--text-dim);
-}
-
-.rowRight {
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.todayBadge {
+  justify-content: center;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--pink);
 }
 
-.daysBadge {
-  font-family: 'Orbitron', monospace;
-  font-size: 0.75rem;
+.crownIcon {
+  position: absolute;
+  top: -6px;
+  right: -5px;
+  color: #FBBF24;
+  line-height: 1;
+}
+
+/* ─── Info ─────────────────────────────────────────────── */
+.info { flex: 1; min-width: 0; }
+
+.name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--tool-color, var(--cyan));
-  background: rgba(0,207,255,0.08);
-  border-radius: var(--r-sm);
-  padding: 3px 8px;
+  color: var(--text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.removeBtn {
-  background: none;
-  border: none;
+.meta {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
   color: var(--text-dim);
-  font-size: 0.75rem;
-  cursor: pointer;
-  padding: 4px;
-  transition: color 0.15s;
+  margin-bottom: 4px;
 }
 
-.removeBtn:hover { color: var(--pink); }
+.statusPills {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
 
+.statusPill {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  border: 1px solid;
+}
+
+/* ─── Badge ────────────────────────────────────────────── */
+.badge {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+/* ─── Empty ────────────────────────────────────────────── */
 .empty {
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   color: var(--text-dim);
   text-align: center;
-  padding: 40px 16px;
+  padding: 48px 16px;
   line-height: 1.6;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
