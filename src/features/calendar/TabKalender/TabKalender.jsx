@@ -4,6 +4,7 @@ import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor 
 import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geburtstage/birthdayUtils'
 import { TOOL_REGISTRY, ToolIcon } from '../../tools/toolRegistry'
+import { loadEntries } from '../../tools/gewicht/gewichtData'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
 import s from './TabKalender.module.css'
@@ -41,20 +42,27 @@ function slotToHeight(duration) {
   return Math.max(8, Math.round(((duration ?? 30) / 30) * SLOT_H))
 }
 
-function getToolDots(dk, todos, activeTools, birthdays = []) {
-  const [, mm, dd] = dk.split('-')
-  return TOOL_REGISTRY
-    .filter(t => {
-      if (!activeTools.includes(t.id)) return false
-      if (t.id === 'geburtstage') return birthdays.some(b => b.date === `${mm}-${dd}`)
-      return true
-    })
-    .map(t => ({
-      id:    t.id,
-      color: t.color,
-      // geburtstage-Dot filled = Geburtstag ist heute. Alle anderen Dots immer als Ring (kein per-Tool Completion-State).
-      done:  t.id === 'geburtstage',
-    }))
+function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors) {
+  const dots = []
+
+  if (activeTools.includes('gewicht')) {
+    if (weightEntries.some(e => e.date === dk))
+      dots.push({ id: 'gewicht', color: getToolColor('gewicht', toolColors) })
+  }
+
+  if (activeTools.includes('haushalt')) {
+    if (todos.some(t => t.toolId === 'haushalt' && t.createdAt?.startsWith(dk)))
+      dots.push({ id: 'haushalt', color: getToolColor('haushalt', toolColors) })
+  }
+
+  if (activeTools.includes('reminder')) {
+    const hasTodo = todos.some(t => t.reminderItemId && t.createdAt?.startsWith(dk))
+    const hasSlot = Object.values(days[dk] ?? {}).some(s => s.reminderItemId)
+    if (hasTodo || hasSlot)
+      dots.push({ id: 'reminder', color: getToolColor('reminder', toolColors) })
+  }
+
+  return dots
 }
 
 function getCellBars(dk, days) {
@@ -261,8 +269,8 @@ export default function TabKalender() {
   const [selectedDay, setSelectedDay] = useState(todayKey)
   const [showTermine, setShowTermine] = useState(true)
   const [showTodos,   setShowTodos]   = useState(true)
-  const [showTools,   setShowTools]   = useState(true)
   const [restoreTodo, setRestoreTodo] = useState(null)
+  const weightEntries = useMemo(() => loadEntries(), [])
   const weekScrollRef = useRef(null)
 
   useEffect(() => {
@@ -350,7 +358,7 @@ export default function TabKalender() {
               {weekDays.map(date => {
                 const dk       = toDateKey(date)
                 const isToday  = dk === todayKey
-                const toolDots = showTools ? getToolDots(dk, todos, activeTools, birthdays) : []
+                const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors)
                 return (
                   <div key={dk} className={[s.weekDayHead, isToday ? s.weekDayHeadToday : ''].join(' ')}>
                     <span className={s.weekDayHeadName}>
@@ -362,10 +370,8 @@ export default function TabKalender() {
                         {toolDots.map(dot => (
                           <span
                             key={dot.id}
-                            className={[s.toolDot, dot.done ? '' : s.toolDotActive].join(' ')}
-                            style={dot.done
-                              ? { background: dot.color }
-                              : { color: dot.color, borderColor: dot.color }}
+                            className={s.toolDot}
+                            style={{ background: dot.color }}
                           />
                         ))}
                       </div>
@@ -488,8 +494,8 @@ export default function TabKalender() {
               ]
               const visible  = filtered.slice(0, 3)
               const overflow = filtered.length - visible.length
-              const toolDots = showTools ? getToolDots(dk, todos, activeTools, birthdays) : []
-              const bdays    = showTools ? getBirthdaysForCalendarDate(birthdays, dk) : []
+              const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors)
+              const bdays    = getBirthdaysForCalendarDate(birthdays, dk)
 
               return (
                 <button
@@ -526,10 +532,8 @@ export default function TabKalender() {
                       {toolDots.map(dot => (
                         <span
                           key={dot.id}
-                          className={[s.toolDot, dot.done ? '' : s.toolDotActive].join(' ')}
-                          style={dot.done
-                            ? { background: dot.color }
-                            : { color: dot.color, borderColor: dot.color }}
+                          className={s.toolDot}
+                          style={{ background: dot.color }}
                         />
                       ))}
                     </div>
@@ -572,12 +576,6 @@ export default function TabKalender() {
           onClick={() => setShowTodos(v => !v)}
         >
           Todos {showTodos ? '●' : '○'}
-        </button>
-        <button
-          className={[s.toggleChip, s.toggleChipTools, showTools ? s.toggleChipOn : ''].join(' ')}
-          onClick={() => setShowTools(v => !v)}
-        >
-          Tools {showTools ? '●' : '○'}
         </button>
       </div>
     </div>
