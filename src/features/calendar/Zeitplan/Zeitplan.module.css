@@ -115,6 +115,10 @@
   border-bottom: 1px dashed var(--border-dim);
 }
 
+.sgGrid > :last-child {
+  border-bottom: none;
+}
+
 .sgEmpty {
   display: flex;
   align-items: center;
