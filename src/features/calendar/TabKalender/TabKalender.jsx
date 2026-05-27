@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
+import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geburtstage/birthdayUtils'
 import { TOOL_REGISTRY, ToolIcon } from '../../tools/toolRegistry'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
@@ -68,8 +69,11 @@ function getCellBars(dk, days) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
+function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
   const [open, setOpen] = useState({ zeitplan: true, done: true, tools: false })
+
+  const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
+  const bdayColor       = getToolColor('geburtstage', toolColors)
 
   const slots = days[dateKey] ?? {}
   const sortedSlots = Object.entries(slots)
@@ -99,6 +103,28 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, set
         </span>
         {dateKey === todayKey && <span className={s.todayBadge}>heute</span>}
       </div>
+
+      {/* Geburtstage */}
+      {birthdayEntries.length > 0 && (
+        <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: 8, marginBottom: 8 }}>
+          {birthdayEntries.map(b => (
+            <div
+              key={b.id}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '5px 0',
+                fontFamily: 'Outfit, sans-serif', fontSize: 12,
+                color: bdayColor,
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              <span>{b.name} · {formatBirthdayDate(b.date)}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Zeitplan */}
       <div className={s.dayPanelSection}>
@@ -463,6 +489,7 @@ export default function TabKalender() {
               const visible  = filtered.slice(0, 3)
               const overflow = filtered.length - visible.length
               const toolDots = showTools ? getToolDots(dk, todos, activeTools, birthdays) : []
+              const bdays    = showTools ? getBirthdaysForCalendarDate(birthdays, dk) : []
 
               return (
                 <button
@@ -475,6 +502,15 @@ export default function TabKalender() {
                   onClick={() => handleDayClick(dk)}
                 >
                   <span className={s.monthDay}>{day}</span>
+                  {bdays.map(b => (
+                    <div
+                      key={b.id}
+                      className={s.cellBar}
+                      style={{ background: getToolColor('geburtstage', toolColors), opacity: 0.85 }}
+                    >
+                      <span className={s.cellBarText}>{b.name}</span>
+                    </div>
+                  ))}
                   {visible.map((bar, i) => (
                     <div
                       key={i}
@@ -512,6 +548,7 @@ export default function TabKalender() {
               todos={todos}
               activeTools={activeTools}
               toolColors={toolColors}
+              birthdays={birthdays}
               setCurrentTab={setCurrentTab}
               setDayplanDate={setDayplanDate}
               setTodos={setTodos}
