@@ -1,0 +1,364 @@
+/* ── Overlay ─────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+}
+
+/* ── Modal ───────────────────────────────────────────────── */
+.modal {
+  background: rgba(12, 12, 26, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r);
+  padding: 20px 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: scaleIn 0.18s ease both;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.93) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Navigation ──────────────────────────────────────────── */
+.back {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  align-self: flex-start;
+}
+.back:hover { color: rgba(255, 255, 255, 0.7); }
+
+/* ── Todo-Titel ──────────────────────────────────────────── */
+.todoTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.35;
+}
+
+/* ── Frage ───────────────────────────────────────────────── */
+.question {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.4;
+}
+
+.questionSub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.4;
+  margin-top: -4px;
+}
+
+.tagline {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.32);
+  margin-top: -4px;
+}
+
+/* ── Textarea ────────────────────────────────────────────── */
+.textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  padding: 11px 12px;
+  outline: none;
+  resize: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+.textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
+.textarea:focus {
+  border-color: var(--tool-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tool-color) 18%, transparent);
+}
+
+/* ── Delegations-Tipp ────────────────────────────────────── */
+.delegationHint {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--tool-color) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 20%, transparent);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+}
+
+.delegationIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.delegationText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+}
+
+.delegationText strong {
+  color: var(--tool-color);
+  font-weight: 700;
+}
+
+/* ── Bestätigen-Button ───────────────────────────────────── */
+.confirmBtn {
+  background: color-mix(in srgb, var(--tool-color) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 45%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 13px 16px;
+  width: 100%;
+  transition: background 0.18s, border-color 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.confirmBtn:hover {
+  background: color-mix(in srgb, var(--tool-color) 24%, transparent);
+}
+
+/* ── Loslassen-Button ────────────────────────────────────── */
+.loslassenBtn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-sm);
+  color: rgba(255, 255, 255, 0.38);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 12px 16px;
+  width: 100%;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.loslassenBtn:hover {
+  background: rgba(255, 80, 80, 0.08);
+  color: rgba(255, 120, 120, 0.7);
+  border-color: rgba(255, 80, 80, 0.2);
+}
+
+/* ── Überspringen-Link ───────────────────────────────────── */
+.skipLink {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.25);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+.skipLink:hover { color: rgba(255, 255, 255, 0.5); }
+
+/* ── Chip-Simulation ─────────────────────────────────────── */
+.chipSim {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1.5px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+}
+
+.chipSimRing {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--tool-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--tool-color);
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.chipSimText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Schritte-Liste ──────────────────────────────────────── */
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.stepRow:last-child { border-bottom: none; }
+.stepRow:hover { background: rgba(255, 255, 255, 0.02); }
+
+.stepDone { opacity: 0.4; }
+
+.stepCheck {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  color: var(--tool-color);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.stepCheckDone {
+  background: color-mix(in srgb, var(--tool-color) 15%, transparent);
+  border-color: color-mix(in srgb, var(--tool-color) 50%, transparent);
+}
+
+.stepText {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  min-width: 0;
+  word-break: break-word;
+}
+.stepDone .stepText { text-decoration: line-through; }
+
+.stepRm {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.12);
+  font-size: 0.55rem;
+  cursor: pointer;
+  padding: 3px 5px;
+  flex-shrink: 0;
+  transition: color 0.12s;
+  line-height: 1;
+}
+.stepRm:hover { color: var(--rose, #fb7185); }
+
+/* ── Schritt-Eingabe ─────────────────────────────────────── */
+.stepAddRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  padding: 4px 8px 4px 12px;
+}
+
+.stepInput {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  padding: 7px 4px 7px 0;
+  caret-color: var(--tool-color);
+}
+.stepInput::placeholder { color: rgba(255, 255, 255, 0.2); }
+
+.stepAddBtn {
+  background: none;
+  border: none;
+  color: var(--tool-color);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: opacity 0.12s;
+  line-height: 1;
+}
+.stepAddBtn:hover { opacity: 0.7; }
+
+/* ── Fortschritts-Dots ───────────────────────────────────── */
+.progressDots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.2s;
+}
+
+.dotActive {
+  background: var(--tool-color);
+}
