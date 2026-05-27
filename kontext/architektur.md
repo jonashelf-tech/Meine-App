@@ -10,7 +10,7 @@ src/
     PrioBadge/        PrioBadge.jsx
     RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
     Toast/            Toast.jsx
-    TodoChip/         TodoChip.jsx + .module.css
+    TodoChip/         TodoChip.jsx + .module.css  — Stripe wird ausgeblendet wenn `glowColor` prop gesetzt (toolId aktiv)
     TodoModal/        TodoModal.jsx + .module.css
     ToolHeader/       ToolHeader.jsx          — Standard-Header für alle Tools
     ToolSection/      ToolSection.jsx
@@ -23,7 +23,7 @@ src/
         RepeatDeleteSheet.jsx   — "Nur diese" / "Diese und zukünftige" löschen
         blockerUtils.js         — Factory + Query + Mutation Helpers
       KiPlanSection/  KiPlanSection.jsx
-      Pool/           Pool.jsx + Pool.module.css
+      Pool/           Pool.jsx + Pool.module.css  — `.listArea` hat horizontales Padding 8px (Glow-Effekt nicht abschneiden)
       QuickAdd/       QuickAdd.jsx
       TabHeute/
         TabHeute.jsx            — Tagesplaner (DayNav + Zeitplan + Pool + Sections)

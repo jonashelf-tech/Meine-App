@@ -1,0 +1,173 @@
+<h2>Shift-Buttons in die Pill-Leiste integriert</h2>
+<p class="subtitle">▲ 30min links außen oben · ▼ 30min rechts außen unten</p>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
+  .zw { background:#0a0a12; border-radius:12px; padding:12px; font-family:'Outfit',system-ui,sans-serif; }
+
+  .pill {
+    display:flex; align-items:stretch;
+    border-radius:10px; overflow:hidden;
+    border:1px solid rgba(255,255,255,0.07);
+    background:#0f0f1a;
+  }
+
+  .pill-btn {
+    flex-shrink:0;
+    background:transparent; border:none;
+    color:rgba(255,255,255,0.2);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:color .15s, background .15s;
+    font-family:'Outfit',sans-serif; font-weight:600;
+  }
+  .pill-btn:hover { background:rgba(255,255,255,0.04); }
+
+  .shift-btn {
+    width:52px; font-size:11px; gap:2px; flex-direction:column;
+    color:rgba(255,255,255,0.3); padding:4px 0;
+    border-right:1px solid rgba(255,255,255,0.07);
+  }
+  .shift-btn.bottom { border-right:none; border-left:1px solid rgba(255,255,255,0.07); }
+  .shift-btn:hover { color:rgba(255,255,255,0.7); background:rgba(255,255,255,0.04); }
+  .shift-arrow { font-size:14px; line-height:1; }
+
+  .minus-btn { width:34px; font-size:19px; border-right:1px solid rgba(255,255,255,0.07); }
+  .plus-btn  { width:34px; font-size:19px; border-left:1px solid rgba(255,255,255,0.07); color:#8B5CF6; }
+  .plus-btn:hover { background:rgba(139,92,246,0.1); color:#a78bfa; }
+
+  .chip-area {
+    flex:1; padding:6px 8px;
+    display:flex; flex-direction:column; gap:4px; min-height:32px;
+  }
+
+  .todo-chip {
+    display:flex; align-items:stretch;
+    background:rgba(255,255,255,0.022);
+    border:1px solid rgba(255,255,255,0.065);
+    border-radius:8px; overflow:hidden; cursor:pointer;
+    transition:background .14s;
+  }
+  .todo-chip:hover { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); }
+  .stripe { width:3px; min-width:3px; flex-shrink:0; }
+  .expand { width:38px; min-width:38px; display:flex; align-items:center; justify-content:center; border-right:1px solid rgba(255,255,255,0.06); flex-shrink:0; }
+  .body { flex:1; padding:8px; display:flex; flex-direction:column; justify-content:center; min-width:0; overflow:hidden; }
+  .chip-text { font-size:13.5px; font-weight:600; color:rgba(255,255,255,0.85); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chip-meta { font-size:10.5px; font-weight:600; color:rgba(255,255,255,0.35); margin-top:2px; letter-spacing:.03em; }
+  .rm { background:none; border:none; border-left:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.12); font-size:9px; cursor:pointer; padding:0 8px; align-self:stretch; display:flex; align-items:center; }
+  .prio { align-self:center; width:6px; height:6px; border-radius:50%; margin-right:8px; flex-shrink:0; }
+
+  .zp { background:#141428; border-radius:8px; overflow:hidden; }
+  .zp-row { display:grid; grid-template-columns:32px 1fr; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .zp-row:last-child { border-bottom:none; }
+  .lbl { padding:7px 3px; color:#6b7280; font-size:10px; text-align:center; font-weight:600; }
+  .cell { padding:5px 8px; display:flex; align-items:center; }
+  .slot { border-radius:5px; padding:3px 9px; font-size:11px; font-weight:600; color:#fff; }
+  .empty { color:rgba(255,255,255,0.12); font-size:10px; }
+  .mid { grid-column:1/-1; background:#0f0f1a; padding:3px 0; text-align:center; color:rgba(255,255,255,0.1); font-size:9px; }
+
+  .label { font-size:10px; color:rgba(255,255,255,0.2); margin-bottom:4px; padding-left:2px; }
+</style>
+
+<div class="mockup">
+  <div class="mockup-header">Komplette Pill-Leiste — alle Zeitplan-Controls vereint</div>
+  <div class="mockup-body" style="padding:0;">
+    <div class="zw">
+
+      <!-- ═══ OBERE LEISTE ═══ -->
+      <div class="label">Oben: alles früher + expand + out-of-range</div>
+      <div class="pill" style="margin-bottom:8px;">
+
+        <!-- ▲ Shift -->
+        <button class="pill-btn shift-btn" title="Alle ungelockten Todos 30min früher">
+          <span class="shift-arrow">▲</span>
+          <span>30min</span>
+        </button>
+
+        <!-- − Shrink -->
+        <button class="pill-btn minus-btn" title="Früheste Stunde entfernen">−</button>
+
+        <!-- Chip-Area -->
+        <div class="chip-area">
+          <div class="todo-chip">
+            <div class="stripe" style="background:#8B5CF6;"></div>
+            <div class="expand">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" opacity=".7">
+                <circle cx="11" cy="11" r="8.5" stroke="rgba(255,255,255,0.09)" stroke-width="1.5" stroke-dasharray="3.5 2.8"/>
+                <line x1="11" y1="7.2" x2="11" y2="14.8" stroke="rgba(255,255,255,0.38)" stroke-width="1.6" stroke-linecap="round"/>
+                <line x1="7.2" y1="11" x2="14.8" y2="11" stroke="rgba(255,255,255,0.38)" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="chip-text">Morgenroutine</div>
+              <div class="chip-meta">06:30 · 30min</div>
+            </div>
+            <button class="rm">✕</button>
+            <div class="prio" style="background:#facc15;"></div>
+          </div>
+        </div>
+
+        <!-- + Expand -->
+        <button class="pill-btn plus-btn" title="Noch frühere Stunde hinzufügen">+</button>
+      </div>
+
+      <!-- ═══ ZEITPLAN ═══ -->
+      <div class="zp" style="margin-bottom:8px;">
+        <div class="zp-row"><div class="lbl" style="color:#8B5CF6;">08</div><div class="cell"><span class="empty">:00</span></div></div>
+        <div class="zp-row"><div class="lbl"></div><div class="cell"><div class="slot" style="background:#7c3aed;">Sport 🏃</div></div></div>
+        <div class="zp-row"><div class="lbl">09</div><div class="cell"><span class="empty">:00</span></div></div>
+        <div class="zp-row mid">· · · 09–17 Uhr · · ·</div>
+        <div class="zp-row"><div class="lbl">17</div><div class="cell"><div class="slot" style="background:#065f46;">Meeting</div></div></div>
+        <div class="zp-row"><div class="lbl">18</div><div class="cell"><span class="empty">:00</span></div></div>
+      </div>
+
+      <!-- ═══ UNTERE LEISTE ═══ -->
+      <div class="label">Unten: expand + out-of-range + alles später</div>
+      <div class="pill">
+
+        <!-- − Shrink -->
+        <button class="pill-btn minus-btn" title="Letzte Stunde entfernen">−</button>
+
+        <!-- Chip-Area -->
+        <div class="chip-area">
+          <div class="todo-chip">
+            <div class="stripe" style="background:#10b981;"></div>
+            <div class="expand">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" opacity=".7">
+                <circle cx="11" cy="11" r="8.5" stroke="rgba(255,255,255,0.09)" stroke-width="1.5" stroke-dasharray="3.5 2.8"/>
+                <line x1="11" y1="7.2" x2="11" y2="14.8" stroke="rgba(255,255,255,0.38)" stroke-width="1.6" stroke-linecap="round"/>
+                <line x1="7.2" y1="11" x2="14.8" y2="11" stroke="rgba(255,255,255,0.38)" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="chip-text">Abendessen kochen</div>
+              <div class="chip-meta">19:00 · 45min</div>
+            </div>
+            <button class="rm">✕</button>
+            <div class="prio" style="background:rgba(255,255,255,0.15);"></div>
+          </div>
+        </div>
+
+        <!-- + Expand -->
+        <button class="pill-btn plus-btn" title="Noch spätere Stunde hinzufügen">+</button>
+
+        <!-- ▼ Shift -->
+        <button class="pill-btn shift-btn bottom" title="Alle ungelockten Todos 30min später">
+          <span class="shift-arrow">▼</span>
+          <span>30min</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <h3>Was ändert sich</h3>
+  <ul style="color:#9ca3af;font-size:13px;line-height:1.9;padding-left:18px;">
+    <li>Die bisherige <strong style="color:#e5e7eb;">controls-Zeile</strong> (▲ ▼ · Minimal/Alles · + Fenster) entfällt komplett</li>
+    <li><strong style="color:#e5e7eb;">▲ 30min</strong> → ganz links in der oberen Leiste</li>
+    <li><strong style="color:#e5e7eb;">▼ 30min</strong> → ganz rechts in der unteren Leiste</li>
+    <li><strong style="color:#e5e7eb;">Minimal/Alles + Fenster</strong> — brauchen wir die noch?</li>
+  </ul>
+</div>

@@ -1,0 +1,366 @@
+<h2>Expand-Button für Sub-Todos</h2>
+<p class="subtitle">Der linke Button beim Todo-Chip — welcher Stil passt zur App?</p>
+
+<style>
+  /* App-getreues Dark Theme */
+  .chip-demo {
+    display: flex;
+    align-items: stretch;
+    background: rgba(255,255,255,0.022);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 44px;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    margin-bottom: 6px;
+    width: 100%;
+    max-width: 340px;
+  }
+  .chip-demo.has-subs {
+    border-color: rgba(139,92,246,0.45);
+  }
+  .chip-demo.all-done .chip-text { opacity: 0.45; text-decoration: line-through; }
+
+  .chip-stripe {
+    width: 3px;
+    min-width: 3px;
+    background: #8B5CF6;
+    flex-shrink: 0;
+  }
+  .chip-stripe.cyan { background: #00CFFF; }
+  .chip-stripe.pink { background: #FF2D78; }
+  .chip-stripe.green { background: #00FF94; }
+
+  .chip-expand {
+    width: 34px; min-width: 34px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px;
+    border: none; border-right: 1px solid rgba(255,255,255,0.06);
+    background: none; cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .chip-body {
+    flex: 1; padding: 0 8px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .chip-text {
+    font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .chip-meta {
+    font-size: 10px; font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    margin-top: 1px;
+  }
+  .chip-right {
+    display: flex; align-items: center;
+    padding: 0 8px; gap: 6px;
+    flex-shrink: 0;
+  }
+  .prio-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .prio-dot.p2 { background: rgba(245,166,35,0.6); }
+
+  /* State labels */
+  .state-label {
+    font-size: 10px; font-weight: 600;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-top: 14px; margin-bottom: 4px;
+  }
+
+  /* ── Variant styles ── */
+
+  /* A: Number Badge */
+  .badge-num {
+    font-size: 11px; font-weight: 700;
+    font-family: 'Outfit','Inter',sans-serif;
+    color: rgba(255,255,255,0.25);
+    line-height: 1;
+  }
+  .badge-num.active { color: #8B5CF6; }
+  .badge-num.done   { color: #00FF94; }
+  .badge-chevron-tiny {
+    width: 8px; height: 8px;
+    border-right: 1.5px solid rgba(255,255,255,0.2);
+    border-bottom: 1.5px solid rgba(255,255,255,0.2);
+    transform: rotate(45deg);
+    margin-top: -2px;
+  }
+  .badge-chevron-tiny.active {
+    border-color: #8B5CF6;
+    transform: rotate(225deg);
+    margin-top: 2px;
+  }
+
+  /* B: Dots */
+  .dots-row {
+    display: flex; gap: 3px; align-items: center; flex-wrap: wrap;
+    justify-content: center; width: 26px;
+  }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.12);
+    flex-shrink: 0;
+  }
+  .dot.filled { background: #8B5CF6; border-color: #8B5CF6; }
+  .dot.done   { background: #00FF94; border-color: #00FF94; }
+  .dot.empty-plus {
+    background: none;
+    border: 1px dashed rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; color: rgba(255,255,255,0.2); line-height: 1;
+  }
+
+  /* C: Arc Progress */
+  .arc-wrap { position: relative; width: 24px; height: 24px; }
+  .arc-wrap svg { position: absolute; inset: 0; }
+  .arc-count {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Outfit','Inter',sans-serif;
+  }
+  .arc-count.done { color: #00FF94; }
+
+  /* D: Tag/Pill */
+  .pill-tag {
+    background: rgba(139,92,246,0.08);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 5px;
+    padding: 2px 5px;
+    font-size: 10px; font-weight: 700;
+    color: rgba(139,92,246,0.7);
+    font-family: 'Outfit','Inter',sans-serif;
+    white-space: nowrap;
+  }
+  .pill-tag.done {
+    background: rgba(0,255,148,0.06);
+    border-color: rgba(0,255,148,0.2);
+    color: rgba(0,255,148,0.7);
+  }
+  .pill-tag.empty {
+    background: none;
+    border: 1px dashed rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* E: Slash counter */
+  .slash-count {
+    font-size: 11px; font-weight: 700;
+    color: rgba(255,255,255,0.2);
+    font-family: 'Outfit','Inter',sans-serif;
+    letter-spacing: -0.5px;
+  }
+  .slash-count .done-part { color: #8B5CF6; }
+  .slash-count.all-done .done-part { color: #00FF94; }
+
+  /* Cards */
+  .cards { gap: 16px; }
+  .card { background: rgba(255,255,255,0.025) !important; border: 1px solid rgba(255,255,255,0.07) !important; }
+  .card:hover { border-color: rgba(139,92,246,0.4) !important; }
+  .card.selected { border-color: #8B5CF6 !important; background: rgba(139,92,246,0.08) !important; }
+  .card-image { background: rgba(0,0,0,0.3) !important; padding: 16px 12px !important; min-height: auto !important; border-radius: 8px; margin-bottom: 4px; }
+  .card-body h3 { color: rgba(255,255,255,0.85) !important; }
+  .card-body p  { color: rgba(255,255,255,0.4) !important; }
+</style>
+
+<div class="cards">
+
+  <!-- A: Chevron + Zahl -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <div class="card-image">
+        <div class="state-label" style="margin-top:0">leer</div>
+        <div class="chip-demo">
+          <div class="chip-stripe"></div>
+          <div class="chip-expand">
+            <div class="badge-chevron-tiny"></div>
+            <span class="badge-num">0</span>
+          </div>
+          <div class="chip-body"><div class="chip-text">Arzt anrufen</div></div>
+          <div class="chip-right"><div class="prio-dot p2"></div></div>
+        </div>
+        <div class="state-label">teilweise</div>
+        <div class="chip-demo has-subs">
+          <div class="chip-stripe"></div>
+          <div class="chip-expand">
+            <div class="badge-chevron-tiny"></div>
+            <span class="badge-num active">1/3</span>
+          </div>
+          <div class="chip-body"><div class="chip-text">Wohnung aufräumen</div></div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+        <div class="state-label">fertig</div>
+        <div class="chip-demo all-done">
+          <div class="chip-stripe green"></div>
+          <div class="chip-expand">
+            <div class="badge-chevron-tiny active"></div>
+            <span class="badge-num done">3/3</span>
+          </div>
+          <div class="chip-body"><div class="chip-text">Steuern einreichen</div></div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3>Chevron + Zahl</h3>
+        <p>Kleiner Pfeil + Fortschritt als "1/3" — klassisch, kompakt</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Dots -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <div class="card-image">
+        <div class="state-label" style="margin-top:0">leer</div>
+        <div class="chip-demo">
+          <div class="chip-stripe cyan"></div>
+          <div class="chip-expand">
+            <div class="dots-row"><div class="dot empty-plus">+</div></div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Arzt anrufen</div></div>
+          <div class="chip-right"><div class="prio-dot p2"></div></div>
+        </div>
+        <div class="state-label">teilweise</div>
+        <div class="chip-demo has-subs">
+          <div class="chip-stripe cyan"></div>
+          <div class="chip-expand">
+            <div class="dots-row">
+              <div class="dot filled"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Wohnung aufräumen</div></div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+        <div class="state-label">fertig</div>
+        <div class="chip-demo all-done">
+          <div class="chip-stripe green"></div>
+          <div class="chip-expand">
+            <div class="dots-row">
+              <div class="dot done"></div>
+              <div class="dot done"></div>
+              <div class="dot done"></div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Steuern einreichen</div></div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3>Dot-Reihe</h3>
+        <p>Punkte zeigen Sub-Items visuell — jeder Punkt = eine Aufgabe</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Arc Progress Ring -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <div class="card-image">
+        <div class="state-label" style="margin-top:0">leer</div>
+        <div class="chip-demo">
+          <div class="chip-stripe pink"></div>
+          <div class="chip-expand">
+            <div class="arc-wrap">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+              </svg>
+              <div class="arc-count" style="font-size:7px;color:rgba(255,255,255,0.2)">+</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Arzt anrufen</div></div>
+          <div class="chip-right"><div class="prio-dot p2"></div></div>
+        </div>
+        <div class="state-label">teilweise (1/3)</div>
+        <div class="chip-demo has-subs">
+          <div class="chip-stripe pink"></div>
+          <div class="chip-expand">
+            <div class="arc-wrap">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                <!-- 33% arc, circumference = 56.5, 33% = 18.8 -->
+                <circle cx="12" cy="12" r="9" stroke="#8B5CF6" stroke-width="2"
+                  stroke-dasharray="18.8 56.5" stroke-dashoffset="14.1"
+                  stroke-linecap="round" transform="rotate(-90 12 12)"/>
+              </svg>
+              <div class="arc-count">1/3</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Wohnung aufräumen</div></div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+        <div class="state-label">fertig</div>
+        <div class="chip-demo all-done">
+          <div class="chip-stripe green"></div>
+          <div class="chip-expand">
+            <div class="arc-wrap">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="#00FF94" stroke-width="2" stroke-dasharray="56.5 56.5" stroke-dashoffset="14.1" transform="rotate(-90 12 12)"/>
+              </svg>
+              <div class="arc-count done">✓</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Steuern einreichen</div></div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3>Progress Ring</h3>
+        <p>Kleiner Fortschrittskreis mit Zahl — visuell stark, kompakt</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- D: Pill Tag (RECHTS statt links) -->
+  <div class="card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <div class="card-image">
+        <div class="state-label" style="margin-top:0">leer — kein Button</div>
+        <div class="chip-demo">
+          <div class="chip-stripe"></div>
+          <div class="chip-body"><div class="chip-text">Arzt anrufen</div><div class="chip-meta">ohne sub-todos kein button</div></div>
+          <div class="chip-right"><div class="prio-dot p2"></div></div>
+        </div>
+        <div class="state-label">teilweise — Pill rechts</div>
+        <div class="chip-demo has-subs" style="height:auto;min-height:44px">
+          <div class="chip-stripe"></div>
+          <div class="chip-body" style="padding:8px 8px">
+            <div class="chip-text">Wohnung aufräumen</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+              <span class="pill-tag">1 / 3</span>
+            </div>
+          </div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+        <div class="state-label">fertig</div>
+        <div class="chip-demo all-done" style="height:auto;min-height:44px">
+          <div class="chip-stripe green"></div>
+          <div class="chip-body" style="padding:8px 8px">
+            <div class="chip-text">Steuern einreichen</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+              <span class="pill-tag done">3 / 3 ✓</span>
+            </div>
+          </div>
+          <div class="chip-right"><div class="prio-dot"></div></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3>Pill in der Meta-Zeile</h3>
+        <p>Kein eigener Button-Bereich links — Fortschritt als Pill unter dem Text</p>
+      </div>
+    </div>
+  </div>
+
+</div>

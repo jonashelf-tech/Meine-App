@@ -100,6 +100,7 @@ export function getToolColor(toolId, toolColors) {
     gamification: '#FFD700',
     reminder:     '#00FF94',
     haushalt:     '#10B981',
+    klaeren:      '#34D399',
   }
   return DEFAULTS[toolId] ?? '#8B5CF6'
 }

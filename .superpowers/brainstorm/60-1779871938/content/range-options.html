@@ -1,0 +1,131 @@
+<h2>Zeitplan 8–18 Uhr: Slots außerhalb anzeigen</h2>
+<p class="subtitle">Wie sollen Einträge vor 8 Uhr oder nach 18 Uhr sichtbar sein?</p>
+
+<div class="cards">
+
+  <!-- Option A: Badge / Chip -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="card-image">
+      <div style="background:#0f0f13;border-radius:10px;padding:12px;font-family:system-ui,sans-serif;color:#e5e7eb;font-size:13px;">
+        <!-- Badge oben -->
+        <div style="display:flex;justify-content:center;margin-bottom:6px;">
+          <div style="background:#1e1b2e;border:1px solid #8B5CF6;border-radius:20px;padding:4px 12px;color:#a78bfa;font-size:11px;font-weight:600;cursor:pointer;">▲ 06:30 · Morgenroutine</div>
+        </div>
+        <!-- Zeitplan -->
+        <div style="background:#1a1a2e;border-radius:8px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:36px 1fr;gap:0;">
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">08</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#9ca3af;font-size:11px;">:00</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;"></div>
+            <div style="padding:4px 8px;border-bottom:1px solid #2a2a3e;"><div style="background:#7c3aed;border-radius:6px;padding:4px 8px;color:#fff;font-size:11px;">Sport</div></div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">09</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#9ca3af;font-size:11px;">:00</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;"></div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#9ca3af;font-size:11px;">:30</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">…</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#4b5563;font-size:10px;">8–18 Uhr</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;">18</div>
+            <div style="padding:6px 8px;color:#9ca3af;font-size:11px;">:00</div>
+          </div>
+        </div>
+        <!-- Badge unten -->
+        <div style="display:flex;justify-content:center;margin-top:6px;gap:6px;">
+          <div style="background:#1e1b2e;border:1px solid #8B5CF6;border-radius:20px;padding:4px 12px;color:#a78bfa;font-size:11px;font-weight:600;cursor:pointer;">▼ 19:00 · Abendessen</div>
+          <div style="background:#1e1b2e;border:1px solid #8B5CF6;border-radius:20px;padding:4px 12px;color:#a78bfa;font-size:11px;font-weight:600;cursor:pointer;">▼ 20:30 · Lesen</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Chips am Rand</h3>
+      <p>Pill/Badge mit Uhrzeit + Text über/unter dem Zeitplan. Klick springt zur Uhrzeit (expandiert). Sehr kompakt, kein Platzverlust.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Ghost-Zeilen -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="card-image">
+      <div style="background:#0f0f13;border-radius:10px;padding:12px;font-family:system-ui,sans-serif;color:#e5e7eb;font-size:13px;">
+        <div style="background:#1a1a2e;border-radius:8px;overflow:hidden;">
+          <!-- Ghost-Zeile oben -->
+          <div style="display:grid;grid-template-columns:36px 1fr;opacity:0.45;background:#111827;border-bottom:1px solid #2a2a3e;">
+            <div style="padding:3px 4px;color:#6b7280;font-size:10px;text-align:center;">06</div>
+            <div style="padding:3px 8px;"><div style="background:#7c3aed;border-radius:4px;padding:2px 8px;color:#fff;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Morgenroutine</div></div>
+          </div>
+          <!-- Trennlinie -->
+          <div style="border-top:1.5px dashed #4b5563;margin:0;"></div>
+          <!-- Normale Zeilen -->
+          <div style="display:grid;grid-template-columns:36px 1fr;gap:0;">
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">08</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#9ca3af;font-size:11px;">:00</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;"></div>
+            <div style="padding:4px 8px;border-bottom:1px solid #2a2a3e;"><div style="background:#7c3aed;border-radius:6px;padding:4px 8px;color:#fff;font-size:11px;">Sport</div></div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">09</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#9ca3af;font-size:11px;">:00</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">…</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#4b5563;font-size:10px;">8–18 Uhr</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;">18</div>
+            <div style="padding:6px 8px;color:#9ca3af;font-size:11px;">:00</div>
+          </div>
+          <!-- Trennlinie -->
+          <div style="border-top:1.5px dashed #4b5563;margin:0;"></div>
+          <!-- Ghost-Zeile unten -->
+          <div style="display:grid;grid-template-columns:36px 1fr;opacity:0.45;background:#111827;">
+            <div style="padding:3px 4px;color:#6b7280;font-size:10px;text-align:center;">19</div>
+            <div style="padding:3px 8px;"><div style="background:#1e40af;border-radius:4px;padding:2px 8px;color:#fff;font-size:10px;">Abendessen</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Ghost-Zeilen</h3>
+      <p>Einträge außerhalb als halbtransparente, komprimierte Zeilen direkt am Rand. Dashed-Trennlinie markiert den Kernbereich. Braucht etwas Platz, aber alles auf einen Blick sichtbar.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Zahl-Indikator -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="card-image">
+      <div style="background:#0f0f13;border-radius:10px;padding:12px;font-family:system-ui,sans-serif;color:#e5e7eb;font-size:13px;">
+        <!-- Indikator oben im expand-button -->
+        <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
+          <button style="background:#1e1b2e;border:1px solid #374151;border-radius:8px;padding:5px 10px;color:#9ca3af;font-size:11px;cursor:pointer;flex:1;">− früh</button>
+          <button style="background:#1e1b2e;border:1px solid #8B5CF6;border-radius:8px;padding:5px 10px;color:#a78bfa;font-size:11px;cursor:pointer;flex:1;position:relative;">
+            + früher
+            <span style="position:absolute;top:-6px;right:-6px;background:#8B5CF6;color:#fff;border-radius:10px;padding:1px 5px;font-size:10px;font-weight:700;">1</span>
+          </button>
+        </div>
+        <!-- Zeitplan -->
+        <div style="background:#1a1a2e;border-radius:8px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:36px 1fr;gap:0;">
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">08</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#9ca3af;font-size:11px;">:00</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;"></div>
+            <div style="padding:4px 8px;border-bottom:1px solid #2a2a3e;"><div style="background:#7c3aed;border-radius:6px;padding:4px 8px;color:#fff;font-size:11px;">Sport</div></div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">09</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#9ca3af;font-size:11px;">:00</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;border-bottom:1px solid #2a2a3e;">…</div>
+            <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#4b5563;font-size:10px;">8–18 Uhr</div>
+            <div style="padding:6px 4px;color:#6b7280;font-size:11px;text-align:center;">18</div>
+            <div style="padding:6px 8px;color:#9ca3af;font-size:11px;">:00</div>
+          </div>
+        </div>
+        <!-- Indikator unten -->
+        <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
+          <button style="background:#1e1b2e;border:1px solid #374151;border-radius:8px;padding:5px 10px;color:#9ca3af;font-size:11px;cursor:pointer;flex:1;">− spät</button>
+          <button style="background:#1e1b2e;border:1px solid #8B5CF6;border-radius:8px;padding:5px 10px;color:#a78bfa;font-size:11px;cursor:pointer;flex:1;position:relative;">
+            + später
+            <span style="position:absolute;top:-6px;right:-6px;background:#8B5CF6;color:#fff;border-radius:10px;padding:1px 5px;font-size:10px;font-weight:700;">2</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Badge am Expand-Button</h3>
+      <p>Der bestehende "+ früher / + später"-Button bekommt ein Zahl-Badge wenn Einträge dahinter liegen. Kein extra UI — genau da wo der Button schon ist. Minimalste Änderung.</p>
+    </div>
+  </div>
+
+</div>

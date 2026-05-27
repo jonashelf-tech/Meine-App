@@ -55,16 +55,31 @@ export function useDragDrop() {
       const cy = ev.touches ? ev.touches[0].clientY : ev.clientY
       ghost.style.left = `${cx + 10}px`
       ghost.style.top  = `${cy - 14}px`
-      Object.values(halfRefs.current).forEach(({ el, type }) => {
-        if (!el) return
+      const blockingKeys = new Set()
+      for (const [key, { el, type }] of Object.entries(halfRefs.current)) {
+        if (!el) continue
         const rc   = el.getBoundingClientRect()
         const over = cx >= rc.left && cx <= rc.right && cy >= rc.top && cy <= rc.bottom
         el.classList.remove('dnd-half-over', 'dnd-half-locked')
         if (over) {
-          const blocked = type === 'locked' || type === 'occupied' || (type === 'empty' && canDrop && !canDrop(key))
-          el.classList.add(blocked ? 'dnd-half-locked' : 'dnd-half-over')
+          if (type === 'locked' || type === 'occupied') {
+            el.classList.add('dnd-half-locked')
+          } else if (type === 'empty' && canDrop) {
+            const result = canDrop(key)
+            if (result === true) {
+              el.classList.add('dnd-half-over')
+            } else {
+              result.forEach(k => blockingKeys.add(k))
+            }
+          } else {
+            el.classList.add('dnd-half-over')
+          }
         }
-      })
+      }
+      for (const k of blockingKeys) {
+        const reg = halfRefs.current[k]
+        if (reg?.el) reg.el.classList.add('dnd-half-locked')
+      }
 
       const rc      = scrollEl === window ? { top: 0, bottom: window.innerHeight } : scrollEl.getBoundingClientRect()
       const zoneTop = rc.top + SCROLL_ZONE
@@ -94,6 +109,7 @@ export function useDragDrop() {
         if (!el) continue
         el.classList.remove('dnd-half-over', 'dnd-half-locked')
         if (dropped || type !== 'empty') continue
+        if (canDrop && canDrop(key) !== true) continue
         const rc = el.getBoundingClientRect()
         if (cx >= rc.left && cx <= rc.right && cy >= rc.top && cy <= rc.bottom) {
           onDrop(key)

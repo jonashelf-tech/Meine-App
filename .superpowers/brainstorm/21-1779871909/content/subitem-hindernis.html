@@ -1,0 +1,206 @@
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Outfit', system-ui, sans-serif; }
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #34D399; opacity: 0.7; margin: 0 0 8px 0;
+  }
+  p.sub { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin: 0 0 16px 0; line-height: 1.5; }
+
+  /* ── Chip (immer gleich) ────────────────── */
+  .chip-wrap { max-width: 340px; margin-bottom: 4px; }
+  .chip {
+    background: rgba(139,92,246,0.15); border: 1.5px solid #8B5CF6;
+    border-radius: 12px; padding: 8px 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .chip-ring {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    border: 1.5px solid rgba(139,92,246,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.58rem; font-weight: 800; color: rgba(139,92,246,0.8);
+  }
+  .chip-text { flex: 1; font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+  .remove-btn {
+    width: 22px; height: 22px; border-radius: 6px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; color: rgba(255,255,255,0.3); flex-shrink: 0;
+  }
+
+  /* ── Expanded area (immer gleich) ──────── */
+  .items-wrap {
+    background: rgba(139,92,246,0.05);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 8px 10px 10px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .item-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .item-check {
+    width: 14px; height: 14px; border-radius: 4px;
+    border: 1.5px solid rgba(139,92,246,0.4); flex-shrink: 0;
+  }
+  .item-check.done { background: rgba(139,92,246,0.3); border-color: #8B5CF6; }
+  .item-text { flex: 1; font-size: 0.72rem; color: rgba(255,255,255,0.65); }
+  .item-text.done { text-decoration: line-through; opacity: 0.4; }
+
+  /* ── Variante A: Tool-Farbe Border (voll) */
+  .context-card-a {
+    margin: 8px 0 2px;
+    border: 1px solid rgba(52,211,153,0.35);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .context-row-a {
+    padding: 7px 10px;
+    display: flex; gap: 8px; align-items: flex-start;
+    background: rgba(52,211,153,0.05);
+    border-bottom: 1px solid rgba(52,211,153,0.12);
+  }
+  .context-row-a:last-child { border-bottom: none; }
+  .ctx-icon-a { font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
+  .ctx-label-a { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(52,211,153,0.6); line-height: 1; margin-bottom: 2px; }
+  .ctx-text-a { font-size: 0.7rem; color: rgba(255,255,255,0.55); line-height: 1.4; }
+
+  /* ── Variante B: Nur linker Border (Callout) */
+  .context-b {
+    margin: 8px 0 2px;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .context-row-b {
+    padding: 6px 10px;
+    border-left: 2px solid rgba(52,211,153,0.4);
+    background: rgba(52,211,153,0.03);
+    border-radius: 0 6px 6px 0;
+  }
+  .ctx-label-b { font-size: 0.57rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(52,211,153,0.5); margin-bottom: 2px; }
+  .ctx-text-b { font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.4; }
+
+  /* ── Variante C: Chip-Farbe, kein Mint */
+  .context-c {
+    margin: 8px 0 2px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .context-row-c {
+    display: flex; align-items: flex-start; gap: 7px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .ctx-dash { font-size: 0.6rem; color: rgba(139,92,246,0.5); flex-shrink: 0; margin-top: 2px; font-weight: 700; }
+  .ctx-inner { display: flex; flex-direction: column; gap: 1px; }
+  .ctx-label-c { font-size: 0.57rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(139,92,246,0.55); }
+  .ctx-text-c { font-size: 0.7rem; color: rgba(255,255,255,0.5); line-height: 1.4; }
+
+  .note {
+    font-size: 0.68rem; color: rgba(255,255,255,0.28); line-height: 1.5;
+    background: rgba(255,255,255,0.02); border-left: 2px solid rgba(52,211,153,0.2);
+    padding: 7px 10px; border-radius: 0 6px 6px 0; margin-top: 6px; max-width: 340px;
+  }
+</style>
+
+<h2>Hindernis &amp; Wert — Anzeige in Sub-Items</h2>
+<p class="subtitle">Wie sollen sie im ausgeklappten Chip aussehen?</p>
+
+<div class="options">
+
+  <!-- OPTION A: voller tool-color border -->
+  <div class="option" data-choice="A" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Mint-Card (Tool-Farbe)</h3>
+      <p>Eigene Card mit vollem Mint-Border — klar abgegrenzt, aber zweite Farbe neben Chip-Lila.</p>
+      <div style="margin-top:12px;" class="chip-wrap">
+        <div class="chip">
+          <div class="chip-ring">1/2</div>
+          <div class="chip-text">Steuererklärung</div>
+          <div class="remove-btn">✕</div>
+        </div>
+        <div class="items-wrap">
+          <div class="item-row"><div class="item-check done"></div><span class="item-text done">Belege sammeln</span></div>
+          <div class="item-row"><div class="item-check"></div><span class="item-text">ELSTER öffnen</span></div>
+          <div class="context-card-a">
+            <div class="context-row-a">
+              <span class="ctx-icon-a">🏔</span>
+              <div><div class="ctx-label-a">Hindernis</div><div class="ctx-text-a">Ich weiß nicht wo anfangen</div></div>
+            </div>
+            <div class="context-row-a">
+              <span class="ctx-icon-a">✨</span>
+              <div><div class="ctx-label-a">Wert</div><div class="ctx-text-a">Weniger Stress, Geld zurück</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B: linker border nur -->
+  <div class="option" data-choice="B" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Callout-Streifen (dezent)</h3>
+      <p>Nur ein dünner linker Mint-Streifen — weniger präsent, fügt sich besser ein.</p>
+      <div style="margin-top:12px;" class="chip-wrap">
+        <div class="chip">
+          <div class="chip-ring">1/2</div>
+          <div class="chip-text">Steuererklärung</div>
+          <div class="remove-btn">✕</div>
+        </div>
+        <div class="items-wrap">
+          <div class="item-row"><div class="item-check done"></div><span class="item-text done">Belege sammeln</span></div>
+          <div class="item-row"><div class="item-check"></div><span class="item-text">ELSTER öffnen</span></div>
+          <div class="context-b">
+            <div class="context-row-b">
+              <div class="ctx-label-b">🏔 Hindernis</div>
+              <div class="ctx-text-b">Ich weiß nicht wo anfangen</div>
+            </div>
+            <div class="context-row-b">
+              <div class="ctx-label-b">✨ Wert</div>
+              <div class="ctx-text-b">Weniger Stress, Geld zurück</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C: Chip-Farbe, kein Mint -->
+  <div class="option" data-choice="C" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Chip-Farbe (kein extra Mint)</h3>
+      <p>Nutzt die Todo-Farbe (Lila) statt Mint — bleibt im Farbschema des Chips, keine dritte Farbe.</p>
+      <div style="margin-top:12px;" class="chip-wrap">
+        <div class="chip">
+          <div class="chip-ring">1/2</div>
+          <div class="chip-text">Steuererklärung</div>
+          <div class="remove-btn">✕</div>
+        </div>
+        <div class="items-wrap">
+          <div class="item-row"><div class="item-check done"></div><span class="item-text done">Belege sammeln</span></div>
+          <div class="item-row"><div class="item-check"></div><span class="item-text">ELSTER öffnen</span></div>
+          <div class="context-c">
+            <div class="context-row-c">
+              <span class="ctx-dash">●</span>
+              <div class="ctx-inner"><div class="ctx-label-c">Hindernis</div><div class="ctx-text-c">Ich weiß nicht wo anfangen</div></div>
+            </div>
+            <div class="context-row-c" style="border-bottom:none;">
+              <span class="ctx-dash">●</span>
+              <div class="ctx-inner"><div class="ctx-label-c">Wert</div><div class="ctx-text-c">Weniger Stress, Geld zurück</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="note">
+  Datensatz: zwei neue Felder am Todo — <code>todo.klaerenHindernis</code> und <code>todo.klaerenWert</code> (beide strings, optional).<br>
+  Anzeige nur wenn gefüllt. Keine Änderung an bestehenden Sub-Item-Feldern.
+</div>

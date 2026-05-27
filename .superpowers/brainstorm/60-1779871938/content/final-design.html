@@ -1,0 +1,108 @@
+<h2>Finales Design: Zeitplan-Leiste</h2>
+<p class="subtitle">So sieht der komplette Zeitplan aus — klick auf Chips um die Interaktion zu sehen</p>
+
+<div class="mockup">
+  <div class="mockup-header">TabHeute · Zeitplan (8–18 Uhr Default)</div>
+  <div class="mockup-body" style="padding:0;">
+    <div style="background:#0f0f13;padding:12px;font-family:system-ui,sans-serif;font-size:13px;color:#e5e7eb;">
+
+      <!-- Controls: Shift + Minimal/Alles -->
+      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
+        <button style="background:#1e1b2e;border:1px solid #374151;border-radius:7px;padding:5px 10px;color:#9ca3af;font-size:11px;cursor:pointer;">▲ 30min</button>
+        <button style="background:#1e1b2e;border:1px solid #374151;border-radius:7px;padding:5px 10px;color:#9ca3af;font-size:11px;cursor:pointer;">▼ 30min</button>
+        <div style="flex:1;"></div>
+        <button style="background:#1e1b2e;border:1px solid #374151;border-radius:7px;padding:5px 10px;color:#9ca3af;font-size:11px;cursor:pointer;">+ Fenster</button>
+        <div style="background:#1e1b2e;border:1px solid #374151;border-radius:7px;overflow:hidden;display:flex;">
+          <button style="padding:5px 10px;color:#e5e7eb;font-size:11px;background:#2d2d4e;border:none;cursor:pointer;">Alles</button>
+          <button style="padding:5px 10px;color:#6b7280;font-size:11px;background:transparent;border:none;cursor:pointer;">Minimal</button>
+        </div>
+      </div>
+
+      <!-- ═══ TOP PILL-LEISTE ═══ -->
+      <div id="top-strip" style="display:flex;align-items:stretch;gap:0;border-radius:9px;overflow:hidden;border:1px solid #2a2a3e;margin-bottom:8px;" title="Einträge vor 8 Uhr">
+        <!-- Minus -->
+        <button title="Früheren Slot entfernen"
+          style="width:36px;background:#0f0f1a;border:none;border-right:1px solid #2a2a3e;color:#374151;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
+        <!-- Chip-Area -->
+        <div style="flex:1;background:#0f0f1a;padding:5px 8px;display:flex;gap:5px;align-items:center;flex-wrap:nowrap;overflow-x:auto;min-height:32px;" id="top-chips">
+          <span onclick="expandTop(6)" title="Tippen zum Einblenden"
+            style="background:rgba(124,58,237,0.25);border:1px solid rgba(124,58,237,0.4);border-radius:6px;padding:3px 9px;color:#c4b5fd;font-size:10px;white-space:nowrap;cursor:pointer;transition:background .15s;"
+            onmouseover="this.style.background='rgba(124,58,237,0.45)'" onmouseout="this.style.background='rgba(124,58,237,0.25)'">06:30 · Morgenroutine</span>
+          <span onclick="expandTop(7)" title="Tippen zum Einblenden"
+            style="background:rgba(30,64,175,0.25);border:1px solid rgba(30,64,175,0.45);border-radius:6px;padding:3px 9px;color:#93c5fd;font-size:10px;white-space:nowrap;cursor:pointer;transition:background .15s;"
+            onmouseover="this.style.background='rgba(30,64,175,0.45)'" onmouseout="this.style.background='rgba(30,64,175,0.25)'">07:00 · Gym</span>
+        </div>
+        <!-- Plus -->
+        <button title="Noch frühere Stunde hinzufügen"
+          style="width:36px;background:#0f0f1a;border:none;border-left:1px solid #2a2a3e;color:#8B5CF6;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>
+      </div>
+
+      <!-- ═══ ZEITPLAN GRID ═══ -->
+      <div style="background:#1a1a2e;border-radius:8px;overflow:hidden;margin-bottom:8px;" id="zeitplan">
+        <div style="display:grid;grid-template-columns:32px 1fr;gap:0;" id="grid">
+          <div style="padding:6px 2px;color:#8b5cf6;font-size:10px;text-align:center;border-bottom:1px solid #2a2a3e;font-weight:700;">08</div>
+          <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#4b5563;font-size:10px;">:00</div>
+          <div style="padding:6px 2px;color:#6b7280;font-size:10px;text-align:center;border-bottom:1px solid #2a2a3e;"></div>
+          <div style="padding:4px 8px;border-bottom:1px solid #2a2a3e;"><div style="background:#7c3aed;border-radius:5px;padding:3px 8px;color:#fff;font-size:10px;">Sport 🏃</div></div>
+          <div style="padding:6px 2px;color:#6b7280;font-size:10px;text-align:center;border-bottom:1px solid #2a2a3e;">09</div>
+          <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#4b5563;font-size:10px;">:00</div>
+          <div style="padding:6px 2px;color:#6b7280;font-size:10px;text-align:center;border-bottom:1px solid #2a2a3e;"></div>
+          <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#4b5563;font-size:10px;">:30</div>
+
+          <div style="padding:4px 2px;color:#374151;font-size:9px;text-align:center;border-bottom:1px solid #1f2937;grid-column:1/-1;background:#111827;text-align:center;">· · · 10 – 17 Uhr · · ·</div>
+
+          <div style="padding:6px 2px;color:#6b7280;font-size:10px;text-align:center;border-bottom:1px solid #2a2a3e;">17</div>
+          <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;"><div style="background:#065f46;border-radius:5px;padding:3px 8px;color:#6ee7b7;font-size:10px;">Meeting</div></div>
+          <div style="padding:6px 2px;color:#6b7280;font-size:10px;text-align:center;border-bottom:1px solid #2a2a3e;"></div>
+          <div style="padding:6px 8px;border-bottom:1px solid #2a2a3e;color:#4b5563;font-size:10px;">:30</div>
+          <div style="padding:6px 2px;color:#6b7280;font-size:10px;text-align:center;">18</div>
+          <div style="padding:6px 8px;color:#4b5563;font-size:10px;">:00</div>
+        </div>
+      </div>
+
+      <!-- ═══ BOTTOM PILL-LEISTE ═══ -->
+      <div id="bot-strip" style="display:flex;align-items:stretch;gap:0;border-radius:9px;overflow:hidden;border:1px solid #2a2a3e;" title="Einträge nach 18 Uhr">
+        <button title="Spätesten Slot entfernen"
+          style="width:36px;background:#0f0f1a;border:none;border-right:1px solid #2a2a3e;color:#374151;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
+        <div style="flex:1;background:#0f0f1a;padding:5px 8px;display:flex;gap:5px;align-items:center;min-height:32px;" id="bot-chips">
+          <span onclick="expandBot(19)" title="Tippen zum Einblenden"
+            style="background:rgba(6,78,59,0.3);border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 9px;color:#6ee7b7;font-size:10px;white-space:nowrap;cursor:pointer;transition:background .15s;"
+            onmouseover="this.style.background='rgba(6,78,59,0.55)'" onmouseout="this.style.background='rgba(6,78,59,0.3)'">19:00 · Abendessen</span>
+          <span onclick="expandBot(21)" title="Tippen zum Einblenden"
+            style="background:rgba(124,58,237,0.25);border:1px solid rgba(124,58,237,0.35);border-radius:6px;padding:3px 9px;color:#c4b5fd;font-size:10px;white-space:nowrap;cursor:pointer;transition:background .15s;"
+            onmouseover="this.style.background='rgba(124,58,237,0.45)'" onmouseout="this.style.background='rgba(124,58,237,0.25)'">21:30 · Lesen</span>
+        </div>
+        <button title="Noch spätere Stunde hinzufügen"
+          style="width:36px;background:#0f0f1a;border:none;border-left:1px solid #2a2a3e;color:#8B5CF6;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>
+      </div>
+
+      <!-- Feedback nach Chip-Klick -->
+      <div id="feedback" style="display:none;margin-top:8px;background:#1e3a20;border:1px solid #16a34a;border-radius:7px;padding:7px 12px;color:#86efac;font-size:11px;text-align:center;"></div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <h3>Verhalten-Details</h3>
+  <ul style="color:#9ca3af;font-size:13px;line-height:1.8;padding-left:18px;">
+    <li><strong style="color:#e5e7eb;">Chip-Tap</strong> → Zeitplan expandiert so dass die Stunde sichtbar wird (visStart oder visEnd wird angepasst)</li>
+    <li><strong style="color:#e5e7eb;">+ Button</strong> → wie bisher: eine Stunde früher/später hinzufügen</li>
+    <li><strong style="color:#e5e7eb;">− Button</strong> → wie bisher: erste/letzte Stunde entfernen (nur wenn leer)</li>
+    <li><strong style="color:#e5e7eb;">Leere Chip-Area</strong> → Bar bleibt sichtbar, Chip-Area ist leer (nur − und + bleiben)</li>
+    <li><strong style="color:#e5e7eb;">Default</strong> → 8–18 Uhr (statt bisher 8–20)</li>
+  </ul>
+</div>
+
+<script>
+function expandTop(h) {
+  document.getElementById('feedback').style.display = 'block';
+  document.getElementById('feedback').textContent = '→ Zeitplan springt auf ' + String(h).padStart(2,'0') + ':00 — Chip verschwindet ins Grid';
+  setTimeout(() => document.getElementById('feedback').style.display = 'none', 2500);
+}
+function expandBot(h) {
+  document.getElementById('feedback').style.display = 'block';
+  document.getElementById('feedback').textContent = '→ Zeitplan dehnt sich auf ' + String(h+1).padStart(2,'0') + ':00 aus — Chip verschwindet ins Grid';
+  setTimeout(() => document.getElementById('feedback').style.display = 'none', 2500);
+}
+</script>

@@ -1,0 +1,293 @@
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Outfit', system-ui, sans-serif; }
+
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #34D399; opacity: 0.7; margin: 0 0 10px 0;
+  }
+  .note {
+    font-size: 0.7rem; color: rgba(255,255,255,0.3); line-height: 1.5;
+    background: rgba(255,255,255,0.03); border-left: 2px solid rgba(52,211,153,0.3);
+    padding: 8px 12px; border-radius: 0 6px 6px 0; margin-top: 6px;
+  }
+  .divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 24px 0; }
+
+  /* ── Screen 4 Update ────────────────────────── */
+  .screen {
+    background: rgba(12,12,26,0.97); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 16px 14px;
+    display: flex; flex-direction: column; gap: 9px; position: relative;
+    max-width: 240px;
+  }
+  .screen-num {
+    position: absolute; top: -10px; left: 14px;
+    background: #34D399; color: #0c0c1a;
+    font-size: 0.62rem; font-weight: 800;
+    padding: 2px 8px; border-radius: 20px;
+  }
+  .screen-q { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.88); line-height: 1.4; }
+  .mock-btn-primary {
+    border-radius: 8px; padding: 7px 10px; font-size: 0.72rem; font-weight: 700;
+    background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.4); color: #34D399;
+    text-align: center;
+  }
+  .mini-chip {
+    background: rgba(139,92,246,0.12); border: 1.5px solid #8B5CF6;
+    border-radius: 10px; padding: 7px 9px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .mini-chip-ring {
+    width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%;
+    border: 1.5px solid rgba(52,211,153,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; font-weight: 800; color: #34D399;
+  }
+  .mini-chip-text { flex: 1; font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.8); }
+  .mini-subitems { display: flex; flex-direction: column; gap: 4px; }
+  .mini-subitem {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.62rem; color: rgba(255,255,255,0.55); padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .mini-sub-check { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(52,211,153,0.3); flex-shrink: 0; }
+  .mini-add-row { display: flex; gap: 5px; margin-top: 2px; }
+  .mini-add-input {
+    flex: 1; background: rgba(255,255,255,0.04); border: 1px dashed rgba(52,211,153,0.2);
+    border-radius: 5px; padding: 4px 7px;
+    font-size: 0.62rem; color: rgba(255,255,255,0.3); font-style: italic;
+  }
+  .mini-add-btn {
+    background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3);
+    border-radius: 5px; padding: 4px 8px;
+    font-size: 0.72rem; font-weight: 700; color: #34D399;
+  }
+  .progress-dots { display: flex; justify-content: center; gap: 5px; padding-top: 2px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+  .dot.active { background: #34D399; }
+
+  /* ── Chip Demo ──────────────────────────────── */
+  .chip-demo {
+    background: rgba(139,92,246,0.15); border: 1.5px solid #8B5CF6;
+    border-radius: 12px; padding: 8px 10px;
+    display: flex; align-items: center; gap: 8px; max-width: 360px;
+  }
+  .chip-ring {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; color: rgba(255,255,255,0.25);
+  }
+  .chip-body { flex: 1; }
+  .chip-title { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+  .chip-meta { font-size: 0.62rem; color: rgba(255,255,255,0.3); margin-top: 1px; }
+  .klaeren-circle {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(52,211,153,0.1); border: 1.5px solid rgba(52,211,153,0.4);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  }
+  .klaeren-circle .num { font-size: 0.68rem; font-weight: 800; color: #34D399; line-height: 1; }
+  .klaeren-circle .unit { font-size: 0.48rem; font-weight: 600; color: rgba(52,211,153,0.6); line-height: 1; }
+  .remove-btn {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; color: rgba(255,255,255,0.3);
+  }
+  .chip-tag {
+    font-size: 0.6rem; color: rgba(52,211,153,0.5); font-weight: 700;
+    margin-top: 5px; text-align: right; max-width: 360px;
+  }
+
+  /* ── Settings ───────────────────────────────── */
+  .settings-panel {
+    background: rgba(12,12,26,0.95); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 16px; max-width: 340px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .settings-header {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .settings-title {
+    font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.6);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .settings-row {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .settings-label {
+    font-size: 0.62rem; font-weight: 600; color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .settings-control {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mock-number-input {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 7px 12px;
+    font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.8);
+    width: 64px; text-align: center;
+  }
+  .settings-unit { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
+  .color-swatch {
+    width: 28px; height: 28px; border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.15); cursor: pointer;
+    flex-shrink: 0;
+  }
+  .color-row { display: flex; align-items: center; gap: 10px; }
+  .color-label { font-size: 0.68rem; color: rgba(255,255,255,0.4); }
+
+  .tab-mock {
+    background: rgba(12,12,26,0.97); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 16px; max-width: 340px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .tab-header {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .tab-title { font-size: 1.1rem; font-weight: 700; color: rgba(255,255,255,0.88); }
+  .todo-row-mock {
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+  }
+  .todo-row-age { font-size: 0.68rem; font-weight: 700; color: #34D399; min-width: 38px; }
+  .todo-row-text { flex: 1; font-size: 0.75rem; color: rgba(255,255,255,0.75); }
+  .gear-btn {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 5px 9px;
+    font-size: 0.75rem; color: rgba(255,255,255,0.35); cursor: pointer;
+  }
+  .divider-light {
+    border: none; border-top: 1px solid rgba(255,255,255,0.05); margin: 0;
+  }
+</style>
+
+<h2>Flow v3 — Finalisierte Details</h2>
+<p class="subtitle">Screen 4 bereinigt · Chip-Button bestätigt · Settings-Konzept</p>
+
+<!-- ── Screen 4 Update ───────────────────────────────── -->
+<div class="section-label">Screen 4 — Bereinigt (kein Hinweis-Badge)</div>
+
+<div class="screen">
+  <div class="screen-num">4 · Schritte</div>
+  <div class="screen-q">Zerleg es in die kleinsten möglichen Schritte:</div>
+  <div class="mini-chip">
+    <div class="mini-chip-ring">1/3</div>
+    <div class="mini-chip-text">Steuererklärung</div>
+  </div>
+  <div class="mini-subitems">
+    <div class="mini-subitem">
+      <div class="mini-sub-check" style="background:rgba(52,211,153,0.25);border-color:#34D399;"></div>
+      <span style="text-decoration:line-through;opacity:0.4;">Belege sammeln</span>
+    </div>
+    <div class="mini-subitem">
+      <div class="mini-sub-check" style="background:rgba(52,211,153,0.25);border-color:#34D399;"></div>
+      <span style="text-decoration:line-through;opacity:0.4;">ELSTER öffnen</span>
+    </div>
+    <div class="mini-subitem">
+      <div class="mini-sub-check"></div>Werbungskosten eintragen
+    </div>
+  </div>
+  <div class="mini-add-row">
+    <div class="mini-add-input">+ Schritt hinzufügen…</div>
+    <div class="mini-add-btn">+</div>
+  </div>
+  <div class="mock-btn-primary">Fertig ✓</div>
+  <div class="progress-dots">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+  </div>
+</div>
+
+<div class="note" style="max-width:340px;">
+  Chip-Simulation direkt im Modal. Kein externer Hinweis. Sauber.
+</div>
+
+<hr class="divider">
+
+<!-- ── Chip Button ───────────────────────────────────── -->
+<div class="section-label">Chip-Button — Nur Einfügen, kein Redesign</div>
+
+<div class="chip-demo">
+  <div class="chip-ring">○</div>
+  <div class="chip-body">
+    <div class="chip-title">Steuererklärung machen</div>
+    <div class="chip-meta">Finanzen · 34 min</div>
+  </div>
+  <!-- NEU: Klaeren-Kreis (nur hinzugefügt) -->
+  <div class="klaeren-circle">
+    <span class="num">87</span>
+    <span class="unit">Tage</span>
+  </div>
+  <!-- BESTEHEND: Remove -->
+  <div class="remove-btn">✕</div>
+</div>
+<div class="chip-tag">← neu hinzugefügt · bestehender Chip unverändert</div>
+
+<div class="note" style="max-width:360px;margin-top:8px;">
+  Alles andere am TodoChip bleibt exakt wie es ist. Nur der Kreis wird eingefügt — direkt vor dem ✕.<br>
+  Farbe: immer <strong style="color:#34D399;">#34D399</strong> (Prokrastination-Toolfarbe). Nur sichtbar wenn Alter ≥ Schwelle.
+</div>
+
+<hr class="divider">
+
+<!-- ── Settings ─────────────────────────────────────── -->
+<div class="section-label">Settings — Im Prokrastination-Tab</div>
+<p class="subtitle" style="font-size:0.7rem;margin-bottom:14px;">Wo sollen die Einstellungen leben?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="settings-a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Zahnrad im Tab-Header</h3>
+      <p>Kleines ⚙-Icon neben dem Titel. Öffnet ein kompaktes Settings-Modal. Platzsparend, immer erreichbar.</p>
+      <div style="margin-top:10px;">
+        <div class="tab-mock" style="pointer-events:none;">
+          <div class="tab-header">
+            <span>Tool</span>
+            <div class="gear-btn">⚙</div>
+          </div>
+          <div class="tab-title">Prokrastination</div>
+          <div class="divider-light"></div>
+          <div class="todo-row-mock"><span class="todo-row-age">87 T</span><span class="todo-row-text">Steuererklärung</span></div>
+          <div class="todo-row-mock"><span class="todo-row-age">45 T</span><span class="todo-row-text">Schreibtisch aufräumen</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="settings-b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Ausklappbar am Tab-Ende</h3>
+      <p>Settings-Section am unteren Ende des Tabs, hinter einem "Einstellungen"-Toggle. Alles auf einer Seite, kein Modal.</p>
+      <div style="margin-top:10px;">
+        <div class="tab-mock" style="pointer-events:none;">
+          <div class="tab-title">Prokrastination</div>
+          <div class="todo-row-mock"><span class="todo-row-age">87 T</span><span class="todo-row-text">Steuererklärung</span></div>
+          <div class="todo-row-mock"><span class="todo-row-age">45 T</span><span class="todo-row-text">Schreibtisch aufräumen</span></div>
+          <div class="divider-light"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;">
+            <span style="font-size:0.65rem;color:rgba(255,255,255,0.3);">⚙ Einstellungen</span>
+            <span style="font-size:0.65rem;color:rgba(255,255,255,0.2);">›</span>
+          </div>
+          <div style="padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);flex:1;">Schwelle</span>
+              <div class="mock-number-input">30</div>
+              <span class="settings-unit">Tage</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);flex:1;">Farbe</span>
+              <div class="color-swatch" style="background:#34D399;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

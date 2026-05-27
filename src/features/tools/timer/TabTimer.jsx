@@ -5,9 +5,9 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabTimer.module.css'
 
 // ─── Presets ───────────────────────────────────────────────
-const NORMAL_PRESETS = [15, 25, 45, 60]
-const POM_WORK       = [15, 20, 25, 30, 45, 50]
-const POM_BREAK      = [3, 5, 10, 15]
+const NORMAL_PRESETS = [5, 10, 15, 30, 45, 60]
+const POM_WORK       = [5, 10, 15, 30, 45, 60]
+const POM_BREAK      = [5, 10, 15, 20]
 
 // ─── localStorage keys ─────────────────────────────────────
 const LS_START   = 'adhs_timer_startTs'
@@ -52,8 +52,8 @@ export default function TabTimer({ onBack }) {
 
   // Config state
   const [timerMode,  setTimerMode]  = useState('normal')  // "normal" | "pomodoro"
-  const [pomWork,    setPomWork]    = useState(25)
-  const [pomBreak,   setPomBreak]   = useState(3)
+  const [pomWork,    setPomWork]    = useState(15)
+  const [pomBreak,   setPomBreak]   = useState(5)
 
   // Runtime state
   const [pomPhase,   setPomPhase]   = useState('work')    // "work" | "break"
@@ -63,6 +63,8 @@ export default function TabTimer({ onBack }) {
   const [isRunning,  setIsRunning]  = useState(false)
   const [done,       setDone]       = useState(false)
   const [manualMin,  setManualMin]  = useState('')
+  const [manualPomWork,  setManualPomWork]  = useState('')
+  const [manualPomBreak, setManualPomBreak] = useState('')
 
   // Todo picker
   const [focusTodoId,    setFocusTodoId]    = useState(null)
@@ -76,7 +78,7 @@ export default function TabTimer({ onBack }) {
   const rafRef        = useRef(null)
   const startTsRef    = useRef(null)
   const totalSecsRef  = useRef(0)
-  const pomBreakRef   = useRef(3)
+  const pomBreakRef   = useRef(5)
   const timerModeRef  = useRef('normal')
   const phaseRef      = useRef('work')
   const cyclesRef     = useRef(0)
@@ -488,13 +490,26 @@ export default function TabTimer({ onBack }) {
                     <button
                       key={m}
                       className={[s.pill, pomWork === m ? s.pillActive : ''].join(' ')}
-                      onClick={() => setPomWork(m)}
+                      onClick={() => { setPomWork(m); setManualPomWork('') }}
                     >
                       {m}
                     </button>
                   ))}
                 </div>
-                <span className={s.cfgLabel}>min</span>
+                <input
+                  className={s.manualInput}
+                  type="number"
+                  min="1"
+                  max="180"
+                  placeholder="Min"
+                  value={manualPomWork}
+                  onChange={e => {
+                    const v = e.target.value
+                    setManualPomWork(v)
+                    const m = parseInt(v, 10)
+                    if (m > 0) setPomWork(m)
+                  }}
+                />
               </div>
 
               <div className={s.pomRow}>
@@ -504,13 +519,26 @@ export default function TabTimer({ onBack }) {
                     <button
                       key={m}
                       className={[s.pill, pomBreak === m ? s.pillActive : ''].join(' ')}
-                      onClick={() => { setPomBreak(m); pomBreakRef.current = m }}
+                      onClick={() => { setPomBreak(m); pomBreakRef.current = m; setManualPomBreak('') }}
                     >
                       {m}
                     </button>
                   ))}
                 </div>
-                <span className={s.cfgLabel}>min</span>
+                <input
+                  className={s.manualInput}
+                  type="number"
+                  min="1"
+                  max="60"
+                  placeholder="Min"
+                  value={manualPomBreak}
+                  onChange={e => {
+                    const v = e.target.value
+                    setManualPomBreak(v)
+                    const m = parseInt(v, 10)
+                    if (m > 0) { setPomBreak(m); pomBreakRef.current = m }
+                  }}
+                />
               </div>
 
               <button className={s.launchBtn} onClick={handlePomStart}>

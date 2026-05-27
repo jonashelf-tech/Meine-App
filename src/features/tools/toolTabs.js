@@ -12,4 +12,5 @@ export const TOOL_TAB = {
   reminder:     12,
   haushalt:     13,
   wasjetzt:     14,
+  klaeren:      15,
 }

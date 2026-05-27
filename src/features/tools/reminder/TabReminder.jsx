@@ -4,6 +4,7 @@ import { getToolColor } from '../../../utils'
 import {
   CURATED, intervalLabel, mergeWithCurated,
   loadReminderItems, saveReminderItems,
+  reminderSegments, reminderDueLabel,
 } from './reminderData'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import RepeatPicker from '../../../components/RepeatPicker/RepeatPicker'
@@ -27,9 +28,32 @@ function repeatToInterval(repeat) {
   return { every: repeat.every ?? 2, unit: repeat.unit ?? 'weeks' }
 }
 
+// ─── FälligBar ────────────────────────────────────────────
+function FälligBar({ item }) {
+  const { filled, total, color, overdue } = reminderSegments(item)
+  const count  = Math.min(total, 30)
+  const fSegs  = Math.round((filled / total) * count)
+  return (
+    <div className={s.segBar}>
+      {Array.from({ length: count }, (_, i) => (
+        <div
+          key={i}
+          className={s.seg}
+          style={{
+            background: item.active && i < fSegs ? color : undefined,
+            boxShadow: item.active && overdue && i < fSegs ? `0 0 3px ${color}` : undefined,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 // ─── ItemRow ──────────────────────────────────────────────
 function ItemRow({ item, onUpdate, onDelete }) {
   const [open, setOpen] = useState(false)
+  const { color, overdue } = reminderSegments(item)
+  const dueLabel = reminderDueLabel(item)
 
   return (
     <div className={s.itemRow}>
@@ -44,11 +68,17 @@ function ItemRow({ item, onUpdate, onDelete }) {
           <span className={s.itemIcon}>{item.icon || '🔔'}</span>
           <div className={s.itemInfo}>
             <span className={s.itemText}>{item.text}</span>
-            <span className={s.itemMeta}>
-              {intervalLabel(item.interval)}
-              {item.time ? ` · ${item.time}` : ''}
-              {' · '}{item.actionType === 'slot' ? 'Zeitplan' : 'Todo'}
-            </span>
+            <div className={s.itemMetaRow}>
+              <span className={s.itemMeta}>
+                {intervalLabel(item.interval)}
+                {item.time ? ` · ${item.time}` : ''}
+                {' · '}{item.actionType === 'slot' ? 'Zeitplan' : 'Todo'}
+              </span>
+              <span className={s.itemDue} style={{ color: item.active ? (overdue ? 'var(--rose)' : color) : undefined }}>
+                {dueLabel}
+              </span>
+            </div>
+            <FälligBar item={item} />
           </div>
           <span className={s.chevron}>{open ? '▾' : '▸'}</span>
         </button>

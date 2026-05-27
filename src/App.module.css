@@ -127,6 +127,9 @@
     border-top: 1px solid rgba(0, 0, 0, 0.09);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 -2px 12px rgba(0, 0, 0, 0.05);
   }
+  :global([data-theme="system"]) .tabBtn { color: rgba(0, 0, 0, 0.38); }
+  :global([data-theme="system"]) .tabBtn:hover { color: rgba(0, 0, 0, 0.62); }
+  :global([data-theme="system"]) .tabBtn.active { color: var(--primary); text-shadow: 0 0 14px rgba(139, 92, 246, 0.3); }
 }
 
 /* ─── FAB ──────────────────────────────────────────────────── */

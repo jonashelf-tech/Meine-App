@@ -1,0 +1,285 @@
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Outfit', system-ui, sans-serif; }
+
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #34D399; opacity: 0.7; margin: 0 0 10px 0;
+  }
+  .note {
+    font-size: 0.7rem; color: rgba(255,255,255,0.3); line-height: 1.5;
+    background: rgba(255,255,255,0.03); border-left: 2px solid rgba(52,211,153,0.3);
+    padding: 8px 12px; border-radius: 0 6px 6px 0; margin-top: 6px;
+  }
+  .divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 24px 0; }
+
+  /* ── Flow Screens ───────────────────────────── */
+  .flow-row {
+    display: flex; gap: 10px; overflow-x: auto;
+    padding-bottom: 8px; margin-bottom: 16px;
+  }
+  .screen {
+    flex: 0 0 200px; background: rgba(12,12,26,0.97);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+    padding: 16px 14px; display: flex; flex-direction: column;
+    gap: 9px; position: relative;
+  }
+  .screen-num {
+    position: absolute; top: -10px; left: 14px;
+    background: #34D399; color: #0c0c1a;
+    font-size: 0.62rem; font-weight: 800;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: 0.04em;
+  }
+  .screen-arrow {
+    flex: 0 0 20px; display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.2); font-size: 1.2rem; align-self: center; padding-top: 10px;
+  }
+  .todo-pill {
+    background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25);
+    border-radius: 8px; padding: 7px 10px;
+    font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.7); line-height: 1.3;
+  }
+  .screen-q {
+    font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.88); line-height: 1.4;
+  }
+  .screen-tag {
+    font-size: 0.6rem; color: rgba(255,255,255,0.3); font-style: italic; line-height: 1.4;
+  }
+  .mock-btn {
+    border-radius: 8px; padding: 7px 10px; font-size: 0.72rem;
+    font-weight: 700; cursor: default; text-align: center; border: none;
+  }
+  .mock-btn-primary { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.4); color: #34D399; }
+  .mock-btn-ghost   { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
+  .mock-btn-danger  { background: rgba(255,80,80,0.08); border: 1px solid rgba(255,80,80,0.25); color: rgba(255,100,100,0.7); }
+  .mock-input {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(52,211,153,0.3);
+    border-radius: 8px; padding: 7px 9px; font-size: 0.68rem;
+    color: rgba(255,255,255,0.4); font-style: italic;
+  }
+  .progress-dots { display: flex; justify-content: center; gap: 5px; padding-top: 2px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+  .dot.active { background: #34D399; }
+
+  /* ── Screen 4: Chip-in-Modal ─────────────────── */
+  .mini-chip {
+    background: rgba(139,92,246,0.12);
+    border: 1.5px solid #8B5CF6;
+    border-radius: 10px;
+    padding: 7px 9px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .mini-chip-ring {
+    width: 20px; height: 20px; flex-shrink: 0;
+    border-radius: 50%; border: 1.5px solid rgba(52,211,153,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; font-weight: 800; color: #34D399;
+  }
+  .mini-chip-text {
+    flex: 1; font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.8);
+  }
+  .mini-subitems { display: flex; flex-direction: column; gap: 4px; margin-top: 0; }
+  .mini-subitem {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.62rem; color: rgba(255,255,255,0.55); padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .mini-sub-check {
+    width: 12px; height: 12px; border-radius: 3px;
+    border: 1px solid rgba(52,211,153,0.3); flex-shrink: 0;
+  }
+  .mini-add-row {
+    display: flex; gap: 5px; margin-top: 2px;
+  }
+  .mini-add-input {
+    flex: 1; background: rgba(255,255,255,0.04); border: 1px dashed rgba(52,211,153,0.2);
+    border-radius: 5px; padding: 4px 7px;
+    font-size: 0.62rem; color: rgba(255,255,255,0.3); font-style: italic;
+  }
+  .mini-add-btn {
+    background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3);
+    border-radius: 5px; padding: 4px 8px;
+    font-size: 0.72rem; font-weight: 700; color: #34D399; cursor: default;
+  }
+  .helper-badge {
+    background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.18);
+    border-radius: 7px; padding: 6px 9px;
+    font-size: 0.62rem; color: rgba(52,211,153,0.7); line-height: 1.4;
+    display: flex; align-items: flex-start; gap: 6px;
+  }
+
+  /* ── Chip Button Position ────────────────────── */
+  .chip-demo {
+    background: rgba(139,92,246,0.15); border: 1.5px solid #8B5CF6;
+    border-radius: 12px; padding: 8px 10px;
+    display: flex; align-items: center; gap: 8px; max-width: 340px;
+  }
+  .chip-ring {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; color: rgba(255,255,255,0.3);
+  }
+  .chip-body { flex: 1; }
+  .chip-title { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+  .chip-meta { font-size: 0.62rem; color: rgba(255,255,255,0.3); margin-top: 1px; }
+
+  .klaeren-circle {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(52,211,153,0.1); border: 1.5px solid rgba(52,211,153,0.4);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1px; cursor: pointer;
+  }
+  .klaeren-circle .num { font-size: 0.68rem; font-weight: 800; color: #34D399; line-height: 1; }
+  .klaeren-circle .unit { font-size: 0.48rem; font-weight: 600; color: rgba(52,211,153,0.6); line-height: 1; }
+
+  .remove-btn {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; color: rgba(255,255,255,0.3); cursor: pointer;
+  }
+
+  .pos-label {
+    font-size: 0.6rem; color: rgba(52,211,153,0.6); font-weight: 700;
+    text-align: center; margin-top: 8px;
+  }
+
+  .arrow-label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.62rem; color: rgba(255,255,255,0.25);
+    margin-top: 10px;
+  }
+  .arrow-line {
+    flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .arr { color: #34D399; font-size: 0.8rem; }
+</style>
+
+<h2>Prokrastination — Flow v2</h2>
+<p class="subtitle">Feedback eingebaut + Chip-Position festgelegt</p>
+
+<!-- ── SECTION 1: Updated Flow ─────────────────────────── -->
+<div class="section-label">Teil 1 — Überarbeiteter Modal-Flow</div>
+
+<div class="flow-row">
+
+  <!-- Screen 1: Relevanz (updated) -->
+  <div class="screen">
+    <div class="screen-num">1 · Relevanz</div>
+    <div class="todo-pill">Steuererklärung machen</div>
+    <div class="screen-q">Möchtest du das angehen — oder willst du es loslassen?</div>
+    <div class="screen-tag">Die falsche Entscheidung ist nur keine.</div>
+    <div class="mock-btn mock-btn-primary">Angehen ✓</div>
+    <div class="mock-btn mock-btn-ghost">Loslassen &amp; löschen</div>
+    <div class="progress-dots">
+      <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="screen-arrow">›</div>
+
+  <!-- Screen 2: Hindernis -->
+  <div class="screen">
+    <div class="screen-num">2 · Hindernis</div>
+    <div class="screen-q">Was ist gerade dein größter "Gegner" dabei?</div>
+    <div class="screen-tag">Kurz und ehrlich. Kein perfekter Satz nötig.</div>
+    <div class="mock-input">z.B. "Ich weiß nicht wo anfangen"</div>
+    <div class="mock-btn mock-btn-primary">Weiter →</div>
+    <div class="mock-btn mock-btn-ghost" style="font-size:0.62rem;padding:4px;">Überspringen</div>
+    <div class="progress-dots">
+      <div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="screen-arrow">›</div>
+
+  <!-- Screen 3: Wert -->
+  <div class="screen">
+    <div class="screen-num">3 · Wert</div>
+    <div class="screen-q">Was wird konkret besser, wenn es erledigt ist?</div>
+    <div class="screen-tag">Nicht was es kostet — was du gewinnst.</div>
+    <div class="mock-input">z.B. "Weniger Stress, Geld zurück"</div>
+    <div class="mock-btn mock-btn-primary">Weiter →</div>
+    <div class="mock-btn mock-btn-ghost" style="font-size:0.62rem;padding:4px;">Überspringen</div>
+    <div class="progress-dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="screen-arrow">›</div>
+
+  <!-- Screen 4: Zerlegung — Chip-in-Modal -->
+  <div class="screen" style="flex: 0 0 220px;">
+    <div class="screen-num">4 · Schritte</div>
+    <div class="screen-q" style="font-size:0.68rem;">Zerleg es in die kleinsten möglichen Schritte:</div>
+
+    <!-- Chip-Simulation im Modal -->
+    <div class="mini-chip">
+      <div class="mini-chip-ring">2/3</div>
+      <div class="mini-chip-text">Steuererklärung</div>
+    </div>
+    <div class="mini-subitems">
+      <div class="mini-subitem"><div class="mini-sub-check" style="background:rgba(52,211,153,0.25);border-color:#34D399;"></div><span style="text-decoration:line-through;opacity:0.4;">Belege sammeln</span></div>
+      <div class="mini-subitem"><div class="mini-sub-check" style="background:rgba(52,211,153,0.25);border-color:#34D399;"></div><span style="text-decoration:line-through;opacity:0.4;">ELSTER öffnen</span></div>
+      <div class="mini-subitem"><div class="mini-sub-check"></div>Werbungskosten eintragen</div>
+    </div>
+    <div class="mini-add-row">
+      <div class="mini-add-input">+ Schritt…</div>
+      <div class="mini-add-btn">+</div>
+    </div>
+    <div class="helper-badge">
+      🤝 <span>Schwierigsten Schritt abgeben? → als eigener Hinweis gespeichert</span>
+    </div>
+    <div class="mock-btn mock-btn-primary" style="margin-top:2px;">Fertig ✓</div>
+    <div class="progress-dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="note">
+  Screen 4 zeigt den echten TodoChip (vereinfacht) direkt im Modal — Sub-Items werden live hinzugefügt. Der User sieht sofort was gespeichert wird. Ring-Badge aktualisiert sich mit.<br>
+  Hindernis + Wert-Text optional als <em>notes</em>-Feld am Todo hinterlegt (kein eigenes UI-Element nötig).
+</div>
+
+<hr class="divider">
+
+<!-- ── SECTION 2: Chip Position ─────────────────────────── -->
+<div class="section-label">Teil 2 — Chip-Button Position (Variante C, fixiert)</div>
+
+<div class="chip-demo">
+  <div class="chip-ring">○</div>
+  <div class="chip-body">
+    <div class="chip-title">Steuererklärung machen</div>
+    <div class="chip-meta">Finanzen · 87T</div>
+  </div>
+  <!-- KLAEREN (links vom X) -->
+  <div class="klaeren-circle">
+    <span class="num">87</span>
+    <span class="unit">Tage</span>
+  </div>
+  <!-- REMOVE (X) -->
+  <div class="remove-btn">✕</div>
+</div>
+
+<div class="arrow-label">
+  <div class="arrow-line">
+    <div class="arr">↑</div>
+    <div style="font-size:0.58rem;color:#34D399;font-weight:700;">Prokrastination</div>
+    <div style="font-size:0.55rem;color:rgba(255,255,255,0.2);">neu</div>
+  </div>
+  <div style="width:1px;height:30px;background:rgba(255,255,255,0.06);"></div>
+  <div class="arrow-line">
+    <div class="arr" style="color:rgba(255,255,255,0.2);">↑</div>
+    <div style="font-size:0.58rem;color:rgba(255,255,255,0.3);">Löschen</div>
+    <div style="font-size:0.55rem;color:rgba(255,255,255,0.2);">bestehend</div>
+  </div>
+</div>
+
+<div class="note" style="margin-top:12px;">
+  Kreis zeigt immer das Todo-Alter in Tagen. Nur sichtbar wenn Alter ≥ Schwelle (Standard 30 Tage, einstellbar).<br>
+  Position: ganz rechts vor dem ✕ — gleiche Höhe, natürliche Lesereihenfolge.<br>
+  <strong>Frage:</strong> Soll der Kreis eine Farbe bekommen die sich mit dem Alter ändert? (z.B. grün → gelb → rot je älter)
+</div>

@@ -1,0 +1,308 @@
+<h2>Progress Ring — verfeinert</h2>
+<p class="subtitle">Drei Varianten von C, unterschiedlich polished. Empty-State jeweils neu gedacht.</p>
+
+<style>
+  .chip-demo {
+    display: flex; align-items: stretch;
+    background: rgba(255,255,255,0.022);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; overflow: hidden;
+    height: 46px; font-family: 'Outfit','Inter',sans-serif;
+    margin-bottom: 7px; width: 100%; max-width: 320px;
+    transition: border-color 0.15s;
+  }
+  .chip-demo.has-subs  { border-color: rgba(139,92,246,0.4); }
+  .chip-demo.all-done  { border-color: rgba(0,255,148,0.3); }
+  .chip-demo.all-done .chip-text { opacity: 0.45; text-decoration: line-through; }
+
+  .chip-stripe        { width: 3px; min-width: 3px; flex-shrink: 0; }
+  .s-purple           { background: #8B5CF6; }
+  .s-cyan             { background: #00CFFF; }
+  .s-pink             { background: #FF2D78; }
+  .s-green            { background: #00FF94; }
+
+  .chip-expand {
+    width: 36px; min-width: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; border-right: 1px solid rgba(255,255,255,0.05);
+    background: none; cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .chip-body {
+    flex: 1; padding: 0 9px;
+    display: flex; flex-direction: column; justify-content: center; overflow: hidden;
+  }
+  .chip-text {
+    font-size: 13.5px; font-weight: 600; color: rgba(255,255,255,0.85);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .chip-meta {
+    font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.28); margin-top: 1px;
+  }
+  .chip-right { display:flex; align-items:center; padding: 0 10px; flex-shrink:0; }
+  .prio { width:5px; height:5px; border-radius:50%; background:rgba(255,165,0,0.55); }
+
+  .state-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.18); text-transform: uppercase;
+    margin: 12px 0 4px;
+  }
+  .state-label:first-child { margin-top: 0; }
+
+  /* Cards */
+  .cards { gap: 20px; }
+  .card { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(255,255,255,0.07) !important; }
+  .card:hover { border-color: rgba(139,92,246,0.5) !important; }
+  .card.selected { border-color: #8B5CF6 !important; background: rgba(139,92,246,0.07) !important; }
+  .card-image { background: rgba(0,0,0,0.25) !important; padding: 16px 14px !important;
+    min-height: auto !important; border-radius: 8px; margin-bottom: 6px; }
+  .card-body h3 { color: rgba(255,255,255,0.85) !important; font-size: 15px !important; }
+  .card-body p  { color: rgba(255,255,255,0.4) !important; font-size: 12px !important; }
+
+  /* ══ Variant 1: Dezent ══ */
+  .ring-v1 { position: relative; width: 22px; height: 22px; }
+  .ring-v1 svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ring-v1-label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700; letter-spacing: -0.3px;
+    font-family: 'Outfit','Inter',sans-serif;
+  }
+  /* empty: dashed ring + "+" */
+  .ring-v1-plus {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.22);
+    line-height: 1;
+  }
+
+  /* ══ Variant 2: Glow ══ */
+  .ring-v2 { position: relative; width: 24px; height: 24px; }
+  .ring-v2 svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ring-v2-label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 800; letter-spacing: -0.3px;
+    font-family: 'Outfit','Inter',sans-serif;
+  }
+  .ring-v2-empty {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* small + icon svg */
+
+  /* ══ Variant 3: Bold + Glow ══ */
+  .ring-v3 { position: relative; width: 26px; height: 26px; }
+  .ring-v3 svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ring-v3-label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8.5px; font-weight: 800; letter-spacing: -0.5px;
+    font-family: 'Outfit','Inter',sans-serif;
+  }
+</style>
+
+<div class="cards">
+
+  <!-- ── VARIANT 1: Clean & Dezent ── -->
+  <div class="card" data-choice="v1" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <div class="card-image">
+
+        <div class="state-label">leer — dashed ring</div>
+        <div class="chip-demo">
+          <div class="chip-stripe s-purple"></div>
+          <div class="chip-expand">
+            <div class="ring-v1">
+              <svg viewBox="0 0 22 22" fill="none">
+                <circle cx="11" cy="11" r="8.5"
+                  stroke="rgba(255,255,255,0.12)" stroke-width="1.5"
+                  stroke-dasharray="3 3"/>
+              </svg>
+              <div class="ring-v1-plus">+</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Arzt anrufen</div></div>
+          <div class="chip-right"><div class="prio"></div></div>
+        </div>
+
+        <div class="state-label">1 von 3</div>
+        <div class="chip-demo has-subs">
+          <div class="chip-stripe s-purple"></div>
+          <div class="chip-expand">
+            <div class="ring-v1">
+              <svg viewBox="0 0 22 22" fill="none">
+                <circle cx="11" cy="11" r="8.5" stroke="rgba(139,92,246,0.18)" stroke-width="1.5"/>
+                <circle cx="11" cy="11" r="8.5" stroke="#8B5CF6" stroke-width="1.5"
+                  stroke-dasharray="17.8 53.4" stroke-linecap="round"
+                  transform="rotate(-90 11 11)"/>
+              </svg>
+              <div class="ring-v1-label" style="color:#8B5CF6">1/3</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Wohnung aufräumen</div></div>
+          <div class="chip-right"><div class="prio"></div></div>
+        </div>
+
+        <div class="state-label">fertig</div>
+        <div class="chip-demo all-done">
+          <div class="chip-stripe s-green"></div>
+          <div class="chip-expand">
+            <div class="ring-v1">
+              <svg viewBox="0 0 22 22" fill="none">
+                <circle cx="11" cy="11" r="8.5" stroke="#00FF94" stroke-width="1.5"
+                  stroke-dasharray="53.4 0" transform="rotate(-90 11 11)"/>
+              </svg>
+              <div class="ring-v1-label" style="color:#00FF94; font-size:9px">✓</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Steuern einreichen</div></div>
+          <div class="chip-right"></div>
+        </div>
+
+      </div>
+      <div class="card-body">
+        <h3>Clean</h3>
+        <p>Dünner Ring, dashed wenn leer, Fortschritt in Chip-Farbe. Dezent.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VARIANT 2: Glow ── -->
+  <div class="card" data-choice="v2" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <div class="card-image">
+
+        <div class="state-label">leer — Plus-Icon mit Ring</div>
+        <div class="chip-demo">
+          <div class="chip-stripe s-cyan"></div>
+          <div class="chip-expand">
+            <div class="ring-v2">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9.5"
+                  stroke="rgba(255,255,255,0.1)" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <!-- plus lines -->
+                <line x1="12" y1="8.5" x2="12" y2="15.5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="8.5" y1="12" x2="15.5" y2="12" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Arzt anrufen</div></div>
+          <div class="chip-right"><div class="prio"></div></div>
+        </div>
+
+        <div class="state-label">1 von 3 — mit Glow</div>
+        <div class="chip-demo has-subs">
+          <div class="chip-stripe s-cyan"></div>
+          <div class="chip-expand">
+            <div class="ring-v2">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9.5" stroke="rgba(0,207,255,0.15)" stroke-width="2"/>
+                <circle cx="12" cy="12" r="9.5" stroke="#00CFFF" stroke-width="2"
+                  stroke-dasharray="19.9 59.7" stroke-linecap="round"
+                  transform="rotate(-90 12 12)"
+                  style="filter:drop-shadow(0 0 3px #00CFFF88)"/>
+              </svg>
+              <div class="ring-v2-label" style="color:#00CFFF">1/3</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Wohnung aufräumen</div></div>
+          <div class="chip-right"><div class="prio"></div></div>
+        </div>
+
+        <div class="state-label">fertig — grüner Glow</div>
+        <div class="chip-demo all-done">
+          <div class="chip-stripe s-green"></div>
+          <div class="chip-expand">
+            <div class="ring-v2">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9.5" stroke="#00FF94" stroke-width="2"
+                  stroke-dasharray="59.7 0" transform="rotate(-90 12 12)"
+                  style="filter:drop-shadow(0 0 4px #00FF9499)"/>
+              </svg>
+              <div class="ring-v2-label" style="color:#00FF94; font-size:10px">✓</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Steuern einreichen</div></div>
+          <div class="chip-right"></div>
+        </div>
+
+      </div>
+      <div class="card-body">
+        <h3>Glow</h3>
+        <p>SVG Plus-Icon wenn leer, Ring leuchtet in Chip-Farbe beim Fortschritt.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VARIANT 3: Bold & Punchy ── -->
+  <div class="card" data-choice="v3" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <div class="card-image">
+
+        <div class="state-label">leer — Soft Plus-Ring</div>
+        <div class="chip-demo">
+          <div class="chip-stripe s-pink"></div>
+          <div class="chip-expand">
+            <div class="ring-v3">
+              <svg viewBox="0 0 26 26" fill="none">
+                <!-- soft background ring -->
+                <circle cx="13" cy="13" r="10" stroke="rgba(255,255,255,0.07)" stroke-width="2.5"/>
+                <!-- plus, bolder, accent color -->
+                <line x1="13" y1="8.5" x2="13" y2="17.5" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+                <line x1="8.5" y1="13" x2="17.5" y2="13" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Arzt anrufen</div></div>
+          <div class="chip-right"><div class="prio"></div></div>
+        </div>
+
+        <div class="state-label">2 von 4</div>
+        <div class="chip-demo has-subs" style="border-color:rgba(255,45,120,0.4)">
+          <div class="chip-stripe s-pink"></div>
+          <div class="chip-expand">
+            <div class="ring-v3">
+              <svg viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="10" stroke="rgba(255,45,120,0.15)" stroke-width="2.5"/>
+                <!-- 50% arc, circumference ~62.8 -->
+                <circle cx="13" cy="13" r="10" stroke="#FF2D78" stroke-width="2.5"
+                  stroke-dasharray="31.4 62.8" stroke-linecap="round"
+                  transform="rotate(-90 13 13)"
+                  style="filter:drop-shadow(0 0 4px #FF2D7866)"/>
+              </svg>
+              <div class="ring-v3-label" style="color:#FF2D78">2/4</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Projekt vorbereiten</div></div>
+          <div class="chip-right"><div class="prio"></div></div>
+        </div>
+
+        <div class="state-label">fertig</div>
+        <div class="chip-demo all-done">
+          <div class="chip-stripe s-green"></div>
+          <div class="chip-expand">
+            <div class="ring-v3">
+              <svg viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="10" stroke="#00FF94" stroke-width="2.5"
+                  stroke-dasharray="62.8 0" transform="rotate(-90 13 13)"
+                  style="filter:drop-shadow(0 0 5px #00FF9488)"/>
+              </svg>
+              <div class="ring-v3-label" style="color:#00FF94; font-size:11px">✓</div>
+            </div>
+          </div>
+          <div class="chip-body"><div class="chip-text">Steuern einreichen</div></div>
+          <div class="chip-right"></div>
+        </div>
+
+      </div>
+      <div class="card-body">
+        <h3>Bold</h3>
+        <p>Dicker Ring, stärkerer Glow, Plus-Icon im Empty-State klar sichtbar. Punchy.</p>
+      </div>
+    </div>
+  </div>
+
+</div>

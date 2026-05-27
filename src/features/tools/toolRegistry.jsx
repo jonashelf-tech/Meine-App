@@ -11,6 +11,7 @@ const ICONS = {
   reminder:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> },
   haushalt:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
   wasjetzt:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> },
+  klaeren:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> },
 }
 
 export function ToolIcon({ id, size = 20 }) {
@@ -116,6 +117,15 @@ export const TOOL_REGISTRY = [
     icon: '⚡',
     color: '#f97316',
     description: 'Top 3 Aufgaben für dein Zeitfenster',
+    standalone: true,
+    integrated: false,
+  },
+  {
+    id: 'klaeren',
+    name: 'Prokrastination',
+    icon: '🧭',
+    color: '#34D399',
+    description: 'Alte Todos entstauben und wieder ins Rollen bringen',
     standalone: true,
     integrated: false,
   },

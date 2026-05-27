@@ -121,43 +121,55 @@ select { color-scheme: dark; }
 
 /* ─── Light theme ───────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:        #F0F2F5;
-  --bg2:       #E8EBF0;
-  --bg3:       #DDE1E8;
-  --surface:   rgba(0, 0, 0, 0.055);
-  --border:    rgba(0, 0, 0, 0.10);
+  --bg:        #F5F3F0;
+  --bg2:       #ECEAE5;
+  --bg3:       #E0DDD7;
+  --surface:   rgba(0, 0, 0, 0.07);
+  --border:    rgba(0, 0, 0, 0.12);
   --text:      rgba(0, 0, 0, 0.88);
-  --text-dim:  rgba(0, 0, 0, 0.50);
+  --text-dim:  rgba(0, 0, 0, 0.52);
   --shadow-sm: 0 2px 8px  rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.16);
-  --surface-low: rgba(0,0,0,0.04);
-  --border-dim:  rgba(0,0,0,0.07);
-  --text-ghost:  rgba(0,0,0,0.22);
-  --text-faint:  rgba(0,0,0,0.38);
+  --surface-low: rgba(0,0,0,0.045);
+  --border-dim:  rgba(0,0,0,0.08);
+  --text-ghost:  rgba(0,0,0,0.24);
+  --text-faint:  rgba(0,0,0,0.40);
 }
 [data-theme="light"] select { color-scheme: light; }
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse 140% 70% at 10% -10%,  rgba(139, 92, 246, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 70% at 95% 105%,  rgba(20, 184, 166, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 80%  50% at 85% 10%,   rgba(139, 92, 246, 0.04) 0%, transparent 55%);
+}
 
 @media (prefers-color-scheme: light) {
   [data-theme="system"] {
-    --bg:        #F0F2F5;
-    --bg2:       #E8EBF0;
-    --bg3:       #DDE1E8;
-    --surface:   rgba(0, 0, 0, 0.055);
-    --border:    rgba(0, 0, 0, 0.10);
+    --bg:        #F5F3F0;
+    --bg2:       #ECEAE5;
+    --bg3:       #E0DDD7;
+    --surface:   rgba(0, 0, 0, 0.07);
+    --border:    rgba(0, 0, 0, 0.12);
     --text:      rgba(0, 0, 0, 0.88);
-    --text-dim:  rgba(0, 0, 0, 0.50);
+    --text-dim:  rgba(0, 0, 0, 0.52);
     --shadow-sm: 0 2px 8px  rgba(0, 0, 0, 0.08);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
     --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.16);
-    --surface-low: rgba(0,0,0,0.04);
-    --border-dim:  rgba(0,0,0,0.07);
-    --text-ghost:  rgba(0,0,0,0.22);
-    --text-faint:  rgba(0,0,0,0.38);
+    --surface-low: rgba(0,0,0,0.045);
+    --border-dim:  rgba(0,0,0,0.08);
+    --text-ghost:  rgba(0,0,0,0.24);
+    --text-faint:  rgba(0,0,0,0.40);
   }
   [data-theme="system"] select { color-scheme: light; }
   [data-theme="system"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }
+  [data-theme="system"] body::before {
+    background:
+      radial-gradient(ellipse 140% 70% at 10% -10%,  rgba(139, 92, 246, 0.07) 0%, transparent 55%),
+      radial-gradient(ellipse 100% 70% at 95% 105%,  rgba(20, 184, 166, 0.05) 0%, transparent 55%),
+      radial-gradient(ellipse 80%  50% at 85% 10%,   rgba(139, 92, 246, 0.04) 0%, transparent 55%);
+  }
 }
 
 /* ─── Utility ───────────────────────────────────────────── */
