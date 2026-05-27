@@ -9,6 +9,7 @@ import TodoModal           from '../../../components/TodoModal/TodoModal'
 import ReminderSection     from '../../tools/reminder/ReminderSection'
 import HaushaltSection     from '../../tools/haushalt/HaushaltSection'
 import ErfolgeSection      from '../../tools/erfolge/ErfolgeSection'
+import GewichtSection     from '../../tools/gewicht/GewichtSection'
 import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
 import DayNav              from '../../../components/DayNav/DayNav'
 import BlockerModal        from '../Blocker/BlockerModal'
@@ -396,7 +397,7 @@ export default function TabHeute() {
         registerHalf={registerHalf}
       />
       {(() => {
-        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection }
+        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection, gewicht: GewichtSection }
         const SECTION_PROPS = {
           haushalt: { onStartDrag: startHaushaltDrag },
           reminder: { onStartDrag: startReminderDrag },
