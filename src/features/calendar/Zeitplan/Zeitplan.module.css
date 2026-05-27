@@ -62,44 +62,7 @@
   background: rgba(139,92,246,0.1);
 }
 
-/* ── Expand rows ──────────────────────────────────────── */
-.expandRow {
-  display: flex;
-  gap: 4px;
-  margin: 3px 0;
-}
 
-.xBtn {
-  flex: 1;
-  padding: 5px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: transparent;
-  border: 1px dashed var(--border-dim);
-  border-radius: 9px;
-  color: var(--text-ghost);
-  cursor: pointer;
-  transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.xBtnAdd:hover {
-  border-color: rgba(139,92,246,0.35);
-  color: rgba(139,92,246,0.6);
-}
-
-.xBtnRm {
-  border-color: rgba(251,113,133,0.12);
-  color: rgba(251,113,133,0.25);
-}
-
-.xBtnRm:hover {
-  border-color: rgba(251,113,133,0.4);
-  color: rgba(251,113,133,0.65);
-}
 
 /* ── Flat grid (v2.7-style) ───────────────────────────── */
 .slotsContainer {
