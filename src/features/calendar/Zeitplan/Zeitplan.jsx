@@ -25,13 +25,53 @@ function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
   )
 }
 
+// ─── SlotChipPreview ──────────────────────────────────────
+function SlotChipPreview({ slotKey, slot, onTap }) {
+  const h    = parseFloat(slotKey)
+  const hour = String(Math.floor(h)).padStart(2, '0')
+  const min  = h % 1 === 0 ? '00' : '30'
+  const meta = `${hour}:${min}${slot.duration ? ` · ${slot.duration}min` : ''}`
+  return (
+    <div className={s.pillChip} onClick={() => onTap(h)}>
+      <div className={s.pillChipStripe} style={{ background: slot.color || '#8B5CF6' }} />
+      <div className={s.pillChipBody}>
+        <span className={s.pillChipText}>{slot.text || '—'}</span>
+        <span className={s.pillChipMeta}>{meta}</span>
+      </div>
+    </div>
+  )
+}
+
+// ─── PillStrip ────────────────────────────────────────────
+function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink, onExpandTo }) {
+  const outSlots = Object.entries(slots)
+    .filter(([k, v]) => {
+      if (!v) return false
+      const h = Math.floor(parseFloat(k))
+      return isTop ? h < visibleStart : h > visibleEnd
+    })
+    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+
+  return (
+    <div className={s.pillStrip}>
+      <button className={[s.pillBtn, s.pillBtnMinus].join(' ')} onClick={onShrink}>−</button>
+      <div className={s.pillChips}>
+        {outSlots.map(([k, slot]) => (
+          <SlotChipPreview key={k} slotKey={k} slot={slot} onTap={onExpandTo} />
+        ))}
+      </div>
+      <button className={[s.pillBtn, s.pillBtnPlus].join(' ')} onClick={onExpand}>+</button>
+    </div>
+  )
+}
+
 // ─── Zeitplan ─────────────────────────────────────────────
 export default function Zeitplan({
   slots = {},
   todos = [],
   setTodos,
   visibleStart = 8,
-  visibleEnd = 20,
+  visibleEnd = 18,
   dateLabel,
   onSetSlot,
   onToggleSlotDone,
@@ -40,6 +80,8 @@ export default function Zeitplan({
   onShiftAll,
   onExpandUp,
   onExpandDown,
+  onExpandUpTo,
+  onExpandDownTo,
   onRemoveHour,
   onToggleLock,
   registerHalf,
@@ -227,13 +269,16 @@ export default function Zeitplan({
         </div>
       </div>
 
-      {/* Top expand row */}
-      <div className={s.expandRow}>
-        {visibleStart < visibleEnd - 1 && (
-          <button className={[s.xBtn, s.xBtnRm].join(' ')} onClick={() => onRemoveHour?.(visibleStart)}>− früh</button>
-        )}
-        <button className={[s.xBtn, s.xBtnAdd].join(' ')} onClick={() => onExpandUp?.()}>+ früher</button>
-      </div>
+      {/* Top pill strip */}
+      <PillStrip
+        slots={slots}
+        visibleStart={visibleStart}
+        visibleEnd={visibleEnd}
+        isTop={true}
+        onExpand={() => onExpandUp?.()}
+        onShrink={() => onRemoveHour?.(visibleStart)}
+        onExpandTo={(h) => onExpandUpTo?.(h)}
+      />
 
       {/* Sections: normal grids + blocker cards */}
       <div className={s.slotsContainer}>
@@ -267,13 +312,16 @@ export default function Zeitplan({
         )}
       </div>
 
-      {/* Bottom expand row */}
-      <div className={s.expandRow}>
-        {visibleStart < visibleEnd - 1 && (
-          <button className={[s.xBtn, s.xBtnRm].join(' ')} onClick={() => onRemoveHour?.(visibleEnd)}>− spät</button>
-        )}
-        <button className={[s.xBtn, s.xBtnAdd].join(' ')} onClick={() => onExpandDown?.()}>+ später</button>
-      </div>
+      {/* Bottom pill strip */}
+      <PillStrip
+        slots={slots}
+        visibleStart={visibleStart}
+        visibleEnd={visibleEnd}
+        isTop={false}
+        onExpand={() => onExpandDown?.()}
+        onShrink={() => onRemoveHour?.(visibleEnd)}
+        onExpandTo={(h) => onExpandDownTo?.(h)}
+      />
 
       {/* Remove dialog */}
       {removeDialog && (
