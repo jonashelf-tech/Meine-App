@@ -1,0 +1,129 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 2px;
+}
+
+/* ─── Datum-Navigation ──────────────────────────────────── */
+.dateNav {
+  display: flex;
+  align-items: center;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  position: relative;
+}
+
+.dateArrow {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 1.3rem;
+  font-weight: 700;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.dateArrow:hover { color: var(--text); }
+
+.dateLabel {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 6px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+
+.dateLabelToday {
+  color: var(--primary);
+}
+
+.dateInputHidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.editBadge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.62rem;
+  color: var(--primary);
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 4px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+/* ─── Eingabe ────────────────────────────────────────────── */
+.inputRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.unit {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.numInput {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 7px 8px;
+  outline: none;
+  width: 100%;
+  text-align: center;
+}
+.numInput:focus { border-color: var(--primary); }
+
+.saveBtn {
+  background: rgba(139,92,246,0.12);
+  border: 1.5px solid rgba(139,92,246,0.3);
+  border-radius: var(--r-sm);
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.saveBtn:hover { background: rgba(139,92,246,0.22); }
+.saveBtn:disabled { opacity: 0.4; cursor: default; }
