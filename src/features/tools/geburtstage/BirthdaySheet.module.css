@@ -1,0 +1,238 @@
+/* BirthdaySheet.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.sheet {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 12px 16px 32px;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: slideInBottom 0.22s ease both;
+}
+
+.handle {
+  width: 32px;
+  height: 3px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  margin: 0 auto 6px;
+  flex-shrink: 0;
+}
+
+.label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 2px;
+}
+
+.nameInput {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.nameInput:focus { border-color: var(--primary); }
+
+/* ─── Datum-Zeile ──────────────────────────────────────────── */
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dateInput {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  padding: 8px 12px;
+  outline: none;
+  width: 80px;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+.dateInput:focus { border-color: var(--primary); }
+.dateInput::placeholder { color: rgba(255,255,255,0.3); }
+
+.yearInput {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-sm);
+  color: rgba(255,255,255,0.45);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  padding: 8px 10px;
+  outline: none;
+  width: 72px;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+.yearInput:focus { border-color: var(--primary); color: var(--text); }
+.yearInput::placeholder { color: rgba(255,255,255,0.25); }
+
+.spacer { flex: 1; }
+
+/* ─── Toggle-Buttons ───────────────────────────────────────── */
+.toggleBtn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggleBtn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.55); }
+
+.toggleBtnKalender.active {
+  background: rgba(139,92,246,0.15);
+  border-color: rgba(139,92,246,0.5);
+  color: var(--primary);
+  box-shadow: 0 0 8px rgba(139,92,246,0.2);
+}
+.toggleBtnWichtig.active {
+  background: rgba(251,191,36,0.12);
+  border-color: rgba(251,191,36,0.45);
+  color: #FBBF24;
+  box-shadow: 0 0 8px rgba(251,191,36,0.2);
+}
+.toggleBtnGeschenk.active {
+  background: rgba(20,184,166,0.15);
+  border-color: rgba(20,184,166,0.5);
+  color: #14B8A6;
+  box-shadow: 0 0 8px rgba(20,184,166,0.2);
+}
+
+/* ─── Preset-Zeilen ────────────────────────────────────────── */
+.presetRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  animation: fadeInUp 0.15s ease both;
+}
+
+.presetIcon {
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.4);
+}
+
+.presetLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  flex-shrink: 0;
+}
+
+.presets {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.presetPill {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.presetPillWichtig.selected {
+  background: rgba(251,191,36,0.18);
+  border-color: rgba(251,191,36,0.5);
+  color: #FBBF24;
+  font-weight: 700;
+}
+.presetPillGeschenk.selected {
+  background: rgba(20,184,166,0.18);
+  border-color: rgba(20,184,166,0.5);
+  color: #14B8A6;
+  font-weight: 700;
+}
+
+/* ─── Notizen ──────────────────────────────────────────────── */
+.notesLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  padding-left: 2px;
+  margin-bottom: -4px;
+}
+
+.notesInput {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  padding: 9px 12px;
+  outline: none;
+  resize: none;
+  min-height: 54px;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.5;
+  transition: border-color 0.15s;
+}
+.notesInput:focus { border-color: var(--primary); }
+.notesInput::placeholder { color: rgba(255,255,255,0.22); }
+
+/* ─── Submit ───────────────────────────────────────────────── */
+.submitBtn {
+  background: var(--primary);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 11px;
+  cursor: pointer;
+  width: 100%;
+  transition: opacity 0.15s;
+  box-shadow: 0 0 14px rgba(139,92,246,0.4);
+}
+.submitBtn:hover { opacity: 0.88; }
