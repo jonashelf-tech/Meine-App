@@ -95,9 +95,11 @@ function BirthdayCard({ birthday, toolColor, onEdit, onDelete }) {
 
   return (
     <div className={s.cardWrapper}>
-      <div className={s.deleteReveal} onClick={() => onDelete(birthday.id)}>
-        <span className={s.deleteRevealIcon}><TrashIcon /></span>
-      </div>
+      {swipeX < 0 && (
+        <div className={s.deleteReveal} onClick={() => onDelete(birthday.id)}>
+          <span className={s.deleteRevealIcon}><TrashIcon /></span>
+        </div>
+      )}
 
       <div
         ref={cardRef}
