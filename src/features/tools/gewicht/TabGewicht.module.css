@@ -1,5 +1,4 @@
 .page {
-  padding: 16px;
   padding-bottom: 80px;
   display: flex;
   flex-direction: column;
@@ -89,18 +88,63 @@
   gap: 8px;
 }
 
-.dateInput {
-  background: transparent;
+.dateNav {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
-  padding: 5px 8px;
-  outline: none;
-  cursor: pointer;
+  border-radius: 999px;
+  padding: 2px;
+  gap: 0;
+  flex: 1;
 }
-.dateInput:focus { border-color: var(--tool-color, var(--cyan)); }
+
+.dateArrow {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 1.4rem;
+  font-weight: 700;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.dateArrow:hover { color: var(--text); }
+
+.dateNavLabel {
+  flex: 1;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+
+.dateNavLabelToday {
+  color: var(--tool-color, var(--primary));
+}
+
+.dateInputHidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
 
 .editBadge {
   font-family: 'Outfit', sans-serif;

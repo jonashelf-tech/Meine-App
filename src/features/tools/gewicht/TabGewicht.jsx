@@ -2,15 +2,13 @@ import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import {
+  isoToday, isoAddDays, isoLabel, isoNavLabel,
+  loadEntries, saveEntries, upsertEntry,
+} from './gewichtData'
 import s from './TabGewicht.module.css'
 
-const SK      = 'adhs_health_weight'
 const SK_DASH = 'adhs_wdash'
-
-// ── Date helpers ─────────────────────────────────────────────
-const isoToday  = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
-const isoAddDays= (iso,n) => { const d=new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10) }
-const isoLabel  = (iso) => { const[,m,d]=iso.split('-'); return `${d}.${m}` }
 
 // ── Stats ─────────────────────────────────────────────────────
 function wAvg(entries, refDate, days) {
@@ -36,20 +34,7 @@ function weeklyChangeTrend(entries, refDate) {
   return (now==null||past==null) ? null : +(now-past).toFixed(2)
 }
 
-// ── Storage ───────────────────────────────────────────────────
-const loadEntries = () => {
-  try {
-    const r = localStorage.getItem(SK)
-    if (!r) return []
-    return JSON.parse(r).map(e=>({
-      date: e.date,
-      kg:   e.kg   ?? e.weight ?? null,
-      kcal: e.kcal ?? null,
-    })).filter(e=>e.date&&e.kg!=null)
-  } catch { return [] }
-}
-const saveEntries = e => { try { localStorage.setItem(SK,JSON.stringify(e)) } catch {} }
-
+// ── Dashboard settings ────────────────────────────────────────
 const DEFAULT_DASH = {
   showCurrentWeight:true, showAvgWeight7:true, showAvgKcal7:true,
   showWeekChangeTrend:true, showDiffFromTrend:true, showMaintenance:true,
@@ -70,9 +55,9 @@ export default function TabGewicht({ onBack }) {
   const [inputKcal,      setInputKcal]        = useState('')
   const [dashSettings,   setDashSettingsRaw]  = useState(loadDash)
   const [chartOpts,      setChartOpts]        = useState({show7:true,show14:true,show21:true})
-  const chartRef = useRef(null)
+  const chartRef    = useRef(null)
+  const dateInputRef = useRef(null)
 
-  const setEntries     = e => { setEntriesRaw(e);      saveEntries(e) }
   const setDashSettings= d => { setDashSettingsRaw(d); saveDash(d) }
 
   // Pre-fill when date changes
@@ -83,15 +68,22 @@ export default function TabGewicht({ onBack }) {
   }, [inputDate, entries])
 
   const submitEntry = () => {
-    const kg   = parseFloat(inputKg.replace(',','.'))
+    const kg   = parseFloat(inputKg.replace(',', '.'))
     const kcal = parseInt(inputKcal) || null
-    if (!inputKg.trim()||isNaN(kg)||kg<20||kg>300) return
-    const rec  = { date:inputDate, kg:Math.round(kg*10)/10, kcal:kcal&&kcal>0?kcal:null }
-    const idx  = entries.findIndex(e=>e.date===inputDate)
-    setEntries(idx>=0 ? entries.map((e,i)=>i===idx?rec:e) : [...entries,rec].sort((a,b)=>a.date.localeCompare(b.date)))
+    if (!inputKg.trim() || isNaN(kg) || kg < 20 || kg > 300) return
+    const rec  = { date: inputDate, kg: Math.round(kg * 10) / 10, kcal: kcal && kcal > 0 ? kcal : null }
+    setEntriesRaw(upsertEntry(entries, rec))
   }
 
-  const deleteEntry = date => setEntries(entries.filter(e=>e.date!==date))
+  const deleteEntry = date => {
+    const next = entries.filter(e => e.date !== date)
+    saveEntries(next)
+    setEntriesRaw(next)
+  }
+
+  const openPicker = () => {
+    try { dateInputRef.current?.showPicker() } catch { dateInputRef.current?.click() }
+  }
 
   // Dashboard stats
   const sorted         = [...entries].sort((a,b)=>b.date.localeCompare(a.date))
@@ -205,7 +197,25 @@ export default function TabGewicht({ onBack }) {
       {/* Quick input — immer sichtbar */}
       <div className={s.inputCard}>
         <div className={s.inputDateRow}>
-          <input type="date" className={s.dateInput} value={inputDate} onChange={e=>setInputDate(e.target.value)} />
+          <div className={s.dateNav}>
+            <button className={s.dateArrow} onClick={() => setInputDate(isoAddDays(inputDate, -1))} aria-label="Vorheriger Tag">‹</button>
+            <button
+              className={[s.dateNavLabel, inputDate === today ? s.dateNavLabelToday : ''].join(' ')}
+              onClick={openPicker}
+            >
+              {isoNavLabel(inputDate)}
+            </button>
+            <button className={s.dateArrow} onClick={() => setInputDate(isoAddDays(inputDate, 1))} aria-label="Nächster Tag">›</button>
+          </div>
+          <input
+            ref={dateInputRef}
+            type="date"
+            className={s.dateInputHidden}
+            value={inputDate}
+            onChange={e => setInputDate(e.target.value)}
+            tabIndex={-1}
+            aria-hidden="true"
+          />
           {isEditing && <span className={s.editBadge}>bearbeiten</span>}
         </div>
         <div className={s.inputRow}>
