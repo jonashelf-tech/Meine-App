@@ -26,7 +26,7 @@ export default function TabHeute() {
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
-  const [visEnd,   setVisEnd]   = useState(() => lv(SK.visEnd,   20))
+  const [visEnd,   setVisEnd]   = useState(() => lv(SK.visEnd,   18))
   const [editingTodo,       setEditingTodo]       = useState(null)
   const [klaerenTodo,       setKlaerenTodo]       = useState(null)
   const [blockerModal,      setBlockerModal]       = useState(null)
@@ -160,6 +160,18 @@ export default function TabHeute() {
     if (h === visStart) setVisStart(v => { const next = Math.min(v + 1, visEnd - 1); saveVis(next, visEnd); return next })
     else if (h === visEnd) setVisEnd(v => { const next = Math.max(v - 1, visStart + 1); saveVis(visStart, next); return next })
   }, [visStart, visEnd])
+
+  const handleExpandUpTo = useCallback((h) => {
+    const next = Math.floor(h)
+    setVisStart(next)
+    saveVis(next, visEnd)
+  }, [visEnd])
+
+  const handleExpandDownTo = useCallback((h) => {
+    const next = Math.floor(h)
+    setVisEnd(next)
+    saveVis(visStart, next)
+  }, [visStart])
 
   // ─── Shift all slots ±30min ───────────────────────────────
   const handleShiftAll = useCallback((dir) => {
@@ -360,6 +372,8 @@ export default function TabHeute() {
         onShiftAll={handleShiftAll}
         onExpandUp={handleExpandUp}
         onExpandDown={handleExpandDown}
+        onExpandUpTo={handleExpandUpTo}
+        onExpandDownTo={handleExpandDownTo}
         onRemoveHour={handleRemoveHour}
         onToggleLock={handleToggleLock}
         registerHalf={registerHalf}
