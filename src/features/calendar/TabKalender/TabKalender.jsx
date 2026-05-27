@@ -3,7 +3,6 @@ import { useAppStore } from '../../../store'
 import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geburtstage/birthdayUtils'
-import { TOOL_REGISTRY, ToolIcon } from '../../tools/toolRegistry'
 import { loadEntries } from '../../tools/gewicht/gewichtData'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
@@ -77,11 +76,10 @@ function getCellBars(dk, days) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
-  const [open, setOpen] = useState({ zeitplan: true, done: true, tools: false })
+function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
+  const [open, setOpen] = useState({ zeitplan: true, done: true, gewicht: true })
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
-  const bdayColor       = getToolColor('geburtstage', toolColors)
 
   const slots = days[dateKey] ?? {}
   const sortedSlots = Object.entries(slots)
@@ -89,16 +87,14 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
 
   const doneTodos = todos.filter(t => t.doneAt?.startsWith(dateKey))
 
-  const activeToolsData = activeTools
-    .map(id => TOOL_REGISTRY.find(t => t.id === id))
-    .filter(Boolean)
-
   const [y, m, d] = dateKey.split('-')
   const dateObj  = new Date(parseInt(y), parseInt(m) - 1, parseInt(d))
   const dayName  = dateObj.toLocaleDateString('de-DE', { weekday: 'long' })
   const label    = `${dayName}, ${d}.${m}.${y}`
 
   const toggle = (key) => setOpen(prev => ({ ...prev, [key]: !prev[key] }))
+
+  const totalZeitplan = sortedSlots.length + birthdayEntries.length
 
   return (
     <div className={s.dayPanel}>
@@ -112,40 +108,25 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
         {dateKey === todayKey && <span className={s.todayBadge}>heute</span>}
       </div>
 
-      {/* Geburtstage */}
-      {birthdayEntries.length > 0 && (
-        <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: 8, marginBottom: 8 }}>
-          {birthdayEntries.map(b => (
-            <div
-              key={b.id}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '5px 0',
-                fontFamily: 'Outfit, sans-serif', fontSize: 12,
-                color: bdayColor,
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
-              <span>{b.name} · {formatBirthdayDate(b.date)}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Zeitplan */}
       <div className={s.dayPanelSection}>
         <button className={s.dayPanelSectionHead} onClick={() => toggle('zeitplan')}>
           <span className={s.dayPanelSectionLabel}>Zeitplan</span>
-          {sortedSlots.length > 0 && (
-            <span className={s.dayPanelSectionCount}>{sortedSlots.length}</span>
+          {totalZeitplan > 0 && (
+            <span className={s.dayPanelSectionCount}>{totalZeitplan}</span>
           )}
           <span className={s.dayPanelArrow}>{open.zeitplan ? '▾' : '▸'}</span>
         </button>
         {open.zeitplan && (
           <div className={s.dayPanelList}>
-            {sortedSlots.length === 0 ? (
+            {birthdayEntries.map(b => (
+              <div key={b.id} className={s.dayPanelAlldayEntry}>
+                <span className={s.dayPanelAlldayStar}>⭐</span>
+                <span className={s.dayPanelAlldayName}>{b.name} Geburtstag</span>
+                <span className={s.dayPanelAlldayDate}>{formatBirthdayDate(b.date)}</span>
+              </div>
+            ))}
+            {sortedSlots.length === 0 && birthdayEntries.length === 0 ? (
               <p className={s.dayPanelEmpty}>Keine Termine</p>
             ) : sortedSlots.map(([key, slot]) => {
               const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
@@ -196,41 +177,30 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
         )}
       </div>
 
-      {/* Tools */}
-      <div className={s.dayPanelSection}>
-        <button className={s.dayPanelSectionHead} onClick={() => toggle('tools')}>
-          <span className={s.dayPanelSectionLabel}>Tools</span>
-          {activeToolsData.length > 0 && (
-            <span className={s.dayPanelSectionCount}>{activeToolsData.length}</span>
+      {/* Gewicht — nur wenn Eintrag für diesen Tag */}
+      {weightEntry && (
+        <div className={s.dayPanelSection}>
+          <button className={s.dayPanelSectionHead} onClick={() => toggle('gewicht')}>
+            <span className={s.dayPanelSectionLabel}>Gewicht</span>
+            <span className={s.dayPanelArrow}>{open.gewicht ? '▾' : '▸'}</span>
+          </button>
+          {open.gewicht && (
+            <div className={s.dayPanelGewichtRow}>
+              <span className={s.dayPanelGewichtIcon}>⚖️</span>
+              <span className={s.dayPanelGewichtVal}>{weightEntry.kg} kg</span>
+              {weightEntry.kcal && (
+                <span className={s.dayPanelGewichtKcal}>{weightEntry.kcal.toLocaleString('de-DE')} kcal</span>
+              )}
+              <button
+                className={s.dayPanelGewichtLink}
+                onClick={() => setCurrentTab(TOOL_TAB.gewicht)}
+              >
+                → Gewicht
+              </button>
+            </div>
           )}
-          <span className={s.dayPanelArrow}>{open.tools ? '▾' : '▸'}</span>
-        </button>
-        {open.tools && (
-          <div className={s.dayPanelToolGrid}>
-            {activeToolsData.length === 0 ? (
-              <p className={s.dayPanelEmpty}>Keine aktiven Tools</p>
-            ) : activeToolsData.map(tool => {
-              const color = getToolColor(tool.id, toolColors)
-              const tab   = TOOL_TAB[tool.id]
-              return (
-                <button
-                  key={tool.id}
-                  className={s.dayPanelToolChip}
-                  style={{
-                    borderColor: `${color}55`,
-                    background:  `${color}14`,
-                    color,
-                  }}
-                  onDoubleClick={() => tab != null && setCurrentTab(tab)}
-                >
-                  <span className={s.dayPanelToolIcon}><ToolIcon id={tool.id} size={16} /></span>
-                  <span className={s.dayPanelToolName}>{tool.name}</span>
-                </button>
-              )
-            })}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Restore-Modal */}
       {restoreTodo && (
@@ -381,15 +351,25 @@ export default function TabKalender() {
               })}
             </div>
 
-            {/* Allday-Streifen — Todos ohne Uhrzeit */}
-            {showTodos && (
+            {/* Allday-Streifen — Geburtstage + Todos ohne Uhrzeit */}
+            {(showTodos || showTermine) && (
               <div className={s.weekAlldayRow}>
                 <div className={s.weekAlldayLabel}>All</div>
                 {weekDays.map(date => {
                   const dk          = toDateKey(date)
-                  const alldayTodos = todos.filter(t => t.date === dk && !t.time)
+                  const bdays       = getBirthdaysForCalendarDate(birthdays, dk)
+                  const alldayTodos = showTodos ? todos.filter(t => t.date === dk && !t.time) : []
                   return (
                     <div key={dk} className={s.weekAlldayCol}>
+                      {bdays.map(b => (
+                        <div
+                          key={b.id}
+                          className={s.weekAlldayBar}
+                          style={{ background: getToolColor('geburtstage', toolColors) }}
+                        >
+                          <span className={s.weekAlldayBarText}>{b.name}</span>
+                        </div>
+                      ))}
                       {alldayTodos.map(t => (
                         <div
                           key={t.id}
@@ -553,6 +533,7 @@ export default function TabKalender() {
               activeTools={activeTools}
               toolColors={toolColors}
               birthdays={birthdays}
+              weightEntry={weightEntries.find(e => e.date === selectedDay) ?? null}
               setCurrentTab={setCurrentTab}
               setDayplanDate={setDayplanDate}
               setTodos={setTodos}

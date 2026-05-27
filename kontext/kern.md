@@ -100,6 +100,39 @@ birthdays,    setBirthdays
 
 ---
 
+## Geburtstage — Datenmodell
+
+```js
+// SK.birthdays → 'adhs_birthdays'
+{
+  id:          genId(),
+  name:        "",
+  date:        "MM-DD",        // Monat-Tag (ohne Jahr)
+  year:        null,           // Geburtsjahr (optional)
+  kalender:    false,          // true → Balken in Monats-/Wochenansicht + DayPanel
+  wichtig:     false,          // true → Geburtstags-Chip in BirthdaySection (Tagesplaner)
+  wichtigDays: 3,              // Vorlauf-Tage für Geburtstags-Chip
+  geschenk:    false,          // true → Geschenk-Chip in BirthdaySection
+  geschenkDays:7,              // Vorlauf-Tage für Geschenk-Chip
+  notes:       "",
+  plannedYear: null,           // Jahr in dem der Geburtstag auf den Zeitplan gezogen wurde → blendet Kalender-Balken aus bis nächstes Jahr
+}
+```
+
+**birthdayUtils.js** (`src/features/tools/geburtstage/birthdayUtils.js`):
+- `getBirthdaysForCalendarDate(birthdays, dateKey)` — gibt Einträge zurück wenn `kalender===true` UND `plannedYear !== currentYear`
+- `formatBirthdayDate(date)` — "05-12" → "12. Mai"
+- `getActiveChips(birthdays, today)` — fällige Chips (Geburtstag + Geschenk) für heutigen Tag + Vorlauf
+- `isBirthdayChipDue(b, today)` / `isGeschenkChipDue(b, today)` — Chip-Logik
+
+**Kalender-Integration (nach Tool-Redesign):**
+- Monatsansicht: Geburtstags-Balken ganz oben in Tageskachel (vor Termin/Todo-Balken), Toolfarbe `geburtstage`, **kein Dot**
+- Wochenansicht: Geburtstags-Balken im Allday-Streifen (erscheint wenn `showTodos || showTermine`)
+- DayPanel: Geburtstags-Einträge als All-day-Zeilen ganz oben in Zeitplan-Sektion (kein eigener Abschnitt)
+- `plannedYear` setzen: Geburtstag via `startBirthdayDrag` auf Zeitplan ziehen → setzt `plannedYear = currentYear` → blendet Kalender-Balken bis nächstes Jahr aus
+
+---
+
 ## Slot-Format (days-Store)
 
 ```js
@@ -218,14 +251,21 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 ## TabKalender — Features
 
 - **Ansichten:** Woche (Zeitgitter 07–22 Uhr) · Monat (Kacheln mit Farbbalken)
-- **Toggle-Strip:** Termine / Todos / Tools ein-/ausblendbar (3 lokale Booleans)
-- **Tool-Dots:** ein Dot pro aktivem Tool in Tool-Farbe; ausgefüllt = Todo an dem Tag abgehakt, Ring = offen
+- **Toggle-Strip:** Termine + Todos (je ein lokaler Boolean). Tools-Toggle entfernt.
+- **Tool-Dots:** Datengesteuert — nur wenn tatsächlich Daten vorhanden:
+  - Gewicht-Dot: `loadEntries().some(e => e.date === dk)` (aus `gewichtData.js`)
+  - Haushalt-Dot: `todos.some(t => t.toolId === 'haushalt' && t.createdAt?.startsWith(dk))`
+  - Reminder-Dot: `todos.some(t => t.reminderItemId && t.createdAt?.startsWith(dk))` ODER `Object.values(days[dk] ?? {}).some(s => s.reminderItemId)`
+  - Dots immer solid (kein Ring-Stil). Farbe via `getToolColor(id, toolColors)`.
+  - Keine Dots für: Elvi, Fokus-Timer, Pizza, Prokrastination, Rezepte, Was jetzt?, Zufallsrad, Erfolge
+- **Geburtstags-Balken:** synthetisch aus `birthdays[]` abgeleitet (kein `days`-Store), erscheinen vor Termin/Todo-Balken in Tageskachel. Nur wenn `kalender===true` AND `plannedYear !== currentYear`.
 - **DayPanel:** erscheint unterhalb des Grids wenn Monatskachel angeklickt
-  - Sektionen: Zeitplan · Erledigt · Tools — alle einzeln klappbar
-  - Daten: `days[dk]` · `todos.filter(t => t.doneAt?.startsWith(dk))` · `activeTools`
-  - Doppelklick Zeitplan-Eintrag → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
-  - Einzelklick erledigtes Todo → Restore-Modal ("Wiederherstellen?" Ja/Nein) → stellt als datumsloses Todo wieder her
-  - Doppelklick Tool-Chip → direkt ins Tool
+  - Sektionen: Zeitplan · Erledigt · Gewicht (nur wenn Eintrag für diesen Tag)
+  - Zeitplan: Geburtstags-All-day-Einträge ganz oben (pinker Akzentstreifen), darunter normale Slots
+  - Erledigt: `todos.filter(t => t.doneAt?.startsWith(dk))` — Einzelklick → Restore-Modal
+  - Gewicht: nur sichtbar wenn `loadEntries().find(e => e.date === dk)` — zeigt kg + kcal + Link-Button → Tab Gewicht
+  - Klick auf Datum-Header → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
+- **Wochenansicht Allday-Streifen:** zeigt Geburtstags-Balken + Todos ohne Uhrzeit. Erscheint wenn `showTodos || showTermine`.
 
 ---
 

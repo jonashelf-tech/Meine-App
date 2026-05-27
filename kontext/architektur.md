@@ -44,7 +44,11 @@ src/
       toolTabs.js                             — TOOL_TAB — Single Source of Truth
       elvi/           TabElvi.jsx
       gamification/   TabGamification.jsx
-      geburtstage/    TabGeburtstage.jsx
+      geburtstage/
+        BirthdaySheet.jsx   — Bottom Sheet (Neu + Edit)
+        BirthdaySection.jsx — Tagesplaner-Widget (Chips: Geburtstag + Geschenk, fakeTodo-Pattern)
+        TabGeburtstage.jsx  — Avatar-Karten, Sort, Swipe-Delete
+        birthdayUtils.js    — Migration, Chip-Logik, Hilfsfunktionen
       gewicht/        TabGewicht.jsx
       haushalt/
         HaushaltBriefing.jsx
@@ -112,6 +116,11 @@ Globale Variablen nur in `styles/vars.css`.
 **Glows:** `--glow-primary` · `--glow-teal` · `--glow-emerald`
 **Keyframes:** `fadeInUp` · `pulse` · `slideInBottom` · `glowPulse` · `shimmer`
 **Accessibility:** `@media (prefers-reduced-motion: reduce)` — alle Animationen aus
+
+**Light Mode** (`data-theme="light"` und `@media (prefers-color-scheme: light)`):
+- Hintergründe warm: #F5F3F0 / #ECEAE5 / #E0DDD7 (statt kaltem Blau-Grau)
+- surface/border-Kontrast erhöht, Atmosphären-Gradient für Light Mode
+- `App.module.css`: Tab-Bar mit hellem frosted-glass Hintergrund + dunkle Icon-Farben via `data-theme` Override
 
 ---
 

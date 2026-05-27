@@ -179,11 +179,6 @@
   flex-shrink: 0;
 }
 
-.toolDotActive {
-  background: transparent !important;
-  border: 1px solid currentColor;
-  opacity: 0.55;
-}
 
 /* ─── Week Time Grid ─────────────────────────────────────── */
 .weekWrapper {
@@ -410,11 +405,6 @@
   background: rgba(20,184,166,0.08);
 }
 
-.toggleChipTools.toggleChipOn {
-  color: var(--emerald);
-  border-color: rgba(16,185,129,0.35);
-  background: rgba(16,185,129,0.08);
-}
 
 /* ─── Day Panel ──────────────────────────────────────────── */
 .dayPanel {
@@ -510,6 +500,80 @@
   opacity: 0.4;
 }
 
+.dayPanelAlldayEntry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-left: 2.5px solid #FF2D78;
+  border-radius: 0 8px 8px 0;
+  background: rgba(255,45,120,0.06);
+}
+
+.dayPanelAlldayStar {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.dayPanelAlldayName {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dayPanelAlldayDate {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.dayPanelGewichtRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 12px;
+}
+
+.dayPanelGewichtIcon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.dayPanelGewichtVal {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #00FF94;
+}
+
+.dayPanelGewichtKcal {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.dayPanelGewichtLink {
+  margin-left: auto;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem;
+  color: #00FF94;
+  opacity: 0.75;
+  border: 1px solid rgba(0,255,148,0.2);
+  border-radius: 6px;
+  padding: 4px 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.dayPanelGewichtLink:hover { opacity: 1; }
+
 .dayPanelList {
   padding: 2px 14px 10px;
   display: flex;
@@ -594,39 +658,6 @@
   font-weight: 700;
 }
 
-.dayPanelToolGrid {
-  padding: 4px 14px 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.dayPanelToolChip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 11px;
-  border-radius: var(--r-sm);
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  font-family: 'Outfit', sans-serif;
-  transition: opacity 0.15s;
-}
-
-.dayPanelToolChip:active { opacity: 0.7; }
-
-.dayPanelToolIcon {
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
-.dayPanelToolName {
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1;
-}
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(6px); }

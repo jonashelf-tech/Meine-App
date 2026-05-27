@@ -1,0 +1,262 @@
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #18181f;
+    --surface2: #1e1e28;
+    --surface3: #25252f;
+    --border: rgba(255,255,255,0.07);
+    --text: #e2e2e8;
+    --muted: #6b6b80;
+    --pink: #FF2D78;
+    --green: #00FF94;
+    --cyan: #00CFFF;
+    --purple: #8B5CF6;
+  }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 24px; }
+
+  .layout { display: flex; gap: 28px; max-width: 920px; margin: 0 auto; align-items: flex-start; }
+  .col { flex: 1; min-width: 0; }
+  .col-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
+
+  h2 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+  .subtitle { color: var(--muted); font-size: 13px; margin: 0 0 24px; }
+
+  /* ─── Month cells ─── */
+  .month-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
+  .month-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .month-cell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 8px 7px;
+    display: flex; flex-direction: column; gap: 3px;
+    width: 96px;
+  }
+  .month-cell.now { border-color: rgba(139,92,246,0.4); }
+  .month-day-num { font-size: 13px; font-weight: 600; margin-bottom: 1px; }
+  .cell-bar { height: 13px; border-radius: 4px; display: flex; align-items: center; padding: 0 5px; overflow: hidden; }
+  .cell-bar-text { font-size: 9px; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tool-dots { display: flex; gap: 4px; margin-top: 3px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* ─── DayPanel ─── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 14px 16px 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-date { font-size: 14px; font-weight: 600; color: var(--cyan); }
+  .panel-badge { font-size: 10px; background: rgba(0,207,255,.12); color: var(--cyan); border-radius: 6px; padding: 2px 7px; font-weight: 600; }
+
+  /* Section wrapper — soft card feel */
+  .section {
+    margin: 4px 8px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface2);
+    margin-bottom: 4px;
+  }
+  .section-head {
+    padding: 10px 13px;
+    display: flex; align-items: center; gap: 7px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text);
+    width: 100%; text-align: left;
+    font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    border: none; border-radius: 0;
+  }
+  .section-head:hover { background: rgba(255,255,255,0.03); }
+  .section-count { font-size: 10px; background: var(--surface3); color: var(--muted); border-radius: 4px; padding: 1px 5px; }
+  .section-arrow { margin-left: auto; color: var(--muted); font-size: 10px; }
+
+  /* Birthday allday entry */
+  .entry-allday {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 13px 10px;
+    border-left: 2.5px solid var(--pink);
+    margin: 0 10px 8px;
+    border-radius: 0 7px 7px 0;
+    background: rgba(255,45,120,0.06);
+  }
+  .entry-allday-icon { font-size: 12px; }
+  .entry-allday-name { font-size: 13px; font-weight: 500; }
+  .entry-allday-date { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+  /* Slot entries */
+  .entry-slot {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 13px;
+    border-left: 2.5px solid;
+    margin: 0 10px 4px;
+    border-radius: 0 7px 7px 0;
+    background: rgba(255,255,255,0.02);
+  }
+  .entry-time { font-size: 11px; font-weight: 600; min-width: 36px; }
+  .entry-text { font-size: 13px; }
+  .entry-chip { margin-left: auto; font-size: 10px; background: var(--surface3); color: var(--muted); border-radius: 4px; padding: 1px 5px; }
+
+  /* Erledigt dummy */
+  .erledigt-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 13px;
+    margin: 0 10px 4px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.02);
+    border-left: 2.5px solid rgba(255,255,255,0.12);
+  }
+  .check { font-size: 11px; color: var(--green); }
+  .erledigt-text { font-size: 13px; color: var(--muted); text-decoration: line-through; }
+
+  /* Gewicht mini-section */
+  .gewicht-body {
+    padding: 10px 13px 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .gewicht-val { font-size: 15px; font-weight: 700; color: var(--green); }
+  .gewicht-kcal { font-size: 12px; color: var(--muted); }
+  .gewicht-link {
+    margin-left: auto; font-size: 11px; color: var(--green); opacity: 0.7;
+    border: 1px solid rgba(0,255,148,0.2); border-radius: 6px; padding: 4px 10px;
+    cursor: pointer;
+  }
+
+  /* Bottom padding */
+  .panel-pad { height: 8px; }
+
+  /* new/removed badges */
+  .new-badge { font-size: 9px; background: rgba(0,255,148,0.15); color: var(--green); border-radius: 3px; padding: 1px 5px; font-weight: 700; letter-spacing: .04em; }
+  .removed-badge { font-size: 9px; background: rgba(255,107,107,0.15); color: #FF6B6B; border-radius: 3px; padding: 1px 5px; font-weight: 700; }
+</style>
+
+<h2>Kalender-Redesign v2</h2>
+<p class="subtitle">Weichere Sektionen, gerundete Kanten</p>
+
+<div class="layout">
+
+  <!-- ─── LEFT: Month cells ─── -->
+  <div class="col" style="max-width:240px">
+    <div class="col-label">Monatsansicht</div>
+
+    <div class="month-label" style="color:var(--muted);opacity:.6">Vorher</div>
+    <div class="month-row" style="opacity:.55;margin-bottom:16px">
+      <div class="month-cell">
+        <div class="month-day-num">12</div>
+        <div class="cell-bar" style="background:rgba(0,207,255,.55)"><span class="cell-bar-text">Meeting</span></div>
+        <div class="cell-bar" style="background:rgba(139,92,246,.55)"><span class="cell-bar-text">Sport</span></div>
+        <div class="tool-dots">
+          <span class="dot" style="border:1.5px solid #00CFFF;background:transparent"></span>
+          <span class="dot" style="border:1.5px solid #8B5CF6;background:transparent"></span>
+          <span class="dot" style="border:1.5px solid #00FF94;background:transparent"></span>
+          <span class="dot" style="border:1.5px solid #FF2D78;background:transparent"></span>
+          <span class="dot" style="border:1.5px solid #f97316;background:transparent"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="month-label" style="color:var(--green)">Nachher</div>
+    <div class="month-row">
+      <div class="month-cell now">
+        <div class="month-day-num">12</div>
+        <div class="cell-bar" style="background:var(--pink)"><span class="cell-bar-text">⭐ Mama</span></div>
+        <div class="cell-bar" style="background:rgba(0,207,255,.55)"><span class="cell-bar-text">Meeting</span></div>
+        <div class="cell-bar" style="background:rgba(139,92,246,.55)"><span class="cell-bar-text">Sport</span></div>
+        <div class="tool-dots">
+          <span class="dot" style="background:var(--green)" title="Gewicht"></span>
+          <span class="dot" style="background:var(--purple)" title="Haushalt"></span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;font-size:11px;line-height:1.9;color:var(--muted)">
+      <div><span style="color:var(--pink)">■</span> Geburtstag-Balken (kalender=true)</div>
+      <div><span style="color:var(--green)">●</span> Gewicht-Dot (Eintrag vorhanden)</div>
+      <div><span style="color:var(--purple)">●</span> Haushalt-Dot (abgeholt)</div>
+      <div><span style="color:var(--green)">●</span> Reminder-Dot (abgeholt)</div>
+    </div>
+  </div>
+
+  <!-- ─── RIGHT: DayPanel ─── -->
+  <div class="col">
+    <div class="col-label">DayPanel — weichere Sektionen</div>
+    <div class="panel">
+
+      <div class="panel-header">
+        <span class="panel-date">Montag, 12.05.2025</span>
+        <span class="panel-badge">heute</span>
+      </div>
+
+      <!-- Zeitplan -->
+      <div class="section">
+        <button class="section-head">
+          Zeitplan
+          <span class="section-count">3</span>
+          <span class="section-arrow">▾</span>
+        </button>
+        <!-- Birthday allday — ganz oben, kein Zeitstempel -->
+        <div class="entry-allday">
+          <span class="entry-allday-icon">⭐</span>
+          <span class="entry-allday-name">Mama Geburtstag</span>
+          <span class="entry-allday-date">12. Mai</span>
+        </div>
+        <div class="entry-slot" style="border-color:#00CFFF">
+          <span class="entry-time" style="color:#00CFFF">09:00</span>
+          <span class="entry-text">Team Meeting</span>
+        </div>
+        <div class="entry-slot" style="border-color:#8B5CF6">
+          <span class="entry-time" style="color:#8B5CF6">14:00</span>
+          <span class="entry-text">Sport</span>
+          <span class="entry-chip">Todo</span>
+        </div>
+        <div style="height:4px"></div>
+      </div>
+
+      <!-- Erledigt -->
+      <div class="section">
+        <button class="section-head">
+          Erledigt
+          <span class="section-count">2</span>
+          <span class="section-arrow">▸</span>
+        </button>
+      </div>
+
+      <!-- Gewicht — nur wenn Daten -->
+      <div class="section">
+        <button class="section-head">
+          Gewicht
+          <span class="new-badge">neu</span>
+          <span class="section-arrow">▾</span>
+        </button>
+        <div class="gewicht-body">
+          <span style="font-size:15px">⚖️</span>
+          <span class="gewicht-val">81.2 kg</span>
+          <span class="gewicht-kcal">1.840 kcal</span>
+          <a class="gewicht-link">→ Gewicht</a>
+        </div>
+      </div>
+
+      <!-- Entfernt: Tools -->
+      <div class="section" style="opacity:.3;pointer-events:none">
+        <button class="section-head" style="text-decoration:line-through">
+          Tools
+          <span class="removed-badge">fällt weg</span>
+          <span class="section-arrow">▸</span>
+        </button>
+      </div>
+
+      <div class="panel-pad"></div>
+    </div>
+
+    <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+      <div><strong style="color:var(--text)">Toggle-Strip:</strong> "Tools"-Button fällt weg. Nur noch Termine + Todos.</div>
+      <div><strong style="color:var(--text)">Gewicht-Sektion:</strong> erscheint nur wenn Eintrag für diesen Tag existiert. Kein kcal → nur kg.</div>
+      <div><strong style="color:var(--text)">Haushalt/Reminder:</strong> kein DayPanel-Eintrag — nur Dot in der Kachel.</div>
+    </div>
+  </div>
+
+</div>
