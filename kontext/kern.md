@@ -15,7 +15,8 @@
   done:      false,
   doneAt:    null,
   subItems:  [],        // [{ id, text, done }]
-  notes:     null,
+  notes:          null,
+  haushaltRoomId: null,  // Haushalt-Raum-Zuordnung (string|null)
   createdAt: new Date().toISOString(),
 }
 ```
@@ -233,8 +234,8 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 - **DayNav:** Kompakte Pille oben — `‹ Datum ›`. Datum cyan+glow = heute, weiß = anderer Tag. Pfeil Richtung heute leuchtet cyan wenn nicht auf heute. Klick auf Datum → Tab 1 (Kalender).
 - **viewDate:** Lokaler State (`useState(() => store.dayplanDate ?? todayKey())`). Mount-Effect liest `store.dayplanDate`, setzt viewDate, löscht es. Tab verlassen → unmount → automatisch Reset auf heute beim nächsten Mount.
 - **store.dayplanDate:** Flüchtiger Intent-Wert (kein localStorage). DayPanel setzt ihn vor `setCurrentTab(0)`, TabHeute konsumiert ihn einmalig beim Mount.
-- **Pool + Drag & Drop:** Immer sichtbar, funktioniert auf allen Tagen — Slots schreiben auf `viewDate`.
-- **Eingebettete Sektionen:** `<ReminderSection />` (wenn reminder aktiv) und `<HaushaltSection />` (wenn haushalt aktiv) erscheinen unter dem Pool.
+- **Pool + Drag & Drop:** Immer sichtbar, funktioniert auf allen Tagen — Slots schreiben auf `viewDate`. Pool-Container ist als Drop-Zone registriert (`registerHalf('pool', el, 'empty')`): Zeitplan-Slot in den Pool ziehen löscht den Slot, das Todo bleibt im Pool.
+- **Eingebettete Sektionen:** `<ReminderSection />` und `<HaushaltSection />` erscheinen unter dem Pool wenn aktiv. Beide nutzen das **fakeTodo-Pattern**: Items werden als `fakeTodo`-Objekte in `<TodoChip>` gerendert (disableExpand, 6-Punkte-Drag-Handle, Auswahl-Checkbox, Masse-Add-Button). Todo-Erstellung passiert erst **beim Drop** (atomar mit dem Slot) — kein Flackern im Pool. TabHeute liefert `startHaushaltDrag` / `startReminderDrag` via `onStartDrag`-Prop. Siehe `kontext/tool-pattern.md` für das vollständige Muster.
 - **Blocker:** `BlockerModal` + `RepeatDeleteSheet` — Blocker im Zeitplan erstellen/bearbeiten/löschen. Löschen wiederkehrender Blocker: "Nur diese" (exception) oder "Diese und alle zukünftigen" (endDate).
 
 ---

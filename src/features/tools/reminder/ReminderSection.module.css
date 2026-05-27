@@ -2,116 +2,32 @@
 .items {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
-/* ─── Chip (TodoChip-style) ───────────────────────────────── */
-.chip {
+/* ─── Zeile (Select + Chip) ───────────────────────────────── */
+.reminderRow {
   display: flex;
   align-items: stretch;
-  background: rgba(255, 255, 255, 0.022);
-  border: 1px solid rgba(255, 255, 255, 0.065);
-  border-radius: var(--r);
-  overflow: hidden;
-  min-height: 40px;
-  -webkit-tap-highlight-color: transparent;
+  gap: 4px;
 }
 
-.stripe {
-  width: 3px;
-  min-width: 3px;
-  align-self: stretch;
-  background: var(--chip-color, var(--primary));
-  flex-shrink: 0;
-}
-
-.chipIcon {
-  display: flex;
-  align-items: center;
-  padding: 0 8px 0 10px;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.chipBody {
+.reminderChipWrap {
   flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 4px 8px 0;
   min-width: 0;
 }
 
-.chipText {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.reminderRowDeselected {
+  opacity: 0.4;
 }
 
-.chipTime {
-  font-family: 'Orbitron', monospace;
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.3);
-  flex-shrink: 0;
-}
-
-/* ─── Add button (+) ──────────────────────────────────────── */
-.addBtn {
-  background: none;
-  border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--chip-color, var(--primary));
-  font-size: 1.2rem;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0 13px;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  transition: background 0.12s;
-  -webkit-tap-highlight-color: transparent;
-  line-height: 1;
-}
-
-.addBtn:hover { background: rgba(255, 255, 255, 0.05); }
-
-/* ─── Dismiss button (✕) ──────────────────────────────────── */
-.dismissBtn {
-  background: none;
-  border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.12);
-  font-size: 0.62rem;
-  cursor: pointer;
-  padding: 0 8px;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  min-width: 28px;
-  transition: color 0.12s, background 0.12s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.dismissBtn:hover {
-  color: var(--rose);
-  background: rgba(251, 113, 133, 0.07);
-}
-
-/* ─── Select toggle ──────────────────────────────────────── */
+/* ─── Select-Button (links) ───────────────────────────────── */
 .selectBtn {
   width: 28px;
   min-width: 28px;
-  align-self: stretch;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: none;
-  border: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.2);
   font-size: 0.72rem;
   cursor: pointer;
@@ -124,18 +40,35 @@
 }
 
 .selectBtnOn {
-  color: var(--chip-color, var(--primary));
+  color: var(--emerald);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
-.chipDeselected {
-  opacity: 0.4;
+/* ─── Drag-Handle (rechts, via dragHandle-Prop im TodoChip) ── */
+.reminderDragHandle {
+  width: 30px;
+  min-width: 30px;
+  align-self: stretch;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.25);
+  cursor: grab;
+  touch-action: none;
+  transition: color 0.15s;
+}
+
+.reminderDragHandle:hover {
+  color: rgba(255, 255, 255, 0.55);
 }
 
 /* ─── Alle hinzufügen ─────────────────────────────────────── */
 .addAllBtn {
   width: 100%;
   padding: 9px 12px;
-  border-radius: var(--r-sm);
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.6);

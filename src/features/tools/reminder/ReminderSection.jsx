@@ -3,6 +3,7 @@ import { useAppStore } from '../../../store'
 import { todayKey, minutesToSk, parseHHMM, ALL_SLOT_KEYS, sk, getToolColor } from '../../../utils'
 import { TOOL_TAB } from '../toolTabs'
 import ToolSection from '../../../components/ToolSection/ToolSection'
+import TodoChip from '../../../components/TodoChip/TodoChip'
 import { createBlock } from '../../todos/Block'
 import {
   isDueToday, mergeWithCurated,
@@ -11,7 +12,18 @@ import {
 } from './reminderData'
 import s from './ReminderSection.module.css'
 
-export default function ReminderSection() {
+const DragIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+  </svg>
+)
+
+export default function ReminderSection({ onStartDrag }) {
   const { todos, setTodos, days, setDays, setCurrentTab, toolColors } = useAppStore()
   const today      = todayKey()
   const todaySlots = days[today] ?? {}
@@ -29,7 +41,6 @@ export default function ReminderSection() {
     })
   }, [])
 
-  // Re-sync items wenn ein Reminder-Todo abgehakt wird (TabHeute setzt lastAdded in localStorage)
   const reminderDoneKey = todos
     .filter(t => t.reminderItemId)
     .map(t => `${t.id}:${t.done}`)
@@ -38,7 +49,6 @@ export default function ReminderSection() {
 
   const todayDismissed = dismissed[today] ?? []
 
-  // Items verstecken die bereits ein offenes Todo/Slot haben — sichtbar erst wieder wenn done
   const pendingReminderIds = new Set(
     todos.filter(t => t.reminderItemId && !t.done).map(t => t.reminderItemId)
   )
@@ -76,7 +86,6 @@ export default function ReminderSection() {
     }
   }, [])
 
-  // Kein lastAdded-Update beim Hinzufügen — passiert erst wenn Todo/Slot abgehakt wird
   const handleAddSingle = useCallback((item) => {
     const result = buildResult(item, todaySlots)
     if (result.type === 'slot') {
@@ -84,7 +93,6 @@ export default function ReminderSection() {
     } else {
       setTodos(prev => [...prev, result.block])
     }
-    // pendingReminderIds versteckt das Item automatisch — kein dismiss nötig
   }, [today, todaySlots, buildResult, setDays, setTodos])
 
   const handleAddSelected = useCallback(() => {
@@ -118,12 +126,30 @@ export default function ReminderSection() {
       <div className={s.items}>
         {dueItems.map(item => {
           const isSelected = !deselected.has(item.id)
-          return (
-            <div
-              key={item.id}
-              className={[s.chip, !isSelected ? s.chipDeselected : ''].join(' ')}
-              style={{ '--chip-color': item.color ?? '#00FF94' }}
+          const fakeTodo = {
+            id:       item.id,
+            text:     `${item.icon || '🔔'} ${item.text}`,
+            color:    item.color ?? toolColor,
+            done:     false,
+            priority: 2,
+            duration: null,
+            subItems: [],
+            category: item.time ?? null,
+            date:     null,
+            time:     null,
+            toolId:   'reminder',
+          }
+          const dragHandle = (
+            <span
+              className={s.reminderDragHandle}
+              onPointerDown={e => { e.stopPropagation(); onStartDrag?.(item, item.color ?? toolColor, e) }}
+              aria-label="Ziehen"
             >
+              <DragIcon />
+            </span>
+          )
+          return (
+            <div key={item.id} className={[s.reminderRow, !isSelected ? s.reminderRowDeselected : ''].join(' ')}>
               <button
                 className={[s.selectBtn, isSelected ? s.selectBtnOn : ''].join(' ')}
                 onClick={() => toggleSelect(item.id)}
@@ -131,14 +157,14 @@ export default function ReminderSection() {
               >
                 {isSelected ? '✓' : '○'}
               </button>
-              <span className={s.stripe} />
-              <span className={s.chipIcon}>{item.icon || '🔔'}</span>
-              <div className={s.chipBody}>
-                <span className={s.chipText}>{item.text}</span>
-                {item.time && <span className={s.chipTime}>{item.time}</span>}
+              <div className={s.reminderChipWrap}>
+                <TodoChip
+                  todo={fakeTodo}
+                  onRemove={() => dismiss(item.id)}
+                  disableExpand
+                  dragHandle={dragHandle}
+                />
               </div>
-              <button className={s.addBtn} onClick={() => handleAddSingle(item)} title="Einzeln hinzufügen">+</button>
-              <button className={s.dismissBtn} onClick={() => dismiss(item.id)} title="Für heute ignorieren">✕</button>
             </div>
           )
         })}

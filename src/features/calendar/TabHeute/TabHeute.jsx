@@ -294,6 +294,18 @@ export default function TabHeute() {
     }, e, canDrop)
   }, [todos, todaySlots, startDrag, startPoolDrag, setTodos, handleSetSlot])
 
+  const startReminderDrag = useCallback((item, reminderColor, e) => {
+    const text     = `${item.icon || '🔔'} ${item.text}`
+    const duration = 30
+    startDrag(text, reminderColor, (dropKey) => {
+      const newTodo = createBlock({ text, priority: 2, color: reminderColor, category: 'Selfcare', reminderItemId: item.id, duration })
+      setTodos(prev => [...prev, newTodo])
+      if (dropKey !== 'pool') {
+        handleSetSlot(dropKey, { text, todoId: newTodo.id, color: reminderColor, duration, locked: false, done: false })
+      }
+    }, e, null)
+  }, [startDrag, setTodos, handleSetSlot])
+
   const startSlotDrag = useCallback((fromKey, e) => {
     const slot = todaySlots[fromKey]
     if (!slot || slot.locked) return
@@ -371,7 +383,10 @@ export default function TabHeute() {
       />
       {(() => {
         const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection }
-        const SECTION_PROPS = { haushalt: { onStartDrag: startHaushaltDrag } }
+        const SECTION_PROPS = {
+          haushalt: { onStartDrag: startHaushaltDrag },
+          reminder: { onStartDrag: startReminderDrag },
+        }
         return activeTools
           .filter(id => SECTIONS[id])
           .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })

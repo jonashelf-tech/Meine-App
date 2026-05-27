@@ -125,14 +125,110 @@ const writeToCalendar = (date, slotKey, entry) => {
 
 ---
 
-## Tagesplaner-Widget (HaushaltSection / ReminderSection Pattern)
+## Tagesplaner-Widget — Standard-Muster (HaushaltSection / ReminderSection)
 
 Tools können als eingebettete Sektion im Tagesplaner erscheinen (unter dem Pool).
 Bedingung: `activeTools.includes('toolid')` in `TabHeute.jsx`.
 
 ```jsx
-// In TabHeute.jsx ergänzen:
+// In TabHeute.jsx ergänzen (Imports):
 import ToolnameSection from '../../tools/toolname/ToolnameSection'
-// Im JSX:
-{activeTools.includes('toolname') && <ToolnameSection />}
+
+// Im JSX (SECTION_PROPS + Render-Block):
+const SECTION_PROPS = {
+  haushalt: { onStartDrag: startHaushaltDrag },
+  reminder: { onStartDrag: startReminderDrag },
+  toolname: { onStartDrag: startToolnameDrag },  // ← neu ergänzen
+}
+const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, toolname: ToolnameSection }
+return activeTools
+  .filter(id => SECTIONS[id])
+  .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
+```
+
+### fakeTodo-Pattern (Standard für alle Dashboard-Widgets)
+
+Items werden **nicht** als echte Todos im Store angelegt — nur als `fakeTodo` zur Anzeige in `<TodoChip>`.
+Das echte Todo entsteht erst **beim Drop** (atomar mit dem Slot). Kein Flackern im Pool.
+
+```jsx
+// ToolnameSection.jsx
+export default function ToolnameSection({ onStartDrag }) {
+  const { todos, setTodos, toolColors } = useAppStore()
+  const toolColor = getToolColor('toolname', toolColors)
+
+  const fakeTodo = {
+    id:       item.id,
+    text:     item.text,
+    color:    item.color ?? toolColor,
+    done:     false,
+    priority: 3,        // Default Prio für Tool-Items
+    duration: null,     // kein "Xmin" in Meta
+    subItems: [],
+    category: null,     // optional: Zusatzinfo (z.B. item.time)
+    date:     null,
+    time:     null,
+    toolId:   'toolname',
+  }
+
+  const dragHandle = (
+    <span
+      className={s.dragHandle}
+      onPointerDown={e => { e.stopPropagation(); onStartDrag?.(item, toolColor, e) }}
+      aria-label="Ziehen"
+    >
+      <DragIcon />
+    </span>
+  )
+
+  return (
+    <div className={s.row}>
+      <button className={[s.selectBtn, isSelected ? s.selectBtnOn : ''].join(' ')} onClick={() => toggleSelect(item.id)}>
+        {isSelected ? '✓' : '○'}
+      </button>
+      <div className={s.chipWrap}>
+        <TodoChip
+          todo={fakeTodo}
+          onRemove={() => handleRemoveOrDismiss(item.id)}
+          disableExpand
+          dragHandle={dragHandle}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+### startXxxDrag in TabHeute (Standard-Callback)
+
+```js
+const startToolnameDrag = useCallback((item, itemColor, e) => {
+  const text     = item.text
+  const duration = 30
+  startDrag(text, itemColor, (dropKey) => {
+    const newTodo = createBlock({ text, priority: 3, color: itemColor, toolId: 'toolname', duration })
+    setTodos(prev => [...prev, newTodo])
+    if (dropKey !== 'pool') {
+      handleSetSlot(dropKey, { text, todoId: newTodo.id, color: itemColor, duration, locked: false, done: false })
+    }
+  }, e, null)
+}, [startDrag, setTodos, handleSetSlot])
+```
+
+- **Drop auf Zeitplan-Slot** → Todo + Slot atomar erstellt
+- **Drop auf Pool** → nur Todo erstellt (kein Slot), erscheint im Pool
+- **Drag aus Zeitplan zurück in Pool** → Slot gelöscht, Todo bleibt (via `pool`-Drop-Zone in Pool.jsx)
+
+### CSS-Grundstruktur (ToolnameSection.module.css)
+
+```css
+.items { display: flex; flex-direction: column; gap: 6px; }
+.row { display: flex; align-items: stretch; gap: 4px; }
+.chipWrap { flex: 1; min-width: 0; }
+.rowDeselected { opacity: 0.4; }
+.selectBtn { width: 28px; min-width: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: none; color: rgba(255,255,255,0.2); font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.selectBtnOn { color: var(--emerald); border-color: rgba(16,185,129,0.3); }
+.dragHandle { width: 30px; min-width: 30px; align-self: stretch; border-left: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(255,255,255,0.25); cursor: grab; touch-action: none; transition: color 0.15s; }
+.dragHandle:hover { color: rgba(255,255,255,0.55); }
+.addAllBtn { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-family: 'Outfit',sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; text-align: center; }
 ```
