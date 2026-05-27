@@ -16,22 +16,87 @@ const SubDragIcon = () => (
   </svg>
 )
 
-const ChevronIcon = ({ down }) => (
-  <svg
-    width="10" height="10" viewBox="0 0 10 10"
-    fill="none" stroke="currentColor" strokeWidth="1.8"
-    strokeLinecap="round" strokeLinejoin="round"
-    style={{ transform: down ? 'none' : 'rotate(-90deg)', transition: 'transform 0.18s ease' }}
-  >
-    <polyline points="2 3 5 7 8 3"/>
-  </svg>
-)
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
+const ProgressRing = ({ done, total, chipColor, todoIsDone }) => {
+  const SIZE = 22, r = 8.5
+  const circ = 2 * Math.PI * r   // ≈ 53.4
+
+  if (todoIsDone) return (
+    <svg width={SIZE} height={SIZE} viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="11" r={r} stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
+    </svg>
+  )
+
+  if (total === 0) return (
+    <svg width={SIZE} height={SIZE} viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="11" r={r}
+        stroke="rgba(255,255,255,0.09)" strokeWidth="1.5" strokeDasharray="3.5 2.8"/>
+      <line x1="11" y1="7.2" x2="11" y2="14.8"
+        stroke="rgba(255,255,255,0.38)" strokeWidth="1.6" strokeLinecap="round"/>
+      <line x1="7.2" y1="11" x2="14.8" y2="11"
+        stroke="rgba(255,255,255,0.38)" strokeWidth="1.6" strokeLinecap="round"/>
+    </svg>
+  )
+
+  const allDone   = done === total
+  const ringColor = allDone ? '#00FF94' : chipColor
+  const glow      = allDone
+    ? 'rgba(0,255,148,0.6)'
+    : hexToRgba(chipColor, 0.55)
+  const progress  = (done / total) * circ
+
+  return (
+    <div style={{ position: 'relative', width: SIZE, height: SIZE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <svg width={SIZE} height={SIZE} viewBox="0 0 22 22" fill="none"
+        style={{ position: 'absolute', inset: 0, filter: `drop-shadow(0 0 ${allDone ? 4 : 3}px ${glow})` }}>
+        <circle cx="11" cy="11" r={r}
+          stroke={hexToRgba(ringColor, 0.18)} strokeWidth="2"/>
+        <circle cx="11" cy="11" r={r}
+          stroke={ringColor} strokeWidth="2"
+          strokeDasharray={`${progress} ${circ}`}
+          strokeLinecap="round"
+          transform="rotate(-90 11 11)"/>
+      </svg>
+      <span style={{
+        position: 'absolute',
+        fontSize:     allDone ? 10 : 7.5,
+        fontWeight:   800,
+        color:        ringColor,
+        fontFamily:   'Outfit, sans-serif',
+        letterSpacing: '-0.4px',
+        lineHeight:    1,
+        zIndex:        1,
+      }}>
+        {allDone ? '✓' : `${done}/${total}`}
+      </span>
+    </div>
+  )
+}
 
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
   const MONTHS = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez']
   return `${d.getDate()}. ${MONTHS[d.getMonth()]}`
+}
+
+function getAgeDays(createdAt) {
+  if (!createdAt) return 0
+  return Math.floor((Date.now() - new Date(createdAt).getTime()) / 86400000)
+}
+
+function fmtAge(days) {
+  if (days < 7)  return null
+  if (days < 30) return `${days} T`
+  if (days < 90) return `${Math.floor(days / 7)} Wo`
+  return `${Math.floor(days / 30)} Mo`
 }
 
 export default function TodoChip({
@@ -48,6 +113,8 @@ export default function TodoChip({
   disableExpand,      // true = hide expand btn + sub-items entirely
   onExpandedChange,   // fn(isExpanded, extraPx)
   className,
+  showAge,            // true = show age in meta (Pool only)
+  onKlaeren,          // fn(todo) — opens Klären dialog for this todo (Pool only)
 }) {
   const [expanded, setExpanded]   = useState(false)
   const [itemInput, setItemInput] = useState('')
@@ -126,9 +193,15 @@ export default function TodoChip({
   }, [allItems, todo, updateTodo])
 
 
-  const { toolColors } = useAppStore()
+  const { toolColors, klaerenSettings } = useAppStore()
+  const threshold = klaerenSettings?.threshold ?? 30
+  const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
   const color     = todo.color || '#8B5CF6'
   const glowColor = todo.toolId ? (toolColors?.[todo.toolId] ?? '#8B5CF6') : null
+
+  const ageDays   = (showAge || !!onKlaeren) ? getAgeDays(todo.createdAt) : 0
+  const ageLabel  = showAge ? fmtAge(ageDays) : null
+  const isOld     = ageDays >= threshold
 
   const metaParts = [
     todo.category,
@@ -156,10 +229,12 @@ export default function TodoChip({
           s.chip,
           flashing  ? s.doneFlash : '',
           todo.done ? s.chipDone  : '',
+          !todo.done && isOld ? s.chipOld : '',
           className || ''
         ].join(' ').trim()}
         style={{
           '--chip-color': todo.done ? 'rgba(0,255,148,0.15)' : color,
+          '--age-color': ageColor,
           ...(glowColor && !todo.done ? {
             boxShadow: `0 0 0 1.5px ${glowColor}, 0 0 14px ${glowColor}44`,
           } : {}),
@@ -184,15 +259,12 @@ export default function TodoChip({
               })
             }}
           >
-            <ChevronIcon down={expanded} />
-            {!todo.done && (
-              <span className={[
-                s.expandCount,
-                allItems.length > 0 && doneItems === allItems.length ? s.expandCountDone : ''
-              ].join(' ')}>
-                {doneItems}/{allItems.length}
-              </span>
-            )}
+            <ProgressRing
+              done={doneItems}
+              total={allItems.length}
+              chipColor={color}
+              todoIsDone={todo.done}
+            />
           </button>
         )}
 
@@ -204,10 +276,29 @@ export default function TodoChip({
               <span className={s.quickBadge}>⚡</span>
             )}
           </span>
-          {metaParts.length > 0 && (
-            <span className={s.meta}>{metaParts.join(' · ')}</span>
+          {(metaParts.length > 0 || ageLabel) && (
+            <span className={s.meta}>
+              <span className={s.metaLeft}>{metaParts.join(' · ')}</span>
+              {ageLabel && (
+                <span className={[s.ageTag, isOld ? s.ageTagOld : ''].join(' ')}>
+                  {ageLabel}
+                </span>
+              )}
+            </span>
           )}
         </div>
+
+        {/* Klaeren Circle Badge */}
+        {onKlaeren && !todo.done && ageDays >= threshold && (
+          <button
+            className={s.klaerenCircle}
+            onClick={e => { e.stopPropagation(); onKlaeren(todo) }}
+            aria-label="Prokrastination"
+          >
+            <span className={s.klaerenCircleNum}>{ageDays}</span>
+            <span className={s.klaerenCircleUnit}>Tage</span>
+          </button>
+        )}
 
         {/* Remove */}
         {onRemove && (
@@ -282,6 +373,30 @@ export default function TodoChip({
               ><SubDragIcon /></span>
             </div>
           ))}
+
+          {/* Klaeren-Kontext */}
+          {(todo.klaerenHindernis || todo.klaerenWert) && (
+            <div className={s.klaerenContext}>
+              {todo.klaerenHindernis && (
+                <div className={s.klaerenRow}>
+                  <span className={s.klaerenIcon}>🏔</span>
+                  <div>
+                    <span className={s.klaerenLabel}>Hindernis</span>
+                    <span className={s.klaerenText}>{todo.klaerenHindernis}</span>
+                  </div>
+                </div>
+              )}
+              {todo.klaerenWert && (
+                <div className={s.klaerenRow}>
+                  <span className={s.klaerenIcon}>✨</span>
+                  <div>
+                    <span className={s.klaerenLabel}>Wert</span>
+                    <span className={s.klaerenText}>{todo.klaerenWert}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Add row */}
           <div className={s.itemAddRow}>

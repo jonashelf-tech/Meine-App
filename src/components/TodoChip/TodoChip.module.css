@@ -34,6 +34,15 @@
   border-color: rgba(255, 255, 255, 0.12);
 }
 
+/* Old todo → Farbe aus klaerenSettings.ageColor */
+.chipOld {
+  border-color: color-mix(in srgb, var(--age-color) 35%, transparent);
+}
+
+.chipOld:hover {
+  border-color: color-mix(in srgb, var(--age-color) 55%, transparent);
+}
+
 .chip:active {
   transform: scale(0.998);
 }
@@ -63,14 +72,12 @@
 
 /* ── Expand button ───────────────────────────────────────── */
 .expandBtn {
-  width: 34px;
-  min-width: 34px;
+  width: 38px;
+  min-width: 38px;
   align-self: stretch;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
   background: none;
   border: none;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
@@ -89,9 +96,10 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.38);
   line-height: 1;
 }
+
 
 .expandCountDone {
   color: var(--emerald);
@@ -138,10 +146,116 @@
   letter-spacing: 0.03em;
   color: rgba(255, 255, 255, 0.35);
   margin-top: 2px;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.metaLeft {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Age tag — passiv */
+.ageTag {
+  color: rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 30+ days → ageColor */
+.ageTagOld {
+  color: color-mix(in srgb, var(--age-color) 75%, transparent);
+}
+
+/* ── Klaeren Kreis-Badge ─────────────────────────────────── */
+.klaerenCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1.5px solid rgba(52, 211, 153, 0.35);
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: center;
+  margin: 0 3px;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.klaerenCircle:hover {
+  background: rgba(52, 211, 153, 0.16);
+  border-color: rgba(52, 211, 153, 0.65);
+}
+
+.klaerenCircleNum {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #34D399;
+  line-height: 1;
+}
+
+.klaerenCircleUnit {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.46rem;
+  font-weight: 600;
+  color: rgba(52, 211, 153, 0.6);
+  line-height: 1;
+}
+
+/* ── Klaeren Kontext-Card (ausgeklappt) ──────────────────── */
+.klaerenContext {
+  margin: 6px 12px 2px;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.05);
+  overflow: hidden;
+}
+
+.klaerenRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(52, 211, 153, 0.12);
+}
+.klaerenRow:last-child { border-bottom: none; }
+
+.klaerenIcon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.klaerenLabel {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(52, 211, 153, 0.6);
+  margin-bottom: 2px;
+}
+
+.klaerenText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.4;
+  word-break: break-word;
 }
 
 /* ── Remove button ───────────────────────────────────────── */
