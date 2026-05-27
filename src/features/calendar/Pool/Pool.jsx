@@ -61,7 +61,7 @@ function sortTodos(list, sort) {
 }
 
 // ─── PoolChip ─────────────────────────────────────────────
-function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced }) {
+function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced, onKlaeren }) {
   const color = todo.color || '#8B5CF6'
 
   const handlePointerDown = useCallback((e) => {
@@ -88,6 +88,8 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, start
       todos={todos}
       saveTodos={setTodos}
       dragHandle={handle}
+      showAge
+      onKlaeren={onKlaeren}
     />
   )
 }
@@ -102,6 +104,8 @@ export default function Pool({
   onRemove,
   startDrag,
   onDoneCalendar,
+  onKlaeren,        // fn(todo) — opens Klären dialog; wired up when Klären-Tool is built
+  registerHalf,
 }) {
   const [collapsed,      setCollapsed]      = useState(false)
   const [sort,           setSort]           = useState(() => lv(SK.poolSort, 'standard'))
@@ -180,11 +184,15 @@ export default function Pool({
       onRemove={() => setConfirmId(t.id)}
       startDrag={startDrag}
       isPlaced={isPlaced(t)}
+      onKlaeren={onKlaeren}
     />
   )
 
   return (
-    <div className={s.pool}>
+    <div
+      className={s.pool}
+      ref={el => registerHalf?.('pool', el, 'empty')}
+    >
 
       {/* ── Header ────────────────────────────────────── */}
       <div

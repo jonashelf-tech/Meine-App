@@ -118,6 +118,31 @@
   outline: none;
 }
 
+.prioBtnGroup {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.prioBtn {
+  padding: 3px 6px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.prioBtnActive {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .statusBadge {
   font-family: 'Outfit', sans-serif;
   font-size: 0.68rem;

@@ -12,6 +12,7 @@ import ErfolgeSection      from '../../tools/erfolge/ErfolgeSection'
 import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
 import DayNav              from '../../../components/DayNav/DayNav'
 import BlockerModal        from '../Blocker/BlockerModal'
+import KlaerenModal        from '../../tools/klaeren/KlaerenModal'
 import RepeatDeleteSheet   from '../Blocker/RepeatDeleteSheet'
 import { deleteBlockerInstance, deleteBlockerFuture } from '../Blocker/blockerUtils'
 import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '../../tools/haushalt/haushaltData'
@@ -26,6 +27,7 @@ export default function TabHeute() {
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
   const [visEnd,   setVisEnd]   = useState(() => lv(SK.visEnd,   20))
   const [editingTodo,       setEditingTodo]       = useState(null)
+  const [klaerenTodo,       setKlaerenTodo]       = useState(null)
   const [blockerModal,      setBlockerModal]       = useState(null)
   const [repeatDeleteSheet, setRepeatDeleteSheet]  = useState(null)
 
@@ -266,11 +268,16 @@ export default function TabHeute() {
     const dur = slot.duration || 30
     const canDrop = dur > 30
       ? (toKey) => {
+          if (toKey === 'pool') return true
           const blocking = getDurationKeys(toKey, dur).slice(1).filter(k => k !== fromKey && todaySlots[k])
           return blocking.length === 0 ? true : blocking
         }
       : null
     startDrag(slot.text, slot.color || '#8B5CF6', (toKey) => {
+      if (toKey === 'pool') {
+        handleRemoveSlot(fromKey)
+        return
+      }
       if (toKey === fromKey) return
       setTodaySlots(prev => {
         const ns    = { ...prev }
@@ -280,7 +287,7 @@ export default function TabHeute() {
         return ns
       })
     }, e, canDrop)
-  }, [startDrag, todaySlots, setTodaySlots])
+  }, [startDrag, todaySlots, setTodaySlots, handleRemoveSlot])
 
   // ─── Edit modal ───────────────────────────────────────────
   const handleEdit = useCallback((id) => {
@@ -327,18 +334,36 @@ export default function TabHeute() {
         onRemove={handleRemove}
         startDrag={startPoolDrag}
         onDoneCalendar={handleDoneCalendar}
+        onKlaeren={(todo) => setKlaerenTodo(todo)}
+        registerHalf={registerHalf}
       />
       {(() => {
         const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection }
+        const SECTION_PROPS = { haushalt: { onStartDrag: startPoolDrag } }
         return activeTools
           .filter(id => SECTIONS[id])
-          .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} /> })
+          .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
       })()}
 
       {editingTodo && (
         <TodoModal
           existingTodo={editingTodo}
           onClose={() => setEditingTodo(null)}
+        />
+      )}
+
+      {klaerenTodo && (
+        <KlaerenModal
+          todo={klaerenTodo}
+          onClose={() => setKlaerenTodo(null)}
+          onSave={(upd) => {
+            setTodos(prev => prev.map(t => t.id === upd.id ? upd : t))
+            setKlaerenTodo(null)
+          }}
+          onDelete={(id) => {
+            setTodos(prev => prev.filter(t => t.id !== id))
+            setKlaerenTodo(null)
+          }}
         />
       )}
 

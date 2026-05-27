@@ -73,30 +73,24 @@
   opacity: 0.4;
 }
 
-/* ── Raum-Done-Button (dragHandle im TodoChip) ──────────── */
-.roomDoneBtn {
+/* ── Raum-Drag-Handle (dragHandle im TodoChip) ──────────── */
+.roomDragHandle {
   width: 30px;
   min-width: 30px;
   align-self: stretch;
   border-left: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0;
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
-  background: none;
-  color: rgba(16, 185, 129, 0.55);
-  font-size: 0.72rem;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.15s;
+  color: rgba(255, 255, 255, 0.25);
+  cursor: grab;
+  touch-action: none;
+  transition: color 0.15s;
 }
 
-.roomDoneBtn:hover {
-  background: rgba(16, 185, 129, 0.1);
-  color: rgba(16, 185, 129, 0.9);
+.roomDragHandle:hover {
+  color: rgba(255, 255, 255, 0.55);
 }
 
 /* ── Alle-Button ────────────────────────────────────────── */

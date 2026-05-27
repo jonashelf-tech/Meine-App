@@ -12,6 +12,17 @@ import {
 import { useState, useEffect, useCallback } from 'react'
 import s from './HaushaltSection.module.css'
 
+const DragIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+  </svg>
+)
+
 const BoltIcon = () => (
   <svg width={12} height={12} viewBox="0 0 24 24" fill="currentColor" stroke="none">
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
@@ -26,7 +37,7 @@ const BatteryLowIcon = () => (
   </svg>
 )
 
-export default function HaushaltSection() {
+export default function HaushaltSection({ onStartDrag }) {
   const { todos, setTodos, setCurrentTab, toolColors } = useAppStore()
   const [config,  setConfig]  = useState(() => loadHaushalt())
   const [energie, setEnergie] = useState(() => lv(SK.haushaltEnergie, 'normal'))
@@ -76,6 +87,36 @@ export default function HaushaltSection() {
 
   const handleTaskDone = (taskId) => updateConfig(markTaskDone(config, taskId))
 
+  const handleRoomDragStart = useCallback((room, dueTasks, e) => {
+    const existing = todos.find(t => t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done)
+    let todoId, text, color, duration
+    if (existing) {
+      todoId   = existing.id
+      text     = existing.text
+      color    = existing.color
+      duration = existing.duration
+    } else {
+      const covered    = new Set(todos.filter(t => t.toolId === 'haushalt' && !t.done).flatMap(t => t.haushaltTaskIds ?? []))
+      const uncovered  = dueTasks.filter(t => !covered.has(t.id))
+      const newTodo    = createBlock({
+        text:            `${room.icon} ${room.name}`,
+        duration:        uncovered.reduce((sum, t) => sum + (t.duration ?? 0), 0),
+        subItems:        uncovered.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false })),
+        color:           toolColor,
+        toolId:          'haushalt',
+        haushaltRoomId:  room.id,
+        haushaltTaskIds: uncovered.map(t => t.id),
+        priority:        room.priority ?? 3,
+      })
+      setTodos(prev => [...prev, newTodo])
+      todoId   = newTodo.id
+      text     = newTodo.text
+      color    = toolColor
+      duration = newTodo.duration
+    }
+    onStartDrag?.(todoId, text, color, duration, e)
+  }, [todos, setTodos, toolColor, onStartDrag])
+
   const handleRoomDone = (roomId) => {
     const entry = dueRooms.find(e => e.room.id === roomId)
     if (!entry) return
@@ -120,6 +161,7 @@ export default function HaushaltSection() {
             toolId:          'haushalt',
             haushaltRoomId:  room.id,
             haushaltTaskIds: newTasks.map(t => t.id),
+            priority:        room.priority ?? 3,
           }))
         }
       })
@@ -166,19 +208,21 @@ export default function HaushaltSection() {
                 color:    toolColor,
                 toolId:   'haushalt',
                 done:     false,
-                priority: null,
+                priority: room.priority ?? 3,
                 duration: uncoveredTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
                 subItems: uncoveredTasks.map(t => ({ id: t.id, text: t.text, done: false })),
                 category: null,
                 date:     null,
                 time:     null,
               }
-              const doneBtn = (
-                <button
-                  className={s.roomDoneBtn}
-                  onClick={e => { e.stopPropagation(); handleRoomDone(room.id) }}
-                  title="Alle erledigt"
-                >✓</button>
+              const dragHandle = (
+                <span
+                  className={s.roomDragHandle}
+                  onPointerDown={e => { e.stopPropagation(); handleRoomDragStart(room, dueTasks, e) }}
+                  aria-label="Ziehen"
+                >
+                  <DragIcon />
+                </span>
               )
               return (
                 <div key={room.id} className={[s.roomRow, !isSelected ? s.roomRowDeselected : ''].join(' ')}>
@@ -193,7 +237,7 @@ export default function HaushaltSection() {
                     <TodoChip
                       todo={fakeTodo}
                       saveItem={makeSaveItem(uncoveredTasks)}
-                      dragHandle={doneBtn}
+                      dragHandle={dragHandle}
                     />
                   </div>
                 </div>

@@ -188,6 +188,8 @@ function TaskRow({ task, editing, dimmed, onDone, onReset, onUpdate, onDelete })
 }
 
 // ─── Raum Karte ───────────────────────────────────────────
+const PRIO_LABELS = { 1: 'P1', 2: 'P2', 3: 'P3' }
+
 function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTaskDone, onTaskReset, onUpdateTask, onAddTask, onDeleteTask, onUpdateRoom, onDeleteRoom }) {
   const [newTaskText, setNewTaskText] = useState('')
   const status = roomStatus(room)
@@ -209,12 +211,25 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
       <div className={s.roomHeader} onClick={onToggle}>
         <span className={s.roomIcon}>{room.icon}</span>
         {editing ? (
-          <input
-            className={s.roomNameInput}
-            value={room.name}
-            onChange={e => onUpdateRoom({ name: e.target.value })}
-            onClick={e => e.stopPropagation()}
-          />
+          <>
+            <input
+              className={s.roomNameInput}
+              value={room.name}
+              onChange={e => onUpdateRoom({ name: e.target.value })}
+              onClick={e => e.stopPropagation()}
+            />
+            <div className={s.prioBtnGroup} onClick={e => e.stopPropagation()}>
+              {[1, 2, 3].map(p => (
+                <button
+                  key={p}
+                  className={[s.prioBtn, (room.priority ?? 3) === p ? s.prioBtnActive : ''].join(' ')}
+                  onClick={() => onUpdateRoom({ priority: p })}
+                >
+                  {PRIO_LABELS[p]}
+                </button>
+              ))}
+            </div>
+          </>
         ) : (
           <span className={s.roomName}>{room.name}</span>
         )}
