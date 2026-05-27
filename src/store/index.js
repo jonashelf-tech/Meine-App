@@ -108,4 +108,12 @@ export const useAppStore = create((set, get) => ({
     set({ toolColors: next })
     sv(SK.toolColors, next)
   },
+
+  // ─── Klaeren Settings ──────────────────────────────────
+  klaerenSettings: lv(SK.klaerenSettings, { threshold: 30, ageColor: '#FB923C' }),
+  setKlaerenSettings: (s) => {
+    const next = typeof s === 'function' ? s(get().klaerenSettings) : s
+    set({ klaerenSettings: next })
+    sv(SK.klaerenSettings, next)
+  },
 }))

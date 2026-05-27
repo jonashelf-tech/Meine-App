@@ -45,6 +45,7 @@ export const SK = {
   poolSort:       `${PREFIX}view_pool_sort`,
   calView:        `${PREFIX}view_cal_view`,
   blockers:        `${PREFIX}blockers`,
+  klaerenSettings: `${PREFIX}klaeren_settings`,
   erfolgeTracking: `${PREFIX}erfolge_tracking_v1`,
   erfolge:         `${PREFIX}erfolge_v1`,
 }
