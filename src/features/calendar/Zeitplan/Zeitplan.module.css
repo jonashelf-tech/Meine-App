@@ -292,3 +292,109 @@
 .dialogBtnCancel:hover {
   color: var(--text);
 }
+
+/* ── Pill Strip ───────────────────────────────────────────── */
+.pillStrip {
+  display: flex;
+  align-items: stretch;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--surface-low);
+}
+
+.pillBtn {
+  flex-shrink: 0;
+  width: 38px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 20px;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pillBtn:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pillBtnMinus {
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.pillBtnPlus {
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--primary);
+}
+
+.pillBtnPlus:hover {
+  background: rgba(139, 92, 246, 0.1);
+  color: #a78bfa;
+}
+
+.pillChips {
+  flex: 1;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 34px;
+  justify-content: center;
+}
+
+/* ── Slot-Chip in der Strip ──────────────────────────────── */
+.pillChip {
+  display: flex;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: var(--r);
+  overflow: hidden;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pillChip:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.pillChipStripe {
+  width: 3px;
+  min-width: 3px;
+  flex-shrink: 0;
+}
+
+.pillChipBody {
+  flex: 1;
+  padding: 7px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.pillChipText {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pillChipMeta {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 2px;
+}
