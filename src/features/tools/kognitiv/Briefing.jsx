@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { MODULE_CONFIG } from './moduleConfig'
+import { isPracticeAvailable } from './sessionStore'
 import { ToolIcon } from '../toolRegistry'
 import s from './Briefing.module.css'
 
-export default function Briefing({ moduleId, onStart, onBack }) {
+export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
   const m = MODULE_CONFIG[moduleId]
   const [variant, setVariant] = useState(m.defaultVariant)
+  const canPractice = isPracticeAvailable(moduleId)
 
   return (
     <div className={s.root}>
@@ -64,6 +66,12 @@ export default function Briefing({ moduleId, onStart, onBack }) {
         <button className={s.startBtn} onClick={() => onStart(variant)}>
           Starten →
         </button>
+
+        {canPractice && (
+          <button className={s.practiceBtn} onClick={() => onPractice(variant)}>
+            Üben <span className={s.practiceSub}>· 1× diese Woche · nicht gewertet</span>
+          </button>
+        )}
       </div>
     </div>
   )

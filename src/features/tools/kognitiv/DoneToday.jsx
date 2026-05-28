@@ -1,10 +1,11 @@
 import { MODULE_CONFIG } from './moduleConfig'
-import { getLastSession } from './sessionStore'
+import { getLastSession, isPracticeAvailable } from './sessionStore'
 import s from './DoneToday.module.css'
 
-export default function DoneToday({ moduleId, onBack, onViewResult }) {
-  const m    = MODULE_CONFIG[moduleId]
-  const last = getLastSession(moduleId)
+export default function DoneToday({ moduleId, onBack, onViewResult, onPractice }) {
+  const m          = MODULE_CONFIG[moduleId]
+  const last       = getLastSession(moduleId)
+  const canPractice = isPracticeAvailable(moduleId)
 
   const time = last
     ? new Date(last.startedAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
@@ -36,6 +37,11 @@ export default function DoneToday({ moduleId, onBack, onViewResult }) {
             <button className={s.viewBtn} onClick={() => onViewResult(last)}>Ergebnis ansehen →</button>
           </div>
         </div>
+      )}
+      {canPractice && (
+        <button className={s.practiceBtn} onClick={onPractice}>
+          Üben <span className={s.practiceSub}>· 1× diese Woche · nicht gewertet →</span>
+        </button>
       )}
     </div>
   )

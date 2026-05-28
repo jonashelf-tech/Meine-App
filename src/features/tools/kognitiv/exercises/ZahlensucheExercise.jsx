@@ -70,23 +70,30 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
     <div className={s.root}>
       <div className={s.topBar}>
         <button className={s.closeBtn} onClick={onAbort}>✕</button>
+        <div className={s.targetWrap}>
+          <div className={s.targetHint}>Suche</div>
+          <div className={s.targetNum}>{fmt(nextTarget)}</div>
+        </div>
+        <div className={s.progress}>{nextIdx}/{total}</div>
       </div>
-      <div className={s.grid} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-        {cells.map(num => {
-          const isDone  = doneSet.has(num)
-          const isNext  = num === nextTarget
-          const isError = num === errorCell
-          return (
-            <button
-              key={num}
-              className={[s.cell, isDone ? s.done : '', isNext ? s.next : '', isError ? s.error : ''].join(' ')}
-              onClick={() => !isDone && handleTap(num)}
-              disabled={isDone}
-            >
-              {fmt(num)}
-            </button>
-          )
-        })}
+      <div className={s.gridWrap}>
+        <div className={s.grid} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+          {cells.map(num => {
+            const isDone  = doneSet.has(num)
+            const isNext  = num === nextTarget
+            const isError = num === errorCell
+            return (
+              <button
+                key={num}
+                className={[s.cell, isDone ? s.done : '', isNext ? s.next : '', isError ? s.error : ''].join(' ')}
+                onClick={() => !isDone && handleTap(num)}
+                disabled={isDone}
+              >
+                {fmt(num)}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

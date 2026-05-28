@@ -15,3 +15,5 @@
 .lastVal { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
 .lastSub { font-size: 0.62rem; color: var(--text-dim); margin-top: 2px; }
 .viewBtn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--text-dim); font-family: 'Outfit', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 7px 12px; cursor: pointer; }
+.practiceBtn { background: none; border: 1px solid var(--border); border-radius: var(--r); color: var(--text-dim); font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 600; padding: 13px 15px; text-align: center; width: calc(100% - 32px); margin: 0 16px 16px; cursor: pointer; display: block; }
+.practiceSub { font-weight: 400; opacity: 0.6; }
