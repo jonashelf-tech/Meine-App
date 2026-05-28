@@ -1,23 +1,47 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import { useAppStore } from '../../../store'
 import { ToolIcon } from '../toolRegistry'
-import { isDoneToday } from './sessionStore'
+import { MODULE_CONFIG } from './moduleConfig'
+import { isDoneToday, saveSession } from './sessionStore'
 import ModuleList from './ModuleList'
 import Briefing   from './Briefing'
 import DoneToday  from './DoneToday'
+import Results    from './Results'
 import AlertnessExercise   from './exercises/AlertnessExercise'
-import ZahlensucheExercise  from './exercises/ZahlensucheExercise'
-import GedaechtnisExercise  from './exercises/GedaechtnisExercise'
+import ZahlensucheExercise from './exercises/ZahlensucheExercise'
+import GedaechtnisExercise from './exercises/GedaechtnisExercise'
 import s from './TabKognitiv.module.css'
 
 // Nav screens: null = tabs visible
 // 'briefing' | 'done-today' | 'exercise' | 'results' | 'module-detail' | 'session-detail'
 
 export default function TabKognitiv({ onBack }) {
-  const [tab, setTab] = useState('modules')   // 'modules' | 'dashboard'
+  const [tab, setTab] = useState('modules')
   const [nav, setNav] = useState(null)
+  const { setDays } = useAppStore()
 
   const goBack = () => setNav(null)
+
+  const handleSaveToCalendar = useCallback((session) => {
+    const m       = MODULE_CONFIG[session.moduleId]
+    const hour    = new Date(session.startedAt).getHours()
+    const slotKey = String(hour)
+    setDays(prev => ({
+      ...prev,
+      [session.date]: {
+        ...(prev[session.date] ?? {}),
+        [slotKey]: {
+          text:     `Kognitiv: ${m.name} (${session.mainMetric}${m.mainMetricUnit})`,
+          color:    '#8B5CF6',
+          duration: Math.max(1, Math.ceil(session.duration / 60)),
+          locked:   true,
+          done:     true,
+          toolId:   'kognitiv',
+        },
+      },
+    }))
+  }, [setDays])
 
   const handleSelectModule = (moduleId) => {
     if (isDoneToday(moduleId)) {
@@ -52,7 +76,16 @@ export default function TabKognitiv({ onBack }) {
     return <div className={s.placeholder}>Exercise {nav.moduleId} — noch nicht implementiert</div>
   }
   if (nav?.screen === 'results') {
-    return <div className={s.placeholder}>Results</div>
+    if (!nav.fromArchive && !nav.saved) {
+      saveSession(nav.session)
+      setNav(prev => ({ ...prev, saved: true }))
+    }
+    return <Results
+      session={nav.session}
+      fromArchive={nav.fromArchive}
+      onBack={goBack}
+      onSaveToCalendar={handleSaveToCalendar}
+    />
   }
   if (nav?.screen === 'module-detail') {
     return <div className={s.placeholder}>ModuleDetail — {nav.moduleId}</div>
