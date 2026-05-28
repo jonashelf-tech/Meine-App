@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
-import { TOOL_TAB } from '../toolTabs'
-import { useAppStore } from '../../../store'
 import { ToolIcon } from '../toolRegistry'
+import { isDoneToday } from './sessionStore'
+import ModuleList from './ModuleList'
 import s from './TabKognitiv.module.css'
 
 // Nav screens: null = tabs visible
@@ -13,6 +13,14 @@ export default function TabKognitiv({ onBack }) {
   const [nav, setNav] = useState(null)
 
   const goBack = () => setNav(null)
+
+  const handleSelectModule = (moduleId) => {
+    if (isDoneToday(moduleId)) {
+      setNav({ screen: 'done-today', moduleId })
+    } else {
+      setNav({ screen: 'briefing', moduleId })
+    }
+  }
 
   if (nav?.screen === 'briefing') {
     return <div className={s.placeholder}>Briefing — {nav.moduleId}</div>
@@ -42,7 +50,7 @@ export default function TabKognitiv({ onBack }) {
       </div>
       <div className={s.content}>
         {tab === 'modules'
-          ? <div className={s.placeholder}>ModuleList kommt in Task 3</div>
+          ? <ModuleList onSelectModule={handleSelectModule} />
           : <div className={s.placeholder}>Dashboard kommt in Task 9</div>
         }
       </div>
