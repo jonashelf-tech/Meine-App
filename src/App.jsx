@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAppStore } from './store'
 import { hexToGlow } from './utils'
 import { TOOL_TAB } from './features/tools/toolTabs'
+import { saveAutoBackup } from './storage'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
 import TabKalender     from './features/calendar/TabKalender/TabKalender'
@@ -73,6 +74,14 @@ const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 export default function App() {
   const { currentTab, previousTab, setCurrentTab, accentColor, theme } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
+
+  useEffect(() => { saveAutoBackup() }, [])
+
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === 'visible') saveAutoBackup() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [])
 
   useEffect(() => {
     document.documentElement.style.setProperty('--primary', accentColor)

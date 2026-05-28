@@ -231,7 +231,111 @@
   border-color: var(--rose);
 }
 
+.actionBtnPrimary {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.actionBtnPrimary:hover { background: rgba(139,92,246,0.1); }
+
+.actionBtnSecondary {
+  opacity: 0.6;
+  font-size: 0.78rem;
+}
+
 .hidden { display: none; }
+
+/* ─── Auto-Backup ────────────────────────────────────────── */
+.autoBackupRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.autoBackupLabel {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.autoBackupTime {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* ─── Category Panel ─────────────────────────────────────── */
+.catPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px;
+  margin-top: -4px;
+}
+
+.catList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.catItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.catCheck {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sourceBtn {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 9px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+.sourceBtn:hover { border-color: var(--primary); }
+
+.restoreInfo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin: 0 0 4px;
+}
+
+.actionBtnText {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
+  transition: color 0.15s;
+}
+.actionBtnText:hover { color: var(--text); }
 
 /* ─── Info ───────────────────────────────────────────────── */
 .infoRow {

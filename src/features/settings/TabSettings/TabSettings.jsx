@@ -1,6 +1,10 @@
 import { useState, useRef } from 'react'
 import { useAppStore } from '../../../store'
-import { exportData, importData } from '../../../storage'
+import {
+  lv, SK,
+  exportDataByCategories, importDataByCategories,
+  saveAutoBackup, loadAutoBackup,
+} from '../../../storage'
 import { useToast } from '../../../components/Toast/Toast'
 import s from './TabSettings.module.css'
 
@@ -19,23 +23,72 @@ const ACCENTS = [
   { color: '#14B8A6', label: 'Teal'   },
 ]
 
+const CAT_LABELS = [
+  ['kalender',      'Kalender & Todos'],
+  ['tools',         'Tools-Daten'],
+  ['einstellungen', 'Einstellungen'],
+]
+
+function formatAge(ts) {
+  if (!ts) return 'Noch kein Backup'
+  const mins = Math.floor((Date.now() - ts) / 60000)
+  if (mins < 1) return 'Gerade eben'
+  if (mins < 60) return `Vor ${mins} Min.`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `Vor ${hrs} Std.`
+  const days = Math.floor(hrs / 24)
+  return `Vor ${days} ${days === 1 ? 'Tag' : 'Tagen'}`
+}
+
+function formatDate(ts) {
+  if (!ts) return '–'
+  return new Date(ts).toLocaleDateString('de-DE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+}
+
+function CatSelect({ cats, onChange }) {
+  const toggle = k => onChange(p => ({ ...p, [k]: !p[k] }))
+  return (
+    <div className={s.catList}>
+      {CAT_LABELS.map(([k, label]) => (
+        <label key={k} className={s.catItem}>
+          <input type="checkbox" checked={cats[k]} onChange={() => toggle(k)} className={s.catCheck} />
+          <span>{label}</span>
+        </label>
+      ))}
+    </div>
+  )
+}
+
 export default function TabSettings() {
   const { settings, setSettings, theme, setTheme, accentColor, setAccentColor } = useAppStore()
   const { showToast } = useToast()
 
-  const [showKey, setShowKey] = useState(false)
+  const [showKey, setShowKey]           = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
-  const fileRef        = useRef(null)
+  const [backupOpen, setBackupOpen]     = useState(false)
+  const [restoreOpen, setRestoreOpen]   = useState(false)
+  const [backupCats, setBackupCats]     = useState({ kalender: true, tools: true, einstellungen: true })
+  const [restoreCats, setRestoreCats]   = useState({ kalender: true, tools: true, einstellungen: true })
+  const [restoreData, setRestoreData]   = useState(null)
+
+  const fileRestoreRef = useRef(null)
   const accentInputRef = useRef(null)
+
+  const lastAutoBackup = lv(SK.lastAutoBackup, null)
 
   const aiEnabled = settings?.aiEnabled ?? false
   const apiKey    = settings?.apiKey ?? ''
 
-  const toggleAi = () => setSettings(s => ({ ...s, aiEnabled: !aiEnabled }))
+  const toggleAi    = () => setSettings(s => ({ ...s, aiEnabled: !aiEnabled }))
   const updateApiKey = (v) => setSettings(s => ({ ...s, apiKey: v }))
 
-  const handleExport = () => {
-    const data = exportData()
+  const toggleBackup = () => { setBackupOpen(p => !p); setRestoreOpen(false) }
+  const toggleRestore = () => { setRestoreOpen(p => !p); setBackupOpen(false); setRestoreData(null) }
+
+  const handleManualBackup = () => {
+    const selected = Object.keys(backupCats).filter(k => backupCats[k])
+    if (!selected.length) { showToast('Keine Kategorie gewählt', 'error'); return }
+    const data = exportDataByCategories(selected)
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
@@ -43,24 +96,36 @@ export default function TabSettings() {
     a.download = `adhs-backup-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
-    showToast('Daten exportiert', 'success')
+    saveAutoBackup()
+    showToast('Backup gespeichert', 'success')
+    setBackupOpen(false)
   }
 
-  const handleImport = (e) => {
+  const handleFileLoad = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = (ev) => {
+    reader.onload = ev => {
       try {
-        const data = JSON.parse(ev.target.result)
-        importData(data)
-        showToast('Import erfolgreich — App wird neu geladen', 'success')
-        setTimeout(() => window.location.reload(), 1200)
-      } catch {
-        showToast('Ungültige Datei', 'error')
-      }
+        setRestoreData(JSON.parse(ev.target.result))
+      } catch { showToast('Ungültige Datei', 'error') }
     }
     reader.readAsText(file)
+    e.target.value = ''
+  }
+
+  const handleLoadFromOPFS = async () => {
+    const data = await loadAutoBackup()
+    if (!data) { showToast('Kein Auto-Backup gefunden', 'error'); return }
+    setRestoreData(data)
+  }
+
+  const handleRestore = () => {
+    const selected = Object.keys(restoreCats).filter(k => restoreCats[k])
+    if (!selected.length) { showToast('Keine Kategorie gewählt', 'error'); return }
+    importDataByCategories(restoreData, selected)
+    showToast('Backup eingespielt — App wird neu geladen', 'success')
+    setTimeout(() => window.location.reload(), 1200)
   }
 
   const handleCacheReset = async () => {
@@ -72,10 +137,7 @@ export default function TabSettings() {
   }
 
   const handleReset = () => {
-    if (!confirmReset) {
-      setConfirmReset(true)
-      return
-    }
+    if (!confirmReset) { setConfirmReset(true); return }
     Object.keys(localStorage)
       .filter(k => k.startsWith('adhs_'))
       .forEach(k => localStorage.removeItem(k))
@@ -166,24 +228,60 @@ export default function TabSettings() {
       </section>
 
       <section className={s.card}>
-        <h3 className={s.cardTitle}>Daten</h3>
+        <h3 className={s.cardTitle}>Speicher</h3>
+
+        <div className={s.autoBackupRow}>
+          <span className={s.autoBackupLabel}>Auto-Backup</span>
+          <span className={s.autoBackupTime}>{formatAge(lastAutoBackup)}</span>
+        </div>
+
         <div className={s.btnGroup}>
-          <button className={s.actionBtn} onClick={handleExport}>
-            ↓ Daten exportieren
+          <button className={s.actionBtn} onClick={toggleBackup}>
+            ↓ Jetzt sichern
           </button>
-          <button className={s.actionBtn} onClick={() => fileRef.current?.click()}>
-            ↑ Daten importieren
+          {backupOpen && (
+            <div className={s.catPanel}>
+              <CatSelect cats={backupCats} onChange={setBackupCats} />
+              <button className={[s.actionBtn, s.actionBtnPrimary].join(' ')} onClick={handleManualBackup}>
+                Sichern &amp; Herunterladen
+              </button>
+            </div>
+          )}
+
+          <button className={s.actionBtn} onClick={toggleRestore}>
+            ↑ Backup einspielen
           </button>
-          <button className={s.actionBtn} onClick={handleCacheReset}>
-            ↺ Cache leeren & neu laden
+          {restoreOpen && (
+            <div className={s.catPanel}>
+              {!restoreData ? (
+                <>
+                  <button className={s.sourceBtn} onClick={handleLoadFromOPFS}>
+                    Auto-Backup vom {formatDate(lastAutoBackup)}
+                  </button>
+                  <button className={s.sourceBtn} onClick={() => fileRestoreRef.current?.click()}>
+                    Aus Datei wählen
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className={s.restoreInfo}>Backup geladen — was einspielen?</p>
+                  <CatSelect cats={restoreCats} onChange={setRestoreCats} />
+                  <button className={[s.actionBtn, s.actionBtnPrimary].join(' ')} onClick={handleRestore}>
+                    Wiederherstellen &amp; neu laden
+                  </button>
+                  <button className={s.actionBtnText} onClick={() => setRestoreData(null)}>
+                    Abbrechen
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          <input ref={fileRestoreRef} type="file" accept=".json" className={s.hidden} onChange={handleFileLoad} />
+
+          <button className={[s.actionBtn, s.actionBtnSecondary].join(' ')} onClick={handleCacheReset}>
+            ↺ Cache leeren
           </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".json"
-            className={s.hidden}
-            onChange={handleImport}
-          />
           <button
             className={[s.actionBtn, s.actionBtnDanger, confirmReset ? s.actionBtnConfirm : ''].join(' ')}
             onClick={handleReset}
@@ -192,7 +290,6 @@ export default function TabSettings() {
           </button>
         </div>
       </section>
-
     </div>
   )
 }
