@@ -37,6 +37,11 @@ export default function TabHeute() {
 
   const { registerHalf, startDrag } = useDragDrop()
 
+  const todaySlots = days[viewDate] ?? {}
+
+  const { isOpen: teOpen, variant: teVariant, items: teItems, handleDone: teDone, handleIgnore: teIgnore, handleMoveToPool: teToPool } =
+    useTimeEvents({ days, setDays, todos, setTodos })
+
   const swipeRef = useRef(null)
   usePageSwipe(swipeRef, {
     onPrev: () => {
@@ -53,11 +58,6 @@ export default function TabHeute() {
     },
     disabled: editingTodo !== null || blockerModal !== null || klaerenTodo !== null || teOpen,
   })
-
-  const todaySlots = days[viewDate] ?? {}
-
-  const { isOpen: teOpen, variant: teVariant, items: teItems, handleDone: teDone, handleIgnore: teIgnore, handleMoveToPool: teToPool } =
-    useTimeEvents({ days, setDays, todos, setTodos })
 
   // ─── Consume dayplanDate on mount ─────────────────────
   useEffect(() => {
