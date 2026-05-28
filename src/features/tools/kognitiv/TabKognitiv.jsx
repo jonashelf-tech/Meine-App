@@ -5,6 +5,7 @@ import { isDoneToday } from './sessionStore'
 import ModuleList from './ModuleList'
 import Briefing   from './Briefing'
 import DoneToday  from './DoneToday'
+import AlertnessExercise  from './exercises/AlertnessExercise'
 import s from './TabKognitiv.module.css'
 
 // Nav screens: null = tabs visible
@@ -39,7 +40,14 @@ export default function TabKognitiv({ onBack }) {
     />
   }
   if (nav?.screen === 'exercise') {
-    return <div className={s.placeholder}>Exercise — {nav.moduleId}</div>
+    const ExMap = { alertness: AlertnessExercise }
+    const Ex = ExMap[nav.moduleId]
+    if (Ex) return <Ex
+      variant={nav.variant}
+      onDone={(session) => setNav({ screen: 'results', session })}
+      onAbort={goBack}
+    />
+    return <div className={s.placeholder}>Exercise {nav.moduleId} — noch nicht implementiert</div>
   }
   if (nav?.screen === 'results') {
     return <div className={s.placeholder}>Results</div>
