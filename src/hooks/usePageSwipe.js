@@ -33,7 +33,6 @@ export function usePageSwipe(ref, opts) {
         e.preventDefault()
         deltaX = dx
         el.style.transform = `translateX(${dx}px)`
-        el.style.opacity   = String(1 - Math.abs(dx) / 800)
       }
     }
 
@@ -44,28 +43,35 @@ export function usePageSwipe(ref, opts) {
       if (velocity > 0.3 || Math.abs(deltaX) > threshold) {
         navigate(deltaX > 0 ? 'prev' : 'next')
       } else {
-        el.style.transition = 'transform 200ms cubic-bezier(0.34,1.56,0.64,1), opacity 200ms ease'
+        el.style.transition = 'transform 200ms cubic-bezier(0.34,1.56,0.64,1)'
         el.style.transform  = 'translateX(0)'
-        el.style.opacity    = '1'
       }
     }
 
     function navigate(dir) {
       const ease = 'cubic-bezier(0.25,0.46,0.45,0.94)'
-      el.style.transition = `transform 260ms ${ease}, opacity 260ms ease`
-      el.style.transform  = `translateX(${dir === 'prev' ? '100%' : '-100%'})`
-      el.style.opacity    = '0'
-      setTimeout(() => {
+      const exitX  = dir === 'prev' ? '100%' : '-100%'
+      const enterX = dir === 'prev' ? '-100%' : '100%'
+
+      el.style.transition = `transform 200ms ${ease}`
+      el.style.transform  = `translateX(${exitX})`
+
+      el.addEventListener('transitionend', function handler() {
+        el.removeEventListener('transitionend', handler)
+
         flushSync(() => dir === 'prev' ? o.current.onPrev() : o.current.onNext())
+
         el.style.transition = 'none'
-        el.style.transform  = `translateX(${dir === 'prev' ? '-100%' : '100%'})`
-        el.style.opacity    = '0'
+        el.style.transform  = `translateX(${enterX})`
+
+        // double rAF: browser paints off-screen state before animating in
         requestAnimationFrame(() => {
-          el.style.transition = `transform 260ms ${ease}, opacity 260ms ease`
-          el.style.transform  = 'translateX(0)'
-          el.style.opacity    = '1'
+          requestAnimationFrame(() => {
+            el.style.transition = `transform 280ms ${ease}`
+            el.style.transform  = 'translateX(0)'
+          })
         })
-      }, 260)
+      }, { once: true })
     }
 
     el.addEventListener('touchstart', onStart,  { passive: true  })
