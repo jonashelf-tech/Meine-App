@@ -53,7 +53,7 @@ export function usePageSwipe(ref, opts) {
       const exitX  = dir === 'prev' ? '100%' : '-100%'
       const enterX = dir === 'prev' ? '-100%' : '100%'
 
-      el.style.transition = `transform 200ms ${ease}`
+      el.style.transition = `transform 120ms ${ease}`
       el.style.transform  = `translateX(${exitX})`
 
       el.addEventListener('transitionend', function handler() {
@@ -67,7 +67,7 @@ export function usePageSwipe(ref, opts) {
         // double rAF: browser paints off-screen state before animating in
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            el.style.transition = `transform 280ms ${ease}`
+            el.style.transition = `transform 180ms ${ease}`
             el.style.transform  = 'translateX(0)'
           })
         })
