@@ -6,6 +6,7 @@ import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geb
 import { loadEntries } from '../../tools/gewicht/gewichtData'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
+import { usePageSwipe } from '../../../hooks/usePageSwipe'
 import s from './TabKalender.module.css'
 
 const DAY_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -243,6 +244,25 @@ export default function TabKalender() {
   const weightEntries = useMemo(() => loadEntries(), [])
   const weekScrollRef = useRef(null)
 
+  const kalenderSwipeRef = useRef(null)
+  usePageSwipe(kalenderSwipeRef, {
+    onPrev: view === 'woche'
+      ? () => setWeekStart(d => addDays(d, -7))
+      : () => setMonthRef(r => {
+          const m = r.month === 0 ? 11 : r.month - 1
+          const y = r.month === 0 ? r.year - 1 : r.year
+          return { year: y, month: m }
+        }),
+    onNext: view === 'woche'
+      ? () => setWeekStart(d => addDays(d, 7))
+      : () => setMonthRef(r => {
+          const m = r.month === 11 ? 0 : r.month + 1
+          const y = r.month === 11 ? r.year + 1 : r.year
+          return { year: y, month: m }
+        }),
+    disabled: restoreTodo !== null,
+  })
+
   useEffect(() => {
     if (view !== 'woche' || !weekScrollRef.current) return
     const scrollTo = Math.max(0, (new Date().getHours() - GRID_START) * 2 * SLOT_H - 80)
@@ -308,6 +328,7 @@ export default function TabKalender() {
         </button>
       </div>
 
+      <div ref={kalenderSwipeRef}>
       {/* ─── WOCHENANSICHT — Zeitgitter ───────────────────────── */}
       {view === 'woche' && (
         <>
@@ -544,6 +565,7 @@ export default function TabKalender() {
           )}
         </>
       )}
+      </div>
 
       <div className={s.toggleStrip}>
         <button
