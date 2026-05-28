@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
-import { todayKey, ALL_SLOT_KEYS, getDurationKeys } from '../../../utils'
+import { todayKey, ALL_SLOT_KEYS, getDurationKeys, dateKey } from '../../../utils'
 import { sv, lv, SK } from '../../../storage'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan            from '../Zeitplan/Zeitplan'
@@ -21,6 +21,7 @@ import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '..
 import { createBlock } from '../../todos/Block'
 import { setReminderLastAdded } from '../../tools/reminder/reminderData'
 import { useTimeEvents } from './useTimeEvents'
+import { usePageSwipe } from '../../../hooks/usePageSwipe'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
@@ -35,6 +36,23 @@ export default function TabHeute() {
   const [repeatDeleteSheet, setRepeatDeleteSheet]  = useState(null)
 
   const { registerHalf, startDrag } = useDragDrop()
+
+  const swipeRef = useRef(null)
+  usePageSwipe(swipeRef, {
+    onPrev: () => {
+      const [y, m, d] = viewDate.split('-').map(Number)
+      const date = new Date(y, m - 1, d)
+      date.setDate(date.getDate() - 1)
+      setViewDate(dateKey(date))
+    },
+    onNext: () => {
+      const [y, m, d] = viewDate.split('-').map(Number)
+      const date = new Date(y, m - 1, d)
+      date.setDate(date.getDate() + 1)
+      setViewDate(dateKey(date))
+    },
+    disabled: editingTodo !== null || blockerModal !== null || klaerenTodo !== null || teOpen,
+  })
 
   const todaySlots = days[viewDate] ?? {}
 
@@ -402,56 +420,58 @@ export default function TabHeute() {
         onChange={setViewDate}
         onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
       />
-      <Zeitplan
-        slots={todaySlots}
-        todos={todos}
-        setTodos={setTodos}
-        visibleStart={visStart}
-        visibleEnd={visEnd}
-        dateLabel={viewDate}
-        onSetSlot={handleSetSlot}
-        onToggleSlotDone={handleToggleSlotDone}
-        onEditTodo={handleEdit}
-        onRemoveSlot={handleRemoveSlot}
-        onShiftAll={handleShiftAll}
-        onExpandUp={handleExpandUp}
-        onExpandDown={handleExpandDown}
-        onExpandUpTo={handleExpandUpTo}
-        onExpandDownTo={handleExpandDownTo}
-        onRemoveHour={handleRemoveHour}
-        onToggleLock={handleToggleLock}
-        registerHalf={registerHalf}
-        startSlotDrag={startSlotDrag}
-        blockers={blockers}
-        onCreateBlocker={handleCreateBlocker}
-        onEditBlocker={handleEditBlocker}
-        onToggleBlockerLocked={handleToggleBlockerLocked}
-        birthdayPills={birthdays}
-        birthdayPillsDate={viewDate}
-      />
-      <Pool
-        todos={todos}
-        setTodos={setTodos}
-        todaySlots={todaySlots}
-        onToggleDone={handleToggleDone}
-        onEdit={handleEdit}
-        onRemove={handleRemove}
-        startDrag={startPoolDrag}
-        onDoneCalendar={handleDoneCalendar}
-        onKlaeren={(todo) => setKlaerenTodo(todo)}
-        registerHalf={registerHalf}
-      />
-      {(() => {
-        const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection, gewicht: GewichtSection, geburtstage: BirthdaySection }
-        const SECTION_PROPS = {
-          haushalt:    { onStartDrag: startHaushaltDrag },
-          reminder:    { onStartDrag: startReminderDrag },
-          geburtstage: { onStartDrag: startBirthdayDrag },
-        }
-        return activeTools
-          .filter(id => SECTIONS[id])
-          .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
-      })()}
+      <div ref={swipeRef} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <Zeitplan
+          slots={todaySlots}
+          todos={todos}
+          setTodos={setTodos}
+          visibleStart={visStart}
+          visibleEnd={visEnd}
+          dateLabel={viewDate}
+          onSetSlot={handleSetSlot}
+          onToggleSlotDone={handleToggleSlotDone}
+          onEditTodo={handleEdit}
+          onRemoveSlot={handleRemoveSlot}
+          onShiftAll={handleShiftAll}
+          onExpandUp={handleExpandUp}
+          onExpandDown={handleExpandDown}
+          onExpandUpTo={handleExpandUpTo}
+          onExpandDownTo={handleExpandDownTo}
+          onRemoveHour={handleRemoveHour}
+          onToggleLock={handleToggleLock}
+          registerHalf={registerHalf}
+          startSlotDrag={startSlotDrag}
+          blockers={blockers}
+          onCreateBlocker={handleCreateBlocker}
+          onEditBlocker={handleEditBlocker}
+          onToggleBlockerLocked={handleToggleBlockerLocked}
+          birthdayPills={birthdays}
+          birthdayPillsDate={viewDate}
+        />
+        <Pool
+          todos={todos}
+          setTodos={setTodos}
+          todaySlots={todaySlots}
+          onToggleDone={handleToggleDone}
+          onEdit={handleEdit}
+          onRemove={handleRemove}
+          startDrag={startPoolDrag}
+          onDoneCalendar={handleDoneCalendar}
+          onKlaeren={(todo) => setKlaerenTodo(todo)}
+          registerHalf={registerHalf}
+        />
+        {(() => {
+          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection, gewicht: GewichtSection, geburtstage: BirthdaySection }
+          const SECTION_PROPS = {
+            haushalt:    { onStartDrag: startHaushaltDrag },
+            reminder:    { onStartDrag: startReminderDrag },
+            geburtstage: { onStartDrag: startBirthdayDrag },
+          }
+          return activeTools
+            .filter(id => SECTIONS[id])
+            .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
+        })()}
+      </div>
 
       {editingTodo && (
         <TodoModal
