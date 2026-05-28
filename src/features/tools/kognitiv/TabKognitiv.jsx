@@ -3,6 +3,8 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
 import { isDoneToday } from './sessionStore'
 import ModuleList from './ModuleList'
+import Briefing   from './Briefing'
+import DoneToday  from './DoneToday'
 import s from './TabKognitiv.module.css'
 
 // Nav screens: null = tabs visible
@@ -23,10 +25,18 @@ export default function TabKognitiv({ onBack }) {
   }
 
   if (nav?.screen === 'briefing') {
-    return <div className={s.placeholder}>Briefing — {nav.moduleId}</div>
+    return <Briefing
+      moduleId={nav.moduleId}
+      onBack={goBack}
+      onStart={(variant) => setNav({ screen: 'exercise', moduleId: nav.moduleId, variant })}
+    />
   }
   if (nav?.screen === 'done-today') {
-    return <div className={s.placeholder}>DoneToday — {nav.moduleId}</div>
+    return <DoneToday
+      moduleId={nav.moduleId}
+      onBack={goBack}
+      onViewResult={(session) => setNav({ screen: 'results', session, fromArchive: true })}
+    />
   }
   if (nav?.screen === 'exercise') {
     return <div className={s.placeholder}>Exercise — {nav.moduleId}</div>

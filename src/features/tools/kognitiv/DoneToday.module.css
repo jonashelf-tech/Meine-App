@@ -1,0 +1,13 @@
+.root { padding: 20px 16px; display: flex; flex-direction: column; min-height: 100%; background: var(--bg); }
+.backBtn { width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.9rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 24px 0; }
+.checkIcon { width: 64px; height: 64px; border-radius: 18px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); display: flex; align-items: center; justify-content: center; color: var(--emerald); }
+.msg { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.sub { font-size: 0.75rem; color: var(--text-dim); line-height: 1.6; max-width: 220px; }
+.nextPill { font-family: 'Orbitron', sans-serif; font-size: 0.62rem; color: var(--emerald); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.15); border-radius: 20px; padding: 5px 14px; font-weight: 600; }
+.lastBox { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 14px; }
+.lastLabel { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.lastRow { display: flex; justify-content: space-between; align-items: center; }
+.lastVal { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.lastSub { font-size: 0.62rem; color: var(--text-dim); margin-top: 2px; }
+.viewBtn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--text-dim); font-family: 'Outfit', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 7px 12px; cursor: pointer; }
