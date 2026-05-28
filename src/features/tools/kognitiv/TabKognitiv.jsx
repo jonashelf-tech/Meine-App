@@ -5,7 +5,8 @@ import { isDoneToday } from './sessionStore'
 import ModuleList from './ModuleList'
 import Briefing   from './Briefing'
 import DoneToday  from './DoneToday'
-import AlertnessExercise  from './exercises/AlertnessExercise'
+import AlertnessExercise   from './exercises/AlertnessExercise'
+import ZahlensucheExercise from './exercises/ZahlensucheExercise'
 import s from './TabKognitiv.module.css'
 
 // Nav screens: null = tabs visible
@@ -40,7 +41,7 @@ export default function TabKognitiv({ onBack }) {
     />
   }
   if (nav?.screen === 'exercise') {
-    const ExMap = { alertness: AlertnessExercise }
+    const ExMap = { alertness: AlertnessExercise, zahlensuche: ZahlensucheExercise }
     const Ex = ExMap[nav.moduleId]
     if (Ex) return <Ex
       variant={nav.variant}
