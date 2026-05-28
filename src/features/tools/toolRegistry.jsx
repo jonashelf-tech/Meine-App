@@ -12,6 +12,7 @@ const ICONS = {
   haushalt:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
   wasjetzt:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> },
   klaeren:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> },
+  kognitiv:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12"/><circle cx="12" cy="12" r="3"/><path d="M12 9V5M15 12h4"/></svg> },
 }
 
 export function ToolIcon({ id, size = 20 }) {
@@ -128,5 +129,14 @@ export const TOOL_REGISTRY = [
     description: 'Alte Todos entstauben und wieder ins Rollen bringen',
     standalone: true,
     integrated: false,
+  },
+  {
+    id:          'kognitiv',
+    name:        'Kognitiv',
+    icon:        '🧠',
+    color:       '#8B5CF6',
+    description: 'Kognitives Training: Reaktion, Aufmerksamkeit, Gedächtnis',
+    standalone:  true,
+    integrated:  true,
   },
 ]

@@ -20,6 +20,7 @@ import TabReminder     from './features/tools/reminder/TabReminder'
 import TabHaushalt     from './features/tools/haushalt/TabHaushalt'
 import TabWasJetzt     from './features/tools/wasjetzt/TabWasJetzt'
 import TabKlaeren      from './features/tools/klaeren/TabKlaeren'
+import TabKognitiv     from './features/tools/kognitiv/TabKognitiv'
 import TodoModal       from './components/TodoModal/TodoModal'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
@@ -95,6 +96,17 @@ export default function App() {
   const goBack = () => setCurrentTab(previousTab ?? 2)
   const isToolTab = TOOL_IDS.has(currentTab)
 
+  useEffect(() => {
+    history.pushState(null, '')
+    const handlePop = () => {
+      history.pushState(null, '')
+      const { previousTab: prev } = useAppStore.getState()
+      setCurrentTab(prev ?? 2)
+    }
+    window.addEventListener('popstate', handlePop)
+    return () => window.removeEventListener('popstate', handlePop)
+  }, [setCurrentTab])
+
   return (
     <div className={styles.app}>
       <div className={styles.content}>
@@ -114,15 +126,18 @@ export default function App() {
         {currentTab === TOOL_TAB.haushalt     && <TabHaushalt     onBack={goBack} />}
         {currentTab === TOOL_TAB.wasjetzt     && <TabWasJetzt     onBack={goBack} />}
         {currentTab === TOOL_TAB.klaeren      && <TabKlaeren      onBack={goBack} />}
+        {currentTab === TOOL_TAB.kognitiv     && <TabKognitiv     onBack={goBack} />}
       </div>
 
-      <button
-        className={styles.fab}
-        onClick={() => setAddOpen(true)}
-        aria-label="Todo hinzufügen"
-      >
-        +
-      </button>
+      {!isToolTab && currentTab !== 3 && (
+        <button
+          className={styles.fab}
+          onClick={() => setAddOpen(true)}
+          aria-label="Todo hinzufügen"
+        >
+          +
+        </button>
+      )}
 
       {addOpen && <TodoModal onClose={() => setAddOpen(false)} />}
 

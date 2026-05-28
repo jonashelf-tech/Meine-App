@@ -1,0 +1,6 @@
+.root { display: flex; flex-direction: column; height: 100%; background: var(--bg); }
+.tabBar { display: flex; border-bottom: 1px solid var(--border); padding: 0 16px; flex-shrink: 0; }
+.tabBtn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-dim); font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 10px 0; cursor: pointer; transition: all 0.15s; }
+.tabOn { color: var(--primary); border-bottom-color: var(--primary); }
+.content { flex: 1; overflow-y: auto; }
+.placeholder { padding: 24px; color: var(--text-dim); font-size: 0.8rem; }

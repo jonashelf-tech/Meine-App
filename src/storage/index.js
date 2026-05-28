@@ -48,6 +48,7 @@ export const SK = {
   klaerenSettings: `${PREFIX}klaeren_settings`,
   erfolgeTracking: `${PREFIX}erfolge_tracking_v1`,
   erfolge:         `${PREFIX}erfolge_v1`,
+  kognitiv:        `${PREFIX}kognitiv_sessions`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
 }
 
@@ -127,6 +128,108 @@ export const loadAutoBackup = async () => {
     const file = await handle.getFile()
     return JSON.parse(await file.text())
   } catch { return null }
+}
+
+// ─── Readable / KI export ────────────────────────────────
+export const exportDataReadable = () => {
+  const todos     = lv(SK.todos, [])
+  const routines  = lv(SK.routines, [])
+  const blockers  = lv(SK.blockers, [])
+  const birthdays = lv(SK.birthdays, [])
+  const weight    = lv(SK.weight, [])
+  const recipes   = lv(SK.recipes, [])
+  const cats      = lv(SK.cats, [])
+  const haushalt  = lv(SK.haushalt, null)
+
+  const doneTodos = todos.filter(t => t.done && t.doneAt)
+  const erledigungenProTag = {}
+  doneTodos.forEach(t => {
+    const day = t.doneAt.slice(0, 10)
+    erledigungenProTag[day] = (erledigungenProTag[day] || 0) + 1
+  })
+
+  return {
+    _meta: {
+      app: 'ADHS Planner',
+      beschreibung: 'Persönlicher ADHS-Selbstmanagement-Planner',
+      exportiert: new Date().toISOString(),
+      hinweis: 'Lesbarer Export für externe Analyse. Nicht zum Wiederherstellen in die App geeignet.',
+    },
+    todos: {
+      _info: 'Aufgaben und Todos',
+      gesamt: todos.length,
+      offen: todos.filter(t => !t.done).length,
+      erledigt: todos.filter(t => t.done).length,
+      erledigungen_pro_tag: erledigungenProTag,
+      eintraege: todos.map(t => ({
+        text: t.text,
+        erledigt: t.done ?? false,
+        erledigt_am: t.doneAt ?? null,
+        prioritaet: t.prio ?? null,
+        kategorie: t.cat ?? null,
+        faelligkeit: t.date ?? null,
+      })),
+    },
+    routinen: {
+      _info: 'Wiederkehrende Aufgaben',
+      eintraege: routines.map(r => ({
+        text: r.text,
+        wiederholung: r.repeat ?? null,
+        prioritaet: r.prio ?? null,
+      })),
+    },
+    zeitplan: {
+      _info: 'Feste Zeitblöcke im Tagesplaner (Blocker)',
+      eintraege: blockers.map(b => ({
+        titel: b.text,
+        datum: b.date ?? null,
+        uhrzeit: b.slotKey ?? null,
+        dauer_min: b.duration ?? null,
+        wiederholung: b.repeat ?? null,
+      })),
+    },
+    geburtstage: {
+      _info: 'Gespeicherte Geburtstage',
+      eintraege: birthdays.map(b => ({
+        name: b.name,
+        datum: b.date,
+        wichtig: b.wichtig ?? false,
+      })),
+    },
+    gewicht: {
+      _info: 'Gewichts- und Kalorientracking (chronologisch)',
+      eintraege: [...weight]
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map(e => ({ datum: e.date, kg: e.kg ?? null, kalorien: e.kcal ?? null })),
+    },
+    rezepte: {
+      _info: 'Gespeicherte Rezepte',
+      anzahl: recipes.length,
+      eintraege: recipes.map(r => ({
+        name: r.name,
+        zubereitungszeit_min: r.cookingTime ?? null,
+        portionen: r.portions ?? null,
+        tk_geeignet: r.tkSuitable ?? false,
+        kalt_essbar: r.coldEdible ?? false,
+        naehrwerte_pro_portion: r.nutrition ?? null,
+      })),
+    },
+    haushalt: haushalt ? {
+      _info: 'Haushaltsaufgaben nach Räumen',
+      eintraege: (haushalt.rooms ?? []).map(room => ({
+        raum: room.name,
+        aufgaben: (room.tasks ?? []).map(t => ({
+          name: t.name,
+          haeufigkeit: t.freq ?? null,
+          zuletzt_erledigt: t.lastDone ?? null,
+        })),
+      })),
+    } : null,
+    kategorien: {
+      _info: 'Todo-Kategorien',
+      eintraege: cats,
+    },
+  }
 }
 
 // ─── Default module config ────────────────────────────────

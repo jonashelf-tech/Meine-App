@@ -13,4 +13,5 @@ export const TOOL_TAB = {
   haushalt:     13,
   wasjetzt:     14,
   klaeren:      15,
+  kognitiv:     16,
 }
