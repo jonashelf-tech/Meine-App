@@ -1,5 +1,6 @@
 .page {
   padding-bottom: 24px;
+  overflow-x: hidden;
 }
 
 .segmented {
