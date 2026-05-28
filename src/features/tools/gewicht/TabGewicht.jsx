@@ -4,7 +4,7 @@ import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import {
   isoToday, isoAddDays, isoLabel, isoNavLabel,
-  loadEntries, saveEntries, upsertEntry,
+  loadEntries, saveEntries, upsertEntry, SK_WEIGHT,
 } from './gewichtData'
 import s from './TabGewicht.module.css'
 
@@ -59,6 +59,14 @@ export default function TabGewicht({ onBack }) {
   const dateInputRef = useRef(null)
 
   const setDashSettings= d => { setDashSettingsRaw(d); saveDash(d) }
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  const handleReset = () => {
+    if (!confirmReset) { setConfirmReset(true); return }
+    localStorage.removeItem(SK_WEIGHT)
+    localStorage.removeItem(SK_DASH)
+    window.location.reload()
+  }
 
   // Pre-fill when date changes
   useEffect(() => {

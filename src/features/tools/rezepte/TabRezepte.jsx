@@ -48,6 +48,13 @@ export default function TabRezepte({ onBack }) {
   const [editing, setEditing] = useState(null)
   const [numDishes, setNumDishes] = useState(4)
   const [confirmClear, setConfirmClear] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  const handleReset = () => {
+    if (!confirmReset) { setConfirmReset(true); return }
+    ;[SK_R, SK_S, SK_SL, SK_SS].forEach(k => localStorage.removeItem(k))
+    window.location.reload()
+  }
 
   const setRecipes = r => { setRecipesRaw(r); sv(SK_R,r) }
   const setSelected = r => { setSelectedRaw(r); sv(SK_S,r) }
@@ -289,6 +296,13 @@ export default function TabRezepte({ onBack }) {
           </>}
         </div>
       )}
+
+      <button
+        className={[s.toolReset, confirmReset ? s.toolResetConfirm : ''].join(' ')}
+        onClick={handleReset}
+      >
+        {confirmReset ? '⚠ Wirklich alle Rezepte löschen?' : 'Rezepte-Daten löschen'}
+      </button>
     </div>
   )
 }
