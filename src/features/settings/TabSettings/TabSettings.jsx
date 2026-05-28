@@ -193,24 +193,6 @@ export default function TabSettings() {
         </div>
       </section>
 
-      <section className={s.card}>
-        <h3 className={s.cardTitle}>App-Info</h3>
-        <div className={s.infoRow}>
-          <span className={s.infoLabel}>Version</span>
-          <span className={s.infoValue}>ADHS Planner v0.1</span>
-        </div>
-        <div className={s.infoRow}>
-          <span className={s.infoLabel}>GitHub</span>
-          <a
-            className={s.link}
-            href="https://github.com/jonashelf-tech/Meine-App"
-            target="_blank"
-            rel="noreferrer"
-          >
-            jonashelf-tech/Meine-App
-          </a>
-        </div>
-      </section>
     </div>
   )
 }

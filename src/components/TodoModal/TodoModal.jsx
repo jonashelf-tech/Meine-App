@@ -197,23 +197,27 @@ export default function TodoModal({ onClose, existingTodo = null }) {
           })
           if (changed) result[dk] = newDay
         })
-        return result
-      })
-
-      if (nowTermin && !wasTermin) {
-        const mins    = parseHHMM(time)
-        const slotKey = minutesToSk(mins)
-        setDays(prev => ({
-          ...prev,
-          [date]: {
-            ...(prev[date] ?? {}),
-            [slotKey]: {
+        const oldSlotKey = wasTermin ? minutesToSk(parseHHMM(existingTodo.time)) : null
+        const termDateChanged = existingTodo.date !== (date || null)
+        const termTimeChanged = existingTodo.time !== (time || null)
+        if (wasTermin && (termDateChanged || termTimeChanged || !nowTermin)) {
+          if (result[existingTodo.date]?.[oldSlotKey]?.todoId === existingTodo.id) {
+            result[existingTodo.date] = { ...result[existingTodo.date] }
+            delete result[existingTodo.date][oldSlotKey]
+          }
+        }
+        if (nowTermin && (!wasTermin || termDateChanged || termTimeChanged)) {
+          const newSlotKey = minutesToSk(parseHHMM(time))
+          result[date] = {
+            ...(result[date] ?? {}),
+            [newSlotKey]: {
               text: updated.text, todoId: updated.id, color: updated.color,
               duration: updated.duration || 30, done: false, locked: true,
             },
-          },
-        }))
-      }
+          }
+        }
+        return result
+      })
 
       setTodos(prev => prev.map(t => t.id === existingTodo.id ? updated : t))
 
