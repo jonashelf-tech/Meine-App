@@ -4,6 +4,7 @@ import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor 
 import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geburtstage/birthdayUtils'
 import { loadEntries } from '../../tools/gewicht/gewichtData'
+import { loadSessions as loadKognitivSessions } from '../../tools/kognitiv/sessionStore'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
@@ -42,7 +43,7 @@ function slotToHeight(duration) {
   return Math.max(8, Math.round(((duration ?? 30) / 30) * SLOT_H))
 }
 
-function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors) {
+function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions) {
   const dots = []
 
   if (activeTools.includes('gewicht')) {
@@ -62,23 +63,29 @@ function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors) {
       dots.push({ id: 'reminder', color: getToolColor('reminder', toolColors) })
   }
 
+  if (activeTools.includes('kognitiv') && kognitivSessions) {
+    if (kognitivSessions.some(s => s.date === dk))
+      dots.push({ id: 'kognitiv', color: getToolColor('kognitiv', toolColors) })
+  }
+
   return dots
 }
 
-function getCellBars(dk, days) {
+function getCellBars(dk, days, todos, showTools) {
   const slots = days[dk] ?? {}
   return Object.entries(slots)
     .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
-    .map(([, slot]) => ({
-      text: slot.text,
-      color: slot.color || 'var(--primary)',
-      isTodo: Boolean(slot.todoId),
-    }))
+    .map(([, slot]) => {
+      const todo   = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
+      const isTool = Boolean(todo?.toolId)
+      return { text: slot.text, color: slot.color || 'var(--primary)', isTodo: Boolean(slot.todoId), isTool }
+    })
+    .filter(bar => showTools || !bar.isTool)
 }
 
 // ─── Day Panel ────────────────────────────────────────────
 function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
-  const [open, setOpen] = useState({ zeitplan: true, done: true, gewicht: true })
+  const [open, setOpen] = useState({ zeitplan: true, done: false, gewicht: true })
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
 
@@ -122,7 +129,11 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
           <div className={s.dayPanelList}>
             {birthdayEntries.map(b => (
               <div key={b.id} className={s.dayPanelAlldayEntry}>
-                <span className={s.dayPanelAlldayStar}>⭐</span>
+                <span className={s.dayPanelAlldayStar}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#FF2D78" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/>
+                  </svg>
+                </span>
                 <span className={s.dayPanelAlldayName}>{b.name} Geburtstag</span>
                 <span className={s.dayPanelAlldayDate}>{formatBirthdayDate(b.date)}</span>
               </div>
@@ -240,8 +251,10 @@ export default function TabKalender() {
   const [selectedDay, setSelectedDay] = useState(todayKey)
   const [showTermine, setShowTermine] = useState(true)
   const [showTodos,   setShowTodos]   = useState(true)
+  const [showTools,   setShowTools]   = useState(false)
   const [restoreTodo, setRestoreTodo] = useState(null)
-  const weightEntries = useMemo(() => loadEntries(), [])
+  const weightEntries   = useMemo(() => loadEntries(), [])
+  const kognitivSessions = useMemo(() => loadKognitivSessions(), [])
   const weekScrollRef = useRef(null)
 
   const kalenderSwipeRef = useRef(null)
@@ -313,6 +326,36 @@ export default function TabKalender() {
 
   return (
     <div className={s.page}>
+      {view === 'woche' ? (
+        <NavPill
+          label={`${addDays(weekStart, 0).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })} – ${addDays(weekStart, 6).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}`}
+          onPrev={() => setWeekStart(d => addDays(d, -7))}
+          onNext={() => setWeekStart(d => addDays(d, 7))}
+          isCurrent={isCurrentWeek}
+          leftGlows={!isCurrentWeek && toDateKey(weekStart) > toDateKey(getMonday(today))}
+          rightGlows={!isCurrentWeek && toDateKey(weekStart) < toDateKey(getMonday(today))}
+          onLabelDoubleClick={isCurrentWeek ? undefined : () => setWeekStart(getMonday(today))}
+        />
+      ) : (
+        <NavPill
+          label={`${MONTH_NAMES[monthRef.month]} ${monthRef.year}`}
+          onPrev={() => setMonthRef(r => {
+              const m = r.month === 0 ? 11 : r.month - 1
+              const y = r.month === 0 ? r.year - 1 : r.year
+              return { year: y, month: m }
+            })}
+          onNext={() => setMonthRef(r => {
+              const m = r.month === 11 ? 0 : r.month + 1
+              const y = r.month === 11 ? r.year + 1 : r.year
+              return { year: y, month: m }
+            })}
+          isCurrent={isCurrentMonth}
+          leftGlows={monthRef.year > today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month > today.getMonth())}
+          rightGlows={monthRef.year < today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month < today.getMonth())}
+          onLabelDoubleClick={isCurrentMonth ? undefined : () => setMonthRef({ year: today.getFullYear(), month: today.getMonth() })}
+        />
+      )}
+
       <div className={s.segmented}>
         <button
           className={[s.seg, view === 'woche' ? s.segActive : ''].join(' ')}
@@ -332,16 +375,6 @@ export default function TabKalender() {
       {/* ─── WOCHENANSICHT — Zeitgitter ───────────────────────── */}
       {view === 'woche' && (
         <>
-          <NavPill
-            label={`${addDays(weekStart, 0).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })} – ${addDays(weekStart, 6).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}`}
-            onPrev={() => setWeekStart(d => addDays(d, -7))}
-            onNext={() => setWeekStart(d => addDays(d, 7))}
-            isCurrent={isCurrentWeek}
-            leftGlows={!isCurrentWeek && toDateKey(weekStart) > toDateKey(getMonday(today))}
-            rightGlows={!isCurrentWeek && toDateKey(weekStart) < toDateKey(getMonday(today))}
-            onLabelDoubleClick={isCurrentWeek ? undefined : () => setWeekStart(getMonday(today))}
-          />
-
           <div className={s.weekWrapper}>
             {/* Spalten-Header */}
             <div className={s.weekHeaderRow}>
@@ -349,7 +382,7 @@ export default function TabKalender() {
               {weekDays.map(date => {
                 const dk       = toDateKey(date)
                 const isToday  = dk === todayKey
-                const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors)
+                const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions)
                 return (
                   <div key={dk} className={[s.weekDayHead, isToday ? s.weekDayHeadToday : ''].join(' ')}>
                     <span className={s.weekDayHeadName}>
@@ -434,6 +467,8 @@ export default function TabKalender() {
                         const isTodo = Boolean(slot.todoId)
                         if (!showTermine && !isTodo) return null
                         if (!showTodos   &&  isTodo) return null
+                        const slotTodo = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
+                        if (!showTools   && slotTodo?.toolId) return null
                         const top    = slotToTop(key)
                         const height = slotToHeight(slot.duration)
                         const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
@@ -461,24 +496,6 @@ export default function TabKalender() {
       {/* ─── MONATSANSICHT ────────────────────────────────────── */}
       {view === 'monat' && (
         <>
-          <NavPill
-            label={`${MONTH_NAMES[monthRef.month]} ${monthRef.year}`}
-            onPrev={() => setMonthRef(r => {
-              const m = r.month === 0 ? 11 : r.month - 1
-              const y = r.month === 0 ? r.year - 1 : r.year
-              return { year: y, month: m }
-            })}
-            onNext={() => setMonthRef(r => {
-              const m = r.month === 11 ? 0 : r.month + 1
-              const y = r.month === 11 ? r.year + 1 : r.year
-              return { year: y, month: m }
-            })}
-            isCurrent={isCurrentMonth}
-            leftGlows={monthRef.year > today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month > today.getMonth())}
-            rightGlows={monthRef.year < today.getFullYear() || (monthRef.year === today.getFullYear() && monthRef.month < today.getMonth())}
-            onLabelDoubleClick={isCurrentMonth ? undefined : () => setMonthRef({ year: today.getFullYear(), month: today.getMonth() })}
-          />
-
           <div className={s.monthGrid}>
             {DAY_SHORT.map(d => (
               <div key={d} className={s.monthHeader}>{d}</div>
@@ -488,14 +505,14 @@ export default function TabKalender() {
               const dk         = `${monthRef.year}-${String(monthRef.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
               const isToday    = dk === todayKey
               const isSelected = selectedDay === dk
-              const bars       = getCellBars(dk, days)
+              const bars       = getCellBars(dk, days, todos, showTools)
               const filtered   = [
                 ...(showTermine ? bars.filter(b => !b.isTodo) : []),
                 ...(showTodos   ? bars.filter(b =>  b.isTodo) : []),
               ]
               const visible  = filtered.slice(0, 3)
               const overflow = filtered.length - visible.length
-              const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors)
+              const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions)
               const bdays    = getBirthdaysForCalendarDate(birthdays, dk)
 
               return (
@@ -572,13 +589,19 @@ export default function TabKalender() {
           className={[s.toggleChip, s.toggleChipTermine, showTermine ? s.toggleChipOn : ''].join(' ')}
           onClick={() => setShowTermine(v => !v)}
         >
-          Termine {showTermine ? '●' : '○'}
+          Termine
         </button>
         <button
           className={[s.toggleChip, s.toggleChipTodos, showTodos ? s.toggleChipOn : ''].join(' ')}
           onClick={() => setShowTodos(v => !v)}
         >
-          Todos {showTodos ? '●' : '○'}
+          Todos
+        </button>
+        <button
+          className={[s.toggleChip, s.toggleChipTools, showTools ? s.toggleChipOn : ''].join(' ')}
+          onClick={() => setShowTools(v => !v)}
+        >
+          Tools
         </button>
       </div>
     </div>
