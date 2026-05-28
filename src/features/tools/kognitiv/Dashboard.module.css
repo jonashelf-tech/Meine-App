@@ -1,0 +1,19 @@
+.root { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; display: flex; align-items: center; }
+.sumCol { flex: 1; text-align: center; }
+.sumVal { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--text); }
+.sumLbl { font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+.sumDivider { width: 1px; height: 32px; background: var(--border); }
+.secLabel { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); padding: 4px 2px; }
+.tile { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; text-align: left; }
+.tileIcon { width: 32px; height: 32px; border-radius: var(--r-sm); background: rgba(139,92,246,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--primary); }
+.tileInfo { flex: 1; min-width: 0; }
+.tileName { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.tileLast { font-size: 0.62rem; color: var(--text-dim); margin-top: 1px; }
+.tileRight { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.tileDelta { font-size: 0.65rem; font-weight: 600; border-radius: 10px; padding: 2px 7px; }
+.deltaGood { background: rgba(16,185,129,0.1); color: var(--emerald); }
+.deltaBad  { background: rgba(251,113,133,0.1); color: var(--rose); }
+.miniChart { display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+.miniBar { width: 5px; border-radius: 2px 2px 0 0; background: rgba(139,92,246,0.25); }
+.miniBarLast { background: var(--primary); }

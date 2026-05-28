@@ -1,0 +1,23 @@
+.root { padding: 0 12px 32px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); min-height: 100%; overflow-y: auto; }
+.hd { padding: 16px 2px 8px; display: flex; align-items: center; gap: 10px; }
+.back { width: 26px; height: 26px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.ey { font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); }
+.tt { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+.hero { background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.14); border-radius: var(--r); padding: 12px; display: flex; }
+.hCol { flex: 1; text-align: center; padding: 0 8px; }
+.hVal { font-family: 'Orbitron', sans-serif; font-size: 1.15rem; font-weight: 700; }
+.hLbl { font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; }
+.secLabel { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.tapBars { display: flex; align-items: flex-end; gap: 2.5px; height: 44px; margin-bottom: 6px; }
+.tapBar { flex: 1; border-radius: 2px 2px 0 0; min-width: 3px; }
+.legend { display: flex; gap: 12px; }
+.legendItem { display: flex; align-items: center; gap: 4px; font-size: 0.58rem; color: var(--text-dim); }
+.legendDot { width: 7px; height: 7px; border-radius: 1px; }
+.tapRow { display: flex; align-items: center; gap: 8px; padding: 3px 0; border-bottom: 1px solid var(--border); }
+.tapRow:last-child { border: none; }
+.tapRowError { background: rgba(251,113,133,0.04); border-radius: 4px; }
+.tapIdx { font-family: 'Orbitron', sans-serif; font-size: 0.58rem; font-weight: 700; color: var(--text-dim); width: 22px; }
+.tapBarWrap { flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+.tapBarInline { height: 100%; border-radius: 2px; }
+.tapTime { font-size: 0.6rem; font-family: 'Orbitron', sans-serif; font-weight: 600; width: 32px; text-align: right; }

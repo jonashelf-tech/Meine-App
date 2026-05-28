@@ -1,0 +1,24 @@
+.root { padding: 0 12px 24px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); min-height: 100%; overflow-y: auto; }
+.hd { padding: 16px 2px 8px; display: flex; align-items: center; gap: 10px; }
+.back { width: 26px; height: 26px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.ey { font-size: 0.58rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary); }
+.tt { font-size: 1rem; font-weight: 700; color: var(--text); }
+.chart { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; }
+.chartLabel { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+.bars { display: flex; align-items: flex-end; gap: 4px; height: 52px; }
+.bar { flex: 1; border-radius: 3px 3px 0 0; background: rgba(139,92,246,0.25); min-width: 6px; }
+.barLast { background: var(--primary); box-shadow: 0 0 8px rgba(139,92,246,0.4); }
+.statsRow { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px; text-align: center; }
+.statVal { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.statLbl { font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.listLabel { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); padding: 4px 2px; }
+.list { display: flex; flex-direction: column; gap: 5px; }
+.sessRow { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: left; }
+.sessDate { font-size: 0.65rem; color: var(--text-dim); }
+.sessRight { display: flex; align-items: center; gap: 6px; }
+.sessVal { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--text); }
+.sessDelta { font-size: 0.6rem; font-weight: 600; }
+.deltaGood { color: var(--emerald); }
+.deltaBad  { color: var(--rose); }
+.sessArr { color: var(--text-dim); font-size: 0.8rem; }

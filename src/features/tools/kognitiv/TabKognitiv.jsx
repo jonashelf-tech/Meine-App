@@ -7,7 +7,10 @@ import { isDoneToday, saveSession } from './sessionStore'
 import ModuleList from './ModuleList'
 import Briefing   from './Briefing'
 import DoneToday  from './DoneToday'
-import Results    from './Results'
+import Results       from './Results'
+import Dashboard     from './Dashboard'
+import ModuleDetail  from './ModuleDetail'
+import SessionDetail from './SessionDetail'
 import AlertnessExercise   from './exercises/AlertnessExercise'
 import ZahlensucheExercise from './exercises/ZahlensucheExercise'
 import GedaechtnisExercise from './exercises/GedaechtnisExercise'
@@ -88,10 +91,14 @@ export default function TabKognitiv({ onBack }) {
     />
   }
   if (nav?.screen === 'module-detail') {
-    return <div className={s.placeholder}>ModuleDetail — {nav.moduleId}</div>
+    return <ModuleDetail
+      moduleId={nav.moduleId}
+      onBack={goBack}
+      onSelectSession={(session) => setNav({ screen: 'session-detail', session })}
+    />
   }
   if (nav?.screen === 'session-detail') {
-    return <div className={s.placeholder}>SessionDetail</div>
+    return <SessionDetail session={nav.session} onBack={goBack} />
   }
 
   return (
@@ -104,7 +111,7 @@ export default function TabKognitiv({ onBack }) {
       <div className={s.content}>
         {tab === 'modules'
           ? <ModuleList onSelectModule={handleSelectModule} />
-          : <div className={s.placeholder}>Dashboard kommt in Task 9</div>
+          : <Dashboard onSelectModule={(id) => setNav({ screen: 'module-detail', moduleId: id })} />
         }
       </div>
     </div>
