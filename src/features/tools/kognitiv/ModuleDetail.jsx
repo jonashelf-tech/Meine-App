@@ -15,12 +15,15 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
 
   return (
     <div className={s.root}>
-      <div className={s.hd}>
-        <button className={s.back} onClick={onBack}>‹</button>
-        <div>
-          <div className={s.ey}>Dashboard → Modul</div>
-          <div className={s.tt}>{m.name}</div>
-        </div>
+      <div className={s.topBar}>
+        <button className={s.backBtn} onClick={onBack}>
+          <span className={s.arrow}>←</span> Zurück
+        </button>
+      </div>
+      <div className={s.scroll}>
+      <div className={s.hdInfo}>
+        <div className={s.ey}>Dashboard → Modul</div>
+        <div className={s.tt}>{m.name}</div>
       </div>
 
       {stats && (
@@ -75,6 +78,7 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
             </button>
           )
         })}
+      </div>
       </div>
     </div>
   )

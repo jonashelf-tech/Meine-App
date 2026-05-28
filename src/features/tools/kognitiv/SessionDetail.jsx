@@ -13,12 +13,15 @@ export default function SessionDetail({ session, onBack }) {
 
   return (
     <div className={s.root}>
-      <div className={s.hd}>
-        <button className={s.back} onClick={onBack}>‹</button>
-        <div>
-          <div className={s.ey}>{m.name} · Tiefenanalyse</div>
-          <div className={s.tt}>{fmtDate(session.startedAt)} · {session.variant}</div>
-        </div>
+      <div className={s.topBar}>
+        <button className={s.backBtn} onClick={onBack}>
+          <span className={s.arrow}>←</span> Zurück
+        </button>
+      </div>
+      <div className={s.scroll}>
+      <div className={s.hdInfo}>
+        <div className={s.ey}>{m.name} · Tiefenanalyse</div>
+        <div className={s.tt}>{fmtDate(session.startedAt)} · {session.variant}</div>
       </div>
 
       <div className={s.hero}>
@@ -81,6 +84,7 @@ export default function SessionDetail({ session, onBack }) {
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 }

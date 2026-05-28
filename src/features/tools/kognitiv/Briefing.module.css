@@ -1,19 +1,29 @@
-.root { padding: 20px 16px; display: flex; flex-direction: column; min-height: 100%; background: var(--bg); overflow-y: auto; }
-.backBtn { width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.9rem; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 16px; }
-.iconWrap { width: 52px; height: 52px; border-radius: 15px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.18); display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 10px; }
-.name { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-.durationPill { display: inline-flex; align-items: center; gap: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.68rem; color: var(--text-dim); margin-bottom: 12px; }
-.desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 14px; }
+.root { display: flex; flex-direction: column; height: 100%; background: var(--bg); overflow: hidden; }
+
+.topBar { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg); }
+.backBtn { display: flex; align-items: center; gap: 6px; background: none; border: none; color: var(--text-dim); font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; padding: 4px 0; }
+.arrow { font-size: 1rem; line-height: 1; }
+
+.scroll { flex: 1; overflow-y: auto; padding: 20px 16px 32px; display: flex; flex-direction: column; gap: 0; }
+
+.hero { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-bottom: 20px; }
+.iconWrap { width: 48px; height: 48px; border-radius: 14px; background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.2); display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 8px; }
+.name { font-size: 1.35rem; font-weight: 700; color: var(--text); line-height: 1.15; }
+.durationPill { display: inline-flex; align-items: center; gap: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.66rem; color: var(--text-dim); margin-top: 2px; }
+.desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.65; margin-top: 10px; }
+
 .infoBlock { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; margin-bottom: 8px; }
-.infoLabel { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.infoLabel { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; }
 .infoLabel[data-type="measured"] { color: var(--emerald); }
-.infoLabel[data-type="not"] { color: var(--text-dim); }
-.infoRow { display: flex; align-items: flex-start; gap: 7px; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 3px; line-height: 1.4; }
+.infoLabel[data-type="not"] { color: var(--text-dim); opacity: 0.6; }
+.infoRow { display: flex; align-items: flex-start; gap: 8px; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; line-height: 1.4; }
 .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 .dot[data-type="measured"] { background: var(--emerald); }
 .dot[data-type="not"] { background: var(--border); }
-.diffLabel { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin: 12px 0 6px; }
-.diffRow { display: flex; gap: 6px; margin-bottom: 16px; }
-.diffBtn { flex: 1; padding: 7px; border-radius: var(--r-sm); font-family: 'Outfit', sans-serif; font-size: 0.72rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
-.diffOn { background: rgba(139,92,246,0.14); border-color: rgba(139,92,246,0.35); color: var(--primary); }
-.startBtn { margin-top: auto; background: var(--primary); border: none; border-radius: var(--r); color: white; font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 700; padding: 14px; text-align: center; width: 100%; cursor: pointer; }
+
+.diffLabel { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin: 16px 0 8px; }
+.diffRow { display: flex; gap: 8px; margin-bottom: 20px; }
+.diffBtn { flex: 1; padding: 9px; border-radius: var(--r-sm); font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
+.diffOn { background: rgba(139,92,246,0.14); border-color: rgba(139,92,246,0.4); color: var(--primary); }
+
+.startBtn { background: var(--primary); border: none; border-radius: var(--r); color: white; font-family: 'Outfit', sans-serif; font-size: 0.92rem; font-weight: 700; padding: 15px; text-align: center; width: 100%; cursor: pointer; letter-spacing: 0.02em; }

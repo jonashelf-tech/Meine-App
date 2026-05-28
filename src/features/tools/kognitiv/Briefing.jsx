@@ -9,54 +9,62 @@ export default function Briefing({ moduleId, onStart, onBack }) {
 
   return (
     <div className={s.root}>
-      <button className={s.backBtn} onClick={onBack}>‹</button>
-
-      <div className={s.iconWrap}>
-        <ToolIcon id="kognitiv" size={24} />
+      <div className={s.topBar}>
+        <button className={s.backBtn} onClick={onBack}>
+          <span className={s.arrow}>←</span> Zurück
+        </button>
       </div>
-      <div className={s.name}>{m.name}</div>
-      <div className={s.durationPill}>
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        {m.duration}
-      </div>
-      <p className={s.desc}>{m.desc}</p>
 
-      <div className={s.infoBlock}>
-        <div className={s.infoLabel} data-type="measured">Was gemessen wird</div>
-        {m.measured.map(item => (
-          <div key={item} className={s.infoRow}>
-            <div className={s.dot} data-type="measured" />
-            {item}
+      <div className={s.scroll}>
+        <div className={s.hero}>
+          <div className={s.iconWrap}>
+            <ToolIcon id="kognitiv" size={26} />
           </div>
-        ))}
-      </div>
-
-      <div className={s.infoBlock}>
-        <div className={s.infoLabel} data-type="not">Nicht relevant</div>
-        {m.notMeasured.map(item => (
-          <div key={item} className={s.infoRow}>
-            <div className={s.dot} data-type="not" />
-            {item}
+          <div className={s.name}>{m.name}</div>
+          <div className={s.durationPill}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {m.duration}
           </div>
-        ))}
-      </div>
+          <p className={s.desc}>{m.desc}</p>
+        </div>
 
-      <div className={s.diffLabel}>Schwierigkeit</div>
-      <div className={s.diffRow}>
-        {m.variants.map(v => (
-          <button
-            key={v}
-            className={[s.diffBtn, variant === v ? s.diffOn : ''].join(' ')}
-            onClick={() => setVariant(v)}
-          >
-            {v}
-          </button>
-        ))}
-      </div>
+        <div className={s.infoBlock}>
+          <div className={s.infoLabel} data-type="measured">Was gemessen wird</div>
+          {m.measured.map(item => (
+            <div key={item} className={s.infoRow}>
+              <div className={s.dot} data-type="measured" />
+              {item}
+            </div>
+          ))}
+        </div>
 
-      <button className={s.startBtn} onClick={() => onStart(variant)}>
-        Starten →
-      </button>
+        <div className={s.infoBlock}>
+          <div className={s.infoLabel} data-type="not">Nicht relevant</div>
+          {m.notMeasured.map(item => (
+            <div key={item} className={s.infoRow}>
+              <div className={s.dot} data-type="not" />
+              {item}
+            </div>
+          ))}
+        </div>
+
+        <div className={s.diffLabel}>Schwierigkeit</div>
+        <div className={s.diffRow}>
+          {m.variants.map(v => (
+            <button
+              key={v}
+              className={[s.diffBtn, variant === v ? s.diffOn : ''].join(' ')}
+              onClick={() => setVariant(v)}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+
+        <button className={s.startBtn} onClick={() => onStart(variant)}>
+          Starten →
+        </button>
+      </div>
     </div>
   )
 }

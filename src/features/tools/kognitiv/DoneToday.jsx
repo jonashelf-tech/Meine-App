@@ -12,7 +12,11 @@ export default function DoneToday({ moduleId, onBack, onViewResult }) {
 
   return (
     <div className={s.root}>
-      <button className={s.backBtn} onClick={onBack}>‹</button>
+      <div className={s.topBar}>
+        <button className={s.backBtn} onClick={onBack}>
+          <span className={s.arrow}>←</span> Zurück
+        </button>
+      </div>
       <div className={s.center}>
         <div className={s.checkIcon}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>

@@ -19,7 +19,12 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
 
   return (
     <div className={s.root}>
-      <button className={s.backBtn} onClick={onBack}>‹</button>
+      <div className={s.topBar}>
+        <button className={s.backBtn} onClick={onBack}>
+          <span className={s.arrow}>←</span> {fromArchive ? 'Zurück' : 'Fertig'}
+        </button>
+      </div>
+      <div className={s.scroll}>
       <div className={s.eyebrow}>{fromArchive ? 'Archiv' : 'Fertig'}</div>
       <div className={s.title}>{m.name}</div>
 
@@ -92,6 +97,7 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
       <button className={s.backBtn2} onClick={onBack}>
         {fromArchive ? 'Zurück' : 'Fertig'}
       </button>
+      </div>
     </div>
   )
 }
