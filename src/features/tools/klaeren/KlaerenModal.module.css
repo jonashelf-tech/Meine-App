@@ -15,8 +15,8 @@
 
 /* ── Modal ───────────────────────────────────────────────── */
 .modal {
-  background: rgba(12, 12, 26, 0.97);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 20px 16px;
   width: 100%;
@@ -43,7 +43,7 @@
 .back {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-faint);
   font-family: 'Outfit', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
@@ -54,14 +54,14 @@
   -webkit-tap-highlight-color: transparent;
   align-self: flex-start;
 }
-.back:hover { color: rgba(255, 255, 255, 0.7); }
+.back:hover { color: var(--text); }
 
 /* ── Todo-Titel ──────────────────────────────────────────── */
 .todoTitle {
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text);
   line-height: 1.35;
 }
 
@@ -70,14 +70,14 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text);
   line-height: 1.4;
 }
 
 .questionSub {
   font-family: 'Outfit', sans-serif;
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--text-faint);
   line-height: 1.4;
   margin-top: -4px;
 }
@@ -86,15 +86,15 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.76rem;
   font-style: italic;
-  color: rgba(255, 255, 255, 0.32);
+  color: var(--text-faint);
   margin-top: -4px;
 }
 
 /* ── Textarea ────────────────────────────────────────────── */
 .textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
@@ -107,7 +107,7 @@
   box-sizing: border-box;
   line-height: 1.5;
 }
-.textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
+.textarea::placeholder { color: var(--text-ghost); }
 .textarea:focus {
   border-color: var(--tool-color);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--tool-color) 18%, transparent);
@@ -133,7 +133,7 @@
 .delegationText {
   font-family: 'Outfit', sans-serif;
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-dim);
   line-height: 1.5;
 }
 
@@ -163,10 +163,10 @@
 
 /* ── Loslassen-Button ────────────────────────────────────── */
 .loslassenBtn {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--text-faint);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
@@ -186,7 +186,7 @@
 .skipLink {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-ghost);
   font-family: 'Outfit', sans-serif;
   font-size: 0.8rem;
   cursor: pointer;
@@ -195,7 +195,7 @@
   -webkit-tap-highlight-color: transparent;
   transition: color 0.15s;
 }
-.skipLink:hover { color: rgba(255, 255, 255, 0.5); }
+.skipLink:hover { color: var(--text-dim); }
 
 /* ── Chip-Simulation ─────────────────────────────────────── */
 .chipSim {
@@ -229,7 +229,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text);
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -242,7 +242,7 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border-dim);
   border-radius: var(--r-sm);
   overflow: hidden;
 }
@@ -252,12 +252,12 @@
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-dim);
   transition: background 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
 .stepRow:last-child { border-bottom: none; }
-.stepRow:hover { background: rgba(255, 255, 255, 0.02); }
+.stepRow:hover { background: var(--surface-low); }
 
 .stepDone { opacity: 0.4; }
 
@@ -266,7 +266,7 @@
   height: 18px;
   min-width: 18px;
   border-radius: 4px;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border: 1.5px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,7 +286,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text);
   cursor: pointer;
   min-width: 0;
   word-break: break-word;
@@ -296,7 +296,7 @@
 .stepRm {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.12);
+  color: var(--text-ghost);
   font-size: 0.55rem;
   cursor: pointer;
   padding: 3px 5px;
@@ -311,8 +311,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: var(--surface-low);
+  border: 1px dashed var(--border);
   border-radius: var(--r-sm);
   padding: 4px 8px 4px 12px;
 }
@@ -322,13 +322,13 @@
   background: none;
   border: none;
   outline: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-dim);
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
   padding: 7px 4px 7px 0;
   caret-color: var(--tool-color);
 }
-.stepInput::placeholder { color: rgba(255, 255, 255, 0.2); }
+.stepInput::placeholder { color: var(--text-ghost); }
 
 .stepAddBtn {
   background: none;
@@ -355,7 +355,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--border);
   transition: background 0.2s;
 }
 

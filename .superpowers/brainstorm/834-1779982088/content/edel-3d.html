@@ -1,0 +1,255 @@
+<h2>Minimalistisch · Edel · 3D</h2>
+<p class="subtitle">Dunkler Hintergrund, Tiefe, App-Thema. Klick auf Favoriten.</p>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 28px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .card {
+    background: #09080f;
+    border: 1.5px solid #1c1a2e;
+    border-radius: 22px;
+    padding: 28px 14px 20px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+  }
+  .card:hover {
+    border-color: #5533aa;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(86,40,180,0.2);
+  }
+  .card.selected {
+    border-color: #863bff;
+    box-shadow: 0 0 0 2px rgba(134,59,255,0.4), 0 12px 40px rgba(134,59,255,0.2);
+  }
+  .wrap {
+    width: 100px;
+    height: 100px;
+    border-radius: 24px;
+    margin: 0 auto 16px;
+    overflow: hidden;
+  }
+  .card h3 { font-size: 14px; font-weight: 700; color: #ccc6e8; margin: 0 0 6px; }
+  .card p  { font-size: 11px; color: #4a4760; margin: 0; line-height: 1.5; }
+</style>
+
+<div class="grid">
+
+<!-- 1: Orb — 3D-Kugel mit Lichtquelle -->
+<div class="card" data-choice="orb" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="#06040e"/>
+  <defs>
+    <radialGradient id="orb1" cx="35%" cy="30%" r="65%">
+      <stop offset="0%"   stop-color="#c084fc"/>
+      <stop offset="40%"  stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#1e0533"/>
+    </radialGradient>
+    <radialGradient id="orbglow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#7c3aed" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="orbblur"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+  <!-- ambient glow -->
+  <circle cx="50" cy="53" r="32" fill="url(#orbglow)" filter="url(#orbblur)"/>
+  <!-- main sphere -->
+  <circle cx="50" cy="50" r="30" fill="url(#orb1)"/>
+  <!-- specular highlight -->
+  <ellipse cx="40" cy="38" rx="9" ry="6" fill="white" opacity="0.18"/>
+  <ellipse cx="38" cy="36" rx="4" ry="2.5" fill="white" opacity="0.35"/>
+  <!-- dark rim at bottom -->
+  <circle cx="50" cy="50" r="30" fill="url(#orbrim)" opacity="0.6"/>
+  <defs>
+    <radialGradient id="orbrim" cx="68%" cy="75%" r="50%">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg></div>
+<h3>Der Orb</h3>
+<p>3D-Kugel, Licht von oben links.<br/>Edel, zeitlos.</p>
+</div>
+
+<!-- 2: Saturn — Planet mit Orbit-Ring -->
+<div class="card" data-choice="saturn" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="#060610"/>
+  <defs>
+    <radialGradient id="sat1" cx="38%" cy="32%" r="62%">
+      <stop offset="0%"   stop-color="#a78bfa"/>
+      <stop offset="45%"  stop-color="#5b21b6"/>
+      <stop offset="100%" stop-color="#0f0722"/>
+    </radialGradient>
+    <radialGradient id="satglow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#6d28d9" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#6d28d9" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow2"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+  <!-- glow -->
+  <circle cx="50" cy="50" r="28" fill="url(#satglow)" filter="url(#glow2)"/>
+  <!-- back half of ring (behind planet) -->
+  <ellipse cx="50" cy="52" rx="38" ry="10" stroke="#2e1065" stroke-width="3.5" fill="none"/>
+  <!-- planet -->
+  <circle cx="50" cy="50" r="20" fill="url(#sat1)"/>
+  <!-- specular -->
+  <ellipse cx="43" cy="42" rx="6" ry="4" fill="white" opacity="0.2"/>
+  <ellipse cx="42" cy="41" rx="2.5" ry="1.5" fill="white" opacity="0.4"/>
+  <!-- front half of ring (in front of planet) -->
+  <path d="M12 52 Q50 68 88 52" stroke="#7c3aed" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M12 52 Q50 62 88 52" stroke="#a78bfa" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+</svg></div>
+<h3>Der Planet</h3>
+<p>Kugel mit Orbit-Ring.<br/>Bewegung ohne Chaos.</p>
+</div>
+
+<!-- 3: Tunnel — Ringe in Tiefe -->
+<div class="card" data-choice="tunnel" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="#050510"/>
+  <defs>
+    <filter id="glow3"><feGaussianBlur stdDeviation="4"/></filter>
+  </defs>
+  <!-- outer rings fade to dark -->
+  <ellipse cx="50" cy="52" rx="40" ry="16" stroke="#1a1040" stroke-width="2" fill="none"/>
+  <ellipse cx="50" cy="52" rx="33" ry="12" stroke="#2a1860" stroke-width="2" fill="none"/>
+  <ellipse cx="50" cy="51" rx="26" ry="9"  stroke="#3d2280" stroke-width="2" fill="none"/>
+  <ellipse cx="50" cy="51" rx="19" ry="6.5" stroke="#5b30aa" stroke-width="2" fill="none"/>
+  <ellipse cx="50" cy="50" rx="12" ry="4"  stroke="#7c3aed" stroke-width="2.5" fill="none"/>
+  <ellipse cx="50" cy="50" rx="6"  ry="2"  stroke="#a78bfa" stroke-width="2.5" fill="none"/>
+  <!-- vanishing point glow -->
+  <circle cx="50" cy="50" r="5" fill="#a78bfa" filter="url(#glow3)" opacity="0.8"/>
+  <circle cx="50" cy="50" r="2.5" fill="white" opacity="0.9"/>
+  <!-- top arc lines (3D tunnel mouth) -->
+  <ellipse cx="50" cy="28" rx="40" ry="10" stroke="#1a1040" stroke-width="1.5" fill="none"/>
+  <path d="M10 28 L10 52" stroke="#1a1040" stroke-width="1.5"/>
+  <path d="M90 28 L90 52" stroke="#1a1040" stroke-width="1.5"/>
+  <ellipse cx="50" cy="28" rx="40" ry="10" stroke="#1a1040" stroke-width="1.5" fill="none"/>
+  <!-- tunnel walls gradient -->
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0e0830"/>
+      <stop offset="100%" stop-color="#050510"/>
+    </linearGradient>
+  </defs>
+  <path d="M10 28 L10 52 Q50 65 90 52 L90 28 Q50 14 10 28Z" fill="url(#wall)" opacity="0.7"/>
+</svg></div>
+<h3>Der Tunnel</h3>
+<p>Perspektive zieht ins Zentrum.<br/>Hyperfokus als Raum.</p>
+</div>
+
+<!-- 4: Kristall / Gem -->
+<div class="card" data-choice="gem" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="#060812"/>
+  <defs>
+    <filter id="gemglow"><feGaussianBlur stdDeviation="6"/></filter>
+    <linearGradient id="gem1" x1="50" y1="20" x2="25" y2="75" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#e9d5ff"/>
+      <stop offset="100%" stop-color="#4c1d95"/>
+    </linearGradient>
+    <linearGradient id="gem2" x1="50" y1="20" x2="75" y2="75" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#2e1065"/>
+    </linearGradient>
+    <linearGradient id="gem3" x1="50" y1="48" x2="50" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#1e0533"/>
+    </linearGradient>
+  </defs>
+  <!-- glow behind -->
+  <ellipse cx="50" cy="58" rx="24" ry="12" fill="#6d28d9" filter="url(#gemglow)" opacity="0.5"/>
+  <!-- gem: top crown, left facet, right facet, bottom pavilion -->
+  <!-- top flat face (table) -->
+  <polygon points="50,20 70,38 30,38" fill="#c4b5fd" opacity="0.9"/>
+  <!-- left upper facet -->
+  <polygon points="50,20 30,38 20,52" fill="url(#gem1)"/>
+  <!-- right upper facet -->
+  <polygon points="50,20 70,38 80,52" fill="url(#gem2)"/>
+  <!-- left lower facet -->
+  <polygon points="20,52 30,38 50,78" fill="#5b21b6" opacity="0.85"/>
+  <!-- right lower facet -->
+  <polygon points="80,52 70,38 50,78" fill="url(#gem3)"/>
+  <!-- center bottom facet -->
+  <polygon points="30,38 70,38 50,78" fill="#7c3aed" opacity="0.5"/>
+  <!-- edge highlight top -->
+  <line x1="50" y1="20" x2="70" y2="38" stroke="white" stroke-width="0.75" opacity="0.5"/>
+  <line x1="50" y1="20" x2="30" y2="38" stroke="white" stroke-width="1" opacity="0.7"/>
+  <!-- specular flash -->
+  <circle cx="46" cy="26" r="3" fill="white" opacity="0.5"/>
+</svg></div>
+<h3>Der Kristall</h3>
+<p>Klarheit. Schärfe. Facetten<br/>wie ADHS-Perspektiven.</p>
+</div>
+
+<!-- 5: Schwebende Kugel mit Spiegelung -->
+<div class="card" data-choice="float" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="#05050d"/>
+  <defs>
+    <radialGradient id="fl1" cx="38%" cy="30%" r="65%">
+      <stop offset="0%"   stop-color="#ddd6fe"/>
+      <stop offset="35%"  stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#140830"/>
+    </radialGradient>
+    <radialGradient id="flrefl" cx="50%" cy="0%" r="100%">
+      <stop offset="0%"   stop-color="#8b5cf6" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="reflblur"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  <!-- ground shadow -->
+  <ellipse cx="50" cy="80" rx="22" ry="5" fill="#5b21b6" filter="url(#shadow)" opacity="0.6"/>
+  <!-- reflection (mirrored orb, faded) -->
+  <ellipse cx="50" cy="79" rx="14" ry="6" fill="url(#flrefl)" filter="url(#reflblur)"/>
+  <!-- sphere -->
+  <circle cx="50" cy="46" r="26" fill="url(#fl1)"/>
+  <!-- specular -->
+  <ellipse cx="42" cy="36" rx="7" ry="5" fill="white" opacity="0.2"/>
+  <ellipse cx="41" cy="35" rx="3" ry="2" fill="white" opacity="0.45"/>
+  <!-- subtle rim -->
+  <circle cx="50" cy="46" r="26" stroke="#a78bfa" stroke-width="0.75" fill="none" opacity="0.3"/>
+</svg></div>
+<h3>Schwebende Kugel</h3>
+<p>Orb mit Boden-Schatten.<br/>Gewicht, aber leicht.</p>
+</div>
+
+<!-- 6: Konzentrischer Kreis — radikal flach aber tief -->
+<div class="card" data-choice="ripple" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs>
+    <filter id="ripglow"><feGaussianBlur stdDeviation="4"/></filter>
+  </defs>
+  <!-- rings from outside in, getting brighter (depth effect) -->
+  <circle cx="50" cy="50" r="40" stroke="#10092a" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="33" stroke="#1b1045" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="26" stroke="#2d1a6e" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="50" r="19" stroke="#4c2fa0" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="50" r="12" stroke="#7c3aed" stroke-width="2.5" fill="none"/>
+  <circle cx="50" cy="50" r="5"  stroke="#c4b5fd" stroke-width="2.5" fill="none"/>
+  <!-- center dot with glow -->
+  <circle cx="50" cy="50" r="6"  fill="#7c3aed" filter="url(#ripglow)"/>
+  <circle cx="50" cy="50" r="2.5" fill="white"/>
+  <!-- single pixel offset highlight to feel 3D -->
+  <circle cx="48" cy="48" r="1" fill="white" opacity="0.7"/>
+</svg></div>
+<h3>Ripple</h3>
+<p>Konzentrische Ringe, Mitte<br/>heller. Flat aber tief.</p>
+</div>
+
+</div>
+
+<p style="margin-top: 28px; font-size: 11px; color: #2a2840; text-align: center;">
+  Alle auf schwarzem Hintergrund · Gleiche Farbpalette wie die App
+</p>

@@ -27,7 +27,7 @@
 .handle {
   width: 32px;
   height: 3px;
-  background: rgba(255,255,255,0.2);
+  background: var(--border);
   border-radius: 2px;
   margin: 0 auto 6px;
   flex-shrink: 0;
@@ -39,7 +39,7 @@
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-faint);
   margin-bottom: 2px;
 }
 
@@ -67,7 +67,7 @@
 
 .dateInput {
   background: var(--surface);
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Orbitron', monospace;
@@ -79,13 +79,13 @@
   transition: border-color 0.15s;
 }
 .dateInput:focus { border-color: var(--primary); }
-.dateInput::placeholder { color: rgba(255,255,255,0.3); }
+.dateInput::placeholder { color: var(--text-faint); }
 
 .yearInput {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  color: rgba(255,255,255,0.45);
+  color: var(--text-dim);
   font-family: 'Outfit', sans-serif;
   font-size: 12px;
   padding: 8px 10px;
@@ -95,7 +95,7 @@
   transition: border-color 0.15s;
 }
 .yearInput:focus { border-color: var(--primary); color: var(--text); }
-.yearInput::placeholder { color: rgba(255,255,255,0.25); }
+.yearInput::placeholder { color: var(--text-ghost); }
 
 .spacer { flex: 1; }
 
@@ -103,10 +103,10 @@
 .toggleBtn {
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  background: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.3);
+  background: var(--surface);
+  color: var(--text-faint);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -114,7 +114,7 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.toggleBtn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.55); }
+.toggleBtn:hover { border-color: var(--border); color: var(--text-dim); }
 
 .toggleBtnKalender.active {
   background: rgba(139,92,246,0.15);
@@ -140,7 +140,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255,255,255,0.03);
+  background: var(--surface-low);
   border-radius: var(--r-sm);
   padding: 8px 10px;
   animation: fadeInUp 0.15s ease both;
@@ -148,13 +148,13 @@
 
 .presetIcon {
   flex-shrink: 0;
-  color: rgba(255,255,255,0.4);
+  color: var(--text-dim);
 }
 
 .presetLabel {
   font-family: 'Outfit', sans-serif;
   font-size: 11px;
-  color: rgba(255,255,255,0.45);
+  color: var(--text-dim);
   flex-shrink: 0;
 }
 
@@ -165,13 +165,13 @@
 }
 
 .presetPill {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 8px;
   font-family: 'Outfit', sans-serif;
   font-size: 11px;
-  color: rgba(255,255,255,0.4);
+  color: var(--text-dim);
   cursor: pointer;
   transition: all 0.12s;
 }
@@ -196,14 +196,14 @@
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: var(--text-faint);
   padding-left: 2px;
   margin-bottom: -4px;
 }
 
 .notesInput {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.13);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
@@ -218,7 +218,7 @@
   transition: border-color 0.15s;
 }
 .notesInput:focus { border-color: var(--primary); }
-.notesInput::placeholder { color: rgba(255,255,255,0.22); }
+.notesInput::placeholder { color: var(--text-faint); }
 
 /* ─── Submit ───────────────────────────────────────────────── */
 .submitBtn {

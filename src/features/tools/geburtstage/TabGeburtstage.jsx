@@ -171,8 +171,16 @@ export default function TabGeburtstage({ onBack }) {
   const toolColor = getToolColor('geburtstage', toolColors)
   const { showToast } = useToast()
 
-  const [sort, setSort]   = useState(() => lv('adhs_bday_sort', 'next'))
-  const [sheet, setSheet] = useState(null) // null | 'new' | birthday-object
+  const [sort, setSort]       = useState(() => lv('adhs_bday_sort', 'next'))
+  const [sheet, setSheet]     = useState(null)
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  const handleReset = () => {
+    if (!confirmReset) { setConfirmReset(true); return }
+    localStorage.removeItem('adhs_birthdays')
+    localStorage.removeItem('adhs_bday_sort')
+    window.location.reload()
+  }
 
   // Migration bestehender Daten
   useEffect(() => {
@@ -275,6 +283,13 @@ export default function TabGeburtstage({ onBack }) {
           onClose={() => setSheet(null)}
         />
       )}
+
+      <button
+        className={[s.toolReset, confirmReset ? s.toolResetConfirm : ''].join(' ')}
+        onClick={handleReset}
+      >
+        {confirmReset ? '⚠ Wirklich alle Geburtstage löschen?' : 'Geburtstage-Daten löschen'}
+      </button>
     </div>
   )
 }

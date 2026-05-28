@@ -1,0 +1,256 @@
+<h2>Hyperfokus — 4 Richtungen</h2>
+<p class="subtitle">Gleiche Energie, unterschiedliche Lesbarkeit. Klick auf deinen Favoriten.</p>
+
+<style>
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin-top: 24px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .icon-card {
+    background: #12101e;
+    border: 2px solid #2a2a4a;
+    border-radius: 24px;
+    padding: 32px 20px 24px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    position: relative;
+    user-select: none;
+  }
+  .icon-card:hover {
+    border-color: #863bff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(134,59,255,0.2);
+  }
+  .icon-card.selected {
+    border-color: #863bff;
+    background: #1a1030;
+    box-shadow: 0 0 0 3px rgba(134,59,255,0.35), 0 8px 32px rgba(134,59,255,0.25);
+  }
+  .icon-wrapper {
+    width: 120px;
+    height: 120px;
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+  .icon-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #e0d8ff;
+    margin: 0 0 8px;
+  }
+  .icon-card p {
+    font-size: 13px;
+    color: #6b6880;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .tension {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #863bff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+  }
+</style>
+
+<div class="icon-grid">
+
+  <!-- A: Auge mit Energie-Iris -->
+  <div class="icon-card" data-choice="eye" onclick="toggleSelect(this)">
+    <div class="icon-wrapper">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="28" fill="#0a0618"/>
+        <!-- outer glow -->
+        <ellipse cx="60" cy="62" rx="44" ry="28" fill="url(#eyebg)" opacity="0.15"/>
+        <!-- Eye white/shape — rounded lense -->
+        <path d="M16 62 Q60 24 104 62 Q60 100 16 62Z" fill="#1a0e3a"/>
+        <path d="M16 62 Q60 24 104 62 Q60 100 16 62Z" stroke="#7c3aed" stroke-width="2" fill="none"/>
+        <!-- Iris outer -->
+        <circle cx="60" cy="62" r="22" fill="#1e0f45"/>
+        <circle cx="60" cy="62" r="22" stroke="#6d28d9" stroke-width="1.5" fill="none"/>
+        <!-- Iris inner rings — hyperfocus -->
+        <circle cx="60" cy="62" r="16" stroke="#8b5cf6" stroke-width="1.5" fill="#180e3a" stroke-dasharray="4 2"/>
+        <circle cx="60" cy="62" r="10" fill="#2d1b69"/>
+        <!-- Pupil -->
+        <circle cx="60" cy="62" r="8" fill="#0d0520"/>
+        <!-- Bright spark / catchlight -->
+        <circle cx="60" cy="62" r="3.5" fill="#a78bfa"/>
+        <circle cx="55" cy="57" r="2" fill="white" opacity="0.9"/>
+        <circle cx="65" cy="67" r="1" fill="white" opacity="0.5"/>
+        <!-- Energy rays emanating from eye -->
+        <line x1="60" y1="18" x2="60" y2="10" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+        <line x1="60" y1="106" x2="60" y2="114" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+        <line x1="8" y1="62" x2="2" y2="62" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+        <line x1="112" y1="62" x2="118" y2="62" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+        <!-- lash dots for playfulness -->
+        <circle cx="34" cy="36" r="2" fill="#8b5cf6" opacity="0.7"/>
+        <circle cx="42" cy="28" r="1.5" fill="#8b5cf6" opacity="0.5"/>
+        <circle cx="52" cy="24" r="1.5" fill="#8b5cf6" opacity="0.5"/>
+        <circle cx="68" cy="24" r="1.5" fill="#8b5cf6" opacity="0.5"/>
+        <circle cx="78" cy="28" r="1.5" fill="#8b5cf6" opacity="0.5"/>
+        <circle cx="86" cy="36" r="2" fill="#8b5cf6" opacity="0.7"/>
+        <defs>
+          <radialGradient id="eyebg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#8b5cf6"/>
+            <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+    <h3>Das Auge</h3>
+    <p>Fokus-Metapher, sofort lesbar.<br/>Iris-Ringe = Hyperfokus-Sog.</p>
+    <div class="tension">professionell ↔ mystisch</div>
+  </div>
+
+  <!-- B: Rakete mit Wirbel-Trail -->
+  <div class="icon-card" data-choice="rocket" onclick="toggleSelect(this)">
+    <div class="icon-wrapper">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="28" fill="#080c1a"/>
+        <!-- Stars/dots in background -->
+        <circle cx="20" cy="22" r="1.5" fill="white" opacity="0.4"/>
+        <circle cx="95" cy="18" r="1" fill="white" opacity="0.3"/>
+        <circle cx="105" cy="45" r="1.5" fill="white" opacity="0.35"/>
+        <circle cx="15" cy="80" r="1" fill="white" opacity="0.25"/>
+        <circle cx="100" cy="90" r="1.5" fill="white" opacity="0.3"/>
+        <circle cx="30" cy="100" r="1" fill="white" opacity="0.2"/>
+        <!-- Chaotic swirling trail (ADHS thoughts) -->
+        <path d="M25 100 Q15 80 30 70 Q50 58 40 45 Q30 32 50 28 Q62 25 62 35" stroke="#4c1d95" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M30 105 Q18 88 32 75 Q52 62 42 48 Q32 34 52 30 Q64 27 64 37" stroke="#6d28d9" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+        <!-- Rocket body (tilted 45°, pointing up-right) -->
+        <g transform="translate(60,55) rotate(-45)">
+          <!-- body -->
+          <rect x="-10" y="-22" width="20" height="32" rx="10" fill="url(#rocketbody)"/>
+          <!-- tip -->
+          <path d="M-10 -22 Q0 -38 10 -22Z" fill="#c4b5fd"/>
+          <!-- window -->
+          <circle cx="0" cy="-10" r="6" fill="#0d0520" stroke="#a78bfa" stroke-width="1.5"/>
+          <circle cx="-1.5" cy="-11.5" r="2" fill="white" opacity="0.4"/>
+          <!-- fins -->
+          <path d="M-10 10 L-18 20 L-10 15Z" fill="#7c3aed"/>
+          <path d="M10 10 L18 20 L10 15Z" fill="#7c3aed"/>
+          <!-- exhaust flame -->
+          <ellipse cx="0" cy="14" rx="5" ry="3" fill="#ff9933" opacity="0.9"/>
+          <ellipse cx="0" cy="18" rx="3" ry="5" fill="#ffcc00" opacity="0.7"/>
+          <ellipse cx="0" cy="22" rx="2" ry="4" fill="white" opacity="0.4"/>
+        </g>
+        <!-- Sparkles -->
+        <text x="82" y="36" font-size="14" fill="#ffcc00" opacity="0.9">✦</text>
+        <text x="16" y="50" font-size="10" fill="#a78bfa" opacity="0.6">✦</text>
+        <defs>
+          <linearGradient id="rocketbody" x1="0" y1="-22" x2="0" y2="10" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#c4b5fd"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <h3>Die Rakete</h3>
+    <p>ADHS-Energie kanalisiert.<br/>Chaotischer Trail → geradliniger Flug.</p>
+    <div class="tension">verspielt ↔ universell</div>
+  </div>
+
+  <!-- C: Chaos → Fokuspunkt (Trichter/Vortex) -->
+  <div class="icon-card" data-choice="vortex" onclick="toggleSelect(this)">
+    <div class="icon-wrapper">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="28" fill="#0c0818"/>
+        <!-- Spiral / vortex rings getting tighter -->
+        <circle cx="60" cy="60" r="46" stroke="#2d1b69" stroke-width="2" fill="none"/>
+        <circle cx="60" cy="60" r="36" stroke="#3b2080" stroke-width="2.5" fill="none"/>
+        <circle cx="60" cy="60" r="26" stroke="#5b35aa" stroke-width="3" fill="none"/>
+        <circle cx="60" cy="60" r="16" stroke="#7c3aed" stroke-width="3.5" fill="none"/>
+        <circle cx="60" cy="60" r="8" stroke="#a78bfa" stroke-width="4" fill="#1a0e3a"/>
+        <!-- Rotating dots on outer rings (thoughts being pulled in) -->
+        <!-- ring 1 dots -->
+        <circle cx="106" cy="60" r="4" fill="#ff6b6b" opacity="0.7"/>
+        <circle cx="60" cy="14" r="3.5" fill="#ffd93d" opacity="0.6"/>
+        <circle cx="14" cy="60" r="3" fill="#6bcb77" opacity="0.5"/>
+        <circle cx="60" cy="106" r="3.5" fill="#4d96ff" opacity="0.6"/>
+        <!-- ring 2 dots — closer, more pulled in -->
+        <circle cx="96" cy="60" r="3" fill="#ff6b6b" opacity="0.5"/>
+        <circle cx="60" cy="24" r="2.5" fill="#ffd93d" opacity="0.4"/>
+        <!-- ring 3 dots -->
+        <circle cx="82" cy="42" r="2.5" fill="#ff6b6b" opacity="0.35"/>
+        <!-- center bright dot = focus point -->
+        <circle cx="60" cy="60" r="5" fill="white"/>
+        <circle cx="60" cy="60" r="3" fill="#a78bfa"/>
+        <!-- motion lines on outermost ring -->
+        <path d="M106 60 Q108 52 104 46" stroke="#ff6b6b" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+        <path d="M60 14 Q68 12 74 16" stroke="#ffd93d" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+      </svg>
+    </div>
+    <h3>Der Sog</h3>
+    <p>Gedanken werden in den Fokus<br/>hineingezogen. Chaos → Mitte.</p>
+    <div class="tension">abstrakt ↔ clean</div>
+  </div>
+
+  <!-- D: Gehirn mit Spotlight -->
+  <div class="icon-card" data-choice="brain-spotlight" onclick="toggleSelect(this)">
+    <div class="icon-wrapper">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="28" fill="#0a0c18"/>
+        <!-- dark background blobs = ignored thoughts -->
+        <circle cx="22" cy="30" r="8" fill="#1a1a2e"/>
+        <circle cx="100" cy="25" r="6" fill="#1a1a2e"/>
+        <circle cx="15" cy="85" r="7" fill="#1a1a2e"/>
+        <circle cx="105" cy="88" r="9" fill="#1a1a2e"/>
+        <!-- Spotlight cone from top -->
+        <path d="M60 8 L35 80 L85 80 Z" fill="url(#spotlight)" opacity="0.25"/>
+        <path d="M60 8 L38 80 L82 80 Z" fill="url(#spotlight)" opacity="0.15"/>
+        <!-- Brain shape in spotlight (warm + bright) -->
+        <g opacity="0.95">
+          <!-- Left hemisphere -->
+          <path d="M46 72 Q34 70 30 60 Q26 50 32 44 Q36 38 44 38 Q44 32 50 30 Q58 26 62 32 Q62 36 62 40" stroke="#a78bfa" stroke-width="2.5" fill="#1e1040"/>
+          <!-- right hemisphere -->
+          <path d="M62 40 Q62 32 68 30 Q76 26 80 34 Q88 36 90 46 Q94 56 88 64 Q82 72 72 72 L46 72" stroke="#a78bfa" stroke-width="2.5" fill="#1e1040"/>
+          <!-- center line -->
+          <line x1="62" y1="32" x2="60" y2="72" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <!-- squiggles L -->
+          <path d="M36 52 Q42 48 40 56 Q38 62 44 60" stroke="#c4b5fd" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <!-- squiggles R -->
+          <path d="M78 50 Q84 46 82 54 Q80 60 86 58" stroke="#c4b5fd" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <!-- glow dot on brain -->
+          <circle cx="60" cy="52" r="5" fill="#ffcc00" opacity="0.9"/>
+          <circle cx="60" cy="52" r="3" fill="white" opacity="0.8"/>
+        </g>
+        <!-- Spotlight source -->
+        <circle cx="60" cy="10" r="5" fill="#ffcc00"/>
+        <circle cx="60" cy="10" r="8" fill="none" stroke="#ffcc00" stroke-width="1.5" opacity="0.4"/>
+        <!-- bottom edge line -->
+        <line x1="35" y1="80" x2="85" y2="80" stroke="#a78bfa" stroke-width="1" opacity="0.3"/>
+        <!-- stem below brain -->
+        <path d="M46 72 Q44 80 48 84 L72 84 Q76 80 72 72" fill="#1e1040" stroke="#7c3aed" stroke-width="1.5"/>
+        <!-- spark above -->
+        <text x="52" y="8" font-size="8" fill="#ffcc00" opacity="0.7">✦</text>
+        <text x="65" y="6" font-size="6" fill="#ffcc00" opacity="0.5">✦</text>
+        <defs>
+          <linearGradient id="spotlight" x1="60" y1="8" x2="60" y2="80" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffcc00"/>
+            <stop offset="100%" stop-color="#ffcc00" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <h3>Brain-Spotlight</h3>
+    <p>Gehirn + Scheinwerfer drauf.<br/>Sofort klar: Fokus auf Gedanken.</p>
+    <div class="tension">lesbar ↔ charakterstark</div>
+  </div>
+
+</div>
+
+<p style="margin-top: 28px; font-size: 12px; color: #444; text-align: center;">
+  Alle im Dark-Style · Klick auf Favorit oder mehrere auswählen
+</p>

@@ -15,7 +15,7 @@
   flex: 1;
   padding: 10px 12px;
   min-height: 44px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: var(--r-sm);
   font-family: 'Outfit', sans-serif;
@@ -107,7 +107,7 @@
 
 .roomNameInput {
   flex: 1;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-low);
   border: 1px solid var(--primary);
   border-radius: 6px;
   padding: 4px 8px;
@@ -127,9 +127,9 @@
 .prioBtn {
   padding: 3px 6px;
   border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.35);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-faint);
   font-family: 'Outfit', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
@@ -268,7 +268,7 @@
   min-width: 0;
   height: 6px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.09);
+  background: var(--surface);
   transition: background 0.3s;
 }
 
@@ -278,12 +278,12 @@
   flex-direction: column;
   gap: 6px;
   padding: 8px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-low);
   border-radius: var(--r-sm);
 }
 
 .taskEditInput {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 6px 10px;
@@ -307,7 +307,7 @@
 
 .taskSelect {
   flex: 1;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 5px 8px;
@@ -397,7 +397,7 @@
 
 .addTaskInput {
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 7px 10px;
@@ -443,8 +443,8 @@
 
 /* ── Add room + setup ── */
 .addRoomBtn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background: var(--surface);
+  border: 1px dashed var(--border);
   border-radius: var(--r);
   color: var(--text-dim);
   font-family: 'Outfit', sans-serif;
@@ -475,4 +475,24 @@
 
 .setupLink:hover {
   opacity: 1;
+}
+
+/* ─── Tool Reset ─────────────────────────────────────────── */
+.toolReset {
+  width: 100%;
+  margin-top: 24px;
+  padding: 9px 16px;
+  background: none;
+  border: 1px solid rgba(251,113,133,0.25);
+  border-radius: var(--r-sm);
+  color: var(--rose);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.toolResetConfirm {
+  border-color: var(--rose);
+  background: rgba(251,113,133,0.08);
 }

@@ -1,0 +1,154 @@
+<h2>Off-Center — 6 Varianten</h2>
+<p class="subtitle">Ursprung wandert, Mitte variiert. Klick auf Favoriten.</p>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 28px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .card {
+    background: #09080f;
+    border: 1.5px solid #1c1a2e;
+    border-radius: 22px;
+    padding: 28px 14px 20px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+  }
+  .card:hover { border-color: #5533aa; transform: translateY(-4px); box-shadow: 0 12px 40px rgba(86,40,180,0.2); }
+  .card.selected { border-color: #863bff; box-shadow: 0 0 0 2px rgba(134,59,255,0.4), 0 12px 40px rgba(134,59,255,0.2); }
+  .wrap { width: 100px; height: 100px; border-radius: 24px; margin: 0 auto 16px; overflow: hidden; }
+  .card h3 { font-size: 14px; font-weight: 700; color: #ccc6e8; margin: 0 0 6px; }
+  .card p  { font-size: 11px; color: #4a4760; margin: 0; line-height: 1.5; }
+</style>
+
+<div class="grid">
+
+<!-- 1: Oben-links, Mitte = Punkt (klassisch) -->
+<div class="card" data-choice="tl-dot" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="f1"><feGaussianBlur stdDeviation="4"/></filter></defs>
+  <circle cx="32" cy="34" r="52" stroke="#0e0828" stroke-width="1.5" fill="none"/>
+  <circle cx="32" cy="34" r="40" stroke="#1a1048" stroke-width="1.5" fill="none"/>
+  <circle cx="32" cy="34" r="28" stroke="#2e1868" stroke-width="2"   fill="none"/>
+  <circle cx="32" cy="34" r="16" stroke="#5828a0" stroke-width="2.5" fill="none"/>
+  <circle cx="32" cy="34" r="6"  stroke="#9858e8" stroke-width="2.5" fill="none"/>
+  <circle cx="32" cy="34" r="8"  fill="#7c3aed" filter="url(#f1)" opacity="0.7"/>
+  <circle cx="32" cy="34" r="3"  fill="white"/>
+</svg></div>
+<h3>Oben-Links · Punkt</h3>
+<p>Ursprung in der Ecke,<br/>Dot als Mitte.</p>
+</div>
+
+<!-- 2: Unten-rechts, Mitte = Kreuz -->
+<div class="card" data-choice="br-cross" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="f2"><feGaussianBlur stdDeviation="4"/></filter></defs>
+  <circle cx="68" cy="70" r="52" stroke="#0e0828" stroke-width="1.5" fill="none"/>
+  <circle cx="68" cy="70" r="40" stroke="#1a1048" stroke-width="1.5" fill="none"/>
+  <circle cx="68" cy="70" r="28" stroke="#2e1868" stroke-width="2"   fill="none"/>
+  <circle cx="68" cy="70" r="16" stroke="#5828a0" stroke-width="2.5" fill="none"/>
+  <circle cx="68" cy="70" r="6"  stroke="#9858e8" stroke-width="2.5" fill="none"/>
+  <circle cx="68" cy="70" r="8"  fill="#7c3aed" filter="url(#f2)" opacity="0.7"/>
+  <!-- cross center -->
+  <line x1="64" y1="70" x2="72" y2="70" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="68" y1="66" x2="68" y2="74" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</svg></div>
+<h3>Unten-Rechts · Kreuz</h3>
+<p>Gegenpol zur Ecke.<br/>Kreuz statt Punkt.</p>
+</div>
+
+<!-- 3: Links-Mitte, Mitte = kleiner Ring -->
+<div class="card" data-choice="left-ring" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="f3"><feGaussianBlur stdDeviation="4"/></filter></defs>
+  <circle cx="28" cy="50" r="52" stroke="#0e0828" stroke-width="1.5" fill="none"/>
+  <circle cx="28" cy="50" r="40" stroke="#1a1048" stroke-width="1.5" fill="none"/>
+  <circle cx="28" cy="50" r="28" stroke="#2e1868" stroke-width="2"   fill="none"/>
+  <circle cx="28" cy="50" r="16" stroke="#5828a0" stroke-width="2.5" fill="none"/>
+  <circle cx="28" cy="50" r="7"  stroke="#9858e8" stroke-width="2.5" fill="none"/>
+  <circle cx="28" cy="50" r="9"  fill="#7c3aed" filter="url(#f3)" opacity="0.6"/>
+  <!-- ring center -->
+  <circle cx="28" cy="50" r="3.5" stroke="white" stroke-width="1.5" fill="none"/>
+</svg></div>
+<h3>Links · Ring</h3>
+<p>Seitlicher Ursprung,<br/>offener Ring als Zentrum.</p>
+</div>
+
+<!-- 4: Oben-mitte, Mitte = Stern-Spark -->
+<div class="card" data-choice="top-spark" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="f4"><feGaussianBlur stdDeviation="4"/></filter></defs>
+  <circle cx="50" cy="28" r="52" stroke="#0e0828" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="28" r="40" stroke="#1a1048" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="28" r="28" stroke="#2e1868" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="28" r="16" stroke="#5828a0" stroke-width="2.5" fill="none"/>
+  <circle cx="50" cy="28" r="6"  stroke="#9858e8" stroke-width="2.5" fill="none"/>
+  <circle cx="50" cy="28" r="9"  fill="#7c3aed" filter="url(#f4)" opacity="0.7"/>
+  <!-- 4-point star spark -->
+  <line x1="50" y1="23" x2="50" y2="33" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="45" y1="28" x2="55" y2="28" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="47" y1="25" x2="53" y2="31" stroke="white" stroke-width="1"   stroke-linecap="round" opacity="0.5"/>
+  <line x1="53" y1="25" x2="47" y2="31" stroke="white" stroke-width="1"   stroke-linecap="round" opacity="0.5"/>
+</svg></div>
+<h3>Oben · Spark</h3>
+<p>Von oben einschlagend,<br/>Stern als Auftreffpunkt.</p>
+</div>
+
+<!-- 5: Unten-links, keine Mitte — pure rings -->
+<div class="card" data-choice="bl-empty" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <circle cx="30" cy="72" r="56" stroke="#0d0825" stroke-width="1.5" fill="none"/>
+  <circle cx="30" cy="72" r="44" stroke="#181040" stroke-width="1.5" fill="none"/>
+  <circle cx="30" cy="72" r="32" stroke="#2a1860" stroke-width="2"   fill="none"/>
+  <circle cx="30" cy="72" r="20" stroke="#4e26a0" stroke-width="2.5" fill="none"/>
+  <circle cx="30" cy="72" r="8"  stroke="#8a4ae8" stroke-width="2.5" fill="none"/>
+  <!-- no center marker — just void -->
+</svg></div>
+<h3>Unten-Links · Leer</h3>
+<p>Kein Marker. Ursprung bleibt<br/>unsichtbar, mysteriös.</p>
+</div>
+
+<!-- 6: Zwei Ursprünge — dual ripple, interference -->
+<div class="card" data-choice="dual" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs>
+    <filter id="f6a"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="f6b"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  <!-- source A: top-left -->
+  <circle cx="33" cy="36" r="40" stroke="#15093a" stroke-width="1.5" fill="none"/>
+  <circle cx="33" cy="36" r="28" stroke="#26125a" stroke-width="1.5" fill="none"/>
+  <circle cx="33" cy="36" r="16" stroke="#4a22a0" stroke-width="2"   fill="none"/>
+  <circle cx="33" cy="36" r="6"  stroke="#8040e0" stroke-width="2"   fill="none"/>
+  <circle cx="33" cy="36" r="7"  fill="#5b21b6" filter="url(#f6a)" opacity="0.6"/>
+  <circle cx="33" cy="36" r="2.5" fill="white"/>
+  <!-- source B: bottom-right -->
+  <circle cx="67" cy="66" r="40" stroke="#15093a" stroke-width="1.5" fill="none"/>
+  <circle cx="67" cy="66" r="28" stroke="#26125a" stroke-width="1.5" fill="none"/>
+  <circle cx="67" cy="66" r="16" stroke="#4a22a0" stroke-width="2"   fill="none"/>
+  <circle cx="67" cy="66" r="6"  stroke="#8040e0" stroke-width="2"   fill="none"/>
+  <circle cx="67" cy="66" r="7"  fill="#5b21b6" filter="url(#f6b)" opacity="0.6"/>
+  <circle cx="67" cy="66" r="2.5" fill="white"/>
+</svg></div>
+<h3>Dual · Interferenz</h3>
+<p>Zwei Ursprünge, überlagernd.<br/>Zwei Gedanken, ein Bild.</p>
+</div>
+
+</div>
+
+<p style="margin-top: 28px; font-size: 11px; color: #2a2840; text-align: center;">
+  Mehrere auswählen erlaubt
+</p>

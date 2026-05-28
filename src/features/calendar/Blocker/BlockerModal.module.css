@@ -11,8 +11,8 @@
 }
 
 .modal {
-  background: rgba(12,12,26,0.98);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: 20px 20px 0 0;
   padding: 20px 16px 36px;
   width: 100%;
@@ -39,10 +39,10 @@
 
 .titleInput {
   flex: 1;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: rgba(255,255,255,0.92);
+  color: var(--text);
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 600;
@@ -52,14 +52,14 @@
 }
 
 .titleInput:focus { border-color: var(--primary); }
-.titleInput::placeholder { color: rgba(255,255,255,0.25); }
+.titleInput::placeholder { color: var(--text-ghost); }
 
 .colorDot {
   width: 22px;
   height: 22px;
   border-radius: 50%;
   flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.2);
+  border: 2px solid var(--border);
   cursor: pointer;
 }
 
@@ -75,7 +75,7 @@
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-faint);
 }
 
 .timeRow {
@@ -91,10 +91,10 @@
 
 .dropTrigger {
   width: 100%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: rgba(255,255,255,0.88);
+  color: var(--text);
   font-family: 'Orbitron', monospace;
   font-size: 0.9rem;
   padding: 9px 10px;
@@ -119,8 +119,8 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: rgba(12,12,26,0.98);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: 10px;
   overflow-y: auto;
   max-height: 220px;
@@ -132,7 +132,7 @@
   width: 100%;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.7);
+  color: var(--text);
   font-family: 'Orbitron', monospace;
   font-size: 0.88rem;
   padding: 9px 12px;
@@ -142,7 +142,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.dropItem:hover { background: rgba(255,255,255,0.06); }
+.dropItem:hover { background: var(--surface); }
 
 .dropItemActive {
   color: var(--primary);
@@ -150,7 +150,7 @@
 }
 
 .timeSep {
-  color: rgba(255,255,255,0.3);
+  color: var(--text-faint);
   font-size: 1.1rem;
   font-weight: 300;
 }
@@ -170,7 +170,7 @@
 
 .modeRow {
   display: flex;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -179,7 +179,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-faint);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
@@ -189,7 +189,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.modeBtn + .modeBtn { border-left: 1px solid rgba(255,255,255,0.1); }
+.modeBtn + .modeBtn { border-left: 1px solid var(--border); }
 
 .modeBtnOpen.modeActive {
   background: rgba(59,130,246,0.18);
@@ -208,10 +208,10 @@
 }
 
 .chip {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  color: rgba(255,255,255,0.55);
+  color: var(--text-dim);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.78rem;
@@ -238,9 +238,9 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
@@ -272,7 +272,7 @@
 }
 
 .colorCircleActive {
-  border-color: rgba(255,255,255,0.8);
+  border-color: var(--text);
   transform: scale(1.18);
 }
 
@@ -318,7 +318,7 @@
 .cancelBtn {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.3);
+  color: var(--text-faint);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;

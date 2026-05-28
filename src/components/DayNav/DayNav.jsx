@@ -33,6 +33,7 @@ export default function DayNav({ date, onChange, onCalendarOpen }) {
       rightGlows={rightGlows}
       onLabelClick={onCalendarOpen}
       onLabelDoubleClick={isToday ? undefined : () => onChange(today)}
+      badge={isToday ? 'heute' : undefined}
     />
   )
 }

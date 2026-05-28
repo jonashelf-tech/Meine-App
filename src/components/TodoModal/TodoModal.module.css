@@ -15,8 +15,8 @@
 
 /* ─── Modal ───────────────────────────────────────────────── */
 .modal {
-  background: rgba(12, 12, 26, 0.97);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 18px 16px;
   width: 100%;
@@ -84,8 +84,8 @@
 .textInput {
   flex: 1;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
@@ -150,7 +150,7 @@
 
 .segBtn {
   flex: 1;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-dim);
@@ -163,7 +163,7 @@
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.segBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.segBtn:hover { background: var(--surface); color: var(--text); }
 
 .segBtnActive {
   background: color-mix(in srgb, var(--tc, var(--primary)) 12%, transparent);
@@ -211,7 +211,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 50%;
   color: var(--text-dim);
@@ -222,7 +222,7 @@
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.wdayBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.wdayBtn:hover { background: var(--surface); color: var(--text); }
 
 .wdayBtnActive {
   background: rgba(139, 92, 246, 0.14);
@@ -232,15 +232,15 @@
 
 /* ─── Select ─────────────────────────────────────────────── */
 .fieldSelect {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   padding: 7px 10px;
   outline: none;
-  color-scheme: dark;
+  color-scheme: light dark;
   cursor: pointer;
   transition: border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
@@ -249,15 +249,15 @@
 
 /* ─── Field inputs ───────────────────────────────────────── */
 .fieldInputSm {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   padding: 7px 10px;
   outline: none;
-  color-scheme: dark;
+  color-scheme: light dark;
   transition: border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
   width: 100%;
@@ -273,7 +273,7 @@
 }
 
 .durBtn {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-dim);
@@ -285,7 +285,7 @@
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.durBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.durBtn:hover { background: var(--surface); color: var(--text); }
 
 .durBtnActive {
   background: rgba(139, 92, 246, 0.1);
@@ -295,8 +295,8 @@
 
 .durFreeInput {
   width: 48px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
@@ -304,7 +304,7 @@
   padding: 4px 6px;
   text-align: center;
   outline: none;
-  color-scheme: dark;
+  color-scheme: light dark;
   -webkit-tap-highlight-color: transparent;
   transition: border-color 0.15s;
 }
@@ -312,13 +312,13 @@
 
 .durUnit {
   font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-ghost);
 }
 
 .durInput {
   width: 52px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
@@ -326,7 +326,7 @@
   padding: 5px 8px;
   outline: none;
   text-align: center;
-  color-scheme: dark;
+  color-scheme: light dark;
   -webkit-tap-highlight-color: transparent;
   transition: border-color 0.15s;
 }
@@ -368,10 +368,10 @@
 }
 
 .catChip {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-dim);
   font-size: 0.75rem;
   padding: 4px 10px;
   cursor: pointer;
@@ -390,10 +390,10 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-dim);
   font-size: 0.75rem;
   padding: 4px 6px 4px 10px;
   font-family: inherit;
@@ -421,9 +421,9 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.3);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  color: var(--text-faint);
   font-size: 0.85rem;
   display: flex;
   align-items: center;
@@ -448,10 +448,10 @@
 
 .catNewInput {
   flex: 1;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-low);
   border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text);
   font-size: 0.82rem;
   font-family: inherit;
   padding: 5px 10px;
@@ -481,7 +481,7 @@
 
 .catEmpty {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-ghost);
   font-style: italic;
 }
 
@@ -497,8 +497,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
   border-radius: var(--r-sm);
   padding: 5px 8px;
 }
@@ -531,8 +531,8 @@
 .subInput {
   flex: 1;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: 'Outfit', sans-serif;
@@ -547,8 +547,8 @@
 .subAddBtn {
   width: 36px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-dim);
   cursor: pointer;
@@ -561,7 +561,7 @@
   transition: background 0.15s, color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.subAddBtn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+.subAddBtn:hover { background: var(--surface); color: var(--text); }
 
 /* ─── Details Dropdown ───────────────────────────────────── */
 .detailsToggle {
@@ -571,7 +571,7 @@
   width: 100%;
   background: none;
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--border-dim);
   padding: 10px 0 2px;
   cursor: pointer;
   color: var(--text-dim);

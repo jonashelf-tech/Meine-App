@@ -156,7 +156,7 @@
   font-size: 0.6rem;
   font-weight: 600;
   font-family: 'Outfit', sans-serif;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-faint);
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -172,7 +172,7 @@
   flex: 1;
   height: 3px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--border-dim);
   transition: background 0.2s;
 }
 
@@ -187,7 +187,7 @@
   width: 36px;
   height: 20px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface);
   position: relative;
   cursor: pointer;
   flex-shrink: 0;
@@ -231,7 +231,7 @@
 .optional { font-weight: 400; text-transform: none; letter-spacing: 0; }
 
 .editInput {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
@@ -251,7 +251,7 @@
 .presetRow { display: flex; flex-wrap: wrap; gap: 6px; }
 
 .presetBtn {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--text-dim);
@@ -285,7 +285,7 @@
 
 .customInput {
   width: 56px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
@@ -299,7 +299,7 @@
 .customInput:focus { border-color: rgba(139, 92, 246, 0.4); }
 
 .customSelect {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
@@ -313,8 +313,8 @@
 .doneBtn {
   background: none;
   border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.22);
+  border-left: 1px solid var(--border-dim);
+  color: var(--text-faint);
   cursor: pointer;
   padding: 0 10px;
   align-self: stretch;
@@ -332,9 +332,9 @@
 
 .resetBtn {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-dim);
   font-family: 'Outfit', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
@@ -345,8 +345,8 @@
 }
 
 .resetBtn:hover {
-  color: rgba(255, 255, 255, 0.7);
-  border-color: rgba(255, 255, 255, 0.22);
+  color: var(--text);
+  border-color: var(--border);
 }
 
 /* ─── Delete ─────────────────────────────────────────────── */
@@ -385,7 +385,7 @@
 .iconInput {
   width: 40px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
@@ -397,7 +397,7 @@
 
 .addFormText {
   flex: 1;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);

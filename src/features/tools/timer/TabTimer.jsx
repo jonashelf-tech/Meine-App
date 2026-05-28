@@ -295,7 +295,7 @@ export default function TabTimer({ onBack }) {
   }, [done, focusTodoId, timerMode])
 
   const markTodoDone = () => {
-    setTodos(prev => prev.map(t => t.id === focusTodoId ? { ...t, done: true } : t))
+    setTodos(prev => prev.map(t => t.id === focusTodoId ? { ...t, done: true, doneAt: new Date().toISOString() } : t))
     setFocusTodoId(null)
     setConfirmDone(false)
   }
@@ -316,7 +316,7 @@ export default function TabTimer({ onBack }) {
         icon="⏱"
         eyebrow="Tool"
         title={<>Fokus-<em>Timer</em></>}
-        actions={pomCycles > 0 && <span className={s.cycles}>🍅×{pomCycles}</span>}
+        actions={pomCycles > 0 && <span className={s.cycles}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{display:'inline',verticalAlign:'text-bottom'}}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>×{pomCycles}</span>}
       />
 
       {/* ── Confirm: Stop ──────────────────────────────────── */}
@@ -436,7 +436,7 @@ export default function TabTimer({ onBack }) {
               className={[s.modeBtn, timerMode === 'pomodoro' ? s.modeBtnActive : ''].join(' ')}
               onClick={() => setTimerMode('pomodoro')}
             >
-              🍅 Pomodoro
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{display:'inline',verticalAlign:'text-bottom',marginRight:'5px'}}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>Pomodoro
             </button>
           </div>
 
@@ -542,7 +542,7 @@ export default function TabTimer({ onBack }) {
               </div>
 
               <button className={s.launchBtn} onClick={handlePomStart}>
-                🍅 Pomodoro starten — {pomWork}/{pomBreak} min
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{display:'inline',verticalAlign:'text-bottom',marginRight:'5px'}}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>Pomodoro starten — {pomWork}/{pomBreak} min
               </button>
             </>
           )}

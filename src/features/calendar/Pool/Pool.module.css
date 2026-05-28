@@ -1,6 +1,6 @@
 /* ─── Pool Container ─────────────────────────────────── */
 .pool {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
@@ -43,9 +43,9 @@
   font-weight: 600;
   padding: 3px 7px;
   border-radius: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   background: none;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-faint);
   cursor: pointer;
   letter-spacing: 0.03em;
   transition: all 0.15s;
@@ -54,8 +54,8 @@
 }
 
 .sortChip:hover {
-  color: rgba(255, 255, 255, 0.55);
-  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-dim);
+  border-color: var(--border);
 }
 
 .sortChipActive {
@@ -76,7 +76,7 @@
 }
 
 .chevron {
-  color: rgba(255, 255, 255, 0.28);
+  color: var(--text-faint);
   display: flex;
   align-items: center;
   margin-left: auto;
@@ -106,17 +106,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.18);
+  color: var(--border);
   cursor: grab;
   flex-shrink: 0;
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 1px solid var(--border-dim);
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   transition: color 0.15s;
 }
 
-.handle:hover  { color: rgba(255, 255, 255, 0.45); }
+.handle:hover  { color: var(--text-dim); }
 .handle:active { cursor: grabbing; }
 
 .placedIcon {
@@ -133,10 +133,10 @@
   gap: 6px;
   margin: 4px 8px 2px;
   padding: 7px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
   border-radius: 10px;
-  color: rgba(255, 255, 255, 0.32);
+  color: var(--text-faint);
   font-family: 'Outfit', sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
@@ -147,12 +147,12 @@
 }
 
 .expandMore:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.5);
+  background: var(--surface);
+  color: var(--text-dim);
 }
 
 .expandCount {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface);
   border-radius: 8px;
   padding: 1px 6px;
   font-size: 0.58rem;
@@ -196,7 +196,7 @@
 
 /* ─── Erledigt heute ─────────────────────────────────── */
 .doneSection {
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--border-dim);
   margin-top: 4px;
 }
 
@@ -219,14 +219,14 @@
 .doneHint {
   font-family: 'Outfit', sans-serif;
   font-size: 0.56rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-ghost);
   font-style: italic;
 }
 
 .doneEmpty {
   font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.18);
+  color: var(--border);
   padding: 4px 14px 8px;
   font-style: italic;
 }
@@ -240,8 +240,8 @@
   display: flex;
   align-items: center;
   margin: 0 8px 4px;
-  background: rgba(255, 255, 255, 0.018);
-  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
   border-radius: var(--r);
   overflow: hidden;
   height: 36px;
@@ -277,7 +277,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-dim);
   text-decoration: line-through;
   flex: 1;
   overflow: hidden;
@@ -288,7 +288,7 @@
 .doneMeta {
   font-family: 'Outfit', sans-serif;
   font-size: 0.56rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-ghost);
   padding: 0 10px 0 6px;
   flex-shrink: 0;
 }
@@ -369,10 +369,10 @@
   padding: 9px 16px;
   background: none;
   border: none;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid var(--border-dim);
   font-family: inherit;
   font-size: 11px;
-  color: rgba(255,255,255,0.3);
+  color: var(--text-faint);
   cursor: pointer;
   text-align: center;
   letter-spacing: 0.03em;

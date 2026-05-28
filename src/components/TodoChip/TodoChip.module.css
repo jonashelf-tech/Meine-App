@@ -20,8 +20,8 @@
 .chip {
   display: flex;
   align-items: stretch;
-  background: rgba(255, 255, 255, 0.022);
-  border: 1px solid rgba(255, 255, 255, 0.065);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
   border-radius: var(--r);
   overflow: hidden;
   transition: background 0.14s, border-color 0.14s;
@@ -30,8 +30,8 @@
 }
 
 .chip:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--surface);
+  border-color: var(--border);
 }
 
 /* Old todo → Farbe aus klaerenSettings.ageColor */
@@ -80,7 +80,7 @@
   justify-content: center;
   background: none;
   border: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid var(--border-dim);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -96,7 +96,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--text-faint);
   line-height: 1;
 }
 
@@ -122,7 +122,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.84rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -130,7 +130,7 @@
 }
 
 .emptyText {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-ghost);
   font-style: italic;
 }
 
@@ -144,7 +144,7 @@
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-faint);
   margin-top: 2px;
   display: flex;
   align-items: center;
@@ -163,7 +163,7 @@
 
 /* Age tag — passiv */
 .ageTag {
-  color: rgba(255, 255, 255, 0.28);
+  color: var(--text-faint);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -253,7 +253,7 @@
 .klaerenText {
   font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--text-dim);
   line-height: 1.4;
   word-break: break-word;
 }
@@ -262,8 +262,8 @@
 .removeBtn {
   background: none;
   border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.12);
+  border-left: 1px solid var(--border-dim);
+  color: var(--text-ghost);
   font-size: 0.62rem;
   cursor: pointer;
   padding: 0 8px;
@@ -282,7 +282,7 @@
 }
 
 .prioBadgeWrap {
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 1px solid var(--border-dim);
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -291,10 +291,10 @@
 
 /* ── Sub-items wrap ──────────────────────────────────────── */
 .itemsWrap {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border);
   border-top: 2px solid var(--chip-color);
   border-radius: 0 0 var(--r) var(--r);
-  background: rgba(10, 10, 22, 1);
+  background: var(--bg2);
   overflow: hidden;
 }
 
@@ -305,8 +305,8 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.25);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-ghost);
+  border-bottom: 1px solid var(--border-dim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -318,7 +318,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px 8px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-dim);
   transition: background 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -328,7 +328,7 @@
 }
 
 .itemRow:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--surface-low);
 }
 
 .itemDone {
@@ -341,7 +341,7 @@
   height: 20px;
   min-width: 20px;
   border-radius: 5px;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border: 1.5px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -363,7 +363,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--text);
   cursor: pointer;
   min-width: 0;
   word-break: break-word;
@@ -377,7 +377,7 @@
 .itemRm {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.1);
+  color: var(--text-ghost);
   font-size: 0.55rem;
   cursor: pointer;
   padding: 3px 5px;
@@ -392,7 +392,7 @@
 
 /* Drag handle */
 .itemDragHandle {
-  color: rgba(255, 255, 255, 0.22);
+  color: var(--text-faint);
   cursor: grab;
   padding: 6px 5px;
   flex-shrink: 0;
@@ -416,7 +416,7 @@
   display: flex;
   align-items: center;
   padding: 0 8px 0 14px;
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--surface-low);
 }
 
 .itemInput {
@@ -424,7 +424,7 @@
   background: none;
   border: none;
   outline: none;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--text-dim);
   font-size: 0.76rem;
   font-family: 'Outfit', sans-serif;
   padding: 9px 6px 9px 0;
@@ -432,7 +432,7 @@
 }
 
 .itemInput::placeholder {
-  color: rgba(255, 255, 255, 0.18);
+  color: var(--border);
 }
 
 .itemAddBtn {

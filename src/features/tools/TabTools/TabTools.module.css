@@ -32,6 +32,36 @@
   box-shadow: 0 1px 8px rgba(139, 92, 246, 0.1);
 }
 
+/* ─── All Tools Toggle ──────────────────────────────────── */
+.allToolsToggle {
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 8px 14px;
+  background: var(--border-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  text-align: center;
+}
+
+.allToolsToggle:hover {
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.allToolsToggleOn {
+  color: var(--primary);
+  border-color: rgba(139,92,246,0.35);
+  background: rgba(139,92,246,0.07);
+}
+
 /* ─── Shared List ───────────────────────────────────────── */
 .list {
   display: flex;
@@ -112,7 +142,7 @@
 }
 
 .swatchActive {
-  border-color: rgba(255, 255, 255, 0.8);
+  border-color: var(--border);
   box-shadow: 0 0 8px var(--sw);
 }
 
@@ -124,8 +154,8 @@
   aspect-ratio: 1;
   border-radius: 6px;
   background: var(--surface);
-  border: 1.5px dashed rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.45);
+  border: 1.5px dashed var(--border);
+  color: var(--text-dim);
   font-size: 1.1rem;
   cursor: pointer;
   display: flex;
@@ -136,8 +166,8 @@
 }
 
 .swatchCustom:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  color: rgba(255, 255, 255, 0.8);
+  border-color: var(--text-dim);
+  color: var(--text);
 }
 
 .hidden {
@@ -235,9 +265,9 @@
   height: 36px;
   min-width: 36px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border: 1.5px solid var(--border);
   background: none;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-dim);
   font-size: 1rem;
   font-weight: 700;
   display: flex;

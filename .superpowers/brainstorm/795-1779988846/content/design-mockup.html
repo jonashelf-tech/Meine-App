@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kognitives Training — Design Mockup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Orbitron:wght@600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #04030b;
+    color: rgba(255,255,255,0.92);
+    font-family: 'Outfit', sans-serif;
+    padding: 32px 16px 60px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: rgba(255,255,255,0.35);
+    font-size: 0.82rem;
+    margin-bottom: 40px;
+  }
+
+  .screens {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .screen-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .screen-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* Phone frame */
+  .phone {
+    width: 260px;
+    height: 520px;
+    background: #080810;
+    border-radius: 36px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    flex-shrink: 0;
+  }
+
+  /* ===== SCREEN 1: Tool Home ===== */
+  .home-header {
+    padding: 20px 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .back-btn {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
+  }
+  .home-eyebrow {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8B5CF6;
+  }
+  .home-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+  }
+  .home-streak {
+    margin: 14px 16px 0;
+    background: rgba(139,92,246,0.1);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .streak-icon {
+    font-size: 1.2rem;
+  }
+  .streak-text {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.4;
+  }
+  .streak-text strong {
+    color: #8B5CF6;
+    font-weight: 700;
+  }
+  .section-title {
+    padding: 14px 16px 8px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+  .module-card {
+    margin: 0 12px 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .module-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+  .module-info { flex: 1; min-width: 0; }
+  .module-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+  }
+  .module-desc {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 1px;
+  }
+  .module-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.3);
+    font-weight: 600;
+  }
+  .chart-mini {
+    margin: 0 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 10px 14px;
+  }
+  .chart-mini-label {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 8px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 32px;
+  }
+  .bar {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    background: rgba(139,92,246,0.3);
+    transition: height 0.3s;
+  }
+  .bar.today { background: #8B5CF6; }
+  .bar.empty { background: rgba(255,255,255,0.06); }
+
+  /* ===== SCREEN 2: Reaktion Exercise ===== */
+  .exercise-screen {
+    width: 100%; height: 100%;
+    background: #060610;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .ex-header {
+    padding: 20px 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ex-close {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.75rem;
+  }
+  .ex-progress {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 2px;
+    margin: 0 12px;
+    overflow: hidden;
+  }
+  .ex-progress-fill {
+    height: 100%;
+    background: #8B5CF6;
+    border-radius: 2px;
+    width: 45%;
+    box-shadow: 0 0 8px rgba(139,92,246,0.6);
+  }
+  .ex-level {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.3);
+    font-weight: 600;
+  }
+
+  .ex-timer {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    margin-top: 28px;
+    letter-spacing: 0.05em;
+  }
+  .ex-timer-label {
+    text-align: center;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .ex-arena {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .stimulus-circle {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 38%, rgba(139,92,246,0.9), #8B5CF6);
+    box-shadow: 0 0 40px rgba(139,92,246,0.5), 0 0 80px rgba(139,92,246,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    animation: breathe 1.5s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(139,92,246,0.5), 0 0 80px rgba(139,92,246,0.2); }
+    50% { transform: scale(1.04); box-shadow: 0 0 55px rgba(139,92,246,0.65), 0 0 100px rgba(139,92,246,0.3); }
+  }
+
+  .ex-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 16px 20px;
+  }
+  .ex-stat {
+    text-align: center;
+  }
+  .ex-stat-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+  }
+  .ex-stat-val.green { color: #10B981; }
+  .ex-stat-val.red { color: #FB7185; }
+  .ex-stat-label {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  /* ===== SCREEN 3: Results ===== */
+  .result-screen {
+    width: 100%; height: 100%;
+    background: #080810;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  .result-eyebrow {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #10B981;
+    margin-bottom: 4px;
+  }
+  .result-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .result-hero {
+    background: rgba(139,92,246,0.08);
+    border: 1px solid rgba(139,92,246,0.18);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .result-score {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #8B5CF6;
+    line-height: 1;
+  }
+  .result-score-label {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.35);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .result-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    color: #10B981;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .metric {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+  }
+  .metric-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+  }
+  .metric-lbl {
+    font-size: 0.58rem;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+  .result-trend {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .trend-label {
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .trend-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 36px;
+  }
+  .trend-bar {
+    flex: 1;
+    border-radius: 2px 2px 0 0;
+    background: rgba(139,92,246,0.25);
+  }
+  .trend-bar.last { background: #8B5CF6; box-shadow: 0 0 8px rgba(139,92,246,0.4); }
+
+  .result-btn {
+    margin-top: auto;
+    background: #8B5CF6;
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .result-btn-sec {
+    margin-top: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>Kognitives Training — Design Mockup</h1>
+<p class="subtitle">Unser Aesthetic · Dark Violet · Outfit + Orbitron · Mobile First</p>
+
+<div class="screens">
+
+  <!-- Screen 1: Tool Home -->
+  <div class="screen-wrap">
+    <div class="screen-label">Übersicht</div>
+    <div class="phone">
+      <div class="home-header">
+        <div class="back-btn">‹</div>
+        <div style="flex:1;padding-left:6px">
+          <div class="home-eyebrow">Tool</div>
+          <div class="home-title">Kognitiv</div>
+        </div>
+      </div>
+
+      <div class="home-streak">
+        <div class="streak-icon">🔥</div>
+        <div class="streak-text">
+          <strong>5 Tage</strong> Streak · Heute noch offen<br>
+          <span style="opacity:0.7">Nächste Session: 07:30</span>
+        </div>
+      </div>
+
+      <div class="section-title">Module</div>
+
+      <div class="module-card">
+        <div class="module-icon" style="background:rgba(139,92,246,0.15)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/></svg>
+        </div>
+        <div class="module-info">
+          <div class="module-name">Reaktion</div>
+          <div class="module-desc">Alertness · Reaktionshemmung</div>
+        </div>
+        <div class="module-badge">LV 4</div>
+      </div>
+
+      <div class="module-card">
+        <div class="module-icon" style="background:rgba(20,184,166,0.15)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="module-info">
+          <div class="module-name">Vigilanz</div>
+          <div class="module-desc">Daueraufmerksamkeit</div>
+        </div>
+        <div class="module-badge">LV 2</div>
+      </div>
+
+      <div class="module-card" style="opacity:0.45">
+        <div class="module-icon" style="background:rgba(251,113,133,0.1)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FB7185" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="module-info">
+          <div class="module-name">Selektion</div>
+          <div class="module-desc">Selektive Aufmerksamkeit</div>
+        </div>
+        <div class="module-badge" style="color:rgba(251,113,133,0.4);font-size:0.58rem">BALD</div>
+      </div>
+
+      <div class="section-title" style="margin-top:4px">Verlauf (7 Tage)</div>
+      <div class="chart-mini">
+        <div class="chart-mini-label">Reaktionszeit · ms</div>
+        <div class="chart-bars">
+          <div class="bar" style="height:60%"></div>
+          <div class="bar empty" style="height:30px"></div>
+          <div class="bar" style="height:75%"></div>
+          <div class="bar" style="height:50%"></div>
+          <div class="bar empty" style="height:30px"></div>
+          <div class="bar" style="height:80%"></div>
+          <div class="bar today" style="height:90%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Reaktion (mid-exercise) -->
+  <div class="screen-wrap">
+    <div class="screen-label">Reaktion — Übung</div>
+    <div class="phone">
+      <div class="exercise-screen">
+        <div class="ex-header">
+          <div class="ex-close">✕</div>
+          <div class="ex-progress"><div class="ex-progress-fill"></div></div>
+          <div class="ex-level">LV 4</div>
+        </div>
+
+        <div class="ex-timer">342</div>
+        <div class="ex-timer-label">Reaktionszeit · ms</div>
+
+        <div class="ex-arena">
+          <div class="stimulus-circle">TIPPEN</div>
+        </div>
+
+        <div class="ex-stats">
+          <div class="ex-stat">
+            <div class="ex-stat-val green">12</div>
+            <div class="ex-stat-label">Treffer</div>
+          </div>
+          <div class="ex-stat">
+            <div class="ex-stat-val red">1</div>
+            <div class="ex-stat-label">Fehler</div>
+          </div>
+          <div class="ex-stat">
+            <div class="ex-stat-val">18</div>
+            <div class="ex-stat-label">Gesamt</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Results -->
+  <div class="screen-wrap">
+    <div class="screen-label">Ergebnis</div>
+    <div class="phone">
+      <div class="result-screen">
+        <div class="result-eyebrow">Session abgeschlossen</div>
+        <div class="result-title">Reaktion</div>
+
+        <div class="result-hero">
+          <div class="result-score">342</div>
+          <div class="result-score-label">ms · Ø Reaktionszeit</div>
+          <div class="result-delta">▲ 18ms besser als letzte Woche</div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric">
+            <div class="metric-val" style="color:#10B981">94%</div>
+            <div class="metric-lbl">Treffer</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val" style="color:#FB7185">1</div>
+            <div class="metric-lbl">Fehler</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val">5:00</div>
+            <div class="metric-lbl">Dauer</div>
+          </div>
+        </div>
+
+        <div class="result-trend">
+          <div class="trend-label">Reaktionszeit · letzte Sessions</div>
+          <div class="trend-bars">
+            <div class="trend-bar" style="height:50%"></div>
+            <div class="trend-bar" style="height:40%"></div>
+            <div class="trend-bar" style="height:65%"></div>
+            <div class="trend-bar" style="height:55%"></div>
+            <div class="trend-bar" style="height:60%"></div>
+            <div class="trend-bar" style="height:70%"></div>
+            <div class="trend-bar last" style="height:80%"></div>
+          </div>
+        </div>
+
+        <div class="result-btn">Im Kalender speichern</div>
+        <div class="result-btn-sec">Nächste Session planen</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Inject into parent frame if running inside the companion
+if (window.parent !== window) {
+  window.parent.postMessage({type:'loaded'}, '*');
+}
+</script>
+</body>
+</html>

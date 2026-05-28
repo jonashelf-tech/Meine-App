@@ -254,7 +254,7 @@ export default function TabRad({ onBack }) {
     if (!winner) return
     if (winner.id > 0) {
       setTodos(prev => prev.map(t =>
-        t.id === winner.id ? { ...t, done: true, doneAt: today } : t
+        t.id === winner.id ? { ...t, done: true, doneAt: new Date().toISOString() } : t
       ))
     } else {
       setManualItems(prev => prev.filter(m => m.text !== winner.text))

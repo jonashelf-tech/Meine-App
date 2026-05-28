@@ -242,6 +242,12 @@
   font-size: 0.78rem;
 }
 
+.actionBtnKi {
+  border-color: rgba(20,184,166,0.4);
+  color: var(--teal);
+}
+.actionBtnKi:hover { background: rgba(20,184,166,0.08); border-color: var(--teal); }
+
 .hidden { display: none; }
 
 /* ─── Auto-Backup ────────────────────────────────────────── */

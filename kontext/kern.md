@@ -227,7 +227,7 @@ ALL_SLOT_KEYS        // alle gültigen Slot-Keys 0–23.5
 ```
 Tab 0  — Tagesplaner    (TabHeute: DayNav + Zeitplan + Pool)
 Tab 1  — Kalender       (TabKalender: Woche/Monat + DayPanel)
-Tab 2  — Tools          (TabTools: Meine Tools / Alle Tools)
+Tab 2  — Tools          (TabTools: Meine Tools default; "+ Alle Tools" Toggle-Button oben öffnet Alle-Tools-Liste)
 Tab 3  — Einstellungen
 --- Tools (via TOOL_TAB) ---
 Tab 4  — Geburtstage    (geburtstage)
@@ -251,7 +251,8 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 ## TabKalender — Features
 
 - **Ansichten:** Woche (Zeitgitter 07–22 Uhr) · Monat (Kacheln mit Farbbalken)
-- **Toggle-Strip:** Termine + Todos (je ein lokaler Boolean). Tools-Toggle entfernt.
+- **Layout:** NavPill ganz oben (Monat/Woche Navigation), Woche/Monat-Segmented direkt darunter, dann das Grid
+- **Toggle-Strip:** Termine + Todos + Tools (je ein lokaler Boolean). `showTools` (default false) filtert tool-erstellte Items (`toolId != null`) aus Monats-Balken und Wochen-Slots. DayPanel zeigt immer alle Items unabhängig von showTools.
 - **Tool-Dots:** Datengesteuert — nur wenn tatsächlich Daten vorhanden:
   - Gewicht-Dot: `loadEntries().some(e => e.date === dk)` (aus `gewichtData.js`)
   - Haushalt-Dot: `todos.some(t => t.toolId === 'haushalt' && t.createdAt?.startsWith(dk))`
@@ -262,7 +263,7 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 - **DayPanel:** erscheint unterhalb des Grids wenn Monatskachel angeklickt
   - Sektionen: Zeitplan · Erledigt · Gewicht (nur wenn Eintrag für diesen Tag)
   - Zeitplan: Geburtstags-All-day-Einträge ganz oben (pinker Akzentstreifen), darunter normale Slots
-  - Erledigt: `todos.filter(t => t.doneAt?.startsWith(dk))` — Einzelklick → Restore-Modal
+  - Erledigt: `todos.filter(t => t.doneAt?.startsWith(dk))` — Einzelklick → Restore-Modal. **Default: eingeklappt** (`done: false` in useState)
   - Gewicht: nur sichtbar wenn `loadEntries().find(e => e.date === dk)` — zeigt kg + kcal + Link-Button → Tab Gewicht
   - Klick auf Datum-Header → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
 - **Wochenansicht Allday-Streifen:** zeigt Geburtstags-Balken + Todos ohne Uhrzeit. Erscheint wenn `showTodos || showTermine`.

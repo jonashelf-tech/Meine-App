@@ -14,15 +14,10 @@ const SWATCHES = [
   '#FCD34D', '#FB923C', '#F87171', '#E879F9',
 ]
 
-const VIEWS = [
-  { id: 'mine', label: 'Meine Tools' },
-  { id: 'all',  label: 'Alle Tools' },
-]
-
 const allToolsSorted = [...TOOL_REGISTRY].sort((a, b) => a.name.localeCompare(b.name, 'de'))
 
 export default function TabTools() {
-  const [view, setView] = useState('mine')
+  const [showAll, setShowAll] = useState(false)
   const { activeTools, toggleTool, setCurrentTab, setToolColors, toolColors } = useAppStore()
 
   const [dragId,           setDragId]           = useState(null)
@@ -219,19 +214,15 @@ export default function TabTools() {
         className={s.hidden}
         onChange={e => { if (colorPickerTool) handleColorChange(colorPickerTool, e.target.value) }}
       />
-      <div className={s.segmented}>
-        {VIEWS.map(v => (
-          <button
-            key={v.id}
-            className={[s.seg, view === v.id ? s.segActive : ''].join(' ')}
-            onClick={() => setView(v.id)}
-          >
-            {v.label}
-          </button>
-        ))}
-      </div>
 
-      {view === 'all' && (
+      <button
+        className={[s.allToolsToggle, showAll ? s.allToolsToggleOn : ''].join(' ')}
+        onClick={() => setShowAll(v => !v)}
+      >
+        {showAll ? '✕ Schließen' : '+ Alle Tools'}
+      </button>
+
+      {showAll && (
         <div className={s.list}>
           {allToolsSorted.map(tool => {
             const isActive  = activeTools.includes(tool.id)
@@ -287,7 +278,7 @@ export default function TabTools() {
         </div>
       )}
 
-      {view === 'mine' && (
+      {!showAll && (
         <div className={s.list}>
           {renderMyTools()}
         </div>

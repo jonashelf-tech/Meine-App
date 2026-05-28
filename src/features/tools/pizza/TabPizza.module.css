@@ -29,7 +29,7 @@
 }
 
 .resetBtn {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: 50%;
   color: var(--text-dim);
@@ -48,7 +48,7 @@
 
 .resetBtn:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.09);
+  background: var(--surface);
 }
 
 /* ─── Title ──────────────────────────────────────────────── */
@@ -116,7 +116,7 @@
 }
 
 .inputBox input[type='time'] {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 /* Remove number input spinners */
@@ -235,7 +235,7 @@
 }
 
 .step:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
 }
 
 .stepEnd {

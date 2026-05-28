@@ -1,0 +1,169 @@
+<h2>Ripple — 6 Varianten</h2>
+<p class="subtitle">Gleiche DNA, unterschiedliche Energie. Klick auf Favoriten.</p>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 28px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .card {
+    background: #09080f;
+    border: 1.5px solid #1c1a2e;
+    border-radius: 22px;
+    padding: 28px 14px 20px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+  }
+  .card:hover {
+    border-color: #5533aa;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(86,40,180,0.2);
+  }
+  .card.selected {
+    border-color: #863bff;
+    box-shadow: 0 0 0 2px rgba(134,59,255,0.4), 0 12px 40px rgba(134,59,255,0.2);
+  }
+  .wrap {
+    width: 100px;
+    height: 100px;
+    border-radius: 24px;
+    margin: 0 auto 16px;
+    overflow: hidden;
+  }
+  .card h3 { font-size: 14px; font-weight: 700; color: #ccc6e8; margin: 0 0 6px; }
+  .card p  { font-size: 11px; color: #4a4760; margin: 0; line-height: 1.5; }
+</style>
+
+<div class="grid">
+
+<!-- 1: Eng & dicht — viele Ringe, tight spacing -->
+<div class="card" data-choice="dense" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="g1"><feGaussianBlur stdDeviation="3.5"/></filter></defs>
+  <circle cx="50" cy="50" r="44" stroke="#0d0825" stroke-width="1.2" fill="none"/>
+  <circle cx="50" cy="50" r="39" stroke="#110b30" stroke-width="1.2" fill="none"/>
+  <circle cx="50" cy="50" r="34" stroke="#180f42" stroke-width="1.2" fill="none"/>
+  <circle cx="50" cy="50" r="29" stroke="#221558" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="24" stroke="#311e74" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="19" stroke="#452a96" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="14" stroke="#6333bb" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="50" r="9"  stroke="#8b4ee0" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="50" r="4"  stroke="#c084fc" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="50" r="5"  fill="#8b5cf6" filter="url(#g1)"/>
+  <circle cx="50" cy="50" r="2"  fill="white"/>
+</svg></div>
+<h3>Dicht</h3>
+<p>Viele enge Ringe. Sog-Effekt,<br/>fast hypnotisch.</p>
+</div>
+
+<!-- 2: Weit & luftig — 4 Ringe, viel Raum -->
+<div class="card" data-choice="airy" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="g2"><feGaussianBlur stdDeviation="5"/></filter></defs>
+  <circle cx="50" cy="50" r="42" stroke="#160e38" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="30" stroke="#2d1a6e" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="50" r="18" stroke="#6d28d9" stroke-width="2.5" fill="none"/>
+  <circle cx="50" cy="50" r="8"  fill="#7c3aed" filter="url(#g2)" opacity="0.6"/>
+  <circle cx="50" cy="50" r="5"  fill="#a78bfa"/>
+  <circle cx="47" cy="47" r="1.5" fill="white" opacity="0.8"/>
+</svg></div>
+<h3>Luftig</h3>
+<p>Nur 3 Ringe, viel Luft.<br/>Ruhig, selbstsicher.</p>
+</div>
+
+<!-- 3: Off-center — Stein ins Wasser, nicht mittig -->
+<div class="card" data-choice="offcenter" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="g3"><feGaussianBlur stdDeviation="4"/></filter></defs>
+  <!-- rings centered at 38,42 instead of 50,50 -->
+  <circle cx="38" cy="42" r="46" stroke="#0e0828" stroke-width="1.5" fill="none"/>
+  <circle cx="38" cy="42" r="36" stroke="#1c1050" stroke-width="1.5" fill="none"/>
+  <circle cx="38" cy="42" r="26" stroke="#311870" stroke-width="2"   fill="none"/>
+  <circle cx="38" cy="42" r="16" stroke="#5c28aa" stroke-width="2.5" fill="none"/>
+  <circle cx="38" cy="42" r="7"  stroke="#9d5cff" stroke-width="2.5" fill="none"/>
+  <circle cx="38" cy="42" r="8"  fill="#7c3aed" filter="url(#g3)" opacity="0.7"/>
+  <circle cx="38" cy="42" r="3"  fill="white"/>
+</svg></div>
+<h3>Off-Center</h3>
+<p>Ursprung liegt nicht in der Mitte.<br/>Dynamischer, lebendiger.</p>
+</div>
+
+<!-- 4: Perspective tilt — Ringe als Ellipsen, 3D-Winkel -->
+<div class="card" data-choice="tilt" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs><filter id="g4"><feGaussianBlur stdDeviation="4"/></filter></defs>
+  <!-- ellipses simulating 3D tilt, rx larger than ry -->
+  <ellipse cx="50" cy="54" rx="42" ry="20" stroke="#0e0828" stroke-width="1.5" fill="none"/>
+  <ellipse cx="50" cy="52" rx="34" ry="16" stroke="#1e1050" stroke-width="1.5" fill="none"/>
+  <ellipse cx="50" cy="51" rx="25" ry="11" stroke="#341870" stroke-width="2"   fill="none"/>
+  <ellipse cx="50" cy="50" rx="16" ry="7"  stroke="#6030a8" stroke-width="2.5" fill="none"/>
+  <ellipse cx="50" cy="50" rx="7"  ry="3"  stroke="#a060f0" stroke-width="2.5" fill="none"/>
+  <circle  cx="50" cy="50" r="7"   fill="#7c3aed" filter="url(#g4)" opacity="0.6"/>
+  <circle  cx="50" cy="50" r="3"   fill="white"/>
+  <circle  cx="48" cy="49" r="1"   fill="white" opacity="0.6"/>
+</svg></div>
+<h3>Perspektive</h3>
+<p>Ringe in 3D-Neigung. Tiefe<br/>ohne Aufwand.</p>
+</div>
+
+<!-- 5: Pulse — ein Ring leuchtet auf -->
+<div class="card" data-choice="pulse" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#04030b"/>
+  <defs>
+    <filter id="g5a"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="g5b"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <!-- faded outer rings -->
+  <circle cx="50" cy="50" r="42" stroke="#100930" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="33" stroke="#160e40" stroke-width="1.5" fill="none"/>
+  <!-- THE pulse ring — bright, glowing -->
+  <circle cx="50" cy="50" r="24" stroke="#8b5cf6" stroke-width="3" fill="none" filter="url(#g5a)" opacity="0.6"/>
+  <circle cx="50" cy="50" r="24" stroke="#c4b5fd" stroke-width="1.5" fill="none"/>
+  <!-- inner rings faded again -->
+  <circle cx="50" cy="50" r="14" stroke="#2a1660" stroke-width="1.5" fill="none"/>
+  <!-- center -->
+  <circle cx="50" cy="50" r="10" fill="#5b21b6" filter="url(#g5b)" opacity="0.5"/>
+  <circle cx="50" cy="50" r="4"  fill="#a78bfa"/>
+  <circle cx="48" cy="48" r="1.5" fill="white" opacity="0.9"/>
+</svg></div>
+<h3>Pulse</h3>
+<p>Ein Ring leuchtet auf.<br/>Fokus-Moment eingefroren.</p>
+</div>
+
+<!-- 6: Warm shift — Ringe von kalt (außen) zu warm (innen) -->
+<div class="card" data-choice="warm" onclick="toggleSelect(this)">
+<div class="wrap"><svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="24" fill="#040308"/>
+  <defs><filter id="g6"><feGaussianBlur stdDeviation="5"/></filter></defs>
+  <!-- rings shift cold blue → purple → warm -->
+  <circle cx="50" cy="50" r="41" stroke="#0a1530" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="33" stroke="#12204a" stroke-width="1.5" fill="none"/>
+  <circle cx="50" cy="50" r="25" stroke="#2a1e6e" stroke-width="2"   fill="none"/>
+  <circle cx="50" cy="50" r="17" stroke="#6030a0" stroke-width="2.5" fill="none"/>
+  <circle cx="50" cy="50" r="9"  stroke="#b050e0" stroke-width="2.5" fill="none"/>
+  <!-- warm core glow -->
+  <circle cx="50" cy="50" r="10" fill="#cc44ff" filter="url(#g6)" opacity="0.5"/>
+  <circle cx="50" cy="50" r="4"  fill="#f0b0ff"/>
+  <circle cx="48" cy="48" r="1.5" fill="white" opacity="0.95"/>
+</svg></div>
+<h3>Warm Core</h3>
+<p>Kalt außen, warm innen.<br/>Energie sammelt sich.</p>
+</div>
+
+</div>
+
+<p style="margin-top: 28px; font-size: 11px; color: #2a2840; text-align: center;">
+  Mehrere auswählen erlaubt · Alle basieren auf dem Ripple-Prinzip
+</p>

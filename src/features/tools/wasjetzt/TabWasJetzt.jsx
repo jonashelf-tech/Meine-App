@@ -42,9 +42,8 @@ export default function TabWasJetzt({ onBack }) {
     setDoneIds(prev => new Set([...prev, card.id]))
 
     if (card.type === 'todo') {
-      const today = new Date().toISOString().slice(0, 10)
       setTodos(prev => prev.map(t =>
-        t.id === card.id ? { ...t, done: true, doneAt: today } : t
+        t.id === card.id ? { ...t, done: true, doneAt: new Date().toISOString() } : t
       ))
     } else if (card.type === 'haushalt') {
       const config = loadHaushalt()

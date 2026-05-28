@@ -5,8 +5,8 @@
 ```
 src/
   components/
-    DayNav/           DayNav.jsx              — Datums-Pille oben im Tagesplaner
-    NavPill/          NavPill.jsx
+    DayNav/           DayNav.jsx              — Datums-Pille oben im Tagesplaner; zeigt "heute" Badge wenn viewDate === today
+    NavPill/          NavPill.jsx             — Pille mit Pfeil-Buttons; optionaler `badge`-Prop (z.B. "heute") als Chip rechts neben Label
     PrioBadge/        PrioBadge.jsx
     RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
     Toast/            Toast.jsx
@@ -39,7 +39,7 @@ src/
     todos/            Block.js  — createBlock(), isTermin(), isFaelligkeit(), isTodo()
 
     tools/
-      TabTools/       TabTools.jsx            — Meine Tools / Alle Tools
+      TabTools/       TabTools.jsx            — Default: Meine Tools-Liste; "+ Alle Tools" Button oben (toggle) zeigt Alle-Tools-Ansicht zum Aktivieren/Deaktivieren
       toolRegistry.jsx                        — TOOL_REGISTRY + ToolIcon (SVG)
       toolTabs.js                             — TOOL_TAB — Single Source of Truth
       elvi/           TabElvi.jsx
@@ -121,6 +121,8 @@ Globale Variablen nur in `styles/vars.css`.
 - Hintergründe warm: #F5F3F0 / #ECEAE5 / #E0DDD7 (statt kaltem Blau-Grau)
 - surface/border-Kontrast erhöht, Atmosphären-Gradient für Light Mode
 - `App.module.css`: Tab-Bar mit hellem frosted-glass Hintergrund + dunkle Icon-Farben via `data-theme` Override
+- Alle ~30 CSS-Module-Dateien: hardcodierte `rgba(255,255,255,X)` durch CSS-Variablen ersetzt (--text, --text-dim, --text-ghost, --text-faint, --border, --border-dim, --surface, --surface-low, --bg2). Box-shadows absichtlich nicht geändert.
+- Toast: Light-Mode-Override mit warmem Hintergrund (statt dunklem Popup)
 
 ---
 
@@ -137,6 +139,14 @@ Max-Width: 480px. Alles zuerst fürs Handy denken.
 
 ---
 
+## App-Icon
+
+Ripple-Design: konzentrische Ringe aus der **oberen linken Ecke** (Ursprung = 0,0), kein Mittelpunkt-Marker, dunkler Hintergrund (`#04030b`), Ringe von hell-lila (innen) nach fast-schwarz (außen).
+- `public/favicon.svg` — Browser-Tab
+- `public/pwa-192x192.png` / `pwa-512x512.png` — PWA Install
+
+---
+
 ## Icons
 
 Keine Emojis als strukturelle Icons. Immer SVG (inline oder als Komponente).
@@ -144,6 +154,14 @@ Keine Emojis als strukturelle Icons. Immer SVG (inline oder als Komponente).
 - Tab-Bar-Icons: eigene SVG-Komponenten in `App.jsx`
 - Alle interaktiven Buttons: SVG-Komponenten, nie Text-Sonderzeichen oder Emojis
 - Touch-Targets: min 44×44px für primäre Aktionen, min 36×36px für sekundäre
+- DayPanel Geburtstags-Einträge: SVG-Stern (inline, `fill="#FF2D78"`) statt ⭐ Emoji
+- TabTimer Pomodoro: SVG Bullseye/Target (inline) statt 🍅 Emoji
+
+---
+
+## App.jsx — Navigation
+
+- Hardware Back-Button (Android): `popstate`-Listener fängt das Event und ruft `setCurrentTab(previousTab)` auf statt grauem Browser-Screen.
 
 ---
 

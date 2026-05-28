@@ -307,6 +307,14 @@ export default function TabHaushalt({ onBack }) {
   const [energie,   setEnergie]   = useState(() => lv(SK.haushaltEnergie, 'normal'))
   const [openRooms, setOpenRooms] = useState({})
   const [editRooms, setEditRooms] = useState({})
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  const handleReset = () => {
+    if (!confirmReset) { setConfirmReset(true); return }
+    localStorage.removeItem(SK.haushalt)
+    localStorage.removeItem(SK.haushaltEnergie)
+    window.location.reload()
+  }
 
   const updateConfig = useCallback((next) => {
     setConfig(next)
@@ -394,6 +402,13 @@ export default function TabHaushalt({ onBack }) {
         onClick={() => updateConfig({ ...config, briefingDone: false })}
       >
         Setup neu starten
+      </button>
+
+      <button
+        className={[s.toolReset, confirmReset ? s.toolResetConfirm : ''].join(' ')}
+        onClick={handleReset}
+      >
+        {confirmReset ? '⚠ Wirklich alle Haushalt-Daten löschen?' : 'Haushalt-Daten löschen'}
       </button>
     </div>
   )

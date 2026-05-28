@@ -589,3 +589,23 @@
   padding: 4px 0;
 }
 .deleteBtn:hover { color: var(--pink); }
+
+/* ─── Tool Reset ─────────────────────────────────────────── */
+.toolReset {
+  width: 100%;
+  margin-top: 24px;
+  padding: 9px 16px;
+  background: none;
+  border: 1px solid rgba(251,113,133,0.25);
+  border-radius: var(--r-sm);
+  color: var(--rose);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.toolResetConfirm {
+  border-color: var(--rose);
+  background: rgba(251,113,133,0.08);
+}

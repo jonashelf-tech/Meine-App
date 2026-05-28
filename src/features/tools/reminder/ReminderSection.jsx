@@ -82,7 +82,7 @@ export default function ReminderSection({ onStartDrag }) {
     }
     return {
       type: 'todo',
-      block: createBlock({ text: item.text, priority: 2, color: item.color, category: 'Selfcare', reminderItemId: item.id }),
+      block: createBlock({ text: item.text, priority: 2, color: item.color, category: 'Selfcare', reminderItemId: item.id, toolId: 'reminder' }),
     }
   }, [])
 

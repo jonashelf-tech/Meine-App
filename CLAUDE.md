@@ -34,6 +34,7 @@ Freie Beschreibung reicht — ich erkenne den Typ selbst und lese die relevanten
 | Tool bauen / integrieren | `kontext/tool-pattern.md` |
 | UI / Design / Komponenten | `kontext/architektur.md` |
 | Unterwegs-Tool einbauen (Chat-Ansatz) | `kontext/tool-chat.md` |
+| Tool-Idee planen → Claude-Code-Prompt | `kontext/tool-chat-planung.md` |
 
 ## Austausch
 `Dateien/input/` — Dateien die ich mitbringe  

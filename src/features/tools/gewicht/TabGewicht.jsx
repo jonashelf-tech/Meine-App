@@ -330,6 +330,13 @@ export default function TabGewicht({ onBack }) {
           ))}
         </div>
       )}
+
+      <button
+        className={[s.toolReset, confirmReset ? s.toolResetConfirm : ''].join(' ')}
+        onClick={handleReset}
+      >
+        {confirmReset ? '⚠ Wirklich alle Gewichtsdaten löschen?' : 'Gewichtsdaten löschen'}
+      </button>
     </div>
   )
 }

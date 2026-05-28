@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kognitiv v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Orbitron:wght@600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #04030b;
+    color: rgba(255,255,255,0.92);
+    font-family: 'Outfit', sans-serif;
+    padding: 24px 12px 60px;
+  }
+  h1 { text-align:center; font-size:0.95rem; font-weight:600; color:rgba(255,255,255,0.35); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
+  .sub { text-align:center; font-size:0.75rem; color:rgba(255,255,255,0.2); margin-bottom:32px; }
+
+  .screens { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; align-items:flex-start; }
+  .sw { display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .sl { font-size:0.65rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.25); }
+
+  .phone {
+    width:255px; height:510px;
+    background:#080810;
+    border-radius:34px;
+    border:1.5px solid rgba(255,255,255,0.07);
+    overflow:hidden; position:relative;
+    box-shadow:0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03);
+    flex-shrink:0;
+  }
+
+  /* ── SHARED ── */
+  .hd { padding:18px 14px 0; display:flex; align-items:center; gap:8px; }
+  .bk { width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:0.75rem; }
+  .ey { font-size:0.6rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#8B5CF6; }
+  .tt { font-size:1.1rem;font-weight:700; }
+
+  /* ── SCREEN 1: Übersicht ── */
+  .sec { padding:12px 14px 6px; font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.25); }
+  .mc {
+    margin:0 10px 6px;
+    background:rgba(255,255,255,0.045);
+    border:1px solid rgba(255,255,255,0.065);
+    border-radius:13px; padding:10px 12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .mi { width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+  .mn { font-size:0.82rem;font-weight:600;color:rgba(255,255,255,0.88); }
+  .md { font-size:0.64rem;color:rgba(255,255,255,0.35);margin-top:1px; }
+  .mlv { font-family:'Orbitron',sans-serif;font-size:0.58rem;color:rgba(255,255,255,0.28);font-weight:600; }
+  .mbadge { font-size:0.58rem;color:rgba(255,255,255,0.25);font-weight:600;background:rgba(255,255,255,0.05);border-radius:6px;padding:2px 6px; }
+
+  .lastbox {
+    margin:4px 10px 0;
+    background:rgba(255,255,255,0.025);
+    border:1px solid rgba(255,255,255,0.05);
+    border-radius:13px; padding:10px 12px;
+  }
+  .lb-title { font-size:0.62rem;color:rgba(255,255,255,0.28);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px; }
+  .lb-bars { display:flex;align-items:flex-end;gap:4px;height:28px; }
+  .lb-bar { flex:1;border-radius:2px 2px 0 0;background:rgba(139,92,246,0.22); }
+  .lb-bar.on { background:#8B5CF6;box-shadow:0 0 6px rgba(139,92,246,0.5); }
+  .lb-bar.off { background:rgba(255,255,255,0.05); }
+
+  /* ── SCREEN 2: Erklärung ── */
+  .ex-wrap { padding:18px 14px; height:100%; display:flex;flex-direction:column; }
+  .ex-icon-big { width:56px;height:56px;border-radius:16px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:12px; }
+  .ex-name { font-size:1.2rem;font-weight:700;margin-bottom:4px; }
+  .ex-tagline { font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:16px;line-height:1.5; }
+
+  .info-block { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:11px;padding:10px 12px;margin-bottom:8px; }
+  .ib-label { font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px; }
+  .ib-label.green { color:#10B981; }
+  .ib-label.dim { color:rgba(255,255,255,0.25); }
+  .ib-row { display:flex;align-items:flex-start;gap:6px;font-size:0.72rem;color:rgba(255,255,255,0.6);margin-bottom:3px;line-height:1.4; }
+  .ib-dot { width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px; }
+
+  .diff-row { display:flex;gap:6px;margin-bottom:10px; }
+  .diff-btn { flex:1;padding:7px;border-radius:9px;text-align:center;font-size:0.72rem;font-weight:600;border:1px solid;cursor:pointer; }
+  .diff-btn.on { background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.35);color:#8B5CF6; }
+  .diff-btn.off { background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.3); }
+
+  .start-btn { margin-top:auto;background:#8B5CF6;border:none;border-radius:13px;color:white;font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:700;padding:13px;text-align:center;width:100%; }
+
+  /* ── SCREEN 3: Zahlensuche ── */
+  .zs-wrap { height:100%;display:flex;flex-direction:column; }
+  .zs-hd { padding:14px 14px 0;display:flex;align-items:center;justify-content:space-between; }
+  .zs-close { width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:0.7rem; }
+  .zs-prog { flex:1;height:2.5px;background:rgba(255,255,255,0.06);border-radius:2px;margin:0 10px;overflow:hidden; }
+  .zs-fill { height:100%;background:#8B5CF6;border-radius:2px;width:28%;box-shadow:0 0 6px rgba(139,92,246,0.5); }
+  .zs-lv { font-family:'Orbitron',sans-serif;font-size:0.58rem;color:rgba(255,255,255,0.25);font-weight:600; }
+
+  .zs-timer { font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:700;color:rgba(255,255,255,0.92);text-align:center;margin:10px 0 4px; }
+  .zs-next { text-align:center;font-size:0.68rem;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase; }
+  .zs-next span { color:#8B5CF6;font-weight:700; }
+
+  .zs-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:10px 10px 8px;flex:1; }
+  .zs-cell {
+    aspect-ratio:1;
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',sans-serif;font-size:0.6rem;font-weight:700;
+    background:rgba(255,255,255,0.045);
+    border:1px solid rgba(255,255,255,0.07);
+    color:rgba(255,255,255,0.7);
+    cursor:pointer;
+    transition:all 0.1s;
+  }
+  .zs-cell.done { background:rgba(139,92,246,0.18);border-color:rgba(139,92,246,0.3);color:rgba(139,92,246,0.6); }
+  .zs-cell.next { background:rgba(139,92,246,0.25);border-color:#8B5CF6;color:#fff;box-shadow:0 0 10px rgba(139,92,246,0.4);animation:pulse-cell 1s ease-in-out infinite; }
+  @keyframes pulse-cell { 0%,100%{box-shadow:0 0 10px rgba(139,92,246,0.4)} 50%{box-shadow:0 0 18px rgba(139,92,246,0.7)} }
+
+  .zs-stats { display:flex;justify-content:space-around;padding:0 14px 14px; }
+  .zs-stat { text-align:center; }
+  .zs-val { font-family:'Orbitron',sans-serif;font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.8); }
+  .zs-lbl { font-size:0.58rem;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.07em;margin-top:1px; }
+
+  /* ── SCREEN 4: Ergebnis Tiefenanalyse ── */
+  .rs-wrap { height:100%;display:flex;flex-direction:column;padding:16px 14px; overflow:hidden; }
+  .rs-ey { font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#10B981; }
+  .rs-tt { font-size:1rem;font-weight:700;margin-bottom:12px; }
+
+  .rs-hero { background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center;margin-bottom:8px; }
+  .rs-score { font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:700;color:#8B5CF6;line-height:1; }
+  .rs-slbl { font-size:0.6rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px; }
+  .rs-delta { display:inline-flex;align-items:center;gap:3px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:16px;padding:2px 8px;font-size:0.64rem;color:#10B981;font-weight:600;margin-top:5px; }
+
+  .rs-grid { display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px; }
+  .rs-m { background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.055);border-radius:9px;padding:7px;text-align:center; }
+  .rs-mv { font-family:'Orbitron',sans-serif;font-size:0.82rem;font-weight:700;color:rgba(255,255,255,0.82); }
+  .rs-ml { font-size:0.58rem;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:0.06em;margin-top:1px; }
+
+  .rs-deep { background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);border-radius:11px;padding:9px 11px;margin-bottom:7px; }
+  .rs-dl { font-size:0.6rem;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:7px; }
+  .rs-taps { display:flex;align-items:flex-end;gap:2px;height:28px; }
+  .rs-tap { width:7px;border-radius:2px 2px 0 0;background:rgba(139,92,246,0.3); }
+  .rs-tap.slow { background:rgba(251,113,133,0.5); }
+  .rs-tap.fast { background:#10B981; }
+  .rs-tap.miss { background:rgba(251,113,133,0.8);width:4px; }
+
+  .rs-btn { margin-top:auto;background:#8B5CF6;border:none;border-radius:12px;color:white;font-family:'Outfit',sans-serif;font-size:0.82rem;font-weight:700;padding:11px;text-align:center;width:100%; }
+  .rs-btn2 { margin-top:5px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;color:rgba(255,255,255,0.4);font-family:'Outfit',sans-serif;font-size:0.76rem;font-weight:600;padding:9px;text-align:center; }
+</style>
+</head>
+<body>
+
+<h1>Kognitiv — Mockup v2</h1>
+<p class="sub">Kein Streak · Erklärungsscreen · Zahlensuche · Tiefenanalyse</p>
+
+<div class="screens">
+
+  <!-- 1: Übersicht -->
+  <div class="sw">
+    <div class="sl">Übersicht</div>
+    <div class="phone">
+      <div class="hd">
+        <div class="bk">‹</div>
+        <div style="flex:1;padding-left:6px">
+          <div class="ey">Tool</div>
+          <div class="tt">Kognitiv</div>
+        </div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.2);font-weight:600">NORMAL</div>
+      </div>
+
+      <div class="sec">Module</div>
+
+      <div class="mc">
+        <div class="mi" style="background:rgba(139,92,246,0.12)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5.5"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="mn">Alertness</div>
+          <div class="md">Reaktionszeit · Hemmung</div>
+        </div>
+        <div class="mlv">LV 4</div>
+      </div>
+
+      <div class="mc">
+        <div class="mi" style="background:rgba(20,184,166,0.12)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="mn">Zahlensuche</div>
+          <div class="md">Arbeitsgeschwindigkeit</div>
+        </div>
+        <div class="mlv">LV 2</div>
+      </div>
+
+      <div class="mc">
+        <div class="mi" style="background:rgba(16,185,129,0.12)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="mn">Arbeitsgedächtnis</div>
+          <div class="md">Sequenz merken</div>
+        </div>
+        <div class="mlv">LV 3</div>
+      </div>
+
+      <div class="mc" style="opacity:0.35">
+        <div class="mi" style="background:rgba(251,113,133,0.1)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FB7185" stroke-width="2.2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="mn">Vigilanz</div>
+          <div class="md">Daueraufmerksamkeit</div>
+        </div>
+        <div class="mbadge">Phase 2</div>
+      </div>
+
+      <div class="sec" style="margin-top:6px">Verlauf · 7 Tage</div>
+      <div class="lastbox">
+        <div class="lb-title">Letzte Sessions</div>
+        <div class="lb-bars">
+          <div class="lb-bar" style="height:55%"></div>
+          <div class="lb-bar off" style="height:100%"></div>
+          <div class="lb-bar" style="height:70%"></div>
+          <div class="lb-bar" style="height:48%"></div>
+          <div class="lb-bar off" style="height:100%"></div>
+          <div class="lb-bar" style="height:78%"></div>
+          <div class="lb-bar on" style="height:90%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: Erklärungsscreen -->
+  <div class="sw">
+    <div class="sl">Erklärung vor Start</div>
+    <div class="phone">
+      <div class="ex-wrap">
+        <div class="ex-icon-big">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="ex-name">Zahlensuche</div>
+        <div class="ex-tagline">25 Felder · Zahlen 01–25 in richtiger Reihenfolge antippen. So schnell wie möglich.</div>
+
+        <div class="info-block">
+          <div class="ib-label green">Was gemessen wird</div>
+          <div class="ib-row"><div class="ib-dot" style="background:#10B981"></div>Arbeitsgeschwindigkeit (Sekunden)</div>
+          <div class="ib-row"><div class="ib-dot" style="background:#10B981"></div>Aufmerksamkeitsfeld (Fehler, Auslasser)</div>
+          <div class="ib-row"><div class="ib-dot" style="background:#10B981"></div>Systematik (Reihenfolge-Fehler)</div>
+        </div>
+
+        <div class="info-block">
+          <div class="ib-label dim">Nicht relevant / nicht gemessen</div>
+          <div class="ib-row"><div class="ib-dot" style="background:rgba(255,255,255,0.2)"></div>Wie gut du Zahlen kennst</div>
+          <div class="ib-row"><div class="ib-dot" style="background:rgba(255,255,255,0.2)"></div>Ablenkungen außerhalb des Bildschirms</div>
+        </div>
+
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.28);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase">Schwierigkeit</div>
+        <div class="diff-row">
+          <div class="diff-btn on">Normal</div>
+          <div class="diff-btn off">Schwer</div>
+          <div class="diff-btn off">Rückwärts</div>
+        </div>
+
+        <div class="start-btn">Starten →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: Zahlensuche in Übung -->
+  <div class="sw">
+    <div class="sl">Zahlensuche · läuft</div>
+    <div class="phone">
+      <div class="zs-wrap">
+        <div class="zs-hd">
+          <div class="zs-close">✕</div>
+          <div class="zs-prog"><div class="zs-fill"></div></div>
+          <div class="zs-lv">NORMAL</div>
+        </div>
+
+        <div class="zs-timer">00:18</div>
+        <div class="zs-next">Nächste: <span>08</span></div>
+
+        <div class="zs-grid">
+          <!-- Row 1 -->
+          <div class="zs-cell done">14</div>
+          <div class="zs-cell">21</div>
+          <div class="zs-cell done">03</div>
+          <div class="zs-cell">17</div>
+          <div class="zs-cell done">01</div>
+          <!-- Row 2 -->
+          <div class="zs-cell">09</div>
+          <div class="zs-cell done">05</div>
+          <div class="zs-cell">23</div>
+          <div class="zs-cell next">08</div>
+          <div class="zs-cell">12</div>
+          <!-- Row 3 -->
+          <div class="zs-cell done">02</div>
+          <div class="zs-cell">18</div>
+          <div class="zs-cell done">06</div>
+          <div class="zs-cell">25</div>
+          <div class="zs-cell done">04</div>
+          <!-- Row 4 -->
+          <div class="zs-cell">11</div>
+          <div class="zs-cell">20</div>
+          <div class="zs-cell done">07</div>
+          <div class="zs-cell">15</div>
+          <div class="zs-cell">22</div>
+          <!-- Row 5 -->
+          <div class="zs-cell">16</div>
+          <div class="zs-cell">10</div>
+          <div class="zs-cell">24</div>
+          <div class="zs-cell">13</div>
+          <div class="zs-cell">19</div>
+        </div>
+
+        <div class="zs-stats">
+          <div class="zs-stat">
+            <div class="zs-val" style="color:#10B981">7</div>
+            <div class="zs-lbl">Getippt</div>
+          </div>
+          <div class="zs-stat">
+            <div class="zs-val" style="color:#FB7185">1</div>
+            <div class="zs-lbl">Fehler</div>
+          </div>
+          <div class="zs-stat">
+            <div class="zs-val">25</div>
+            <div class="zs-lbl">Gesamt</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Tiefenanalyse Ergebnis -->
+  <div class="sw">
+    <div class="sl">Ergebnis · Tiefenanalyse</div>
+    <div class="phone">
+      <div class="rs-wrap">
+        <div class="rs-ey">Fertig</div>
+        <div class="rs-tt">Zahlensuche</div>
+
+        <div class="rs-hero">
+          <div>
+            <div class="rs-score">42s</div>
+            <div class="rs-slbl">Gesamtzeit</div>
+            <div class="rs-delta">▲ 6s schneller</div>
+          </div>
+          <div style="flex:1;text-align:right">
+            <div style="font-size:0.65rem;color:rgba(255,255,255,0.25);margin-bottom:4px">Verlauf</div>
+            <div style="display:flex;align-items:flex-end;gap:3px;height:32px;justify-content:flex-end">
+              <div style="width:8px;border-radius:2px 2px 0 0;background:rgba(139,92,246,0.25);height:55%"></div>
+              <div style="width:8px;border-radius:2px 2px 0 0;background:rgba(139,92,246,0.25);height:45%"></div>
+              <div style="width:8px;border-radius:2px 2px 0 0;background:rgba(139,92,246,0.25);height:70%"></div>
+              <div style="width:8px;border-radius:2px 2px 0 0;background:rgba(139,92,246,0.25);height:60%"></div>
+              <div style="width:8px;border-radius:2px 2px 0 0;background:#8B5CF6;height:85%;box-shadow:0 0 6px rgba(139,92,246,0.5)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-grid">
+          <div class="rs-m">
+            <div class="rs-mv" style="color:#10B981">24/25</div>
+            <div class="rs-ml">Korrekte</div>
+          </div>
+          <div class="rs-m">
+            <div class="rs-mv" style="color:#FB7185">1</div>
+            <div class="rs-ml">Fehler</div>
+          </div>
+          <div class="rs-m">
+            <div class="rs-mv">1.68s</div>
+            <div class="rs-ml">Ø pro Zahl</div>
+          </div>
+          <div class="rs-m">
+            <div class="rs-mv" style="color:#8B5CF6">07→09</div>
+            <div class="rs-ml">Fehler bei</div>
+          </div>
+        </div>
+
+        <div class="rs-deep">
+          <div class="rs-dl">Tipp-Zeiten · jeder Tipp einzeln (s)</div>
+          <div class="rs-taps">
+            <div class="rs-tap fast" style="height:40%"></div>
+            <div class="rs-tap" style="height:55%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap fast" style="height:35%"></div>
+            <div class="rs-tap" style="height:60%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap slow" style="height:85%"></div>
+            <div class="rs-tap miss" style="height:100%"></div>
+            <div class="rs-tap" style="height:70%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap fast" style="height:30%"></div>
+            <div class="rs-tap fast" style="height:38%"></div>
+            <div class="rs-tap" style="height:52%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap slow" style="height:80%"></div>
+            <div class="rs-tap" style="height:48%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap fast" style="height:32%"></div>
+            <div class="rs-tap" style="height:58%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap fast" style="height:36%"></div>
+            <div class="rs-tap" style="height:62%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap slow" style="height:75%"></div>
+            <div class="rs-tap fast" style="height:29%"></div>
+            <div class="rs-tap" style="height:44%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap fast" style="height:33%"></div>
+            <div class="rs-tap" style="height:67%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap fast" style="height:31%"></div>
+            <div class="rs-tap" style="height:53%;background:rgba(139,92,246,0.4)"></div>
+            <div class="rs-tap fast" style="height:27%"></div>
+            <div class="rs-tap" style="height:41%;background:rgba(139,92,246,0.4)"></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:6px">
+            <div style="display:flex;align-items:center;gap:4px;font-size:0.58rem;color:rgba(255,255,255,0.3)"><div style="width:7px;height:7px;border-radius:1px;background:#10B981"></div>Schnell</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:0.58rem;color:rgba(255,255,255,0.3)"><div style="width:7px;height:7px;border-radius:1px;background:rgba(251,113,133,0.8)"></div>Langsam/Fehler</div>
+          </div>
+        </div>
+
+        <div class="rs-btn">Im Kalender speichern</div>
+        <div class="rs-btn2">Nochmal · oder anderes Modul</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

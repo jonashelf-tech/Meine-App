@@ -3,7 +3,7 @@ import { useAppStore } from '../../../store'
 import {
   lv, SK,
   exportDataByCategories, importDataByCategories,
-  saveAutoBackup, loadAutoBackup,
+  saveAutoBackup, loadAutoBackup, exportDataReadable,
 } from '../../../storage'
 import { useToast } from '../../../components/Toast/Toast'
 import s from './TabSettings.module.css'
@@ -126,6 +126,18 @@ export default function TabSettings() {
     importDataByCategories(restoreData, selected)
     showToast('Backup eingespielt — App wird neu geladen', 'success')
     setTimeout(() => window.location.reload(), 1200)
+  }
+
+  const handleReadableExport = () => {
+    const data = exportDataReadable()
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    a.href     = url
+    a.download = `adhs-ki-export-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    showToast('KI-Export heruntergeladen', 'success')
   }
 
   const handleCacheReset = async () => {
@@ -278,6 +290,10 @@ export default function TabSettings() {
           )}
 
           <input ref={fileRestoreRef} type="file" accept=".json" className={s.hidden} onChange={handleFileLoad} />
+
+          <button className={[s.actionBtn, s.actionBtnKi].join(' ')} onClick={handleReadableExport}>
+            ✦ Für KI exportieren
+          </button>
 
           <button className={[s.actionBtn, s.actionBtnSecondary].join(' ')} onClick={handleCacheReset}>
             ↺ Cache leeren

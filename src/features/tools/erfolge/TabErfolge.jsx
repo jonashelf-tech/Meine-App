@@ -31,7 +31,15 @@ export default function TabErfolge({ onBack }) {
   const [erfolgeData, setErfolgeData] = useState(() =>
     lv(SK.erfolge, EMPTY_ERFOLGE)
   )
-  const [toast, setToast] = useState(null)
+  const [toast, setToast]             = useState(null)
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  const handleReset = () => {
+    if (!confirmReset) { setConfirmReset(true); return }
+    localStorage.removeItem(SK.erfolge)
+    localStorage.removeItem(SK.erfolgeTracking)
+    window.location.reload()
+  }
 
   const tracking = lv(SK.erfolgeTracking, { tagesplanerDates: [] })
   const stats     = getErfolgeStats(todos, tracking)
@@ -206,6 +214,13 @@ export default function TabErfolge({ onBack }) {
           )}
         </div>
       )}
+
+      <button
+        className={[s.toolReset, confirmReset ? s.toolResetConfirm : ''].join(' ')}
+        onClick={handleReset}
+      >
+        {confirmReset ? '⚠ Wirklich alle Erfolge zurücksetzen?' : 'Erfolge-Daten löschen'}
+      </button>
     </div>
   )
 }

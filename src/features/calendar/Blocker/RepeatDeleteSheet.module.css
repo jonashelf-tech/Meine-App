@@ -11,8 +11,8 @@
 }
 
 .sheet {
-  background: rgba(12,12,26,0.97);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: 20px 20px 0 0;
   padding: 20px 16px 32px;
   width: 100%;
@@ -35,15 +35,15 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-faint);
   margin-bottom: 4px;
 }
 
 .btn {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  color: rgba(255,255,255,0.9);
+  color: var(--text);
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -54,7 +54,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.btn:hover { background: rgba(255,255,255,0.1); }
+.btn:hover { background: var(--surface); }
 
 .btnDelete {
   border-color: rgba(251,113,133,0.3);
@@ -69,7 +69,7 @@
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-faint);
   padding: 8px;
   text-align: center;
   margin-top: 2px;
