@@ -422,6 +422,46 @@ export default function TabKalender() {
     }
   }
 
+  const updateDragTarget = (clientX, clientY) => {
+    for (const [colDk, el] of Object.entries(colRefs.current)) {
+      if (!el) continue
+      const rect = el.getBoundingClientRect()
+      if (clientX >= rect.left && clientX <= rect.right) {
+        const relY  = clientY - rect.top
+        const idx   = Math.max(0, Math.floor(relY / SLOT_H))
+        const h     = Math.min(visibleEnd - 0.5, visibleStart + idx * 0.5)
+        const key   = String(h)
+        dragTargetRef.current = { dk: colDk, key }
+        setDragTarget({ dk: colDk, key })
+        return
+      }
+    }
+    dragTargetRef.current = null
+    setDragTarget(null)
+  }
+
+  const handleDrop = (oldDk, oldKey, slot, newDk, newKey) => {
+    if (oldDk === newDk && oldKey === newKey) return
+    setDays(prev => {
+      const oldDay = { ...(prev[oldDk] ?? {}) }
+      delete oldDay[oldKey]
+      return {
+        ...prev,
+        [oldDk]: oldDay,
+        [newDk]: { ...(prev[newDk] ?? {}), [newKey]: { ...slot } },
+      }
+    })
+    if (slot.todoId) {
+      const hh = String(Math.floor(parseFloat(newKey))).padStart(2, '0')
+      const mm = parseFloat(newKey) % 1 ? '30' : '00'
+      setTodos(prev => prev.map(t =>
+        t.id === slot.todoId
+          ? { ...t, date: newDk, time: `${hh}:${mm}` }
+          : t
+      ))
+    }
+  }
+
   const handleSaveTermin = (dk, slotKey, updatedSlot) => {
     setDays(prev => ({
       ...prev,
@@ -722,6 +762,24 @@ export default function TabKalender() {
                           style={{ left: clickRipple.x, top: clickRipple.y }}
                         />
                       )}
+                      {dragTarget?.dk === dk && dragging && (() => {
+                        const ghostTop    = slotToTop(dragTarget.key, visibleStart)
+                        const ghostHeight = slotToHeight(dragging.slot.duration)
+                        return (
+                          <div
+                            className={s.weekSlotGhost}
+                            style={{
+                              top:            ghostTop,
+                              height:         ghostHeight,
+                              '--slot-color': dragging.slot.color || '#8B5CF6',
+                            }}
+                          >
+                            {ghostHeight >= 14 && (
+                              <span className={s.weekSlotName}>{dragging.slot.text}</span>
+                            )}
+                          </div>
+                        )
+                      })()}
                       {entries.map(([key, slot]) => {
                         const isTodo   = Boolean(slot.todoId)
                         if (!showTermine && !isTodo) return null
