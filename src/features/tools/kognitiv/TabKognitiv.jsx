@@ -14,9 +14,15 @@ import Results       from './Results'
 import Dashboard     from './Dashboard'
 import ModuleDetail  from './ModuleDetail'
 import SessionDetail from './SessionDetail'
-import AlertnessExercise   from './exercises/AlertnessExercise'
-import ZahlensucheExercise from './exercises/ZahlensucheExercise'
-import GedaechtnisExercise from './exercises/GedaechtnisExercise'
+import AlertnessExercise        from './exercises/AlertnessExercise'
+import ZahlensucheExercise      from './exercises/ZahlensucheExercise'
+import GedaechtnisExercise      from './exercises/GedaechtnisExercise'
+import GoNoGoExercise           from './exercises/GoNoGoExercise'
+import NBackExercise            from './exercises/NBackExercise'
+import TaskSwitchingExercise    from './exercises/TaskSwitchingExercise'
+import CptExercise              from './exercises/CptExercise'
+import SelektivExercise         from './exercises/SelektivExercise'
+import GeteilteExercise         from './exercises/GeteilteExercise'
 import s from './TabKognitiv.module.css'
 
 // Nav screens: null = tabs visible
@@ -123,7 +129,17 @@ export default function TabKognitiv({ onBack, onExercising }) {
     />
   }
   if (nav?.screen === 'exercise') {
-    const ExMap = { alertness: AlertnessExercise, zahlensuche: ZahlensucheExercise, gedaechtnis: GedaechtnisExercise }
+    const ExMap = {
+      alertness:      AlertnessExercise,
+      zahlensuche:    ZahlensucheExercise,
+      gedaechtnis:    GedaechtnisExercise,
+      gonogo:         GoNoGoExercise,
+      nback:          NBackExercise,
+      taskswitching:  TaskSwitchingExercise,
+      cpt:            CptExercise,
+      selektiv:       SelektivExercise,
+      geteilt:        GeteilteExercise,
+    }
     const Ex = ExMap[nav.moduleId]
     if (Ex) return <Ex
       variant={nav.variant}
