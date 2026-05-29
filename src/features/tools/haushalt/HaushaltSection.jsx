@@ -146,6 +146,8 @@ export default function HaushaltSection({ onStartDrag }) {
     })
   }
 
+  const selectedCount = visibleDueRooms.filter(({ room }) => !deselected.has(room.id)).length
+
   return (
     <ToolSection
       toolId="haushalt"
@@ -154,6 +156,9 @@ export default function HaushaltSection({ onStartDrag }) {
       badgeBg={badgeBg}
       color={toolColor}
       onTitleClick={() => setCurrentTab(TOOL_TAB.haushalt)}
+      actionLabel={`+ ${selectedCount} hinzufügen`}
+      onAction={handleAddSelected}
+      actionDisabled={selectedCount === 0 || visibleDueRooms.length === 0}
     >
       <div className={s.energieStrip}>
         <button
@@ -220,18 +225,6 @@ export default function HaushaltSection({ onStartDrag }) {
               )
             })}
           </div>
-          {(() => {
-            const selectedCount = visibleDueRooms.filter(({ room }) => !deselected.has(room.id)).length
-            return (
-              <button
-                className={s.addAllBtn}
-                onClick={handleAddSelected}
-                disabled={selectedCount === 0}
-              >
-                + {selectedCount === visibleDueRooms.length ? 'Alle zur Todoliste' : `${selectedCount} zur Todoliste`}
-              </button>
-            )
-          })()}
         </>
       )}
     </ToolSection>
