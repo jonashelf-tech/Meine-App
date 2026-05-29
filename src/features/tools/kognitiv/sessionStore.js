@@ -1,4 +1,5 @@
 import { sv, lv, SK } from '../../../storage'
+import { getTodayCheckin } from './checkinStore'
 
 const PRACTICE_KEY = 'adhs_kognitiv_practice'
 
@@ -43,6 +44,7 @@ export function createSession({ moduleId, variant, startedAt, duration, score, m
     score,
     mainMetric,
     taps,
+    checkinId: getTodayCheckin()?.id ?? null,
   }
 }
 
@@ -79,6 +81,7 @@ export function getModuleStats(moduleId) {
     latest,
     improvement: first - latest,   // positive = got faster/better
     last7: sessions.slice(-7),
+    latestScore: sessions[sessions.length - 1].score ?? null,
   }
 }
 
