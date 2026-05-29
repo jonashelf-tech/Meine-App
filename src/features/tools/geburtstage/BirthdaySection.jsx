@@ -26,10 +26,13 @@ const DragIcon = () => (
  *   onStartDrag — fn(chip, color, e, bulkChips?) — startet Drag in TabHeute
  */
 export default function BirthdaySection({ onStartDrag }) {
-  const { birthdays, setCurrentTab, toolColors } = useAppStore()
+  const { birthdays, setCurrentTab, toolColors, todos } = useAppStore()
   const toolColor = getToolColor('geburtstage', toolColors)
 
-  const chips = getActiveChips(birthdays, toolColor)
+  const chips = getActiveChips(birthdays, toolColor).filter(chip => {
+    const chipId = `${chip.type}-${chip.birthday.id}`
+    return !todos.some(t => t.birthdayChipId === chipId && !t.done)
+  })
   const [deselected, setDeselected] = useState(() => new Set())
 
   const toggleSelect = useCallback((id) => {

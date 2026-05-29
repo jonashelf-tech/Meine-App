@@ -387,7 +387,13 @@ export default function TabHeute() {
     // Bulk-Add in Pool (Masse-Hinzufügen-Button)
     if (!chip && bulkChips) {
       const newTodos = bulkChips.map(c =>
-        createBlock({ text: c.text, priority: c.type === 'birthday' ? 2 : 3, color: c.color, toolId: 'geburtstage' })
+        createBlock({
+          text:           c.text,
+          priority:       c.type === 'birthday' ? 2 : 3,
+          color:          c.color,
+          toolId:         'geburtstage',
+          birthdayChipId: `${c.type}-${c.birthday.id}`,
+        })
       )
       setTodos(prev => [...prev, ...newTodos])
       // Geburtstags-Chips: plannedYear setzen
@@ -405,11 +411,12 @@ export default function TabHeute() {
     const duration = 30
     startDrag(chip.text, chipColor, (dropKey) => {
       const newTodo = createBlock({
-        text: chip.text,
-        priority: chip.type === 'birthday' ? 2 : 3,
-        color: chipColor,
-        toolId: 'geburtstage',
+        text:           chip.text,
+        priority:       chip.type === 'birthday' ? 2 : 3,
+        color:          chipColor,
+        toolId:         'geburtstage',
         duration,
+        birthdayChipId: `${chip.type}-${chip.birthday.id}`,
       })
       setTodos(prev => [...prev, newTodo])
       if (dropKey !== 'pool') {
