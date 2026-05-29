@@ -8,6 +8,7 @@ import { loadSessions as loadKognitivSessions } from '../../tools/kognitiv/sessi
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
+import TodoModal from '../../../components/TodoModal/TodoModal'
 import s from './TabKalender.module.css'
 
 const DAY_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -272,6 +273,77 @@ function WeekPillStrip({ days, weekDays, visibleStart, visibleEnd, isTop, onExpa
   )
 }
 
+const TERMIN_COLORS = [
+  { value: '#8B5CF6', label: 'Lila'  },
+  { value: '#FB7185', label: 'Rot'   },
+  { value: '#F59E0B', label: 'Gelb'  },
+  { value: '#10B981', label: 'Grün'  },
+  { value: '#06B6D4', label: 'Cyan'  },
+]
+
+function WeekTerminEditModal({ dk, slotKey, slot, onSave, onClose }) {
+  const [text,     setText]     = useState(slot.text     ?? '')
+  const [duration, setDuration] = useState(slot.duration ?? 30)
+  const [color,    setColor]    = useState(slot.color    ?? '#8B5CF6')
+
+  const handleSave = () => {
+    if (!text.trim()) return
+    onSave(dk, slotKey, { ...slot, text: text.trim(), duration, color })
+  }
+
+  return (
+    <div className={s.terminOverlay} onClick={onClose}>
+      <div className={s.terminCard} onClick={e => e.stopPropagation()}>
+        <p className={s.terminTitle}>Termin bearbeiten</p>
+
+        <input
+          className={s.terminInput}
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Bezeichnung"
+          autoFocus
+          onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') onClose() }}
+        />
+
+        <div>
+          <span className={s.terminLabel}>Dauer</span>
+          <div className={s.terminDurRow}>
+            {[15, 30, 60, 90].map(v => (
+              <button
+                key={v}
+                className={[s.terminDurBtn, duration === v ? s.terminDurBtnActive : ''].join(' ')}
+                onClick={() => setDuration(v)}
+              >
+                {v < 60 ? `${v}m` : `${v / 60}h`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <span className={s.terminLabel}>Farbe</span>
+          <div className={s.terminColorRow}>
+            {TERMIN_COLORS.map(c => (
+              <button
+                key={c.value}
+                className={[s.terminColorDot, color === c.value ? s.terminColorDotActive : ''].join(' ')}
+                style={{ background: c.value }}
+                onClick={() => setColor(c.value)}
+                aria-label={c.label}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className={s.terminActions}>
+          <button className={s.terminBtnSave} onClick={handleSave}>Speichern</button>
+          <button className={s.terminBtnCancel} onClick={onClose}>Abbrechen</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function TabKalender() {
   const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos, calendarDate, setCalendarDate } = useAppStore()
   const [view, setView] = useState(() => lv(SK.calView, 'woche'))
@@ -291,6 +363,18 @@ export default function TabKalender() {
   const [showTools,   setShowTools]   = useState(false)
   const [visibleStart, setVisibleStart] = useState(() => lv(SK.weekVisStart, 7))
   const [visibleEnd,   setVisibleEnd]   = useState(() => lv(SK.weekVisEnd,   21))
+
+  const [editingTodo,   setEditingTodo]   = useState(null)
+  const [editingTermin, setEditingTermin] = useState(null)
+  const [quickCreate,   setQuickCreate]   = useState(null)
+
+  const handleSaveTermin = (dk, slotKey, updatedSlot) => {
+    setDays(prev => ({
+      ...prev,
+      [dk]: { ...prev[dk], [slotKey]: updatedSlot },
+    }))
+    setEditingTermin(null)
+  }
 
   const expandStart = () => {
     const v = Math.max(0, visibleStart - 1)
@@ -713,6 +797,28 @@ export default function TabKalender() {
           Tools
         </button>
       </div>
+
+      {editingTodo && (
+        <TodoModal
+          existingTodo={editingTodo}
+          onClose={() => setEditingTodo(null)}
+        />
+      )}
+      {editingTermin && (
+        <WeekTerminEditModal
+          dk={editingTermin.dk}
+          slotKey={editingTermin.slotKey}
+          slot={editingTermin.slot}
+          onSave={handleSaveTermin}
+          onClose={() => setEditingTermin(null)}
+        />
+      )}
+      {quickCreate && (
+        <TodoModal
+          prefill={quickCreate}
+          onClose={() => setQuickCreate(null)}
+        />
+      )}
     </div>
   )
 }
