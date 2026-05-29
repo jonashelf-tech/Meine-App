@@ -686,6 +686,12 @@ export default function TabKalender() {
                           <div className={s.weekNowDot} />
                         </div>
                       )}
+                      {clickRipple?.dk === dk && (
+                        <div
+                          className={s.weekClickRipple}
+                          style={{ left: clickRipple.x, top: clickRipple.y }}
+                        />
+                      )}
                       {entries.map(([key, slot]) => {
                         const isTodo   = Boolean(slot.todoId)
                         if (!showTermine && !isTodo) return null
@@ -699,8 +705,17 @@ export default function TabKalender() {
                         return (
                           <div
                             key={key}
-                            className={[s.weekSlotBlock, isTodo ? s.weekSlotTodo : ''].join(' ')}
+                            className={[
+                              s.weekSlotBlock,
+                              isTodo ? s.weekSlotTodo : '',
+                              (slot.done || slotTodo?.done) ? s.weekSlotDone : '',
+                              flashingSlotKey === `${dk}-${key}` ? s.weekSlotDoneFlash : '',
+                            ].join(' ')}
                             style={{ top, height, background: slot.color || 'var(--primary)' }}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleToggleSlotDone(dk, key, slot, slotTodo)
+                            }}
                             onDoubleClick={(e) => {
                               e.stopPropagation()
                               if (slot.todoId) {
