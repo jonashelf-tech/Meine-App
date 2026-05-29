@@ -1,0 +1,5 @@
+.root { position:fixed; inset:0; background:#05050e; display:flex; flex-direction:column; align-items:center; user-select:none; -webkit-tap-highlight-color:transparent; cursor:pointer; }
+.closeBtn { position:absolute; top:16px; left:16px; width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.04); border:none; color:rgba(255,255,255,0.18); font-size:.75rem; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; }
+.indicator { display:flex; align-items:center; gap:8px; margin-top:56px; border-radius:20px; padding:5px 16px; border:1px solid; font-size:12px; font-weight:600; transition:opacity 0.5s; }
+.dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.arena { flex:1; width:100%; display:flex; align-items:center; justify-content:center; }
