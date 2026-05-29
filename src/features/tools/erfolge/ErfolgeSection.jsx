@@ -75,6 +75,7 @@ export default function ErfolgeSection() {
   }
 
   const nothingAtAll = unlocked.length === 0 && recentClaimed.length === 0
+  if (nothingAtAll) return null
 
   return (
     <>
@@ -89,53 +90,47 @@ export default function ErfolgeSection() {
         onTitleClick={() => setCurrentTab(TOOL_TAB.erfolge)}
       >
         <div style={{ '--tool-color': toolColor }}>
-          {nothingAtAll ? (
-            <div className={s.empty}>Noch keine Erfolge — weiter so!</div>
-          ) : (
+          {/* Top 3 abholbare */}
+          {top3.map(a => (
+            <div key={a.id} className={s.claimRow}>
+              <div className={s.claimInfo}>
+                <span className={s.claimName}>{a.name}</span>
+                <span className={s.claimPts}>+{a.points} P</span>
+              </div>
+              <button
+                className={s.claimBtn}
+                onClick={() => claimOne(a)}
+                disabled={remaining <= 0}
+              >
+                Abholen
+              </button>
+            </div>
+          ))}
+
+          {unlocked.length > 1 && (
+            <button
+              className={s.claimAllBtn}
+              onClick={claimAll}
+              disabled={remaining <= 0}
+            >
+              {remaining <= 0
+                ? 'Heute schon 5 abgeholt — morgen weiter'
+                : `Alle ${Math.min(unlocked.length, remaining)} abholen`}
+            </button>
+          )}
+
+          {remaining <= 0 && unlocked.length > 0 && unlocked.length <= 1 && (
+            <div className={s.limitNote}>Heute schon 5 abgeholt — morgen weiter</div>
+          )}
+
+          {recentClaimed.length > 0 && (
             <>
-              {/* Top 3 abholbare */}
-              {top3.map(a => (
-                <div key={a.id} className={s.claimRow}>
-                  <div className={s.claimInfo}>
-                    <span className={s.claimName}>{a.name}</span>
-                    <span className={s.claimPts}>+{a.points} P</span>
-                  </div>
-                  <button
-                    className={s.claimBtn}
-                    onClick={() => claimOne(a)}
-                    disabled={remaining <= 0}
-                  >
-                    Abholen
-                  </button>
-                </div>
-              ))}
-
-              {unlocked.length > 1 && (
-                <button
-                  className={s.claimAllBtn}
-                  onClick={claimAll}
-                  disabled={remaining <= 0}
-                >
-                  {remaining <= 0
-                    ? 'Heute schon 5 abgeholt — morgen weiter'
-                    : `Alle ${Math.min(unlocked.length, remaining)} abholen`}
-                </button>
-              )}
-
-              {remaining <= 0 && unlocked.length > 0 && unlocked.length <= 1 && (
-                <div className={s.limitNote}>Heute schon 5 abgeholt — morgen weiter</div>
-              )}
-
-              {recentClaimed.length > 0 && (
-                <>
-                  <div className={s.divider} />
-                  <div className={s.chips}>
-                    {recentClaimed.map(a => (
-                      <span key={a.id} className={s.chip}>{a.name} · {a.points} P</span>
-                    ))}
-                  </div>
-                </>
-              )}
+              <div className={s.divider} />
+              <div className={s.chips}>
+                {recentClaimed.map(a => (
+                  <span key={a.id} className={s.chip}>{a.name} · {a.points} P</span>
+                ))}
+              </div>
             </>
           )}
         </div>
