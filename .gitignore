@@ -31,3 +31,6 @@ dist-ssr
 
 # Austausch-Ordner — lokal, nicht ins Repo
 Dateien/
+
+# Visual Companion Brainstorming
+.superpowers/
