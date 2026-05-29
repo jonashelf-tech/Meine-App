@@ -44,6 +44,8 @@ export const SK = {
   lastPoolReturn: `${PREFIX}view_last_pool_return`,
   poolSort:       `${PREFIX}view_pool_sort`,
   calView:        `${PREFIX}view_cal_view`,
+  weekVisStart:   `${PREFIX}view_week_vis_start`,
+  weekVisEnd:     `${PREFIX}view_week_vis_end`,
   blockers:        `${PREFIX}blockers`,
   klaerenSettings: `${PREFIX}klaeren_settings`,
   erfolgeTracking: `${PREFIX}erfolge_tracking_v1`,
