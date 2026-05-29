@@ -38,6 +38,7 @@ export default function TabTools() {
   }
 
   const handleColorChange = (toolId, hex) => {
+    if (getUsedByOthers(toolId).includes(hex.toLowerCase())) return
     setToolColors(prev => ({ ...prev, [toolId]: hex }))
   }
 
