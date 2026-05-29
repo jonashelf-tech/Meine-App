@@ -19,6 +19,7 @@ export const useAppStore = create((set, get) => ({
   todos:     lv(SK.todos, []),
   todoOrder: lv(SK.todoOrder, []),
   cats:      lv(SK.cats, []),
+  projects:  lv(SK.projects, []),
 
   setTodos: (todos) => {
     const next = typeof todos === 'function' ? todos(get().todos) : todos
@@ -27,6 +28,7 @@ export const useAppStore = create((set, get) => ({
   },
   setTodoOrder: (order) => { set({ todoOrder: order }); sv(SK.todoOrder, order) },
   setCats: (cats) => { set({ cats }); sv(SK.cats, cats) },
+  setProjects: (projects) => { set({ projects }); sv(SK.projects, projects) },
 
   // ─── Blockers ──────────────────────────────────────────
   blockers: lv(SK.blockers, []),

@@ -54,6 +54,7 @@ export const SK = {
   kognitivCheckin:  `${PREFIX}kognitiv_checkin`,
   kognitivSchedule: `${PREFIX}kognitiv_schedule`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
+  projects:        `${PREFIX}projects`,
 }
 
 export const exportData = () => {
