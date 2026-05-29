@@ -16,9 +16,7 @@ const MONTH_NAMES = [
   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
 ]
 
-const SLOT_H     = 28
-const GRID_START = 7
-const GRID_END   = 22
+const SLOT_H = 40
 
 function getMonday(date) {
   const d = new Date(date)
@@ -35,12 +33,12 @@ function addDays(date, n) {
   return d
 }
 
-function slotToTop(slotKey) {
-  return (parseFloat(slotKey) - GRID_START) * 2 * SLOT_H
+function slotToTop(slotKey, start) {
+  return (parseFloat(slotKey) - start) * 2 * SLOT_H
 }
 
 function slotToHeight(duration) {
-  return Math.max(8, Math.round(((duration ?? 30) / 30) * SLOT_H))
+  return Math.max(10, Math.round(((duration ?? 30) / 30) * SLOT_H))
 }
 
 function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions) {
@@ -235,6 +233,45 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
   )
 }
 
+function WeekPillStrip({ days, weekDays, visibleStart, visibleEnd, isTop, onExpand, onShrink, onExpandTo }) {
+  const outSlots = []
+  for (const date of weekDays) {
+    const dk    = toDateKey(date)
+    const slots = days[dk] ?? {}
+    for (const [key, slot] of Object.entries(slots)) {
+      if (!slot) continue
+      const h = Math.floor(parseFloat(key))
+      if (isTop ? h < visibleStart : h >= visibleEnd) {
+        const hh = String(Math.floor(parseFloat(key))).padStart(2, '0')
+        const mm = parseFloat(key) % 1 ? '30' : '00'
+        outSlots.push({ key: `${dk}-${key}`, time: `${hh}:${mm}`, text: slot.text, h })
+      }
+    }
+  }
+  outSlots.sort((a, b) => a.h - b.h)
+
+  const emptyText = isTop
+    ? `Keine Termine vor ${String(visibleStart).padStart(2, '0')}:00`
+    : `Keine Termine nach ${String(visibleEnd).padStart(2, '0')}:00`
+
+  return (
+    <div className={[s.weekPillStrip, isTop ? '' : s.weekPillStripBot].join(' ')}>
+      <button className={s.weekPillBtn} onClick={onShrink}>−</button>
+      <div className={s.weekPillChips}>
+        {outSlots.length === 0
+          ? <span className={s.weekPillEmpty}>{emptyText}</span>
+          : outSlots.map(slot => (
+              <div key={slot.key} className={s.weekPillChip} onClick={() => onExpandTo(slot.h)}>
+                {slot.time} {slot.text}
+              </div>
+            ))
+        }
+      </div>
+      <button className={s.weekPillBtn} onClick={onExpand}>+</button>
+    </div>
+  )
+}
+
 export default function TabKalender() {
   const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos, calendarDate, setCalendarDate } = useAppStore()
   const [view, setView] = useState(() => lv(SK.calView, 'woche'))
@@ -252,6 +289,33 @@ export default function TabKalender() {
   const [showTermine, setShowTermine] = useState(true)
   const [showTodos,   setShowTodos]   = useState(true)
   const [showTools,   setShowTools]   = useState(false)
+  const [visibleStart, setVisibleStart] = useState(() => lv(SK.weekVisStart, 7))
+  const [visibleEnd,   setVisibleEnd]   = useState(() => lv(SK.weekVisEnd,   21))
+
+  const expandStart = () => {
+    const v = Math.max(0, visibleStart - 1)
+    sv(SK.weekVisStart, v); setVisibleStart(v)
+  }
+  const shrinkStart = () => {
+    const v = Math.min(visibleEnd - 1, visibleStart + 1)
+    sv(SK.weekVisStart, v); setVisibleStart(v)
+  }
+  const expandEnd = () => {
+    const v = Math.min(24, visibleEnd + 1)
+    sv(SK.weekVisEnd, v); setVisibleEnd(v)
+  }
+  const shrinkEnd = () => {
+    const v = Math.max(visibleStart + 1, visibleEnd - 1)
+    sv(SK.weekVisEnd, v); setVisibleEnd(v)
+  }
+  const expandToStart = (h) => {
+    const v = Math.min(visibleStart, h)
+    sv(SK.weekVisStart, v); setVisibleStart(v)
+  }
+  const expandToEnd = (h) => {
+    const v = Math.max(visibleEnd, h + 1)
+    sv(SK.weekVisEnd, v); setVisibleEnd(v)
+  }
   const [restoreTodo, setRestoreTodo] = useState(null)
   const weightEntries   = useMemo(() => loadEntries(), [])
   const kognitivSessions = useMemo(() => loadKognitivSessions(), [])
@@ -278,8 +342,9 @@ export default function TabKalender() {
 
   useEffect(() => {
     if (view !== 'woche' || !weekScrollRef.current) return
-    const scrollTo = Math.max(0, (new Date().getHours() - GRID_START) * 2 * SLOT_H - 80)
+    const scrollTo = Math.max(0, (new Date().getHours() - visibleStart) * 2 * SLOT_H - 80)
     weekScrollRef.current.scrollTop = scrollTo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view])
 
   useEffect(() => {
