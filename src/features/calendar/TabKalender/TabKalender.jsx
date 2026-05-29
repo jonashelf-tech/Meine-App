@@ -638,6 +638,14 @@ export default function TabKalender() {
                       key={dk}
                       className={[s.weekDayCol, isColToday ? s.weekDayColToday : ''].join(' ')}
                       style={{ height: colHeight }}
+                      onClick={(e) => {
+                        if (e.target !== e.currentTarget) return
+                        const slotIndex = Math.floor(e.nativeEvent.offsetY / SLOT_H)
+                        const h  = visibleStart + slotIndex * 0.5
+                        const hh = String(Math.floor(h)).padStart(2, '0')
+                        const mm = h % 1 ? '30' : '00'
+                        setQuickCreate({ date: dk, time: `${hh}:${mm}` })
+                      }}
                     >
                       {isColToday && nowTop !== null && (
                         <div className={s.weekNowLine} style={{ top: nowTop }}>
@@ -659,6 +667,15 @@ export default function TabKalender() {
                             key={key}
                             className={[s.weekSlotBlock, isTodo ? s.weekSlotTodo : ''].join(' ')}
                             style={{ top, height, background: slot.color || 'var(--primary)' }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation()
+                              if (slot.todoId) {
+                                const t = todos.find(td => td.id === slot.todoId)
+                                if (t) setEditingTodo(t)
+                              } else {
+                                setEditingTermin({ dk, slotKey: key, slot })
+                              }
+                            }}
                           >
                             {height >= 20 && <span className={s.weekSlotName}>{slot.text}</span>}
                             {height >= 32 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
