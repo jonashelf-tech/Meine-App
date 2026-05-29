@@ -78,7 +78,7 @@ export default function SessionDetail({ session, onBack }) {
                 />
               </div>
               <div className={s.tapTime} style={{ color: tap.correct ? 'var(--text-dim)' : 'var(--rose)' }}>
-                {tap.time != null ? `${(tap.time / 1000).toFixed(2)}s` : '—'}
+                {tap.time != null ? `${tap.time.toFixed(2)}s` : '—'}
               </div>
             </div>
           ))}

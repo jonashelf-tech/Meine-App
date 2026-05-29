@@ -1,11 +1,28 @@
+import { useState } from 'react'
 import { MODULE_CONFIG } from './moduleConfig'
 import { getDelta, getModuleSessions } from './sessionStore'
+import { loadCheckin } from './checkinStore'
 import s from './Results.module.css'
 
+function DotRow({ value }) {
+  if (value == null) return null
+  return (
+    <span className={s.dots}>
+      {[1, 2, 3, 4, 5].map(n => (
+        <span key={n} className={[s.dot, value >= n ? s.dotOn : ''].join(' ')} />
+      ))}
+    </span>
+  )
+}
+
 export default function Results({ session, fromArchive = false, onBack, onSaveToCalendar }) {
+  const [saved, setSaved] = useState(false)
+
   const m        = MODULE_CONFIG[session.moduleId]
   const delta    = getDelta(session.moduleId, session.mainMetric)
   const last7    = getModuleSessions(session.moduleId).slice(-7)
+
+  const checkin  = session.checkinId ? loadCheckin(session.date) : null
 
   const taps     = session.taps ?? []
   const hitTimes = taps.filter(t => t.correct && t.time != null).map(t => t.time)
@@ -17,6 +34,11 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
         : `▼ ${Math.abs(delta)}${m.mainMetricUnit} schlechter`)
     : null
 
+  const handleSave = () => {
+    setSaved(true)
+    onSaveToCalendar(session)
+  }
+
   return (
     <div className={s.root}>
       <div className={s.topBar}>
@@ -25,6 +47,38 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
         </button>
       </div>
       <div className={s.scroll}>
+
+      {checkin && (
+        <div className={s.checkinBlock}>
+          <div className={s.checkinTitle}>Checkin · {new Date(checkin.savedAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr</div>
+          <div className={s.checkinRow}>
+            {checkin.sleep != null && (
+              <span className={s.checkinItem}>
+                <span className={s.checkinLbl}>Schlaf</span>
+                <DotRow value={checkin.sleep} />
+              </span>
+            )}
+            {checkin.energy != null && (
+              <span className={s.checkinItem}>
+                <span className={s.checkinLbl}>Energie</span>
+                <DotRow value={checkin.energy} />
+              </span>
+            )}
+            {checkin.medi?.name && (
+              <span className={s.checkinItem}>
+                <span className={s.checkinLbl}>💊</span>
+                <span className={s.checkinMedi}>
+                  {checkin.medi.name}
+                  {checkin.medi.dosierung ? ` ${checkin.medi.dosierung}` : ''}
+                  {checkin.medi.uhrzeit   ? ` · ${checkin.medi.uhrzeit}` : ''}
+                </span>
+              </span>
+            )}
+          </div>
+          {checkin.note ? <div className={s.checkinNote}>{checkin.note}</div> : null}
+        </div>
+      )}
+
       <div className={s.eyebrow}>{fromArchive ? 'Archiv' : 'Fertig'}</div>
       <div className={s.title}>{m.name}</div>
 
@@ -89,9 +143,36 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
         </div>
       )}
 
+      {taps.length > 0 && (
+        <div className={s.tapDetail}>
+          <div className={s.tapDetailLabel}>Jeder Tipp</div>
+          {taps.map((tap, i) => (
+            <div key={i} className={[s.tapRow, !tap.correct ? s.tapRowError : ''].join(' ')}>
+              <div className={s.tapIdx}>{String(tap.target ?? i + 1).padStart(2, '0')}</div>
+              <div className={s.tapBarWrap}>
+                <div
+                  className={s.tapBarInline}
+                  style={{
+                    width: `${Math.max(4, Math.min(100, ((tap.time ?? 0) / maxTime) * 100))}%`,
+                    background: tap.correct ? 'var(--primary)' : 'var(--rose)',
+                  }}
+                />
+              </div>
+              <div className={s.tapTime} style={{ color: tap.correct ? 'var(--text-dim)' : 'var(--rose)' }}>
+                {tap.time != null ? `${tap.time.toFixed(2)}s` : '—'}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {!fromArchive && (
-        <button className={s.calBtn} onClick={() => onSaveToCalendar(session)}>
-          Im Kalender speichern
+        <button
+          className={[s.calBtn, saved ? s.calBtnSaved : ''].join(' ')}
+          onClick={handleSave}
+          disabled={saved}
+        >
+          {saved ? '✓ Gespeichert' : 'Einheit speichern'}
         </button>
       )}
       <button className={s.backBtn2} onClick={onBack}>

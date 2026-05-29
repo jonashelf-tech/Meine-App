@@ -39,7 +39,7 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
     done: !!(slot.done),
   }
   const slotBorder = slot.color ? `1px solid ${slot.color}44` : '1px solid rgba(255,255,255,0.09)'
-  const chipStyle = { height: '100%', borderRadius: '6px', border: slotBorder, margin: 0, flexShrink: 0 }
+  const chipStyle = { height: '100%', borderRadius: '10px', border: slotBorder, margin: 0, flexShrink: 0 }
 
   const dragRef = useRef(null)
 

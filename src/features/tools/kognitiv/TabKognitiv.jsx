@@ -33,10 +33,15 @@ export default function TabKognitiv({ onBack, onExercising }) {
   const [nav, setNav] = useState(null)
   const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null
   const pendingExerciseRef = useRef(null)
-  const { setDays, kognitivAutoStart, setKognitivAutoStart } = useAppStore()
+  const { setDays, kognitivAutoStart, setKognitivAutoStart, setBackInterceptor } = useAppStore()
 
   const isTraining = nav?.screen === 'exercise' || countdown !== null
   useEffect(() => { onExercising?.(isTraining) }, [isTraining, onExercising])
+
+  useEffect(() => {
+    setBackInterceptor(nav !== null ? () => setNav(null) : null)
+    return () => setBackInterceptor(null)
+  }, [nav, setBackInterceptor])
 
   // ─── Auto-start from Tagesplaner ─────────────────────
   useEffect(() => {
@@ -173,7 +178,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
     return <ModuleDetail
       moduleId={nav.moduleId}
       onBack={goBack}
-      onSelectSession={(session) => setNav({ screen: 'session-detail', session })}
+      onSelectSession={(session) => setNav({ screen: 'results', session, fromArchive: true })}
     />
   }
   if (nav?.screen === 'session-detail') {

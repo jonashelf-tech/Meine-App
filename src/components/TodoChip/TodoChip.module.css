@@ -21,8 +21,8 @@
   display: flex;
   align-items: stretch;
   background: var(--surface-low);
-  border: 1px solid var(--border-dim);
-  border-radius: var(--r);
+  border: 1px solid color-mix(in srgb, var(--border-dim) 50%, transparent);
+  border-radius: 10px;
   overflow: hidden;
   transition: background 0.14s, border-color 0.14s;
   cursor: pointer;

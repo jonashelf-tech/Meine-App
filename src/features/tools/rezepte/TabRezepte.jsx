@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import { lv, sv } from '../../../storage'
@@ -36,7 +36,7 @@ const sortByMeat = arr => {
 }
 
 export default function TabRezepte({ onBack }) {
-  const { toolColors } = useAppStore()
+  const { toolColors, setBackInterceptor } = useAppStore()
   const toolColor = getToolColor('rezepte', toolColors)
   const [recipes, setRecipesRaw] = useState(() => lv(SK_R, []))
   const [selected, setSelectedRaw] = useState(() => lv(SK_S, []))
@@ -49,6 +49,12 @@ export default function TabRezepte({ onBack }) {
   const [numDishes, setNumDishes] = useState(4)
   const [confirmClear, setConfirmClear] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
+
+  useEffect(() => {
+    const hasOverlay = editing !== null || viewing !== null
+    setBackInterceptor(hasOverlay ? () => { setEditing(null); setViewing(null) } : null)
+    return () => setBackInterceptor(null)
+  }, [editing, viewing, setBackInterceptor])
 
   const handleReset = () => {
     if (!confirmReset) { setConfirmReset(true); return }

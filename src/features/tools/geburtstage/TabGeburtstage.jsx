@@ -94,7 +94,7 @@ function BirthdayCard({ birthday, toolColor, onEdit, onDelete }) {
   }
 
   return (
-    <div className={s.cardWrapper}>
+    <div className={[s.cardWrapper, isToday ? s.cardWrapperToday : isSoon ? s.cardWrapperSoon : ''].join(' ')}>
       {swipeX < 0 && (
         <div className={s.deleteReveal} onClick={() => onDelete(birthday.id)}>
           <span className={s.deleteRevealIcon}><TrashIcon /></span>
@@ -103,7 +103,7 @@ function BirthdayCard({ birthday, toolColor, onEdit, onDelete }) {
 
       <div
         ref={cardRef}
-        className={[s.card, isToday ? s.cardToday : isSoon ? s.cardSoon : ''].join(' ')}
+        className={[s.card, isToday ? s.cardToday : ''].join(' ')}
         style={{ transform: `translateX(${swipeX}px)` }}
         onClick={handleCardClick}
         onPointerDown={handlePointerDown}
@@ -173,14 +173,6 @@ export default function TabGeburtstage({ onBack }) {
 
   const [sort, setSort]       = useState(() => lv('adhs_bday_sort', 'next'))
   const [sheet, setSheet]     = useState(null)
-  const [confirmReset, setConfirmReset] = useState(false)
-
-  const handleReset = () => {
-    if (!confirmReset) { setConfirmReset(true); return }
-    localStorage.removeItem('adhs_birthdays')
-    localStorage.removeItem('adhs_bday_sort')
-    window.location.reload()
-  }
 
   // Migration bestehender Daten
   useEffect(() => {
@@ -284,12 +276,6 @@ export default function TabGeburtstage({ onBack }) {
         />
       )}
 
-      <button
-        className={[s.toolReset, confirmReset ? s.toolResetConfirm : ''].join(' ')}
-        onClick={handleReset}
-      >
-        {confirmReset ? '⚠ Wirklich alle Geburtstage löschen?' : 'Geburtstage-Daten löschen'}
-      </button>
     </div>
   )
 }

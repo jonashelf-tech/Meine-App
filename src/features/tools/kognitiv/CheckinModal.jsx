@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getLastCheckin, saveCheckin } from './checkinStore'
 import s from './CheckinModal.module.css'
+
+const TIMER_SECS = 120
 
 function DotSlider({ value, onChange }) {
   return (
@@ -17,6 +19,54 @@ function DotSlider({ value, onChange }) {
   )
 }
 
+function ArrivalTimer({ entry, onDone }) {
+  const [remaining, setRemaining] = useState(TIMER_SECS)
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current)
+          onDone(entry)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(intervalRef.current)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const mins = String(Math.floor(remaining / 60)).padStart(2, '0')
+  const secs = String(remaining % 60).padStart(2, '0')
+  const pct  = (remaining / TIMER_SECS) * 100
+
+  return (
+    <div className={s.timerWrap}>
+      <div className={s.timerTitle}>Kurz ankommen</div>
+      <div className={s.timerSub}>
+        Nimm dir einen Moment, bevor du startest — damit deine Werte aussagekräftiger sind.
+      </div>
+      <div className={s.timerRing}>
+        <svg viewBox="0 0 56 56" className={s.timerSvg}>
+          <circle cx="28" cy="28" r="24" className={s.timerTrack} />
+          <circle
+            cx="28" cy="28" r="24"
+            className={s.timerArc}
+            strokeDasharray={`${2 * Math.PI * 24}`}
+            strokeDashoffset={`${2 * Math.PI * 24 * (1 - pct / 100)}`}
+          />
+        </svg>
+        <div className={s.timerCount}>{mins}:{secs}</div>
+      </div>
+      <button className={s.skipBtn} onClick={() => onDone(entry)}>
+        Überspringen
+      </button>
+    </div>
+  )
+}
+
 export default function CheckinModal({ onSave, onSkip }) {
   const last = getLastCheckin()
 
@@ -24,15 +74,27 @@ export default function CheckinModal({ onSave, onSkip }) {
   const [energy,   setEnergy]   = useState(last?.energy          ?? 3)
   const [mediName, setMediName] = useState(last?.medi?.name      ?? '')
   const [mediDos,  setMediDos]  = useState(last?.medi?.dosierung ?? '')
-  const [mediTime, setMediTime] = useState('')   // intentionally never pre-filled
+  const [mediTime, setMediTime] = useState('')
   const [note,     setNote]     = useState('')
+
+  const [timerEntry, setTimerEntry] = useState(null)
 
   const handleSave = () => {
     const medi = mediName.trim()
       ? { name: mediName.trim(), dosierung: mediDos.trim(), uhrzeit: mediTime || null }
       : null
     const entry = saveCheckin({ sleep, energy, medi, note: note.trim() })
-    onSave(entry)
+    setTimerEntry(entry)
+  }
+
+  if (timerEntry) {
+    return (
+      <div className={s.backdrop}>
+        <div className={s.modal}>
+          <ArrivalTimer entry={timerEntry} onDone={onSave} />
+        </div>
+      </div>
+    )
   }
 
   return (

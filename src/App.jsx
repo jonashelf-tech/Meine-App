@@ -102,8 +102,12 @@ export default function App() {
     history.pushState(null, '')
     const handlePop = () => {
       history.pushState(null, '')
-      const { previousTab: prev } = useAppStore.getState()
-      setCurrentTab(prev ?? 2)
+      const { previousTab: prev, backInterceptor } = useAppStore.getState()
+      if (backInterceptor) {
+        backInterceptor()
+      } else {
+        setCurrentTab(prev ?? 2)
+      }
     }
     window.addEventListener('popstate', handlePop)
     return () => window.removeEventListener('popstate', handlePop)

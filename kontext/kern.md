@@ -91,11 +91,19 @@ toolColors,   setToolColors  // { [toolId]: "#hexcolor" }
 
 // Navigation
 currentTab,   previousTab,  setCurrentTab
-dayplanDate,  setDayplanDate // Flüchtiger Intent-Wert (kein localStorage)
-heuteModus,   setHeuteModus  // 'manuell'
+dayplanDate,  setDayplanDate   // Flüchtiger Intent-Wert (kein localStorage)
+calendarDate, setCalendarDate  // Flüchtiger Intent-Wert (kein localStorage)
+heuteModus,   setHeuteModus    // 'manuell'
+backInterceptor, setBackInterceptor  // fn | null — App.jsx ruft vor Tab-Navigation auf (Swipe-Back-Fix)
+
+// Kognitiv
+kognitivAutoStart, setKognitivAutoStart  // string | null — moduleId für Auto-Start aus Tagesplaner
 
 // Geburtstage
 birthdays,    setBirthdays
+
+// Projekte
+projects,     setProjects
 ```
 
 ---
@@ -196,8 +204,12 @@ SK.shoppingStates → 'adhs_recipes_shopping_states'
 SK.selectedDishes → 'adhs_recipes_selected'
 SK.weight         → 'adhs_health_weight'
 SK.birthdays      → 'adhs_birthdays'
-SK.haushalt       → 'adhs_haushalt_v1'
-SK.haushaltEnergie→ 'adhs_haushalt_energie'    // lokaler UI-State (Normal/Low Energy)
+SK.haushalt          → 'adhs_haushalt_v1'
+SK.haushaltEnergie   → 'adhs_haushalt_energie'    // lokaler UI-State (Normal/Low Energy)
+SK.kognitiv          → 'adhs_kognitiv_sessions'   // Session-Archiv (Array)
+SK.kognitivCheckin   → 'adhs_kognitiv_checkin'    // { "YYYY-MM-DD": CheckinEntry }
+SK.kognitivSchedule  → 'adhs_kognitiv_schedule'   // { [moduleId]: { mode, days, time } }
+SK.klaerenSettings   → 'adhs_klaeren_settings'    // { threshold, ageColor }
 ```
 
 Lesen/Schreiben:
@@ -267,6 +279,26 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
   - Gewicht: nur sichtbar wenn `loadEntries().find(e => e.date === dk)` — zeigt kg + kcal + Link-Button → Tab Gewicht
   - Klick auf Datum-Header → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
 - **Wochenansicht Allday-Streifen:** zeigt Geburtstags-Balken + Todos ohne Uhrzeit. Erscheint wenn `showTodos || showTermine`.
+
+---
+
+## Swipe-Back / Back-Interceptor
+
+`backInterceptor` im Store (`store/index.js`) — `fn | null`.
+
+`App.jsx` fängt den Browser-Popstate-Event ab. Bevor der Tab-Wechsel ausgeführt wird, wird geprüft ob ein Interceptor gesetzt ist → wird aufgerufen statt zurück zu navigieren.
+
+**Nutzung in Tools:**
+```js
+const { setBackInterceptor } = useAppStore()
+
+useEffect(() => {
+  setBackInterceptor(nav !== null ? () => setNav(null) : null)
+  return () => setBackInterceptor(null)
+}, [nav, setBackInterceptor])
+```
+
+Damit geht Swipe-Back innerhalb eines Tools eine Ebene zurück (statt das Tool zu schließen). Immer `return () => setBackInterceptor(null)` im Cleanup.
 
 ---
 

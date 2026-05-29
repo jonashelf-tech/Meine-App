@@ -49,6 +49,7 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--r-sm);
+  border: 1px solid var(--border);
   margin-bottom: 6px;
 }
 
@@ -75,21 +76,20 @@
   align-items: center;
   gap: 12px;
   background: var(--surface);
-  border: 1px solid var(--border);
   padding: 11px 14px;
-  transition: transform 0.2s ease, border-color 0.15s;
+  transition: transform 0.2s ease;
   cursor: pointer;
   position: relative;
   touch-action: pan-y;
   user-select: none;
 }
 
-.cardSoon { border-color: rgba(20,184,166,0.35); }
-.cardToday {
+.cardWrapperSoon { border-color: rgba(20,184,166,0.35); }
+.cardWrapperToday {
   border-color: rgba(139,92,246,0.5);
   box-shadow: 0 0 14px rgba(139,92,246,0.12);
-  background: rgba(139,92,246,0.06);
 }
+.cardToday { background: rgba(139,92,246,0.06); }
 
 /* ─── Avatar ───────────────────────────────────────────── */
 .avatarWrap {

@@ -78,6 +78,8 @@ export const useAppStore = create((set, get) => ({
   currentTab:   0,
   previousTab:  2,
   setCurrentTab: (tab) => set((state) => ({ previousTab: state.currentTab, currentTab: tab })),
+  backInterceptor: null,
+  setBackInterceptor: (fn) => set({ backInterceptor: fn }),
   heuteModus: 'manuell',
   setHeuteModus: (modus) => set({ heuteModus: modus }),
   dayplanDate: null,

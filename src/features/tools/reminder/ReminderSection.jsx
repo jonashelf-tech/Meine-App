@@ -49,9 +49,10 @@ export default function ReminderSection({ onStartDrag }) {
 
   const todayDismissed = dismissed[today] ?? []
 
-  const pendingReminderIds = new Set(
-    todos.filter(t => t.reminderItemId && !t.done).map(t => t.reminderItemId)
-  )
+  const pendingReminderIds = new Set([
+    ...todos.filter(t => t.reminderItemId && !t.done).map(t => t.reminderItemId),
+    ...Object.values(todaySlots).filter(s => s?.reminderItemId).map(s => s.reminderItemId),
+  ])
 
   const dueItems = items.filter(item =>
     isDueToday(item) &&

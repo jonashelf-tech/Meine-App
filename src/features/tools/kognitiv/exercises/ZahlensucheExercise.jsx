@@ -80,7 +80,6 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
           {feedback === 'ok'  && <span key={`ok-${nextIdx}`}  className={[s.feedbackIcon, s.feedbackOk ].join(' ')}>✓</span>}
           {feedback === 'err' && <span key={`err-${nextIdx}`} className={[s.feedbackIcon, s.feedbackErr].join(' ')}>✗</span>}
         </div>
-        <div className={s.progress}>{nextIdx}/{total}</div>
       </div>
       <div className={s.gridWrap}>
         <div className={s.grid} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>

@@ -4,7 +4,7 @@
   background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 6px 4px;
+  padding: 2px 4px;
   gap: 0;
   user-select: none;
 }
@@ -15,8 +15,8 @@
   color: var(--text-faint);
   font-size: 1.6rem;
   font-weight: 700;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 36px;
+  min-height: 36px;
   padding: 0 16px;
   border-radius: 999px;
   cursor: pointer;

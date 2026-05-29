@@ -34,7 +34,7 @@ export default function ToolSection({
   const [open, setOpen] = useState(defaultOpen)
 
   const sectionStyle = color ? {
-    border:    `1.5px solid ${color}55`,
+    border:    `1.5px solid ${color}77`,
     boxShadow: `0 0 10px ${color}22`,
   } : undefined
 

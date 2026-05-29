@@ -43,17 +43,6 @@ export default function ModuleList({ onSelectModule }) {
         )
       })}
 
-      <div className={s.phase2Header}>Phase 2 — kommt bald</div>
-      {PHASE2_MODULES.map(id => (
-        <div key={id} className={[s.card, s.cardDisabled].join(' ')}>
-          <div className={s.iconWrap}><ToolIcon id="kognitiv" size={18} /></div>
-          <div className={s.info}>
-            <div className={s.name} style={{ textTransform: 'capitalize' }}>{id}</div>
-            <div className={s.desc}>In Entwicklung</div>
-          </div>
-          <div className={s.right}><div className={s.soonPill}>bald</div></div>
-        </div>
-      ))}
     </div>
   )
 }

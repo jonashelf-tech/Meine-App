@@ -60,3 +60,16 @@
   color: var(--primary); font-family: 'Outfit', sans-serif;
   font-size: 0.82rem; font-weight: 700; cursor: pointer;
 }
+
+/* ─── Arrival Timer ─────────────────────────────── */
+.timerWrap {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 16px; padding: 8px 0 4px; text-align: center;
+}
+.timerTitle { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+.timerSub { font-size: 0.72rem; color: var(--text-dim); line-height: 1.6; max-width: 260px; }
+.timerRing { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
+.timerSvg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.timerTrack { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 3; }
+.timerArc { fill: none; stroke: var(--primary); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timerCount { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--primary); position: relative; z-index: 1; }

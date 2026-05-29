@@ -316,7 +316,7 @@
 }
 
 .pill {
-  padding: 7px 14px;
+  padding: 7px 10px;
   border-radius: 50px;
   border: 1.5px solid var(--border);
   background: transparent;
@@ -349,7 +349,7 @@
 }
 
 .manualInput {
-  width: 70px;
+  width: 54px;
   flex-shrink: 0;
   background: var(--surface);
   border: 1px solid var(--border);

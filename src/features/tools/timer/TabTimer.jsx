@@ -5,7 +5,7 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabTimer.module.css'
 
 // ─── Presets ───────────────────────────────────────────────
-const NORMAL_PRESETS = [5, 10, 15, 30, 45, 60]
+const NORMAL_PRESETS = [5, 10, 15, 20, 30, 45, 60]
 const POM_WORK       = [5, 10, 15, 30, 45, 60]
 const POM_BREAK      = [5, 10, 15, 20]
 
@@ -443,40 +443,40 @@ export default function TabTimer({ onBack }) {
           {/* ── Normal mode ── */}
           {timerMode === 'normal' && (
             <>
-              <div className={s.pills}>
-                {NORMAL_PRESETS.map(m => (
-                  <button
-                    key={m}
-                    className={s.pill}
-                    onClick={() => handleNormalStart(m)}
-                  >
-                    {m} min
-                  </button>
-                ))}
-              </div>
-
-              <div className={s.manualRow}>
+              <div className={s.pomRow}>
+                <div className={s.pills} style={{ flex: 1 }}>
+                  {NORMAL_PRESETS.map(m => (
+                    <button
+                      key={m}
+                      className={[s.pill, parseInt(manualMin, 10) === m ? s.pillActive : ''].join(' ')}
+                      style={{ flex: 1 }}
+                      onClick={() => setManualMin(String(m))}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
                 <input
                   className={s.manualInput}
                   type="number"
                   min="1"
                   max="180"
-                  placeholder="Min"
+                  placeholder="min"
                   value={manualMin}
                   onChange={e => setManualMin(e.target.value)}
                 />
-                <button
-                  className={s.launchBtn}
-                  style={{ flex: 1 }}
-                  disabled={!manualMin || parseInt(manualMin, 10) < 1}
-                  onClick={() => {
-                    const m = parseInt(manualMin, 10)
-                    if (m > 0) { handleNormalStart(m); setManualMin('') }
-                  }}
-                >
-                  ▶ Starten
-                </button>
               </div>
+
+              <button
+                className={s.launchBtn}
+                disabled={!manualMin || parseInt(manualMin, 10) < 1}
+                onClick={() => {
+                  const m = parseInt(manualMin, 10)
+                  if (m > 0) { handleNormalStart(m); setManualMin('') }
+                }}
+              >
+                ▶ Starten
+              </button>
             </>
           )}
 
@@ -485,11 +485,12 @@ export default function TabTimer({ onBack }) {
             <>
               <div className={s.pomRow}>
                 <span className={s.cfgLabel}>Fokus</span>
-                <div className={s.pills}>
+                <div className={s.pills} style={{ flex: 1 }}>
                   {POM_WORK.map(m => (
                     <button
                       key={m}
                       className={[s.pill, pomWork === m ? s.pillActive : ''].join(' ')}
+                      style={{ flex: 1 }}
                       onClick={() => { setPomWork(m); setManualPomWork('') }}
                     >
                       {m}
@@ -501,7 +502,7 @@ export default function TabTimer({ onBack }) {
                   type="number"
                   min="1"
                   max="180"
-                  placeholder="Min"
+                  placeholder="min"
                   value={manualPomWork}
                   onChange={e => {
                     const v = e.target.value
@@ -514,11 +515,12 @@ export default function TabTimer({ onBack }) {
 
               <div className={s.pomRow}>
                 <span className={s.cfgLabel}>Pause</span>
-                <div className={s.pills}>
+                <div className={s.pills} style={{ flex: 1 }}>
                   {POM_BREAK.map(m => (
                     <button
                       key={m}
                       className={[s.pill, pomBreak === m ? s.pillActive : ''].join(' ')}
+                      style={{ flex: 1 }}
                       onClick={() => { setPomBreak(m); pomBreakRef.current = m; setManualPomBreak('') }}
                     >
                       {m}
@@ -530,7 +532,7 @@ export default function TabTimer({ onBack }) {
                   type="number"
                   min="1"
                   max="60"
-                  placeholder="Min"
+                  placeholder="min"
                   value={manualPomBreak}
                   onChange={e => {
                     const v = e.target.value
