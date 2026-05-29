@@ -49,6 +49,8 @@ export const SK = {
   erfolgeTracking: `${PREFIX}erfolge_tracking_v1`,
   erfolge:         `${PREFIX}erfolge_v1`,
   kognitiv:        `${PREFIX}kognitiv_sessions`,
+  kognitivCheckin:  `${PREFIX}kognitiv_checkin`,
+  kognitivSchedule: `${PREFIX}kognitiv_schedule`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
 }
 
@@ -79,6 +81,7 @@ export const BACKUP_CATS = {
     SK.weight, `${PREFIX}wdash`,
     SK.birthdays, SK.haushalt, SK.haushaltEnergie,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
+    SK.kognitivCheckin, SK.kognitivSchedule,
   ],
   einstellungen: [
     SK.settings, SK.theme, SK.modules,
