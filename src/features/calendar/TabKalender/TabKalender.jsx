@@ -371,6 +371,14 @@ export default function TabKalender() {
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek  = weekDays.some(d => toDateKey(d) === todayKey)
+  const nowTop = useMemo(() => {
+    if (!isCurrentWeek) return null
+    const n = new Date()
+    const h = n.getHours()
+    const m = n.getMinutes()
+    if (h < visibleStart || h >= visibleEnd) return null
+    return ((h - visibleStart) * 60 + m) / 30 * SLOT_H
+  }, [isCurrentWeek, visibleStart, visibleEnd])
   const isCurrentMonth = monthRef.year === today.getFullYear() && monthRef.month === today.getMonth()
 
   const handleDayClick = (dateKey) => {
@@ -388,6 +396,8 @@ export default function TabKalender() {
     while (cells.length % 7 !== 0) cells.push(null)
     return cells
   }, [monthRef])
+
+  const colHeight = (visibleEnd - visibleStart) * 2 * SLOT_H
 
   return (
     <div className={s.page}>
@@ -470,10 +480,22 @@ export default function TabKalender() {
               })}
             </div>
 
+            {/* PillStrip oben */}
+            <WeekPillStrip
+              days={days}
+              weekDays={weekDays}
+              visibleStart={visibleStart}
+              visibleEnd={visibleEnd}
+              isTop={true}
+              onExpand={expandStart}
+              onShrink={shrinkStart}
+              onExpandTo={expandToStart}
+            />
+
             {/* Allday-Streifen — Geburtstage + Todos ohne Uhrzeit */}
             {(showTodos || showTermine) && (
               <div className={s.weekAlldayRow}>
-                <div className={s.weekAlldayLabel}>All</div>
+                <div className={s.weekAlldayLabel}>Ganzt.</div>
                 {weekDays.map(date => {
                   const dk          = toDateKey(date)
                   const bdays       = getBirthdaysForCalendarDate(birthdays, dk)
@@ -507,8 +529,8 @@ export default function TabKalender() {
             {/* Scrollbares Zeitgitter */}
             <div className={s.weekScrollBody} ref={weekScrollRef}>
               <div className={s.weekTimeAxis}>
-                {Array.from({ length: (GRID_END - GRID_START) * 2 }, (_, i) => {
-                  const h      = GRID_START + i * 0.5
+                {Array.from({ length: (visibleEnd - visibleStart) * 2 }, (_, i) => {
+                  const h      = visibleStart + i * 0.5
                   const isHour = h === Math.floor(h)
                   if (!isHour) return <div key={i} className={s.weekTimeLabel} />
                   return (
@@ -520,21 +542,31 @@ export default function TabKalender() {
               </div>
               <div className={s.weekColsBody}>
                 {weekDays.map(date => {
-                  const dk      = toDateKey(date)
-                  const slots   = days[dk] ?? {}
+                  const dk    = toDateKey(date)
+                  const slots = days[dk] ?? {}
+                  const isColToday = dk === todayKey
                   const entries = Object.entries(slots).filter(([key]) => {
                     const h = parseFloat(key)
-                    return h >= GRID_START && h < GRID_END
+                    return h >= visibleStart && h < visibleEnd
                   })
                   return (
-                    <div key={dk} className={s.weekDayCol}>
+                    <div
+                      key={dk}
+                      className={[s.weekDayCol, isColToday ? s.weekDayColToday : ''].join(' ')}
+                      style={{ height: colHeight }}
+                    >
+                      {isColToday && nowTop !== null && (
+                        <div className={s.weekNowLine} style={{ top: nowTop }}>
+                          <div className={s.weekNowDot} />
+                        </div>
+                      )}
                       {entries.map(([key, slot]) => {
-                        const isTodo = Boolean(slot.todoId)
+                        const isTodo   = Boolean(slot.todoId)
                         if (!showTermine && !isTodo) return null
                         if (!showTodos   &&  isTodo) return null
                         const slotTodo = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
-                        if (!showTools   && slotTodo?.toolId) return null
-                        const top    = slotToTop(key)
+                        if (!showTools && slotTodo?.toolId) return null
+                        const top    = slotToTop(key, visibleStart)
                         const height = slotToHeight(slot.duration)
                         const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
                         const mm     = parseFloat(key) % 1 ? '30' : '00'
@@ -554,6 +586,18 @@ export default function TabKalender() {
                 })}
               </div>
             </div>
+
+            {/* PillStrip unten */}
+            <WeekPillStrip
+              days={days}
+              weekDays={weekDays}
+              visibleStart={visibleStart}
+              visibleEnd={visibleEnd}
+              isTop={false}
+              onExpand={expandEnd}
+              onShrink={shrinkEnd}
+              onExpandTo={expandToEnd}
+            />
           </div>
         </>
       )}
