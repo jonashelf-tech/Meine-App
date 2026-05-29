@@ -338,7 +338,7 @@ export default function TabHaushalt({ onBack }) {
 
   // Show briefing overlay if not done
   if (!config.briefingDone) {
-    return <HaushaltBriefing config={config} onComplete={updateConfig} />
+    return <HaushaltBriefing config={config} onComplete={updateConfig} onBack={onBack} />
   }
 
   const score = calcRingScore(config.rooms)

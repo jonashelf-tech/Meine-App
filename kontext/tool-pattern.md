@@ -14,7 +14,9 @@ Tab 11 — Zufallsrad    (rad)
 Tab 12 — Reminder      (reminder)
 Tab 13 — Haushalt      (haushalt)
 Tab 14 — Was jetzt?    (wasjetzt)
-Tab 15 → nächstes Tool
+Tab 15 — Klar+Sehen   (klaeren)
+Tab 16 — Kognitiv      (kognitiv)
+Tab 17 → nächstes Tool
 ```
 
 ---
@@ -101,6 +103,39 @@ import { sv, lv, SK } from '../../../storage'
 const [data, setData] = useState(() => lv(SK.toolname, DEFAULT))
 const save = (next) => { setData(next); sv(SK.toolname, next) }
 ```
+
+---
+
+## Standalone SessionStore (Muster: kognitiv)
+
+Für Tools die eine eigene Session-Historie brauchen (kein Teil des globalen Stores):
+
+```js
+// src/features/tools/toolname/sessionStore.js
+import { sv, lv, SK } from '../../../storage'
+
+export function loadSessions()           { return lv(SK.toolname, []) }
+export function saveSession(session)     { sv(SK.toolname, [...loadSessions(), session]) }
+
+// Session-Objekt:
+export function createSession({ moduleId, score, mainMetric, duration, startedAt }) {
+  return { id: crypto.randomUUID(), moduleId, date: startedAt.slice(0,10), startedAt, score, mainMetric, duration }
+}
+
+// Tages-Throttle: War heute schon eine Session für dieses Modul?
+export function isDoneToday(moduleId) {
+  const today = new Date().toISOString().slice(0,10)
+  return loadSessions().some(s => s.moduleId === moduleId && s.date === today)
+}
+
+// Wochen-Throttle: War diese KW schon belegt?
+function currentISOWeek() { /* ... */ }
+const PRACTICE_KEY = 'adhs_toolname_practice'
+export function isPracticeAvailable(moduleId) { return lv(PRACTICE_KEY)?.[moduleId] !== currentISOWeek() }
+export function markPracticeUsed(moduleId)    { sv(PRACTICE_KEY, { ...lv(PRACTICE_KEY)??{}, [moduleId]: currentISOWeek() }) }
+```
+
+**Wann nutzen:** Tool trackt Übungs-Sessions mit Zeitstempel, Score, Modul-ID — aber braucht keinen globalen Store-Reaktivität. Kalender-Integration nur über `loadSessions()` direkt in TabKalender (für Dots).
 
 ---
 

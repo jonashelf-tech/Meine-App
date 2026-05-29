@@ -1,5 +1,6 @@
 import { sv, lv, SK } from '../../../storage'
 import { getTodayCheckin } from './checkinStore'
+import { MODULE_ORDER } from './moduleConfig'
 
 const PRACTICE_KEY = 'adhs_kognitiv_practice'
 
@@ -88,4 +89,21 @@ export function getModuleStats(moduleId) {
 export function getWeeklyCount() {
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
   return loadSessions().filter(s => s.date >= weekAgo).length
+}
+
+export function getScheduledToday() {
+  const schedule   = lv(SK.kognitivSchedule, {})
+  const today      = new Date().toISOString().slice(0, 10)
+  const dayOfWeek  = new Date().getDay()
+  const doneTodayIds = loadSessions()
+    .filter(s => s.date === today)
+    .map(s => s.moduleId)
+
+  return MODULE_ORDER.filter(id => {
+    const cfg = schedule[id]
+    if (!cfg || cfg.mode !== 'scheduled') return false
+    if (!(cfg.days ?? []).includes(dayOfWeek)) return false
+    if (doneTodayIds.includes(id)) return false
+    return true
+  }).map(id => ({ moduleId: id, time: schedule[id].time ?? null }))
 }

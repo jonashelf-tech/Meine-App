@@ -3,7 +3,7 @@ import { getToolColor } from '../../../utils'
 import { TOOL_TAB } from '../toolTabs'
 import ToolSection from '../../../components/ToolSection/ToolSection'
 import { MODULE_CONFIG } from './moduleConfig'
-import { loadSessions } from './sessionStore'
+import { loadSessions, getScheduledToday } from './sessionStore'
 import { getTodayCheckin } from './checkinStore'
 import s from './KognitivSection.module.css'
 
@@ -19,17 +19,23 @@ function DotDisplay({ value }) {
 }
 
 export default function KognitivSection() {
-  const { setCurrentTab, toolColors } = useAppStore()
+  const { setCurrentTab, toolColors, setKognitivAutoStart } = useAppStore()
   const toolColor = getToolColor('kognitiv', toolColors)
   const today     = new Date().toISOString().slice(0, 10)
 
-  const checkin       = getTodayCheckin()
-  const todaySessions = loadSessions().filter(sess => sess.date === today)
-  const doneCount     = todaySessions.length
+  const checkin        = getTodayCheckin()
+  const todaySessions  = loadSessions().filter(sess => sess.date === today)
+  const pendingModules = getScheduledToday()
+  const doneCount      = todaySessions.length
 
   const badgeText  = doneCount > 0 ? String(doneCount) : '○'
   const badgeBg    = doneCount > 0 ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.06)'
   const badgeColor = doneCount > 0 ? 'var(--primary)' : 'var(--text-dim)'
+
+  const handleStart = (moduleId) => {
+    setKognitivAutoStart(moduleId)
+    setCurrentTab(TOOL_TAB.kognitiv)
+  }
 
   return (
     <ToolSection
@@ -69,9 +75,28 @@ export default function KognitivSection() {
           </div>
         )}
 
-        {todaySessions.length === 0 ? (
+        {pendingModules.length > 0 && (
+          <div className={s.pending}>
+            {pendingModules.map(({ moduleId, time }) => {
+              const m = MODULE_CONFIG[moduleId]
+              return (
+                <div key={moduleId} className={s.pendingRow}>
+                  <span className={s.pendingName}>{m?.name ?? moduleId}</span>
+                  {time && <span className={s.pendingTime}>{time}</span>}
+                  <button className={s.pendingStart} onClick={() => handleStart(moduleId)}>▶</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {(pendingModules.length > 0 && todaySessions.length > 0) && (
+          <div className={s.sessDivider} />
+        )}
+
+        {todaySessions.length === 0 && pendingModules.length === 0 ? (
           <div className={s.empty}>Noch keine Session heute</div>
-        ) : (
+        ) : todaySessions.length > 0 ? (
           <div className={s.sessions}>
             {todaySessions.map(sess => {
               const m    = MODULE_CONFIG[sess.moduleId]
@@ -87,7 +112,7 @@ export default function KognitivSection() {
               )
             })}
           </div>
-        )}
+        ) : null}
       </div>
     </ToolSection>
   )

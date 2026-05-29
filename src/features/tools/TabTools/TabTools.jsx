@@ -24,6 +24,7 @@ export default function TabTools() {
   const [insertAfterIdx,   setInsertAfterIdx]   = useState(null)
   const [openColorPicker,  setOpenColorPicker]  = useState(null)
   const [colorPickerTool,  setColorPickerTool]  = useState(null)
+  const [flashId,          setFlashId]          = useState(null)
   const cardRefs     = useRef({})
   const colorInputRef = useRef(null)
 
@@ -232,7 +233,10 @@ export default function TabTools() {
                 <div
                   className={[s.allChip, isActive ? '' : s.allChipInactive].join(' ')}
                   style={{ '--tool-color': toolColor }}
-                  onClick={() => isActive && openTool(tool)}
+                  onClick={() => {
+                    if (isActive) openTool(tool)
+                    else { setFlashId(tool.id); setTimeout(() => setFlashId(null), 500) }
+                  }}
                 >
                   <button
                     className={s.colorBar}
@@ -245,7 +249,7 @@ export default function TabTools() {
                     <span className={s.cardDesc}>{tool.description}</span>
                   </div>
                   <button
-                    className={[s.addBtn, isActive ? s.addBtnActive : ''].join(' ')}
+                    className={[s.addBtn, isActive ? s.addBtnActive : '', flashId === tool.id ? s.addBtnFlash : ''].join(' ')}
                     onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
                   >
                     {isActive ? '✓' : '+'}

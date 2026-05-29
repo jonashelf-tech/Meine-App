@@ -3,7 +3,8 @@ import { sv, lv, SK } from '../../../storage'
 import { MODULE_CONFIG, MODULE_ORDER } from './moduleConfig'
 import s from './KognitivSettings.module.css'
 
-const DAY_LABELS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
+const DAY_LABELS   = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
+const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0] // Mo … Sa … So
 
 export default function KognitivSettings() {
   const [schedule, setSchedule] = useState(() => lv(SK.kognitivSchedule, {}))
@@ -58,7 +59,7 @@ export default function KognitivSettings() {
                   />
                 </div>
                 <div className={s.dayChips}>
-                  {DAY_LABELS.map((lbl, idx) => {
+                  {DISPLAY_ORDER.map(idx => {
                     const days = cfg.days ?? []
                     const on   = days.includes(idx)
                     return (
@@ -72,7 +73,7 @@ export default function KognitivSettings() {
                           update(id, { days: next })
                         }}
                       >
-                        {lbl}
+                        {DAY_LABELS[idx]}
                       </button>
                     )
                   })}

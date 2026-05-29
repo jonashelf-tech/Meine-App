@@ -11,17 +11,19 @@ export default function Dashboard({ onSelectModule }) {
     <div className={s.root}>
       <div className={s.summary}>
         <div className={s.sumCol}>
-          <div className={s.sumVal}>{allSessions.length}</div>
+          <div className={s.sumVal}>{allSessions.length || '—'}</div>
           <div className={s.sumLbl}>Sessions</div>
         </div>
         <div className={s.sumDivider} />
         <div className={s.sumCol}>
-          <div className={s.sumVal}>{weeklyCount}</div>
+          <div className={s.sumVal}>{weeklyCount || '—'}</div>
           <div className={s.sumLbl}>Diese Woche</div>
         </div>
         <div className={s.sumDivider} />
         <div className={s.sumCol}>
-          <div className={s.sumVal} style={{ color: 'var(--emerald)' }}>↑</div>
+          <div className={s.sumVal} style={{ color: allSessions.length === 0 ? 'var(--text-dim)' : weeklyCount > 0 ? 'var(--emerald)' : 'var(--rose)' }}>
+            {allSessions.length === 0 ? '—' : weeklyCount > 0 ? '↑' : '↓'}
+          </div>
           <div className={s.sumLbl}>Trend</div>
         </div>
       </div>

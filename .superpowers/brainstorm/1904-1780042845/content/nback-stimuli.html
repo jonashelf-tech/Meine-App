@@ -1,0 +1,41 @@
+<h2>N-Back — Was erscheint auf dem Screen?</h2>
+<p class="subtitle">Jeweils ein Symbol/Buchstabe nacheinander, einzeln, mittig. Tippen wenn es dasselbe wie das vorherige ist.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="letters" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#08080f;display:flex;align-items:center;justify-content:center;height:160px;border-radius:10px;">
+      <span style="font-family:'Orbitron',monospace;font-size:72px;font-weight:700;color:#8B5CF6;letter-spacing:2px;">B</span>
+    </div>
+    <div class="card-body">
+      <h3>Buchstaben (A–Z)</h3>
+      <p>Klassisch, REHACOM-nah. Schnell erkennbar, kein Interpretationsaufwand. Genau wie CPT aber mit Matching-Aufgabe.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="symbols" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#08080f;display:flex;align-items:center;justify-content:center;height:160px;border-radius:10px;gap:32px;">
+      <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" stroke="#8B5CF6" stroke-width="3" fill="none"/></svg>
+      <svg width="52" height="52" viewBox="0 0 52 52"><polygon points="26,4 48,44 4,44" stroke="#14B8A6" stroke-width="3" fill="none"/></svg>
+      <svg width="52" height="52" viewBox="0 0 52 52"><rect x="6" y="6" width="40" height="40" rx="4" stroke="#10B981" stroke-width="3" fill="none"/></svg>
+      <svg width="52" height="52" viewBox="0 0 52 52"><polygon points="26,4 32,20 50,20 36,32 42,48 26,38 10,48 16,32 2,20 20,20" stroke="#FB7185" stroke-width="3" fill="none"/></svg>
+    </div>
+    <div class="card-body">
+      <h3>Geometrische Symbole</h3>
+      <p>Schöner, klarer, weniger textlastig. Kreis · Dreieck · Quadrat · Stern — eindeutig unterscheidbar. Kein Lesen nötig, reiner Shape-Match.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="numbers" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#08080f;display:flex;align-items:center;justify-content:center;height:160px;border-radius:10px;">
+      <span style="font-family:'Orbitron',monospace;font-size:72px;font-weight:700;color:#14B8A6;">7</span>
+    </div>
+    <div class="card-body">
+      <h3>Zahlen (1–9)</h3>
+      <p>Orbitron-Font macht Zahlen visuell stark. Nur 9 mögliche Items — einfacher zu matchen. Minimal, clean.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px">CPT-light ist bereits entschieden: ○ (Kreis) und ✕ (X). Diese Frage betrifft nur N-Back.</p>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MODULE_CONFIG } from './moduleConfig'
 import { isPracticeAvailable } from './sessionStore'
 import { ToolIcon } from '../toolRegistry'
@@ -7,7 +7,10 @@ import s from './Briefing.module.css'
 export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
   const m = MODULE_CONFIG[moduleId]
   const [variant, setVariant] = useState(m.defaultVariant)
+  const [infoOpen, setInfoOpen] = useState(() => !localStorage.getItem(`briefing-seen-${moduleId}`))
   const canPractice = isPracticeAvailable(moduleId)
+
+  useEffect(() => { localStorage.setItem(`briefing-seen-${moduleId}`, '1') }, [moduleId])
 
   return (
     <div className={s.root}>
@@ -30,25 +33,34 @@ export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
           <p className={s.desc}>{m.desc}</p>
         </div>
 
-        <div className={s.infoBlock}>
-          <div className={s.infoLabel} data-type="measured">Was gemessen wird</div>
-          {m.measured.map(item => (
-            <div key={item} className={s.infoRow}>
-              <div className={s.dot} data-type="measured" />
-              {item}
-            </div>
-          ))}
-        </div>
+        <button className={s.infoToggle} onClick={() => setInfoOpen(v => !v)}>
+          <span className={s.infoToggleLabel}>Was gemessen wird</span>
+          <span className={[s.infoChevron, infoOpen ? s.infoChevronOpen : ''].join(' ')}>›</span>
+        </button>
 
-        <div className={s.infoBlock}>
-          <div className={s.infoLabel} data-type="not">Nicht relevant</div>
-          {m.notMeasured.map(item => (
-            <div key={item} className={s.infoRow}>
-              <div className={s.dot} data-type="not" />
-              {item}
+        {infoOpen && (
+          <>
+            <div className={s.infoBlock}>
+              <div className={s.infoLabel} data-type="measured">Gemessen</div>
+              {m.measured.map(item => (
+                <div key={item} className={s.infoRow}>
+                  <div className={s.dot} data-type="measured" />
+                  {item}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+
+            <div className={s.infoBlock}>
+              <div className={s.infoLabel} data-type="not">Nicht relevant</div>
+              {m.notMeasured.map(item => (
+                <div key={item} className={s.infoRow}>
+                  <div className={s.dot} data-type="not" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         <div className={s.diffLabel}>Schwierigkeit</div>
         <div className={s.diffRow}>

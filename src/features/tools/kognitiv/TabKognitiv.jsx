@@ -33,10 +33,19 @@ export default function TabKognitiv({ onBack, onExercising }) {
   const [nav, setNav] = useState(null)
   const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null
   const pendingExerciseRef = useRef(null)
-  const { setDays } = useAppStore()
+  const { setDays, kognitivAutoStart, setKognitivAutoStart } = useAppStore()
 
   const isTraining = nav?.screen === 'exercise' || countdown !== null
   useEffect(() => { onExercising?.(isTraining) }, [isTraining, onExercising])
+
+  // ─── Auto-start from Tagesplaner ─────────────────────
+  useEffect(() => {
+    if (!kognitivAutoStart) return
+    const id = kognitivAutoStart
+    setKognitivAutoStart(null)
+    handleSelectModule(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kognitivAutoStart])
 
   const goBack = () => setNav(null)
 
@@ -77,7 +86,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
     }))
   }, [setDays])
 
-  const handleSelectModule = (moduleId) => {
+  const handleSelectModule = useCallback((moduleId) => {
     if (isDoneToday(moduleId)) {
       setNav({ screen: 'done-today', moduleId })
     } else if (!isCheckinDoneToday()) {
@@ -85,7 +94,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
     } else {
       setNav({ screen: 'briefing', moduleId })
     }
-  }
+  }, [])
 
   if (nav?.screen === 'checkin') {
     return (

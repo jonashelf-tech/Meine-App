@@ -31,7 +31,7 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
       <div className={s.hero}>
         <div className={s.heroLeft}>
           <div className={s.score}>{session.mainMetric}</div>
-          <div className={s.scoreLabel}>{m.mainMetricLabel} · {m.mainMetricUnit}</div>
+          <div className={s.scoreLabel}>{m.mainMetricLabel}{m.mainMetricUnit ? ` · ${m.mainMetricUnit}` : ''}</div>
           {deltaLabel && (
             <div className={[s.delta, delta > 0 ? s.deltaGood : s.deltaBad].join(' ')}>
               {deltaLabel}
@@ -57,13 +57,13 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
       <div className={s.metrics}>
         <div className={s.metric}>
           <div className={s.mVal} style={{ color: 'var(--emerald)' }}>
-            {session.score.correct ?? session.score.correctRounds ?? '—'}
+            {session.score.correct ?? session.score.correctRounds ?? session.score.hits ?? '—'}
           </div>
           <div className={s.mLbl}>Korrekte</div>
         </div>
         <div className={s.metric}>
           <div className={s.mVal} style={{ color: 'var(--rose)' }}>
-            {session.score.errors ?? '—'}
+            {session.score.errors ?? session.score.mistakes ?? session.score.falseAlarms ?? '—'}
           </div>
           <div className={s.mLbl}>Fehler</div>
         </div>

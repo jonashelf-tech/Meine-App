@@ -16,70 +16,6 @@ const SubDragIcon = () => (
   </svg>
 )
 
-function hexToRgba(hex, alpha) {
-  const h = hex.replace('#', '')
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
-  return `rgba(${r},${g},${b},${alpha})`
-}
-
-const ProgressRing = ({ done, total, chipColor, todoIsDone }) => {
-  const SIZE = 22, r = 8.5
-  const circ = 2 * Math.PI * r   // ≈ 53.4
-
-  if (todoIsDone) return (
-    <svg width={SIZE} height={SIZE} viewBox="0 0 22 22" fill="none">
-      <circle cx="11" cy="11" r={r} stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
-    </svg>
-  )
-
-  if (total === 0) return (
-    <svg width={SIZE} height={SIZE} viewBox="0 0 22 22" fill="none">
-      <circle cx="11" cy="11" r={r}
-        stroke="rgba(255,255,255,0.09)" strokeWidth="1.5" strokeDasharray="3.5 2.8"/>
-      <line x1="11" y1="7.2" x2="11" y2="14.8"
-        stroke="rgba(255,255,255,0.38)" strokeWidth="1.6" strokeLinecap="round"/>
-      <line x1="7.2" y1="11" x2="14.8" y2="11"
-        stroke="rgba(255,255,255,0.38)" strokeWidth="1.6" strokeLinecap="round"/>
-    </svg>
-  )
-
-  const allDone   = done === total
-  const ringColor = allDone ? '#00FF94' : chipColor
-  const glow      = allDone
-    ? 'rgba(0,255,148,0.6)'
-    : hexToRgba(chipColor, 0.55)
-  const progress  = (done / total) * circ
-
-  return (
-    <div style={{ position: 'relative', width: SIZE, height: SIZE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width={SIZE} height={SIZE} viewBox="0 0 22 22" fill="none"
-        style={{ position: 'absolute', inset: 0, filter: `drop-shadow(0 0 ${allDone ? 4 : 3}px ${glow})` }}>
-        <circle cx="11" cy="11" r={r}
-          stroke={hexToRgba(ringColor, 0.18)} strokeWidth="2"/>
-        <circle cx="11" cy="11" r={r}
-          stroke={ringColor} strokeWidth="2"
-          strokeDasharray={`${progress} ${circ}`}
-          strokeLinecap="round"
-          transform="rotate(-90 11 11)"/>
-      </svg>
-      <span style={{
-        position: 'absolute',
-        fontSize:     allDone ? 10 : 7.5,
-        fontWeight:   800,
-        color:        ringColor,
-        fontFamily:   'Outfit, sans-serif',
-        letterSpacing: '-0.4px',
-        lineHeight:    1,
-        zIndex:        1,
-      }}>
-        {allDone ? '✓' : `${done}/${total}`}
-      </span>
-    </div>
-  )
-}
-
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
@@ -119,6 +55,7 @@ export default function TodoChip({
   const [expanded, setExpanded]   = useState(false)
   const [itemInput, setItemInput] = useState('')
   const [flashing, setFlashing]   = useState(false)
+  const [pulsing,  setPulsing]    = useState(false)
   const [subDragOver, setSubDragOver] = useState(null)
   const itemRef    = useRef(null)
   const itemsWrapRef = useRef(null)
@@ -244,13 +181,15 @@ export default function TodoChip({
         {/* Stripe — only when no tool glow active */}
         {!glowColor && <span className={s.stripe} />}
 
-        {/* Expand button */}
+        {/* Expand button — full section is clickable */}
         {!disableExpand && (
           <button
             data-expand-btn
-            className={s.expandBtn}
+            className={[s.expandBtnWrap, pulsing ? s.expandBtnWrapPulsing : ''].join(' ').trim()}
             onClick={e => {
               e.stopPropagation()
+              setPulsing(true)
+              setTimeout(() => setPulsing(false), 400)
               setExpanded(p => {
                 const n = !p
                 const extraPx = n ? (28 + allItems.length * 34 + 46) : 0
@@ -259,12 +198,21 @@ export default function TodoChip({
               })
             }}
           >
-            <ProgressRing
-              done={doneItems}
-              total={allItems.length}
-              chipColor={color}
-              todoIsDone={todo.done}
-            />
+            <div
+              className={[
+                s.expandBtn,
+                todo.done                                                ? ''
+                : allItems.length > 0 && doneItems === allItems.length  ? s.expandBtnDone
+                : allItems.length > 0                                   ? s.expandBtnPartial
+                : ''
+              ].join(' ').trim()}
+            >
+              {todo.done
+                ? '✓'
+                : allItems.length > 0 && doneItems === allItems.length
+                  ? '✓'
+                  : `${doneItems}/${allItems.length}`}
+            </div>
           </button>
         )}
 

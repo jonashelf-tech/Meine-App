@@ -1,0 +1,64 @@
+<h2>Go / No-Go — Screen-Design</h2>
+<p class="subtitle">Schwarzer Screen · ein Kreis · zufällige Abstände · kein Timer, kein Counter</p>
+
+<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:24px;">
+
+  <!-- Go -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <p style="color:rgba(255,255,255,0.4);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0;">GO — Tippen</p>
+    <div style="background:#05050e;border-radius:14px;width:100%;aspect-ratio:1/1.1;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.06);">
+      <div style="width:110px;height:110px;border-radius:50%;background:rgba(16,185,129,0.15);border:3px solid #10B981;box-shadow:0 0 40px rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;">
+      </div>
+    </div>
+    <p style="color:#10B981;font-size:12px;margin:0;font-weight:600;">Grüner Kreis → TIPPEN</p>
+  </div>
+
+  <!-- No-Go -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <p style="color:rgba(255,255,255,0.4);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0;">NO-GO — Nicht tippen</p>
+    <div style="background:#05050e;border-radius:14px;width:100%;aspect-ratio:1/1.1;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.06);">
+      <div style="width:110px;height:110px;border-radius:50%;background:rgba(251,113,133,0.12);border:3px solid #FB7185;box-shadow:0 0 40px rgba(251,113,133,0.25);display:flex;align-items:center;justify-content:center;">
+      </div>
+    </div>
+    <p style="color:#FB7185;font-size:12px;margin:0;font-weight:600;">Roter Kreis → STILLHALTEN</p>
+  </div>
+
+  <!-- Leer / warten -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <p style="color:rgba(255,255,255,0.4);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0;">Zwischen Stimuli</p>
+    <div style="background:#05050e;border-radius:14px;width:100%;aspect-ratio:1/1.1;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.06);">
+      <div style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.03);border:2px dashed rgba(255,255,255,0.08);"></div>
+    </div>
+    <p style="color:rgba(255,255,255,0.25);font-size:12px;margin:0;">Leerer Screen · 1–4s</p>
+  </div>
+
+</div>
+
+<!-- Difficulty question -->
+<div style="border-top:1px solid rgba(255,255,255,0.07);padding-top:20px;">
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;margin:0 0 14px 0;">Schwierigkeit — was ändert sich bei "Schwer"?</p>
+  <div class="options" data-multiselect>
+    <div class="option" data-choice="ratio" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>Mehr Rot (höhere No-Go-Rate)</h3>
+        <p>Normal: 80% grün / 20% rot · Schwer: 65% grün / 35% rot. Mehr Inhibitions-Druck, öfter bremsen müssen.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="isi" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>Kürzere Abstände (schnellere Sequenz)</h3>
+        <p>Normal: 1.5–4s zwischen Stimuli · Schwer: 0.8–2.5s. Weniger Zeit zum Vorbereiten, höherer RT-Druck.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="duration" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>Kürzere Stimulus-Sichtbarkeit</h3>
+        <p>Normal: Kreis bleibt 800ms · Schwer: Kreis bleibt nur 400ms. Reaktionsfenster ist enger.</p>
+      </div>
+    </div>
+  </div>
+  <p style="color:rgba(255,255,255,0.3);font-size:11px;margin-top:10px;">Mehrfachauswahl möglich</p>
+</div>

@@ -192,7 +192,7 @@ function StepVerteilung({ distribution, setDistribution }) {
 }
 
 // ─── HaushaltBriefing ─────────────────────────────────────
-export default function HaushaltBriefing({ config, onComplete }) {
+export default function HaushaltBriefing({ config, onComplete, onBack }) {
   const [step,         setStep]         = useState(1)
   const [draftRooms,   setDraftRooms]   = useState(config.rooms)
   const [checkedIds,   setCheckedIds]   = useState(new Set())
@@ -247,7 +247,9 @@ export default function HaushaltBriefing({ config, onComplete }) {
         <div className={s.nav}>
           {canBack
             ? <button className={s.backBtn} onClick={handleBack}>← Zurück</button>
-            : <span />
+            : onBack
+              ? <button className={s.backBtn} onClick={onBack}>← Zurück</button>
+              : <span />
           }
           {canNext
             ? <button className={s.nextBtn} onClick={handleNext}>Weiter →</button>

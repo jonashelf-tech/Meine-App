@@ -85,6 +85,10 @@ export const useAppStore = create((set, get) => ({
   calendarDate: null,
   setCalendarDate: (dk) => set({ calendarDate: dk }),
 
+  // ─── Kognitiv auto-start ──────────────────────────────
+  kognitivAutoStart: null,
+  setKognitivAutoStart: (id) => set({ kognitivAutoStart: id }),
+
   // ─── Active Tools ──────────────────────────────────────
   activeTools: lv(SK.activeTools, ['timer', 'rad']),
   setActiveTools: (tools) => { set({ activeTools: tools }); sv(SK.activeTools, tools) },
