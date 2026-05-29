@@ -265,5 +265,143 @@ const startToolnameDrag = useCallback((item, itemColor, e) => {
 .selectBtnOn { color: var(--emerald); border-color: rgba(16,185,129,0.3); }
 .dragHandle { width: 30px; min-width: 30px; align-self: stretch; border-left: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(255,255,255,0.25); cursor: grab; touch-action: none; transition: color 0.15s; }
 .dragHandle:hover { color: rgba(255,255,255,0.55); }
-.addAllBtn { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-family: 'Outfit',sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; text-align: center; }
 ```
+
+---
+
+## Standard-Dashboard-Muster (ToolSection + Section)
+
+Jedes Tool-Dashboard im Tagesplaner folgt diesem Muster. **Immer zuerst dieses Template verwenden — nicht neu erfinden.**
+
+### Aufbau
+
+```jsx
+// ToolnameSection.jsx
+import { useState, useCallback } from 'react'
+import { useAppStore } from '../../../store'
+import { getToolColor } from '../../../utils'
+import { TOOL_TAB } from '../toolTabs'
+import ToolSection from '../../../components/ToolSection/ToolSection'
+import TodoChip from '../../../components/TodoChip/TodoChip'
+import { createBlock } from '../../todos/Block'
+import s from './ToolnameSection.module.css'
+
+const DragIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+  </svg>
+)
+
+export default function ToolnameSection({ onStartDrag }) {
+  const { todos, setTodos, setCurrentTab, toolColors } = useAppStore()
+  const toolColor = getToolColor('toolname', toolColors)
+
+  // ── Items laden ─────────────────────────────────────────
+  const items = /* Tool-spezifische Items hier */
+
+  // ── Duplikat-Schutz ──────────────────────────────────────
+  // Items die bereits als nicht-erledigte Todos existieren ausblenden
+  const visibleItems = items.filter(item =>
+    !todos.some(t => t.toolnameItemId === item.id && !t.done)
+  )
+
+  if (visibleItems.length === 0) return null
+
+  // ── Auswahl ──────────────────────────────────────────────
+  const [deselected, setDeselected] = useState(() => new Set())
+  const toggleSelect = useCallback((id) => {
+    setDeselected(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }, [])
+
+  // ── Hinzufügen ───────────────────────────────────────────
+  const handleAddSelected = useCallback(() => {
+    const toAdd = visibleItems.filter(i => !deselected.has(i.id))
+    setTodos(prev => [
+      ...prev,
+      ...toAdd.map(item => createBlock({
+        text:           item.text,
+        color:          toolColor,
+        priority:       3,
+        toolId:         'toolname',
+        toolnameItemId: item.id,   // ← Duplikat-Schutz-Key
+      }))
+    ])
+  }, [visibleItems, deselected, toolColor, setTodos])
+
+  const selectedCount = visibleItems.filter(i => !deselected.has(i.id)).length
+
+  // ── Render ───────────────────────────────────────────────
+  return (
+    <ToolSection
+      toolId="toolname"
+      title="Toolname"
+      color={toolColor}
+      onTitleClick={() => setCurrentTab(TOOL_TAB.toolname)}
+      actionLabel={`+ ${selectedCount} hinzufügen`}
+      onAction={handleAddSelected}
+      actionDisabled={selectedCount === 0}
+    >
+      <div className={s.items}>
+        {visibleItems.map(item => {
+          const isSelected = !deselected.has(item.id)
+          const fakeTodo = {
+            id:       item.id,
+            text:     item.text,
+            color:    toolColor,
+            done:     false,
+            priority: 3,
+            duration: null,
+            subItems: [],
+            category: null,
+            date:     null,
+            time:     null,
+            toolId:   'toolname',
+          }
+          const dragHandle = (
+            <span
+              className={s.dragHandle}
+              onPointerDown={e => { e.stopPropagation(); onStartDrag?.(item, toolColor, e) }}
+              aria-label="Ziehen"
+            >
+              <DragIcon />
+            </span>
+          )
+          return (
+            <div key={item.id} className={[s.row, !isSelected ? s.rowDeselected : ''].join(' ')}>
+              <button
+                className={[s.selectBtn, isSelected ? s.selectBtnOn : ''].join(' ')}
+                onClick={() => toggleSelect(item.id)}
+              >
+                {isSelected ? '✓' : '○'}
+              </button>
+              <div className={s.chipWrap}>
+                <TodoChip todo={fakeTodo} dragHandle={dragHandle} disableExpand />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </ToolSection>
+  )
+}
+```
+
+### Regeln
+
+1. **Duplikat-Schutz:** Jede Section filtert `visibleItems` gegen `todos` mit eigenem `toolnameItemId`-Feld. Beim Todo-Erstellen immer dieses Feld setzen.
+2. **Kein Bottom-Button:** `onAction` an ToolSection übergeben — kein `addAllBtn` im Body.
+3. **Button-Text:** `` `+ ${selectedCount} hinzufügen` `` — count = aktuell angewählte Items. Bei 0 → `actionDisabled`.
+4. **fakeTodo:** Immer mit `toolId` stempeln damit `glowColor` in TodoChip die richtige Farbe nutzt.
+5. **Section verschwindet** wenn `visibleItems.length === 0` (`return null`).
+6. **Extra-Badge** (z.B. Prozentwert): `badge`-Prop an ToolSection — erscheint links vom Action-Button.
+7. **Header-Reihenfolge:** `[Name ↗]` → `[badge wenn vorhanden]` → `[+ N hinzufügen]` → `[▾]`
+8. **Sub-Items:** Wenn Items Unter-Aufgaben haben → `subItems` im fakeTodo befüllen, `disableExpand` weglassen.
