@@ -465,7 +465,7 @@ export default function TabHeute() {
         onChange={setViewDate}
         onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
       />
-      <div ref={swipeRef} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div ref={swipeRef} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <Zeitplan
           slots={todaySlots}
           todos={todos}

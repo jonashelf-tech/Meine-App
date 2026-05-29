@@ -3,7 +3,6 @@
   border-radius: var(--r);
   background: var(--surface-low);
   overflow: hidden;
-  margin-bottom: 8px;
 }
 
 .header {
