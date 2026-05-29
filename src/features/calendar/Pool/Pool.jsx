@@ -141,7 +141,12 @@ export default function Pool({
 
   // ─── Derived lists ──────────────────────────────────────
   const activePool = useMemo(() => {
-    const undone = todos.filter(t => !t.done).filter(t => !isTermin(t)).filter(t => !isPlaced(t))
+    const today  = todayKey()
+    const undone = todos
+      .filter(t => !t.done)
+      .filter(t => !isTermin(t))
+      .filter(t => !t.showFromDate || t.showFromDate <= today)
+      .filter(t => !isPlaced(t))
     const pending = todos.filter(t => t.done && pendingDoneIds.has(t.id))
     return [...sortTodos(undone, sort), ...pending]
   }, [todos, pendingDoneIds, sort, isPlaced])

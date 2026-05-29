@@ -26,6 +26,7 @@ export const createBlock = (partial = {}) => ({
   subItems:              [],
   category:              null,
   notes:                 null,
+  showFromDate:          null,   // "2026-06-15" — Todo erst ab diesem Datum im Pool sichtbar
   createdAt:             new Date().toISOString(),
   toolId:                null,
   haushaltTaskIds:       [],
