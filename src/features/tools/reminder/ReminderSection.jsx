@@ -115,13 +115,17 @@ export default function ReminderSection({ onStartDrag }) {
 
   if (dueItems.length === 0) return null
 
+  const selectedCount = dueItems.filter(i => !deselected.has(i.id)).length
+
   return (
     <ToolSection
       toolId="reminder"
       title="Reminder"
-      badge={dueItems.length}
       color={toolColor}
       onTitleClick={() => setCurrentTab(TOOL_TAB.reminder)}
+      actionLabel={`+ ${selectedCount} hinzufügen`}
+      onAction={handleAddSelected}
+      actionDisabled={selectedCount === 0}
     >
       <div className={s.items}>
         {dueItems.map(item => {
@@ -168,18 +172,6 @@ export default function ReminderSection({ onStartDrag }) {
             </div>
           )
         })}
-        {(() => {
-          const selectedCount = dueItems.filter(i => !deselected.has(i.id)).length
-          return (
-            <button
-              className={s.addAllBtn}
-              onClick={handleAddSelected}
-              disabled={selectedCount === 0}
-            >
-              + {selectedCount === dueItems.length ? 'Alle hinzufügen' : `${selectedCount} hinzufügen`}
-            </button>
-          )
-        })()}
       </div>
     </ToolSection>
   )
