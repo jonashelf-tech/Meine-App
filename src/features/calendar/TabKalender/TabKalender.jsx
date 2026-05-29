@@ -17,7 +17,7 @@ const MONTH_NAMES = [
   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
 ]
 
-const SLOT_H = 40
+const SLOT_H = 28
 
 function getMonday(date) {
   const d = new Date(date)
@@ -369,6 +369,11 @@ export default function TabKalender() {
   const [quickCreate,   setQuickCreate]   = useState(null)
   const [flashingSlotKey, setFlashingSlotKey] = useState(null)
   const [clickRipple,     setClickRipple]     = useState(null)
+  const [dragging,        setDragging]        = useState(null)
+  const [dragTarget,      setDragTarget]      = useState(null)
+  const draggingRef   = useRef(null)
+  const dragTargetRef = useRef(null)
+  const clickTimers   = useRef({})
 
   const handleToggleSlotDone = (dk, key, slot, slotTodo) => {
     const compositeKey = `${dk}-${key}`
@@ -431,7 +436,9 @@ export default function TabKalender() {
   const [restoreTodo, setRestoreTodo] = useState(null)
   const weightEntries   = useMemo(() => loadEntries(), [])
   const kognitivSessions = useMemo(() => loadKognitivSessions(), [])
-  const weekScrollRef = useRef(null)
+  const weekScrollRef  = useRef(null)
+  const colRefs        = useRef({})
+  const dragJustEnded  = useRef(false)
 
   const kalenderSwipeRef = useRef(null)
   usePageSwipe(kalenderSwipeRef, {
@@ -666,8 +673,10 @@ export default function TabKalender() {
                       key={dk}
                       className={[s.weekDayCol, isColToday ? s.weekDayColToday : ''].join(' ')}
                       style={{ height: colHeight }}
+                      ref={el => { if (el) colRefs.current[dk] = el }}
                       onClick={(e) => {
                         if (e.target !== e.currentTarget) return
+                        if (dragJustEnded.current) return
                         const slotIndex = Math.floor(e.nativeEvent.offsetY / SLOT_H)
                         const h  = visibleStart + slotIndex * 0.5
                         const hh = String(Math.floor(h)).padStart(2, '0')
@@ -700,8 +709,6 @@ export default function TabKalender() {
                         if (!showTools && slotTodo?.toolId) return null
                         const top    = slotToTop(key, visibleStart)
                         const height = slotToHeight(slot.duration)
-                        const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
-                        const mm     = parseFloat(key) % 1 ? '30' : '00'
                         return (
                           <div
                             key={key}
@@ -710,24 +717,11 @@ export default function TabKalender() {
                               isTodo ? s.weekSlotTodo : '',
                               (slot.done || slotTodo?.done) ? s.weekSlotDone : '',
                               flashingSlotKey === `${dk}-${key}` ? s.weekSlotDoneFlash : '',
+                              (dragging?.dk === dk && dragging?.key === key) ? s.weekSlotDragging : '',
                             ].join(' ')}
-                            style={{ top, height, background: slot.color || 'var(--primary)' }}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleToggleSlotDone(dk, key, slot, slotTodo)
-                            }}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation()
-                              if (slot.todoId) {
-                                const t = todos.find(td => td.id === slot.todoId)
-                                if (t) setEditingTodo(t)
-                              } else {
-                                setEditingTermin({ dk, slotKey: key, slot })
-                              }
-                            }}
+                            style={{ top, height, '--slot-color': slot.color || '#8B5CF6' }}
                           >
-                            {height >= 20 && <span className={s.weekSlotName}>{slot.text}</span>}
-                            {height >= 32 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
+                            {height >= 14 && <span className={s.weekSlotName}>{slot.text}</span>}
                           </div>
                         )
                       })}
