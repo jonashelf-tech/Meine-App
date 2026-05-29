@@ -349,8 +349,8 @@
     to bottom,
     transparent,
     transparent 79px,
-    rgba(255,255,255,0.055) 79px,
-    rgba(255,255,255,0.055) 80px
+    var(--border-dim) 79px,
+    var(--border-dim) 80px
   );
   pointer-events: none;
 }
@@ -363,8 +363,8 @@
     to bottom,
     transparent,
     transparent 39px,
-    rgba(255,255,255,0.025) 39px,
-    rgba(255,255,255,0.025) 40px
+    var(--border-dim) 39px,
+    var(--border-dim) 40px
   );
   pointer-events: none;
 }
@@ -478,7 +478,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.52rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.75);
+  color: var(--text);
   white-space: nowrap;
   cursor: pointer;
   max-width: 80px;
@@ -492,7 +492,7 @@
 .weekPillEmpty {
   font-family: 'Outfit', sans-serif;
   font-size: 0.5rem;
-  color: rgba(255,255,255,0.2);
+  color: var(--text-ghost);
   padding: 0 4px;
 }
 
