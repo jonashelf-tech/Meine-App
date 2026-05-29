@@ -1003,3 +1003,38 @@
 }
 
 .terminBtnCancel:active { background: rgba(255,255,255,0.06); }
+
+/* ─── Wochenansicht: Slot abhaken ─────────────────────────── */
+@keyframes weekDoneFlash {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0   rgba(16, 185, 129, 0);    }
+  30%  { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.55); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(16, 185, 129, 0);    }
+}
+
+.weekSlotDoneFlash {
+  animation: weekDoneFlash 0.65s ease;
+}
+
+.weekSlotDone {
+  opacity: 0.45;
+}
+
+.weekSlotDone .weekSlotName {
+  text-decoration: line-through;
+}
+
+/* ─── Wochenansicht: Click-Ripple ─────────────────────────── */
+@keyframes weekRipple {
+  from { transform: translate(-50%, -50%) scale(0); opacity: 0.45; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 0;    }
+}
+
+.weekClickRipple {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.35);
+  pointer-events: none;
+  animation: weekRipple 0.42s ease-out forwards;
+}
