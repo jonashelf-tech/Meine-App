@@ -345,7 +345,7 @@ function WeekTerminEditModal({ dk, slotKey, slot, onSave, onClose }) {
 }
 
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos, calendarDate, setCalendarDate } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos, setDays, calendarDate, setCalendarDate } = useAppStore()
   const [view, setView] = useState(() => lv(SK.calView, 'woche'))
   const handleSetView = (v) => { sv(SK.calView, v); setView(v) }
   const today = useMemo(() => {
@@ -367,6 +367,34 @@ export default function TabKalender() {
   const [editingTodo,   setEditingTodo]   = useState(null)
   const [editingTermin, setEditingTermin] = useState(null)
   const [quickCreate,   setQuickCreate]   = useState(null)
+  const [flashingSlotKey, setFlashingSlotKey] = useState(null)
+  const [clickRipple,     setClickRipple]     = useState(null)
+
+  const handleToggleSlotDone = (dk, key, slot, slotTodo) => {
+    const compositeKey = `${dk}-${key}`
+    if (slot.todoId && slotTodo) {
+      const nowDone = !slotTodo.done
+      if (nowDone) {
+        setFlashingSlotKey(compositeKey)
+        setTimeout(() => setFlashingSlotKey(k => k === compositeKey ? null : k), 650)
+      }
+      setTodos(prev => prev.map(t =>
+        t.id === slotTodo.id
+          ? { ...t, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null }
+          : t
+      ))
+    } else {
+      const nowDone = !slot.done
+      if (nowDone) {
+        setFlashingSlotKey(compositeKey)
+        setTimeout(() => setFlashingSlotKey(k => k === compositeKey ? null : k), 650)
+      }
+      setDays(prev => ({
+        ...prev,
+        [dk]: { ...prev[dk], [key]: { ...slot, done: nowDone } },
+      }))
+    }
+  }
 
   const handleSaveTermin = (dk, slotKey, updatedSlot) => {
     setDays(prev => ({
@@ -644,6 +672,12 @@ export default function TabKalender() {
                         const h  = visibleStart + slotIndex * 0.5
                         const hh = String(Math.floor(h)).padStart(2, '0')
                         const mm = h % 1 ? '30' : '00'
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        const rx = e.clientX - rect.left
+                        const ry = e.clientY - rect.top
+                        const rid = Date.now()
+                        setClickRipple({ dk, x: rx, y: ry, id: rid })
+                        setTimeout(() => setClickRipple(r => r?.id === rid ? null : r), 420)
                         setQuickCreate({ date: dk, time: `${hh}:${mm}` })
                       }}
                     >
