@@ -74,14 +74,14 @@ export default function ProjektKarte({ project, todos, setTodos, cats, setCats, 
   }, [setTodos])
 
   const handleHide = useCallback(() => {
-    setProjects(projects.map(p => p.id === projectId ? { ...p, hidden: !p.hidden } : p))
+    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, hidden: !p.hidden } : p))
     setMenuOpen(false)
-  }, [projects, projectId, setProjects])
+  }, [projectId, setProjects])
 
   const handleAutoDeleteToggle = useCallback(() => {
-    setProjects(projects.map(p => p.id === projectId ? { ...p, autoDelete: !p.autoDelete } : p))
+    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, autoDelete: !p.autoDelete } : p))
     setMenuOpen(false)
-  }, [projects, projectId, setProjects])
+  }, [projectId, setProjects])
 
   const handleClose = useCallback(() => {
     setMenuOpen(false)
