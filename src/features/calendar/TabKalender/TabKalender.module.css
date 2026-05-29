@@ -227,8 +227,24 @@
   line-height: 1;
 }
 
-.weekDayHeadToday .weekDayHeadName,
-.weekDayHeadToday .weekDayHeadNum { color: var(--primary); }
+.weekDayHeadToday {
+  background: rgba(139,92,246,0.08);
+}
+
+.weekDayHeadToday .weekDayHeadName { color: rgba(139,92,246,0.8); }
+
+.weekDayHeadToday .weekDayHeadNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.72rem;
+  line-height: 1;
+}
 
 .weekDayToolDots {
   display: flex;
@@ -293,7 +309,7 @@
 .weekScrollBody {
   display: flex;
   overflow-y: auto;
-  max-height: 480px;
+  max-height: 600px;
 }
 
 .weekTimeAxis {
@@ -305,11 +321,11 @@
 
 .weekTimeLabel {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.42rem;
+  font-size: 0.52rem;
   color: var(--text-ghost);
   text-align: right;
   padding-right: 4px;
-  height: 28px;
+  height: 40px;
   display: flex;
   align-items: flex-start;
   padding-top: 1px;
@@ -322,7 +338,7 @@
   flex: 1;
   border-left: 1px solid var(--border-dim);
   position: relative;
-  height: 840px;
+  /* height wird per inline style gesetzt */
 }
 
 .weekDayCol::before {
@@ -332,30 +348,48 @@
   background-image: repeating-linear-gradient(
     to bottom,
     transparent,
-    transparent 27px,
-    var(--border-dim) 27px,
-    var(--border-dim) 28px
+    transparent 79px,
+    rgba(255,255,255,0.055) 79px,
+    rgba(255,255,255,0.055) 80px
   );
   pointer-events: none;
 }
 
+.weekDayCol::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 39px,
+    rgba(255,255,255,0.025) 39px,
+    rgba(255,255,255,0.025) 40px
+  );
+  pointer-events: none;
+}
+
+.weekDayColToday {
+  background: rgba(139,92,246,0.04);
+}
+
 .weekSlotBlock {
   position: absolute;
-  left: 1px;
-  right: 1px;
-  border-radius: 3px;
+  left: 2px;
+  right: 2px;
+  border-radius: 5px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 1px 3px;
-  min-height: 8px;
+  padding: 3px 4px;
+  min-height: 10px;
 }
 
 .weekSlotTodo { opacity: 0.65; }
 
 .weekSlotName {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.42rem;
+  font-size: 0.52rem;
   font-weight: 600;
   color: var(--text);
   overflow: hidden;
@@ -366,9 +400,100 @@
 
 .weekSlotTime {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.36rem;
+  font-size: 0.44rem;
   color: var(--text-dim);
   line-height: 1;
+}
+
+.weekNowLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #FB7185;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.weekNowDot {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #FB7185;
+}
+
+/* ─── Week PillStrip ─────────────────────────────────────── */
+.weekPillStrip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(139,92,246,0.07);
+  border-bottom: 1px solid rgba(139,92,246,0.15);
+  padding: 3px 4px;
+  flex-shrink: 0;
+}
+
+.weekPillStripBot {
+  border-bottom: none;
+  border-top: 1px solid rgba(139,92,246,0.15);
+}
+
+.weekPillBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(139,92,246,0.18);
+  border: 1px solid rgba(139,92,246,0.3);
+  color: var(--primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+}
+
+.weekPillBtn:active { background: rgba(139,92,246,0.3); }
+
+.weekPillChips {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.weekPillChip {
+  background: rgba(139,92,246,0.14);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.52rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  white-space: nowrap;
+  cursor: pointer;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.12s;
+}
+
+.weekPillChip:active { background: rgba(139,92,246,0.25); }
+
+.weekPillEmpty {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.5rem;
+  color: rgba(255,255,255,0.2);
+  padding: 0 4px;
 }
 
 /* ─── Toggle Strip ───────────────────────────────────────── */
