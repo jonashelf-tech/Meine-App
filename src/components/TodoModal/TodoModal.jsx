@@ -99,7 +99,7 @@ function formatSummaryDate(dateStr) {
   return `${days[date.getDay()]} ${d}.${String(m).padStart(2,'0')}`
 }
 
-export default function TodoModal({ onClose, existingTodo = null }) {
+export default function TodoModal({ onClose, existingTodo = null, prefill = null }) {
   const keyboardOffset = useKeyboardOffset()
   const { todos, setTodos, days, setDays, cats, setCats, accentColor } = useAppStore()
 
@@ -110,8 +110,8 @@ export default function TodoModal({ onClose, existingTodo = null }) {
   const [duration, setDuration] = useState(existingTodo?.duration ?? null)
   const [color,    setColor]    = useState(existingTodo?.color    ?? accentColor ?? '#8B5CF6')
   const [category, setCategory] = useState(existingTodo?.category ?? null)
-  const [date,     setDate]     = useState(existingTodo?.date     ?? '')
-  const [time,     setTime]     = useState(existingTodo?.time     ?? '')
+  const [date,     setDate]     = useState(existingTodo?.date ?? prefill?.date ?? '')
+  const [time,     setTime]     = useState(existingTodo?.time ?? prefill?.time ?? '')
   const [repeat,   setRepeat]   = useState(existingTodo?.repeat   ?? null)
   const [subItems, setSubItems] = useState(() =>
     (existingTodo?.subItems ?? []).map(si => ({ ...si }))
@@ -122,7 +122,8 @@ export default function TodoModal({ onClose, existingTodo = null }) {
   const [catEditMode, setCatEditMode] = useState(false)
   const [catNewInput, setCatNewInput] = useState('')
   const [detailsOpen, setDetailsOpen] = useState(() =>
-    isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category)
+    (isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category))
+    || !!(prefill?.date || prefill?.time)
   )
 
   const handleAuto = () => {
