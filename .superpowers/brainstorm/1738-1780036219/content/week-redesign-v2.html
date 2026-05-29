@@ -1,0 +1,143 @@
+<style>
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', system-ui, sans-serif; margin: 0; padding: 16px; }
+  h2 { color: #8B5CF6; font-size: 1rem; margin-bottom: 4px; }
+  .subtitle { color: rgba(255,255,255,0.45); font-size: 0.78rem; margin-bottom: 16px; }
+
+  /* ── NEW ── */
+  .week { border: 1px solid rgba(139,92,246,0.18); border-radius: 12px; overflow: hidden; box-shadow: 0 0 20px rgba(139,92,246,0.06); }
+
+  /* Header */
+  .hrow { display: flex; background: #101020; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .corner { width: 30px; flex-shrink: 0; }
+  .dhead { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 6px 1px 5px; gap: 1px; border-left: 1px solid rgba(255,255,255,0.07); }
+  .dname { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+  .dnum  { font-size: 0.82rem; font-weight: 700; color: rgba(255,255,255,0.75); }
+  .dhead.today { background: rgba(139,92,246,0.08); }
+  .dhead.today .dname { color: rgba(139,92,246,0.8); }
+  .dhead.today .dnum-wrap { width: 22px; height: 22px; border-radius: 50%; background: #8B5CF6; display: flex; align-items: center; justify-content: center; }
+  .dhead.today .dnum { color: #fff; font-size: 0.72rem; }
+
+  /* PillStrip — jetzt zwischen Header und Ganztags */
+  .pstrip {
+    display: flex; align-items: center;
+    background: rgba(139,92,246,0.07);
+    border-bottom: 1px solid rgba(139,92,246,0.15);
+    padding: 3px 4px; gap: 3px;
+  }
+  .pstrip.bot { border-top: 1px solid rgba(139,92,246,0.15); border-bottom: none; }
+  .pbtn { width: 20px; height: 20px; border-radius: 6px; background: rgba(139,92,246,0.18); border: 1px solid rgba(139,92,246,0.3); color: #8B5CF6; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .pchips { flex: 1; display: flex; flex-wrap: wrap; gap: 2px; }
+  .pchip { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.25); border-radius: 5px; padding: 2px 6px; font-size: 0.52rem; color: rgba(255,255,255,0.75); white-space: nowrap; }
+  .pempty { font-size: 0.5rem; color: rgba(255,255,255,0.2); padding: 0 4px; }
+
+  /* Allday */
+  .allday { display: flex; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); min-height: 16px; }
+  .allday-lbl { width: 30px; font-size: 0.46rem; letter-spacing: 0.05em; color: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+  .allday-col { flex: 1; border-left: 1px solid rgba(255,255,255,0.05); padding: 2px 1px; }
+  .allday-bar { height: 6px; border-radius: 3px; background: #FF2D78; opacity: 0.75; }
+
+  /* Grid */
+  .scroll { display: flex; height: 140px; overflow: hidden; }
+  .tax { width: 30px; flex-shrink: 0; display: flex; flex-direction: column; }
+  .tlbl { height: 80px; font-size: 0.52rem; color: rgba(255,255,255,0.22); text-align: right; padding-right: 5px; display: flex; align-items: flex-start; padding-top: 2px; }
+  .cols { flex: 1; display: flex; }
+  .col { flex: 1; border-left: 1px solid rgba(255,255,255,0.05); position: relative; height: 200px; }
+  .col.today { background: rgba(139,92,246,0.04); }
+  .col::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(to bottom, transparent, transparent 79px, rgba(255,255,255,0.055) 79px, rgba(255,255,255,0.055) 80px); pointer-events: none; }
+  .col::after  { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(to bottom, transparent, transparent 39px, rgba(255,255,255,0.025) 39px, rgba(255,255,255,0.025) 40px); pointer-events: none; }
+
+  .slot { position: absolute; left: 2px; right: 2px; border-radius: 5px; padding: 3px 4px; overflow: hidden; display: flex; flex-direction: column; }
+  .sname { font-size: 0.52rem; font-weight: 600; color: rgba(255,255,255,0.95); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
+  .stime { font-size: 0.44rem; color: rgba(255,255,255,0.5); margin-top: 1px; }
+  .now-line { position: absolute; left: 0; right: 0; height: 2px; background: #FB7185; z-index: 2; }
+  .now-dot { position: absolute; left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #FB7185; }
+
+  /* annotation */
+  .ann { font-size: 0.62rem; color: rgba(139,92,246,0.7); background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 6px; padding: 3px 8px; margin: 4px 0 0; display: inline-block; }
+</style>
+
+<h2>Wochenansicht — überarbeitetes Layout</h2>
+<p class="subtitle">PillStrip sitzt jetzt zwischen Tages-Header und Ganztags-Zeile</p>
+
+<div class="week">
+
+  <!-- 1. Header -->
+  <div class="hrow">
+    <div class="corner"></div>
+    <div class="dhead"><div class="dname">Mo</div><div class="dnum">26</div></div>
+    <div class="dhead today">
+      <div class="dname">Di</div>
+      <div class="dnum-wrap"><div class="dnum">27</div></div>
+    </div>
+    <div class="dhead"><div class="dname">Mi</div><div class="dnum">28</div></div>
+    <div class="dhead"><div class="dname">Do</div><div class="dnum">29</div></div>
+    <div class="dhead"><div class="dname">Fr</div><div class="dnum">30</div></div>
+    <div class="dhead"><div class="dname">Sa</div><div class="dnum">31</div></div>
+    <div class="dhead"><div class="dname">So</div><div class="dnum">1</div></div>
+  </div>
+
+  <!-- 2. PillStrip top — direkt unter Header -->
+  <div class="pstrip">
+    <button class="pbtn">−</button>
+    <div class="pchips">
+      <div class="pchip">06:30 Sport</div>
+      <div class="pchip">06:00 Arzt</div>
+    </div>
+    <button class="pbtn">+</button>
+  </div>
+
+  <!-- 3. Ganztags -->
+  <div class="allday">
+    <div class="allday-lbl">Ganzt.</div>
+    <div class="allday-col"></div>
+    <div class="allday-col"><div class="allday-bar"></div></div>
+    <div class="allday-col"></div>
+    <div class="allday-col"></div>
+    <div class="allday-col"></div>
+    <div class="allday-col"></div>
+    <div class="allday-col"></div>
+  </div>
+
+  <!-- 4. Scrollbares Grid -->
+  <div class="scroll">
+    <div class="tax">
+      <div class="tlbl">08:00</div>
+      <div class="tlbl">09:00</div>
+    </div>
+    <div class="cols">
+      <div class="col"></div>
+      <div class="col today">
+        <div class="now-line" style="top:60px;"><div class="now-dot"></div></div>
+        <div class="slot" style="top:40px;height:36px;background:rgba(139,92,246,0.85);">
+          <span class="sname">Standup</span>
+          <span class="stime">08:30</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="slot" style="top:80px;height:72px;background:rgba(20,184,166,0.85);">
+          <span class="sname">Team-Meeting</span>
+          <span class="stime">09:00</span>
+        </div>
+      </div>
+      <div class="col"></div>
+      <div class="col">
+        <div class="slot" style="top:20px;height:36px;background:rgba(16,185,129,0.85);">
+          <span class="sname">Review</span>
+          <span class="stime">08:15</span>
+        </div>
+      </div>
+      <div class="col"></div>
+      <div class="col"></div>
+    </div>
+  </div>
+
+  <!-- 5. PillStrip bottom -->
+  <div class="pstrip bot">
+    <button class="pbtn">−</button>
+    <div class="pchips"><span class="pempty">Keine Termine nach 21:00</span></div>
+    <button class="pbtn">+</button>
+  </div>
+
+</div>
+
+<div class="ann">Reihenfolge: Header → PillStrip oben → Ganztags → Grid → PillStrip unten</div>

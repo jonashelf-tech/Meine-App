@@ -45,7 +45,12 @@ export default function Dashboard({ onSelectModule }) {
             <div className={s.tileIcon}><ToolIcon id="kognitiv" size={15} /></div>
             <div className={s.tileInfo}>
               <div className={s.tileName}>{m.name}</div>
-              <div className={s.tileLast}>Zuletzt: {stats.latest}{m.mainMetricUnit} · {stats.sessions} Sessions</div>
+              <div className={s.tileLast}>
+              Zuletzt: {stats.latest}{m.mainMetricUnit}
+              {stats.latestScore?.hits != null && ` · ${stats.latestScore.hits}/${stats.latestScore.total} Treffer`}
+              {stats.latestScore?.errors != null && ` · ${stats.latestScore.errors} Fehler`}
+              {` · ${stats.sessions} Sessions`}
+            </div>
             </div>
             <div className={s.tileRight}>
               <div className={[s.tileDelta, stats.improvement > 0 ? s.deltaGood : s.deltaBad].join(' ')}>

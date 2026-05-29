@@ -21,9 +21,9 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
   const sequence = isReverse ? [...numbers].reverse() : numbers
   const [cells]  = useState(() => shuffle(numbers))
 
-  const [nextIdx,   setNextIdx]   = useState(0)
-  const [doneSet,   setDoneSet]   = useState(new Set())
-  const [errorCell, setErrorCell] = useState(null)
+  const [nextIdx,  setNextIdx]  = useState(0)
+  const [doneSet,  setDoneSet]  = useState(new Set())
+  const [feedback, setFeedback] = useState(null) // 'ok' | 'err' | null
 
   const tapsRef     = useRef([])
   const startRef    = useRef(Date.now())
@@ -40,6 +40,8 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
     tapsRef.current.push({ index: nextIdx, target, got: num, correct, time: elapsed })
 
     if (correct) {
+      setFeedback('ok')
+      setTimeout(() => setFeedback(null), 350)
       setDoneSet(prev => new Set([...prev, num]))
       const newIdx = nextIdx + 1
       setNextIdx(newIdx)
@@ -58,8 +60,8 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
         onDone(session)
       }
     } else {
-      setErrorCell(num)
-      setTimeout(() => setErrorCell(null), 500)
+      setFeedback('err')
+      setTimeout(() => setFeedback(null), 350)
     }
   }, [nextIdx, sequence, total, variant, onDone])
 
@@ -74,18 +76,20 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
           <div className={s.targetHint}>Suche</div>
           <div className={s.targetNum}>{fmt(nextTarget)}</div>
         </div>
+        <div className={s.feedbackSlot}>
+          {feedback === 'ok'  && <span key={`ok-${nextIdx}`}  className={[s.feedbackIcon, s.feedbackOk ].join(' ')}>✓</span>}
+          {feedback === 'err' && <span key={`err-${nextIdx}`} className={[s.feedbackIcon, s.feedbackErr].join(' ')}>✗</span>}
+        </div>
         <div className={s.progress}>{nextIdx}/{total}</div>
       </div>
       <div className={s.gridWrap}>
         <div className={s.grid} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
           {cells.map(num => {
-            const isDone  = doneSet.has(num)
-            const isNext  = num === nextTarget
-            const isError = num === errorCell
+            const isDone = doneSet.has(num)
             return (
               <button
                 key={num}
-                className={[s.cell, isDone ? s.done : '', isNext ? s.next : '', isError ? s.error : ''].join(' ')}
+                className={[s.cell, isDone ? s.done : ''].join(' ')}
                 onClick={() => !isDone && handleTap(num)}
                 disabled={isDone}
               >

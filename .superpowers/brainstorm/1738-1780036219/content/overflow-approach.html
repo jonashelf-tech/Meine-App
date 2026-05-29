@@ -1,0 +1,227 @@
+<style>
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', system-ui, sans-serif; }
+  h2 { color: #8B5CF6; font-size: 1.1rem; margin-bottom: 4px; }
+  .subtitle { color: rgba(255,255,255,0.45); font-size: 0.82rem; margin-bottom: 20px; }
+
+  .options { display: flex; flex-direction: column; gap: 14px; }
+  .option {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .option:hover { border-color: rgba(139,92,246,0.4); background: rgba(139,92,246,0.06); }
+  .option.selected { border-color: rgba(139,92,246,0.6); background: rgba(139,92,246,0.1); }
+  .letter {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: #8B5CF6;
+    flex-shrink: 0;
+  }
+  .content { flex: 1; }
+  .content h3 { font-size: 0.9rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 6px; }
+  .content p { font-size: 0.78rem; color: rgba(255,255,255,0.5); line-height: 1.4; margin-bottom: 0; }
+
+  /* Mini week grid mockup */
+  .week-mini {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    font-size: 0.58rem;
+  }
+  .wh { display: flex; background: rgba(16,16,32,1); border-bottom: 1px solid rgba(255,255,255,0.09); }
+  .wh-corner { width: 24px; flex-shrink: 0; }
+  .wh-day { flex: 1; text-align: center; padding: 5px 2px 3px; font-size: 0.58rem; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; border-left: 1px solid rgba(255,255,255,0.06); }
+  .wh-day.today { color: #8B5CF6; }
+
+  .pill-strip {
+    display: flex; align-items: center;
+    background: rgba(139,92,246,0.06); border-bottom: 1px solid rgba(139,92,246,0.15);
+    padding: 3px 2px;
+  }
+  .pill-btn { background: rgba(139,92,246,0.15); border: none; color: #8B5CF6; font-size: 0.6rem; font-weight: 700; width: 18px; height: 18px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pill-chips { flex: 1; display: flex; flex-wrap: wrap; gap: 2px; padding: 0 4px; }
+  .pill-chip { background: rgba(139,92,246,0.18); border-radius: 4px; padding: 2px 5px; font-size: 0.5rem; color: rgba(255,255,255,0.7); white-space: nowrap; }
+  .pill-chip.teal { background: rgba(20,184,166,0.18); color: #14B8A6; }
+
+  .grid-body { display: flex; height: 80px; overflow: hidden; }
+  .time-axis { width: 24px; flex-shrink: 0; display: flex; flex-direction: column; }
+  .time-lbl { font-size: 0.42rem; color: rgba(255,255,255,0.2); text-align: right; padding-right: 3px; height: 20px; display: flex; align-items: flex-start; padding-top: 1px; flex-shrink: 0; }
+  .cols { flex: 1; display: flex; }
+  .col { flex: 1; border-left: 1px solid rgba(255,255,255,0.05); position: relative; }
+  .col-slot {
+    position: absolute; left: 1px; right: 1px; border-radius: 3px;
+    display: flex; align-items: flex-start; padding: 1px 2px; overflow: hidden;
+    font-size: 0.4rem; font-weight: 600; color: rgba(255,255,255,0.9);
+  }
+
+  .pill-strip-bot { border-bottom: none; border-top: 1px solid rgba(139,92,246,0.15); }
+
+  /* Option B: overflow badges */
+  .overflow-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.48rem; font-weight: 700;
+    background: rgba(139,92,246,0.2); color: #8B5CF6;
+    border-radius: 4px; padding: 1px 4px; margin-top: 1px;
+  }
+
+  /* Option C: simple extended range */
+  .range-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.03); padding: 3px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.52rem; color: rgba(255,255,255,0.35);
+  }
+  .range-btn { background: rgba(255,255,255,0.07); border: none; color: rgba(255,255,255,0.5); border-radius: 4px; padding: 2px 6px; font-size: 0.52rem; cursor: pointer; }
+</style>
+
+<h2>Außerhalb des Zeitfensters: Welcher Ansatz?</h2>
+<p class="subtitle">Was passiert, wenn ein Termin vor 07:00 oder nach 21:00 geplant ist?</p>
+
+<div class="options">
+
+  <!-- Option A: PillStrip (wie Tagesplaner) -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>PillStrip — wie der Tagesplaner</h3>
+      <p>Oben/unten eine Leiste mit Chips für ausgeblendete Termine + globale +/− Buttons zum Erweitern des sichtbaren Bereichs (gilt für alle 7 Tage gleichzeitig).</p>
+      <div class="week-mini">
+        <div class="wh">
+          <div class="wh-corner"></div>
+          <div class="wh-day">Mo</div><div class="wh-day today">Di</div><div class="wh-day">Mi</div>
+          <div class="wh-day">Do</div><div class="wh-day">Fr</div><div class="wh-day">Sa</div><div class="wh-day">So</div>
+        </div>
+        <div class="pill-strip">
+          <button class="pill-btn">−</button>
+          <div class="pill-chips">
+            <div class="pill-chip">06:00 Sport</div>
+            <div class="pill-chip teal">06:30 Arzt</div>
+          </div>
+          <button class="pill-btn">+</button>
+        </div>
+        <div class="grid-body">
+          <div class="time-axis">
+            <div class="time-lbl">07:00</div>
+            <div class="time-lbl">08:00</div>
+            <div class="time-lbl">09:00</div>
+            <div class="time-lbl">10:00</div>
+          </div>
+          <div class="cols">
+            <div class="col"></div>
+            <div class="col">
+              <div class="col-slot" style="top:22px;height:18px;background:#8B5CF6;">Standup</div>
+            </div>
+            <div class="col"></div>
+            <div class="col">
+              <div class="col-slot" style="top:40px;height:18px;background:#14B8A6;">Meeting</div>
+            </div>
+            <div class="col"></div><div class="col"></div><div class="col"></div>
+          </div>
+        </div>
+        <div class="pill-strip pill-strip-bot">
+          <button class="pill-btn">−</button>
+          <div class="pill-chips">
+            <div class="pill-chip">22:30 Film</div>
+          </div>
+          <button class="pill-btn">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: Overflow-Badge im Header -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Badge im Spalten-Header</h3>
+      <p>Termine außerhalb des Bereichs werden nicht angezeigt — aber der Tages-Header zeigt ein kleines "+2" Badge wenn Termine außerhalb liegen. Kein Erweitern möglich, fester Bereich.</p>
+      <div class="week-mini">
+        <div class="wh">
+          <div class="wh-corner"></div>
+          <div class="wh-day" style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+            <span>Mo</span><span class="overflow-badge">+1</span>
+          </div>
+          <div class="wh-day today" style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+            <span style="color:#8B5CF6;">Di</span><span class="overflow-badge">+2</span>
+          </div>
+          <div class="wh-day">Mi</div><div class="wh-day">Do</div>
+          <div class="wh-day">Fr</div><div class="wh-day">Sa</div><div class="wh-day">So</div>
+        </div>
+        <div class="grid-body" style="height:70px;">
+          <div class="time-axis">
+            <div class="time-lbl">07:00</div>
+            <div class="time-lbl">08:00</div>
+            <div class="time-lbl">09:00</div>
+          </div>
+          <div class="cols">
+            <div class="col"></div>
+            <div class="col">
+              <div class="col-slot" style="top:22px;height:18px;background:#8B5CF6;">Standup</div>
+            </div>
+            <div class="col"></div>
+            <div class="col">
+              <div class="col-slot" style="top:40px;height:18px;background:#14B8A6;">Meeting</div>
+            </div>
+            <div class="col"></div><div class="col"></div><div class="col"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C: Erweiterter fixer Bereich -->
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Globale Bereichs-Buttons (oben/unten)</h3>
+      <p>Kein PillStrip. Stattdessen zwei einfache Buttons "− Stunde" / "+ Stunde" am oberen und unteren Rand um den sichtbaren Bereich aller Spalten zu verschieben. Items außerhalb werden mit dünnem Streifen sichtbar.</p>
+      <div class="week-mini">
+        <div class="wh">
+          <div class="wh-corner"></div>
+          <div class="wh-day">Mo</div><div class="wh-day today">Di</div><div class="wh-day">Mi</div>
+          <div class="wh-day">Do</div><div class="wh-day">Fr</div><div class="wh-day">Sa</div><div class="wh-day">So</div>
+        </div>
+        <div class="range-row">
+          <span>ab 07:00</span>
+          <div style="display:flex;gap:4px;">
+            <button class="range-btn">− früher</button>
+            <button class="range-btn">+ später</button>
+          </div>
+        </div>
+        <div class="grid-body" style="height:60px;">
+          <div class="time-axis">
+            <div class="time-lbl">07:00</div>
+            <div class="time-lbl">08:00</div>
+            <div class="time-lbl">09:00</div>
+          </div>
+          <div class="cols">
+            <div class="col"></div>
+            <div class="col">
+              <div class="col-slot" style="top:22px;height:18px;background:#8B5CF6;">Standup</div>
+            </div>
+            <div class="col"></div>
+            <div class="col">
+              <div class="col-slot" style="top:40px;height:18px;background:#14B8A6;">Meeting</div>
+            </div>
+            <div class="col"></div><div class="col"></div><div class="col"></div>
+          </div>
+        </div>
+        <div class="range-row" style="border-top:1px solid rgba(255,255,255,0.06);border-bottom:none;">
+          <span>bis 21:00</span>
+          <div style="display:flex;gap:4px;">
+            <button class="range-btn">− früher</button>
+            <button class="range-btn">+ später</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

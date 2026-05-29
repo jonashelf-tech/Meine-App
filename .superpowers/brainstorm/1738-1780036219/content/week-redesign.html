@@ -1,0 +1,240 @@
+<style>
+  body { background: #080810; color: rgba(255,255,255,0.92); font-family: 'Outfit', system-ui, sans-serif; margin: 0; padding: 16px; }
+  h2 { color: #8B5CF6; font-size: 1rem; margin-bottom: 4px; }
+  .subtitle { color: rgba(255,255,255,0.45); font-size: 0.78rem; margin-bottom: 16px; }
+
+  .split { display: flex; gap: 12px; }
+  .panel { flex: 1; }
+  .panel-label {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3); margin-bottom: 6px; padding-left: 2px;
+  }
+  .panel-label.new { color: #8B5CF6; }
+
+  /* ── SHARED BASE ── */
+  .week { border-radius: 12px; overflow: hidden; }
+
+  /* ── OLD ── */
+  .old { border: 1px solid rgba(255,255,255,0.09); }
+  .old .hrow { display: flex; background: #101020; border-bottom: 1px solid rgba(255,255,255,0.09); }
+  .old .corner { width: 28px; flex-shrink: 0; }
+  .old .dhead { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 5px 1px 3px; gap: 0px; border-left: 1px solid rgba(255,255,255,0.09); }
+  .old .dname { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.05em; color: rgba(255,255,255,0.35); text-transform: uppercase; }
+  .old .dnum  { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.7); }
+  .old .dhead.today .dname, .old .dhead.today .dnum { color: #8B5CF6; }
+
+  .old .allday { display: flex; border-bottom: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.025); min-height: 14px; }
+  .old .allday-lbl { width: 28px; font-size: 0.5rem; color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
+  .old .allday-col { flex: 1; border-left: 1px solid rgba(255,255,255,0.06); padding: 2px; }
+  .old .allday-bar { height: 5px; border-radius: 2px; background: #FF2D78; opacity: 0.7; }
+
+  .old .scroll { display: flex; height: 120px; overflow: hidden; }
+  .old .tax { width: 28px; flex-shrink: 0; display: flex; flex-direction: column; }
+  .old .tlbl { height: 56px; font-size: 0.42rem; color: rgba(255,255,255,0.2); text-align: right; padding-right: 3px; display: flex; align-items: flex-start; padding-top: 1px; }
+  .old .cols { flex: 1; display: flex; }
+  .old .col { flex: 1; border-left: 1px solid rgba(255,255,255,0.06); position: relative; height: 168px; }
+  .old .col::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(to bottom, transparent, transparent 55px, rgba(255,255,255,0.06) 55px, rgba(255,255,255,0.06) 56px); pointer-events: none; }
+  .old .slot { position: absolute; left: 1px; right: 1px; border-radius: 3px; padding: 1px 2px; overflow: hidden; display: flex; flex-direction: column; }
+  .old .sname { font-size: 0.4rem; font-weight: 600; color: rgba(255,255,255,0.9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .old .stime { font-size: 0.34rem; color: rgba(255,255,255,0.45); }
+
+  /* ── NEW ── */
+  .new { border: 1px solid rgba(139,92,246,0.18); box-shadow: 0 0 20px rgba(139,92,246,0.06); }
+
+  /* PillStrip */
+  .new .pstrip { display: flex; align-items: center; background: rgba(139,92,246,0.07); border-bottom: 1px solid rgba(139,92,246,0.15); padding: 3px 4px; gap: 3px; }
+  .new .pstrip.bot { border-top: 1px solid rgba(139,92,246,0.15); border-bottom: none; }
+  .new .pbtn { width: 20px; height: 20px; border-radius: 6px; background: rgba(139,92,246,0.18); border: 1px solid rgba(139,92,246,0.3); color: #8B5CF6; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .new .pchips { flex: 1; display: flex; flex-wrap: wrap; gap: 2px; }
+  .new .pchip { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.25); border-radius: 5px; padding: 2px 6px; font-size: 0.52rem; color: rgba(255,255,255,0.75); white-space: nowrap; }
+  .new .pempty { font-size: 0.5rem; color: rgba(255,255,255,0.2); padding: 0 4px; }
+
+  /* Header */
+  .new .hrow { display: flex; background: #101020; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .new .corner { width: 30px; flex-shrink: 0; }
+  .new .dhead { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 6px 1px 5px; gap: 1px; border-left: 1px solid rgba(255,255,255,0.07); transition: background 0.15s; }
+  .new .dname { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.05em; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+  .new .dnum  { font-size: 0.82rem; font-weight: 700; color: rgba(255,255,255,0.75); }
+  /* today: filled circle */
+  .new .dhead.today { background: rgba(139,92,246,0.08); }
+  .new .dhead.today .dname { color: rgba(139,92,246,0.8); }
+  .new .dhead.today .dnum-wrap {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #8B5CF6; display: flex; align-items: center; justify-content: center;
+  }
+  .new .dhead.today .dnum { color: #fff; font-size: 0.72rem; }
+
+  /* Allday */
+  .new .allday { display: flex; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); min-height: 16px; }
+  .new .allday-lbl { width: 30px; font-size: 0.46rem; letter-spacing: 0.06em; color: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+  .new .allday-col { flex: 1; border-left: 1px solid rgba(255,255,255,0.05); padding: 2px 1px; display: flex; flex-direction: column; gap: 1px; }
+  .new .allday-bar { height: 6px; border-radius: 3px; background: #FF2D78; opacity: 0.75; }
+
+  /* Scroll / Grid */
+  .new .scroll { display: flex; height: 120px; overflow: hidden; }
+  .new .tax { width: 30px; flex-shrink: 0; display: flex; flex-direction: column; }
+  .new .tlbl { height: 80px; font-size: 0.52rem; color: rgba(255,255,255,0.22); text-align: right; padding-right: 5px; display: flex; align-items: flex-start; padding-top: 2px; }
+  .new .cols { flex: 1; display: flex; }
+  .new .col { flex: 1; border-left: 1px solid rgba(255,255,255,0.05); position: relative; height: 200px; }
+  /* heute-Spalte leicht getönt */
+  .new .col.today { background: rgba(139,92,246,0.04); }
+  /* hour lines */
+  .new .col::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(to bottom, transparent, transparent 79px, rgba(255,255,255,0.055) 79px, rgba(255,255,255,0.055) 80px); pointer-events: none; }
+  /* half-hour dashed line */
+  .new .col::after { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(to bottom, transparent, transparent 39px, rgba(255,255,255,0.025) 39px, rgba(255,255,255,0.025) 40px); pointer-events: none; }
+
+  .new .slot { position: absolute; left: 2px; right: 2px; border-radius: 5px; padding: 3px 4px; overflow: hidden; display: flex; flex-direction: column; }
+  .new .sname { font-size: 0.52rem; font-weight: 600; color: rgba(255,255,255,0.95); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
+  .new .stime { font-size: 0.44rem; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+  /* now line */
+  .now-line { position: absolute; left: 0; right: 0; height: 2px; background: #FB7185; z-index: 2; }
+  .now-dot { position: absolute; left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #FB7185; }
+</style>
+
+<h2>Wochenansicht — Vorher / Nachher</h2>
+<p class="subtitle">Gleicher Inhalt, andere Darstellung</p>
+
+<div class="split">
+
+  <!-- OLD -->
+  <div class="panel">
+    <div class="panel-label">Aktuell</div>
+    <div class="week old">
+      <div class="hrow">
+        <div class="corner"></div>
+        <div class="dhead"><div class="dname">Mo</div><div class="dnum">26</div></div>
+        <div class="dhead today"><div class="dname">Di</div><div class="dnum">27</div></div>
+        <div class="dhead"><div class="dname">Mi</div><div class="dnum">28</div></div>
+        <div class="dhead"><div class="dname">Do</div><div class="dnum">29</div></div>
+        <div class="dhead"><div class="dname">Fr</div><div class="dnum">30</div></div>
+        <div class="dhead"><div class="dname">Sa</div><div class="dnum">31</div></div>
+        <div class="dhead"><div class="dname">So</div><div class="dnum">1</div></div>
+      </div>
+      <div class="allday">
+        <div class="allday-lbl">All</div>
+        <div class="allday-col"></div>
+        <div class="allday-col"><div class="allday-bar"></div></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+      </div>
+      <div class="scroll">
+        <div class="tax">
+          <div class="tlbl">08:00</div>
+          <div class="tlbl">09:00</div>
+        </div>
+        <div class="cols">
+          <div class="col"></div>
+          <div class="col">
+            <div class="slot" style="top:28px;height:24px;background:#8B5CF6;">
+              <span class="sname">Standup</span>
+              <span class="stime">08:30</span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="slot" style="top:56px;height:52px;background:#14B8A6;">
+              <span class="sname">Team-Meeting</span>
+              <span class="stime">09:00</span>
+            </div>
+          </div>
+          <div class="col"></div>
+          <div class="col">
+            <div class="slot" style="top:14px;height:24px;background:#10B981;">
+              <span class="sname">Review</span>
+              <span class="stime">08:15</span>
+            </div>
+          </div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW -->
+  <div class="panel">
+    <div class="panel-label new">Neu</div>
+    <div class="week new">
+      <!-- PillStrip top -->
+      <div class="pstrip">
+        <button class="pbtn">−</button>
+        <div class="pchips">
+          <div class="pchip">06:30 Sport</div>
+        </div>
+        <button class="pbtn">+</button>
+      </div>
+
+      <!-- Header -->
+      <div class="hrow">
+        <div class="corner"></div>
+        <div class="dhead"><div class="dname">Mo</div><div class="dnum">26</div></div>
+        <div class="dhead today">
+          <div class="dname">Di</div>
+          <div class="dnum-wrap"><div class="dnum">27</div></div>
+        </div>
+        <div class="dhead"><div class="dname">Mi</div><div class="dnum">28</div></div>
+        <div class="dhead"><div class="dname">Do</div><div class="dnum">29</div></div>
+        <div class="dhead"><div class="dname">Fr</div><div class="dnum">30</div></div>
+        <div class="dhead"><div class="dname">Sa</div><div class="dnum">31</div></div>
+        <div class="dhead"><div class="dname">So</div><div class="dnum">1</div></div>
+      </div>
+
+      <!-- Allday -->
+      <div class="allday">
+        <div class="allday-lbl">Ganzt.</div>
+        <div class="allday-col"></div>
+        <div class="allday-col"><div class="allday-bar"></div></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+        <div class="allday-col"></div>
+      </div>
+
+      <!-- Scroll grid -->
+      <div class="scroll">
+        <div class="tax">
+          <div class="tlbl">08:00</div>
+          <div class="tlbl">09:00</div>
+        </div>
+        <div class="cols">
+          <div class="col"></div>
+          <div class="col today">
+            <!-- now-line bei 08:45 ≈ 60px -->
+            <div class="now-line" style="top:60px;"><div class="now-dot"></div></div>
+            <div class="slot" style="top:40px;height:36px;background:rgba(139,92,246,0.85);">
+              <span class="sname">Standup</span>
+              <span class="stime">08:30</span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="slot" style="top:80px;height:72px;background:rgba(20,184,166,0.85);">
+              <span class="sname">Team-Meeting</span>
+              <span class="stime">09:00</span>
+            </div>
+          </div>
+          <div class="col"></div>
+          <div class="col">
+            <div class="slot" style="top:20px;height:36px;background:rgba(16,185,129,0.85);">
+              <span class="sname">Review</span>
+              <span class="stime">08:15</span>
+            </div>
+          </div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+      </div>
+
+      <!-- PillStrip bottom -->
+      <div class="pstrip bot">
+        <button class="pbtn">−</button>
+        <div class="pchips"><span class="pempty">Keine Termine nach 21:00</span></div>
+        <button class="pbtn">+</button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -75,6 +75,7 @@ const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 export default function App() {
   const { currentTab, previousTab, setCurrentTab, accentColor, theme } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
+  const [exercising, setExercising] = useState(false)
 
   useEffect(() => { saveAutoBackup() }, [])
 
@@ -126,7 +127,7 @@ export default function App() {
         {currentTab === TOOL_TAB.haushalt     && <TabHaushalt     onBack={goBack} />}
         {currentTab === TOOL_TAB.wasjetzt     && <TabWasJetzt     onBack={goBack} />}
         {currentTab === TOOL_TAB.klaeren      && <TabKlaeren      onBack={goBack} />}
-        {currentTab === TOOL_TAB.kognitiv     && <TabKognitiv     onBack={goBack} />}
+        {currentTab === TOOL_TAB.kognitiv     && <TabKognitiv     onBack={goBack} onExercising={setExercising} />}
       </div>
 
       {!isToolTab && currentTab !== 3 && (
@@ -141,7 +142,7 @@ export default function App() {
 
       {addOpen && <TodoModal onClose={() => setAddOpen(false)} />}
 
-      <nav className={styles.tabBar}>
+      {!exercising && <nav className={styles.tabBar}>
         {TABS.map(({ id, label, Icon }) => {
           const active = currentTab === id || (id === 2 && isToolTab)
           return (
@@ -155,7 +156,7 @@ export default function App() {
             </button>
           )
         })}
-      </nav>
+      </nav>}
     </div>
   )
 }

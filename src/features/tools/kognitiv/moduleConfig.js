@@ -3,7 +3,7 @@ export const MODULE_CONFIG = {
     id: 'alertness',
     name: 'Alertness',
     desc: 'Tippe so schnell wie möglich wenn der Kreis erscheint.',
-    duration: 'ca. 3 Minuten',
+    duration: 'ca. 2,5 Minuten',
     measured: ['Reaktionszeit (ms)', 'Fehler (Falschtippen)', 'Auslasser (verpasst)'],
     notMeasured: ['Intelligenz', 'Ablenkungen außerhalb des Screens'],
     mainMetricLabel: 'Ø Reaktionszeit',

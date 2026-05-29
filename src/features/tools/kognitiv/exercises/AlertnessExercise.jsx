@@ -3,7 +3,7 @@ import { createSession } from '../sessionStore'
 import s from './AlertnessExercise.module.css'
 
 const TOTAL_STIMULI = 30
-const ISI_NORMAL = [2000, 5000]
+const ISI_NORMAL = [2400, 6000]
 const ISI_SCHWER = [800, 2500]
 const STIMULUS_VISIBLE = 800
 const WARN_GAP = [500, 2000]
