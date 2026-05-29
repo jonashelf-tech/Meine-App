@@ -410,7 +410,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: #FB7185;
+  background: var(--rose);
   z-index: 2;
   pointer-events: none;
 }
@@ -422,7 +422,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #FB7185;
+  background: var(--rose);
 }
 
 /* ─── Week PillStrip ─────────────────────────────────────── */
