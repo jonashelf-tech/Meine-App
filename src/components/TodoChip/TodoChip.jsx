@@ -3,6 +3,7 @@ import PrioBadge from '../PrioBadge/PrioBadge'
 import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
 import { useAppStore } from '../../store'
+import { getToolColor } from '../../utils'
 import s from './TodoChip.module.css'
 
 const SubDragIcon = () => (
@@ -134,7 +135,7 @@ export default function TodoChip({
   const threshold = klaerenSettings?.threshold ?? 30
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
   const color     = todo.color || '#8B5CF6'
-  const glowColor = todo.toolId ? (toolColors?.[todo.toolId] ?? '#8B5CF6') : null
+  const glowColor = todo.toolId ? getToolColor(todo.toolId, toolColors) : null
 
   const ageDays   = (showAge || !!onKlaeren) ? getAgeDays(todo.createdAt) : 0
   const ageLabel  = showAge ? fmtAge(ageDays) : null
