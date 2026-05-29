@@ -36,19 +36,3 @@
   transition: color 0.15s;
 }
 .dragHandle:hover { color: var(--text-dim); }
-
-.addAllBtn {
-  width: 100%;
-  padding: 9px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
-}
-.addAllBtn:disabled { opacity: 0.35; cursor: default; }

@@ -46,15 +46,18 @@ export default function BirthdaySection({ onStartDrag }) {
   if (chips.length === 0) return null
 
   const selectedChips = chips.filter(c => !deselected.has(`${c.type}-${c.birthday.id}`))
+  const selectedCount = selectedChips.length
 
   return (
     <ToolSection
       toolId="geburtstage"
       title="Geburtstage"
-      badge={chips.length}
       color={toolColor}
       defaultOpen
       onTitleClick={() => setCurrentTab(TOOL_TAB.geburtstage)}
+      actionLabel={`+ ${selectedCount} hinzufügen`}
+      onAction={() => onStartDrag?.(null, null, null, selectedChips)}
+      actionDisabled={selectedCount === 0}
     >
       <div className={s.items}>
         {chips.map(chip => {
@@ -103,18 +106,6 @@ export default function BirthdaySection({ onStartDrag }) {
           )
         })}
 
-        {(() => {
-          const count = selectedChips.length
-          return (
-            <button
-              className={s.addAllBtn}
-              onClick={() => onStartDrag?.(null, null, null, selectedChips)}
-              disabled={count === 0}
-            >
-              + {count === chips.length ? 'Alle hinzufügen' : `${count} hinzufügen`}
-            </button>
-          )
-        })()}
       </div>
     </ToolSection>
   )
