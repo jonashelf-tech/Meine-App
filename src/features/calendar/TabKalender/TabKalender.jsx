@@ -401,6 +401,27 @@ export default function TabKalender() {
     }
   }
 
+  const handleSlotTap = (dk, key, slot, slotTodo) => {
+    const ck = `${dk}-${key}`
+    if (clickTimers.current[ck]) {
+      clearTimeout(clickTimers.current[ck])
+      delete clickTimers.current[ck]
+      // Doppel-Tap → Edit
+      if (slot.todoId) {
+        const t = todos.find(td => td.id === slot.todoId)
+        if (t) setEditingTodo(t)
+      } else {
+        setEditingTermin({ dk, slotKey: key, slot })
+      }
+    } else {
+      clickTimers.current[ck] = setTimeout(() => {
+        delete clickTimers.current[ck]
+        // Einzel-Tap → Abhaken
+        handleToggleSlotDone(dk, key, slot, slotTodo)
+      }, 250)
+    }
+  }
+
   const handleSaveTermin = (dk, slotKey, updatedSlot) => {
     setDays(prev => ({
       ...prev,
@@ -720,6 +741,57 @@ export default function TabKalender() {
                               (dragging?.dk === dk && dragging?.key === key) ? s.weekSlotDragging : '',
                             ].join(' ')}
                             style={{ top, height, '--slot-color': slot.color || '#8B5CF6' }}
+                            onPointerDown={(e) => {
+                              e.stopPropagation()
+                              if (e.button !== 0 && e.pointerType === 'mouse') return
+                              const startX = e.clientX
+                              const startY = e.clientY
+                              let dragStarted = false
+
+                              const onMove = (me) => {
+                                if (dragStarted) {
+                                  updateDragTarget(me.clientX, me.clientY)
+                                  return
+                                }
+                                if (Math.hypot(me.clientX - startX, me.clientY - startY) > 4) {
+                                  dragStarted = true
+                                  const ck = `${dk}-${key}`
+                                  if (clickTimers.current[ck]) {
+                                    clearTimeout(clickTimers.current[ck])
+                                    delete clickTimers.current[ck]
+                                  }
+                                  draggingRef.current = { dk, key, slot }
+                                  setDragging({ dk, key, slot })
+                                }
+                              }
+
+                              const onUp = () => {
+                                document.removeEventListener('pointermove', onMove)
+                                document.removeEventListener('pointerup', onUp)
+                                if (dragStarted) {
+                                  if (dragTargetRef.current) {
+                                    handleDrop(
+                                      draggingRef.current.dk,
+                                      draggingRef.current.key,
+                                      draggingRef.current.slot,
+                                      dragTargetRef.current.dk,
+                                      dragTargetRef.current.key,
+                                    )
+                                  }
+                                  draggingRef.current = null
+                                  dragTargetRef.current = null
+                                  setDragging(null)
+                                  setDragTarget(null)
+                                  dragJustEnded.current = true
+                                  setTimeout(() => { dragJustEnded.current = false }, 50)
+                                } else {
+                                  handleSlotTap(dk, key, slot, slotTodo)
+                                }
+                              }
+
+                              document.addEventListener('pointermove', onMove)
+                              document.addEventListener('pointerup', onUp)
+                            }}
                           >
                             {height >= 14 && <span className={s.weekSlotName}>{slot.text}</span>}
                           </div>
