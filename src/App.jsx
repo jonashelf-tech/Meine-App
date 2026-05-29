@@ -21,6 +21,7 @@ import TabHaushalt     from './features/tools/haushalt/TabHaushalt'
 import TabWasJetzt     from './features/tools/wasjetzt/TabWasJetzt'
 import TabKlaeren      from './features/tools/klaeren/TabKlaeren'
 import TabKognitiv     from './features/tools/kognitiv/TabKognitiv'
+import TabProjekte     from './features/tools/projekte/TabProjekte'
 import TodoModal       from './components/TodoModal/TodoModal'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
@@ -128,6 +129,7 @@ export default function App() {
         {currentTab === TOOL_TAB.wasjetzt     && <TabWasJetzt     onBack={goBack} />}
         {currentTab === TOOL_TAB.klaeren      && <TabKlaeren      onBack={goBack} />}
         {currentTab === TOOL_TAB.kognitiv     && <TabKognitiv     onBack={goBack} onExercising={setExercising} />}
+        {currentTab === TOOL_TAB.projekte     && <TabProjekte     onBack={goBack} />}
       </div>
 
       {!isToolTab && currentTab !== 3 && (

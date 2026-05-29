@@ -14,4 +14,5 @@ export const TOOL_TAB = {
   wasjetzt:     14,
   klaeren:      15,
   kognitiv:     16,
+  projekte:     17,
 }
