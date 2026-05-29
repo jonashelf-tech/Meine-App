@@ -1,9 +1,12 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { useAppStore } from '../../../store'
 import { ToolIcon } from '../toolRegistry'
 import { MODULE_CONFIG } from './moduleConfig'
 import { isDoneToday, saveSession, markPracticeUsed } from './sessionStore'
+import { isCheckinDoneToday } from './checkinStore'
+import CheckinModal     from './CheckinModal'
+import KognitivSettings from './KognitivSettings'
 import ModuleList from './ModuleList'
 import Briefing   from './Briefing'
 import DoneToday  from './DoneToday'
@@ -19,12 +22,34 @@ import s from './TabKognitiv.module.css'
 // Nav screens: null = tabs visible
 // 'briefing' | 'done-today' | 'exercise' | 'results' | 'module-detail' | 'session-detail'
 
-export default function TabKognitiv({ onBack }) {
+export default function TabKognitiv({ onBack, onExercising }) {
   const [tab, setTab] = useState('modules')
   const [nav, setNav] = useState(null)
+  const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null
+  const pendingExerciseRef = useRef(null)
   const { setDays } = useAppStore()
 
+  const isTraining = nav?.screen === 'exercise' || countdown !== null
+  useEffect(() => { onExercising?.(isTraining) }, [isTraining, onExercising])
+
   const goBack = () => setNav(null)
+
+  const startWithCountdown = useCallback((navTarget) => {
+    pendingExerciseRef.current = navTarget
+    setCountdown(3)
+    let n = 3
+    const tick = setInterval(() => {
+      n -= 1
+      if (n <= 0) {
+        clearInterval(tick)
+        setCountdown(null)
+        setNav(pendingExerciseRef.current)
+        pendingExerciseRef.current = null
+      } else {
+        setCountdown(n)
+      }
+    }, 1000)
+  }, [])
 
   const handleSaveToCalendar = useCallback((session) => {
     const m       = MODULE_CONFIG[session.moduleId]
@@ -49,19 +74,39 @@ export default function TabKognitiv({ onBack }) {
   const handleSelectModule = (moduleId) => {
     if (isDoneToday(moduleId)) {
       setNav({ screen: 'done-today', moduleId })
+    } else if (!isCheckinDoneToday()) {
+      setNav({ screen: 'checkin', moduleId })
     } else {
       setNav({ screen: 'briefing', moduleId })
     }
+  }
+
+  if (nav?.screen === 'checkin') {
+    return (
+      <CheckinModal
+        onSave={() => setNav({ screen: 'briefing', moduleId: nav.moduleId })}
+        onSkip={() => setNav({ screen: 'briefing', moduleId: nav.moduleId })}
+      />
+    )
+  }
+
+  if (countdown !== null) {
+    return (
+      <div className={s.countdown}>
+        <div key={countdown} className={s.countdownNum}>{countdown}</div>
+        <div className={s.countdownLabel}>gleich geht's los</div>
+      </div>
+    )
   }
 
   if (nav?.screen === 'briefing') {
     return <Briefing
       moduleId={nav.moduleId}
       onBack={goBack}
-      onStart={(variant) => setNav({ screen: 'exercise', moduleId: nav.moduleId, variant })}
+      onStart={(variant) => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant })}
       onPractice={(variant) => {
         markPracticeUsed(nav.moduleId)
-        setNav({ screen: 'exercise', moduleId: nav.moduleId, variant, practice: true })
+        startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant, practice: true })
       }}
     />
   }
@@ -73,7 +118,7 @@ export default function TabKognitiv({ onBack }) {
       onPractice={() => {
         const defaultVariant = MODULE_CONFIG[nav.moduleId].defaultVariant
         markPracticeUsed(nav.moduleId)
-        setNav({ screen: 'exercise', moduleId: nav.moduleId, variant: defaultVariant, practice: true })
+        startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant: defaultVariant, practice: true })
       }}
     />
   }
@@ -114,13 +159,16 @@ export default function TabKognitiv({ onBack }) {
     <div className={s.root}>
       <ToolHeader onBack={onBack} icon={<ToolIcon id="kognitiv" size={20} />} eyebrow="Tool" title="Kognitiv" />
       <div className={s.tabBar}>
-        <button className={[s.tabBtn, tab === 'modules' ? s.tabOn : ''].join(' ')} onClick={() => setTab('modules')}>Module</button>
+        <button className={[s.tabBtn, tab === 'modules'   ? s.tabOn : ''].join(' ')} onClick={() => setTab('modules')}>Module</button>
         <button className={[s.tabBtn, tab === 'dashboard' ? s.tabOn : ''].join(' ')} onClick={() => setTab('dashboard')}>Dashboard</button>
+        <button className={[s.tabBtn, tab === 'settings'  ? s.tabOn : ''].join(' ')} onClick={() => setTab('settings')}>Einstellungen</button>
       </div>
       <div className={s.content}>
         {tab === 'modules'
           ? <ModuleList onSelectModule={handleSelectModule} />
-          : <Dashboard onSelectModule={(id) => setNav({ screen: 'module-detail', moduleId: id })} />
+          : tab === 'dashboard'
+          ? <Dashboard onSelectModule={(id) => setNav({ screen: 'module-detail', moduleId: id })} />
+          : <KognitivSettings />
         }
       </div>
     </div>
