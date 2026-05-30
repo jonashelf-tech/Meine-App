@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { sv, lv, SK, DEFAULT_MODULES } from '../storage'
+import { sv, lv, SK } from '../storage'
 
 const ACCENT_LEGACY = {
   cyan:   '#00CFFF',
@@ -8,7 +8,7 @@ const ACCENT_LEGACY = {
   green:  '#00FF94',
 }
 
-function migrateAccent(stored) {
+export function migrateAccent(stored) {
   if (!stored) return '#8B5CF6'
   if (stored.startsWith('#')) return stored
   return ACCENT_LEGACY[stored] ?? '#8B5CF6'
@@ -60,19 +60,12 @@ export const useAppStore = create((set, get) => ({
   // ─── App ───────────────────────────────────────────────
   settings: lv(SK.settings, { lastBackup: null }),
   theme:    lv(SK.theme, null),
-  modules:  lv(SK.modules, DEFAULT_MODULES),
-
   setSettings: (s) => {
     const next = typeof s === 'function' ? s(get().settings) : s
     set({ settings: next })
     sv(SK.settings, next)
   },
   setTheme: (t) => { set({ theme: t }); sv(SK.theme, t) },
-  setModules: (m) => {
-    const next = typeof m === 'function' ? m(get().modules) : m
-    set({ modules: next })
-    sv(SK.modules, next)
-  },
 
   // ─── Navigation ────────────────────────────────────────
   currentTab:   0,
