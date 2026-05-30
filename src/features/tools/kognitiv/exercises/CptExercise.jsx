@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './CptExercise.module.css'
 
 const STIM_MS     = 600
@@ -83,12 +84,11 @@ export default function CptExercise({ variant, onDone, onAbort }) {
   }, [stim, targetType])
 
   return (
-    <div className={s.root} onClick={handleTap}>
-      <button className={s.closeBtn} onClick={e => { e.stopPropagation(); onAbort() }}>✕</button>
+    <ExerciseShell moduleId="cpt" durationMs={DURATION_MS} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
         {stim === 'circle' && <div className={s.circle} />}
         {stim === 'x'      && <div className={s.xStim}>✕</div>}
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

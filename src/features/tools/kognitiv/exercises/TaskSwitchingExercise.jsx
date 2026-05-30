@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './TaskSwitchingExercise.module.css'
 
 const SYMBOLS   = ['X', 'O']
@@ -17,6 +18,7 @@ export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
   const [stim,        setStim]        = useState(null)
   const [isSwitching, setIsSwitching] = useState(false)
   const [countdown,   setCountdown]   = useState(null)
+  const [done,        setDone]        = useState(0)
 
   const phaseRef      = useRef(1)
   const phaseCountRef = useRef(0)
@@ -84,6 +86,7 @@ export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
     const prev    = prevStimRef.current
     const isMatch = prev ? (rule === 'shape' ? sym === prev.symbol : col === prev.color) : false
     phaseCountRef.current++
+    setDone((phaseRef.current - 1) * PER_PHASE + phaseCountRef.current)
     matchRef.current   = isMatch
     tappedRef.current  = false
     appearedAt.current = Date.now()
@@ -131,8 +134,7 @@ export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
   }
 
   return (
-    <div className={s.root} onClick={handleTap}>
-      <button className={s.closeBtn} onClick={e => { e.stopPropagation(); onAbort() }}>✕</button>
+    <ExerciseShell moduleId="taskswitching" progress={done} total={PER_PHASE * numPhases} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
         <div
           className={s.rulePill}
@@ -143,6 +145,6 @@ export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
         </div>
         {stim && <div className={s.stimulus} style={{ color: stim.color }}>{stim.symbol}</div>}
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

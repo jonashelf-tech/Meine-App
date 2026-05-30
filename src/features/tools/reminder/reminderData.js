@@ -3,15 +3,17 @@ export const REMINDER_KEY           = 'adhs_reminder_v1'
 export const REMINDER_DISMISSED_KEY = 'adhs_reminder_dismissed'
 
 // ─── Curated items ────────────────────────────────────────
+// icon = Glyph-Name aus _shared/glyphs.jsx (kein Emoji mehr).
 export const CURATED = [
-  { id: 'wasser',    text: 'Wasser trinken',        icon: '💧', interval: { every: 1,  unit: 'days'   }, time: '08:00', actionType: 'slot', color: '#00CFFF' },
-  { id: 'pause',     text: 'Pause einlegen',         icon: '☕', interval: { every: 1,  unit: 'days'   }, time: '15:00', actionType: 'slot', color: '#BF00FF' },
-  { id: 'essen',     text: 'Mittagessen',            icon: '🍽', interval: { every: 1,  unit: 'days'   }, time: '12:30', actionType: 'slot', color: '#FF9F43' },
-  { id: 'schlafen',  text: 'Schlafen gehen',         icon: '🌙', interval: { every: 1,  unit: 'days'   }, time: '23:00', actionType: 'slot', color: '#7C4DFF' },
-  { id: 'draussen',  text: 'Draußen gehen',          icon: '🌿', interval: { every: 1,  unit: 'days'   }, time: null,    actionType: 'slot', color: '#00FF94' },
-  { id: 'zahnarzt',  text: 'Zahnarzt Termin buchen', icon: '🦷', interval: { every: 12, unit: 'months' }, time: null,    actionType: 'todo', color: '#FF2D78' },
-  { id: 'hausarzt',  text: 'Hausarzt Termin buchen', icon: '🏥', interval: { every: 12, unit: 'months' }, time: null,    actionType: 'todo', color: '#FF6B6B' },
-  { id: 'augenarzt', text: 'Augenarzt buchen',       icon: '👁', interval: { every: 24, unit: 'months' }, time: null,    actionType: 'todo', color: '#00E5FF' },
+  { id: 'wasser',      text: 'Wasser trinken',           icon: 'droplet', interval: { every: 1, unit: 'days'   }, time: '10:00', actionType: 'slot', color: '#14B8A6' },
+  { id: 'meds',        text: 'Medikamente nehmen',       icon: 'pill',    interval: { every: 1, unit: 'days'   }, time: '08:00', actionType: 'slot', color: '#8B5CF6' },
+  { id: 'luft',        text: 'Kurz an die frische Luft', icon: 'leaf',    interval: { every: 1, unit: 'days'   }, time: null,    actionType: 'slot', color: '#10B981' },
+  { id: 'augen',       text: 'Bildschirm-Pause',         icon: 'eye',     interval: { every: 1, unit: 'days'   }, time: '15:00', actionType: 'slot', color: '#14B8A6' },
+  { id: 'schlafen',    text: 'Handy weg, Schlafenszeit', icon: 'moon',    interval: { every: 1, unit: 'days'   }, time: '22:30', actionType: 'slot', color: '#7C4DFF' },
+  { id: 'pflanzen',    text: 'Pflanzen gießen',          icon: 'plant',   interval: { every: 3, unit: 'days'   }, time: null,    actionType: 'todo', color: '#10B981' },
+  { id: 'bettwaesche', text: 'Bettwäsche wechseln',      icon: 'washer',  interval: { every: 2, unit: 'weeks'  }, time: null,    actionType: 'todo', color: '#8B5CF6' },
+  { id: 'rezept',      text: 'Rezept nachbestellen',     icon: 'health',  interval: { every: 1, unit: 'months' }, time: null,    actionType: 'todo', color: '#FB7185' },
+  { id: 'zahnarzt',    text: 'Zahnarzt-Kontrolle buchen',icon: 'tooth',   interval: { every: 6, unit: 'months' }, time: null,    actionType: 'todo', color: '#14B8A6' },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────

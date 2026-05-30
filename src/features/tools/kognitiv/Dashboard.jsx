@@ -1,17 +1,30 @@
 import { loadSessions, getModuleStats, getWeeklyCount } from './sessionStore'
 import { MODULE_CONFIG, MODULE_ORDER } from './moduleConfig'
-import { ToolIcon } from '../toolRegistry'
+import ModuleIcon from './ModuleIcon'
 import s from './Dashboard.module.css'
 
 export default function Dashboard({ onSelectModule }) {
   const allSessions = loadSessions()
   const weeklyCount = getWeeklyCount()
+  const trained     = MODULE_ORDER.filter(id => getModuleStats(id))
+
+  if (allSessions.length === 0) {
+    return (
+      <div className={s.root}>
+        <div className={s.empty}>
+          <div className={s.emptyIcon}><ModuleIcon id="alertness" size={26} /></div>
+          <div className={s.emptyTitle}>Noch kein Training</div>
+          <div className={s.emptyText}>Starte ein Modul — hier siehst du danach deinen Fortschritt über die Zeit.</div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={s.root}>
       <div className={s.summary}>
         <div className={s.sumCol}>
-          <div className={s.sumVal}>{allSessions.length || '—'}</div>
+          <div className={s.sumVal}>{allSessions.length}</div>
           <div className={s.sumLbl}>Sessions</div>
         </div>
         <div className={s.sumDivider} />
@@ -21,38 +34,24 @@ export default function Dashboard({ onSelectModule }) {
         </div>
         <div className={s.sumDivider} />
         <div className={s.sumCol}>
-          <div className={s.sumVal} style={{ color: allSessions.length === 0 ? 'var(--text-dim)' : weeklyCount > 0 ? 'var(--emerald)' : 'var(--rose)' }}>
-            {allSessions.length === 0 ? '—' : weeklyCount > 0 ? '↑' : '↓'}
-          </div>
-          <div className={s.sumLbl}>Trend</div>
+          <div className={s.sumVal}>{trained.length}<span className={s.sumOf}>/{MODULE_ORDER.length}</span></div>
+          <div className={s.sumLbl}>Module</div>
         </div>
       </div>
 
-      <div className={s.secLabel}>Module</div>
+      <div className={s.secLabel}>Fortschritt je Modul</div>
 
-      {MODULE_ORDER.map(id => {
+      {trained.map(id => {
         const m     = MODULE_CONFIG[id]
         const stats = getModuleStats(id)
-        if (!stats) return (
-          <div key={id} className={s.tile}>
-            <div className={s.tileIcon}><ToolIcon id="kognitiv" size={15} /></div>
-            <div className={s.tileInfo}>
-              <div className={s.tileName}>{m.name}</div>
-              <div className={s.tileLast}>Noch keine Session</div>
-            </div>
-          </div>
-        )
         return (
-          <button key={id} className={s.tile} onClick={() => onSelectModule(id)}>
-            <div className={s.tileIcon}><ToolIcon id="kognitiv" size={15} /></div>
+          <button key={id} className={s.tile} style={{ '--accent': m.color }} onClick={() => onSelectModule(id)}>
+            <div className={s.tileIcon}><ModuleIcon id={id} size={17} /></div>
             <div className={s.tileInfo}>
               <div className={s.tileName}>{m.name}</div>
               <div className={s.tileLast}>
-              Zuletzt: {stats.latest}{m.mainMetricUnit}
-              {stats.latestScore?.hits != null && ` · ${stats.latestScore.hits}/${stats.latestScore.total} Treffer`}
-              {stats.latestScore?.errors != null && ` · ${stats.latestScore.errors} Fehler`}
-              {` · ${stats.sessions} Sessions`}
-            </div>
+                Zuletzt {stats.latest}{m.mainMetricUnit} · {stats.sessions} {stats.sessions === 1 ? 'Session' : 'Sessions'}
+              </div>
             </div>
             <div className={s.tileRight}>
               <div className={[s.tileDelta, stats.improvement > 0 ? s.deltaGood : s.deltaBad].join(' ')}>
@@ -63,7 +62,7 @@ export default function Dashboard({ onSelectModule }) {
                   <div
                     key={i}
                     className={[s.miniBar, i === stats.last7.length - 1 ? s.miniBarLast : ''].join(' ')}
-                    style={{ height: `${Math.max(20, (stats.best / sess.mainMetric) * 100)}%` }}
+                    style={{ height: `${Math.max(20, Math.min(100, (stats.best / sess.mainMetric) * 100))}%` }}
                   />
                 ))}
               </div>

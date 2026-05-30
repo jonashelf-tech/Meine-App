@@ -93,8 +93,20 @@
 }
 
 .roomIcon {
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  color: var(--primary);
+}
+
+.iconPickerLabel {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 4px;
 }
 
 .roomName {

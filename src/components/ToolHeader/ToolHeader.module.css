@@ -38,6 +38,7 @@
   border-radius: 10px;
   background: color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--tool-color, var(--primary)) 22%, transparent);
+  color: var(--tool-color, var(--primary));
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './ZahlensucheExercise.module.css'
 
 function shuffle(arr) {
@@ -69,13 +70,10 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
   const nextTarget = sequence[nextIdx]
 
   return (
-    <div className={s.root}>
-      <div className={s.topBar}>
-        <button className={s.closeBtn} onClick={onAbort}>✕</button>
-        <div className={s.targetWrap}>
-          <div className={s.targetHint}>Suche</div>
-          <div className={s.targetNum}>{fmt(nextTarget)}</div>
-        </div>
+    <ExerciseShell moduleId="zahlensuche" progress={nextIdx} total={total} onAbort={onAbort}>
+      <div className={s.target}>
+        <div className={s.targetHint}>Suche</div>
+        <div className={s.targetNum}>{fmt(nextTarget)}</div>
         <div className={s.feedbackSlot}>
           {feedback === 'ok'  && <span key={`ok-${nextIdx}`}  className={[s.feedbackIcon, s.feedbackOk ].join(' ')}>✓</span>}
           {feedback === 'err' && <span key={`err-${nextIdx}`} className={[s.feedbackIcon, s.feedbackErr].join(' ')}>✗</span>}
@@ -98,6 +96,6 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
           })}
         </div>
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

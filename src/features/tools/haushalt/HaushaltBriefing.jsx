@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { DEFAULT_ROOMS } from './haushaltData'
+import { Glyph, ROOM_GLYPHS } from '../_shared/glyphs'
+import GlyphPicker from '../_shared/GlyphPicker'
 import s from './HaushaltBriefing.module.css'
 
 const TOTAL_STEPS = 4
@@ -8,7 +10,7 @@ const TOTAL_STEPS = 4
 function StepWillkommen() {
   return (
     <div className={s.stepContent}>
-      <div className={s.welcomeIcon}>🏠</div>
+      <div className={s.welcomeIcon}><Glyph name="home" size={34} /></div>
       <h2 className={s.stepTitle}>Willkommen im Haushalt-Tool</h2>
       <p className={s.stepText}>
         Hier siehst du auf einen Blick, was in deiner Wohnung ansteht — ohne Druck.
@@ -26,7 +28,7 @@ function StepWillkommen() {
           ))}
         </div>
         <div className={s.exampleRow} style={{ marginTop: 10 }}>
-          <span className={s.exampleLabel}>Müll rausbringen <span className={s.lowBadge}>🪫</span></span>
+          <span className={s.exampleLabel}>Müll rausbringen <span className={s.lowBadge}><Glyph name="battery" size={14} /></span></span>
           <span className={s.exampleDue} style={{ color: 'var(--emerald)' }}>in 2 Tagen</span>
         </div>
         <div className={s.exampleBar}>
@@ -41,7 +43,8 @@ function StepWillkommen() {
       </div>
 
       <p className={s.stepHint}>
-        🪫 <strong>Low-Energy-Modus</strong> — zeigt nur die leichteren Tasks wenn du wenig Kraft hast. Den Rest kannst du ausblenden, ohne ihn zu vergessen.
+        <span className={s.inlineGlyph}><Glyph name="battery" size={14} /></span>
+        <strong>Low-Energy-Modus</strong> — zeigt nur die leichteren Tasks wenn du wenig Kraft hast. Den Rest kannst du ausblenden, ohne ihn zu vergessen.
       </p>
     </div>
   )
@@ -50,7 +53,7 @@ function StepWillkommen() {
 // ─── Step 2: Räume einrichten ─────────────────────────────
 function StepRaeume({ draftRooms, setDraftRooms }) {
   const [newName, setNewName] = useState('')
-  const [newIcon, setNewIcon] = useState('')
+  const [newIcon, setNewIcon] = useState('home')
 
   const removeRoom = (id) => setDraftRooms(prev => prev.filter(r => r.id !== id))
 
@@ -60,11 +63,11 @@ function StepRaeume({ draftRooms, setDraftRooms }) {
     setDraftRooms(prev => [...prev, {
       id:    crypto.randomUUID(),
       name,
-      icon:  newIcon.trim() || '🏠',
+      icon:  newIcon,
       tasks: [],
     }])
     setNewName('')
-    setNewIcon('')
+    setNewIcon('home')
   }
 
   return (
@@ -75,7 +78,7 @@ function StepRaeume({ draftRooms, setDraftRooms }) {
       <div className={s.roomList}>
         {draftRooms.map(room => (
           <div key={room.id} className={s.roomChip}>
-            <span className={s.roomChipIcon}>{room.icon}</span>
+            <span className={s.roomChipIcon}><Glyph name={room.icon} size={18} /></span>
             <span className={s.roomChipName}>{room.name}</span>
             <span className={s.roomChipCount}>{room.tasks.length} Tasks</span>
             <button className={s.removeBtn} onClick={() => removeRoom(room.id)}>✕</button>
@@ -91,15 +94,9 @@ function StepRaeume({ draftRooms, setDraftRooms }) {
           onChange={e => setNewName(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && addRoom()}
         />
-        <input
-          className={s.addIconInput}
-          placeholder="🏠"
-          value={newIcon}
-          onChange={e => setNewIcon(e.target.value)}
-          maxLength={2}
-        />
         <button className={s.addBtn} onClick={addRoom}>+</button>
       </div>
+      <GlyphPicker glyphs={ROOM_GLYPHS} value={newIcon} onChange={setNewIcon} />
     </div>
   )
 }
@@ -124,7 +121,7 @@ function StepErledigt({ draftRooms, checkedIds, setCheckedIds }) {
       {draftRooms.map(room => (
         <div key={room.id} className={s.checkGroup}>
           <div className={s.checkGroupHeader}>
-            <span>{room.icon}</span>
+            <span className={s.checkGroupIcon}><Glyph name={room.icon} size={16} /></span>
             <span>{room.name}</span>
           </div>
           {room.tasks.map(task => (
@@ -173,7 +170,7 @@ function StepVerteilung({ distribution, setDistribution }) {
           className={[s.distBtn, distribution === 'spread' ? s.distBtnActive : ''].join(' ')}
           onClick={() => setDistribution('spread')}
         >
-          <span className={s.distIcon}>🗓</span>
+          <span className={s.distIcon}><Glyph name="calendar" size={22} /></span>
           <span className={s.distLabel}>Verteilt über die Woche</span>
           <span className={s.distSub}>Tasks kommen nach Fälligkeit, wann immer sie dran sind</span>
         </button>
@@ -182,7 +179,7 @@ function StepVerteilung({ distribution, setDistribution }) {
           className={[s.distBtn, distribution === 'block' ? s.distBtnActive : ''].join(' ')}
           onClick={() => setDistribution('block')}
         >
-          <span className={s.distIcon}>🧹</span>
+          <span className={s.distIcon}><Glyph name="broom" size={22} /></span>
           <span className={s.distLabel}>Großputztag</span>
           <span className={s.distSub}>Alles sammelt sich für einen fixen Putztag pro Woche</span>
         </button>

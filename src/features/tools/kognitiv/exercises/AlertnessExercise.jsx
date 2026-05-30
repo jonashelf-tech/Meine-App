@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './AlertnessExercise.module.css'
 
 const TOTAL_STIMULI = 30
@@ -17,6 +18,7 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
   const isiRange = variant === 'Schwer' ? ISI_SCHWER : ISI_NORMAL
 
   const [visible, setVisible] = useState(false)
+  const [shown, setShown]     = useState(0)
   const tapsRef        = useRef([])
   const stimulusCount  = useRef(0)
   const startedAt      = useRef(new Date().toISOString())
@@ -83,6 +85,7 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
       return
     }
     stimulusCount.current += 1
+    setShown(stimulusCount.current)
     appearedAtRef.current = Date.now()
     setVisible(true)
     timerRef.current = setTimeout(() => {
@@ -121,11 +124,10 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
   }, [visible, finishSession])
 
   return (
-    <div className={s.root} onClick={handleTap}>
-      <button className={s.closeBtn} onClick={e => { e.stopPropagation(); onAbort() }}>✕</button>
+    <ExerciseShell moduleId="alertness" progress={shown} total={TOTAL_STIMULI} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
         {visible && <div className={s.stimulus} />}
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

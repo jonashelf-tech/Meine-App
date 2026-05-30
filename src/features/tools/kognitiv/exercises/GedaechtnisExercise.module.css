@@ -1,7 +1,5 @@
-.root { position: fixed; inset: 0; background: #05050e; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.closeBtn { position: absolute; top: 16px; left: 16px; width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.04); border: none; color: rgba(255,255,255,0.18); font-size: 0.75rem; cursor: pointer; }
-.arena { position: relative; width: min(92vw, 92vh - 60px); height: min(92vw, 92vh - 60px); flex-shrink: 0; }
-.circle { position: absolute; transform: translate(-50%, -50%); width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.1s; }
-.lit { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px rgba(139,92,246,0.6); }
+.arena { position: relative; width: min(86vw, 86vh - 110px); height: min(86vw, 86vh - 110px); max-width: 340px; max-height: 340px; margin: auto; }
+.circle { position: absolute; transform: translate(-50%, -50%); width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.12); cursor: pointer; transition: all 0.1s; }
+.lit { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 60%, transparent); }
 .correct { background: var(--emerald); border-color: var(--emerald); }
 .wrong { background: var(--rose); border-color: var(--rose); }

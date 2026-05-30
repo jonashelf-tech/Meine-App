@@ -1,4 +1,17 @@
 import { sv, lv, SK } from '../../../storage'
+import { GLYPH_NAMES } from '../_shared/glyphs'
+
+// Alte Emoji-Icons → Glyph-Namen (Migration bestehender Daten).
+const EMOJI_TO_GLYPH = {
+  '🍳': 'kitchen', '🚿': 'bath', '🛁': 'bath', '🛋': 'sofa', '🛏': 'bed',
+  '🚪': 'door', '🏠': 'home', '🪟': 'window', '🧺': 'washer', '🌱': 'plant',
+  '🌿': 'plant', '🚗': 'car', '🖥': 'desk', '💻': 'desk', '🚽': 'bath',
+}
+
+export function normalizeRoomIcon(icon) {
+  if (GLYPH_NAMES.includes(icon)) return icon
+  return EMOJI_TO_GLYPH[icon] ?? 'home'
+}
 
 // ─── Frequency labels ─────────────────────────────────────
 export const FREQ_LABELS = {
@@ -80,7 +93,7 @@ export function getUrgentTasks(config, limit = 5) {
 // ─── Default rooms ────────────────────────────────────────
 export const DEFAULT_ROOMS = [
   {
-    id: 'kueche', name: 'Küche', icon: '🍳', priority: 3,
+    id: 'kueche', name: 'Küche', icon: 'kitchen', priority: 1,
     tasks: [
       { id: 'k-1', text: 'Abwasch / Spülmaschine', duration: 15, freq: 'daily',    customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
       { id: 'k-2', text: 'Müll rausbringen',        duration:  5, freq: 'biweekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
@@ -89,7 +102,7 @@ export const DEFAULT_ROOMS = [
     ],
   },
   {
-    id: 'bad', name: 'Bad', icon: '🚿', priority: 3,
+    id: 'bad', name: 'Bad', icon: 'bath', priority: 1,
     tasks: [
       { id: 'b-1', text: 'WC reinigen',           duration: 10, freq: 'weekly',   customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
       { id: 'b-2', text: 'Waschbecken & Spiegel', duration:  5, freq: 'weekly',   customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
@@ -97,7 +110,7 @@ export const DEFAULT_ROOMS = [
     ],
   },
   {
-    id: 'wohnzimmer', name: 'Wohnzimmer', icon: '🛋', priority: 3,
+    id: 'wohnzimmer', name: 'Wohnzimmer', icon: 'sofa', priority: 2,
     tasks: [
       { id: 'w-1', text: 'Aufräumen / Sachen wegräumen', duration: 15, freq: 'weekly',  customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
       { id: 'w-2', text: 'Staubsaugen',                  duration: 15, freq: 'weekly',  customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
@@ -105,7 +118,7 @@ export const DEFAULT_ROOMS = [
     ],
   },
   {
-    id: 'schlafzimmer', name: 'Schlafzimmer', icon: '🛏', priority: 3,
+    id: 'schlafzimmer', name: 'Schlafzimmer', icon: 'bed', priority: 2,
     tasks: [
       { id: 's-1', text: 'Wäsche waschen', duration: 10, freq: 'weekly',   customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
       { id: 's-2', text: 'Bett machen',    duration:  5, freq: 'daily',    customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
@@ -113,7 +126,7 @@ export const DEFAULT_ROOMS = [
     ],
   },
   {
-    id: 'flur', name: 'Flur', icon: '🚪', priority: 3,
+    id: 'flur', name: 'Flur', icon: 'door', priority: 3,
     tasks: [
       { id: 'f-1', text: 'Staubsaugen',      duration: 10, freq: 'weekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
       { id: 'f-2', text: 'Schuhe wegräumen', duration:  5, freq: 'weekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
@@ -136,6 +149,7 @@ export function loadHaushalt() {
   // Ensure all tasks have lowEnergy field (migration)
   const rooms = (saved.rooms ?? DEFAULT_ROOMS).map(r => ({
     ...r,
+    icon: normalizeRoomIcon(r.icon),
     priority: r.priority ?? 3,
     tasks: r.tasks.map(t => ({ ...t, lowEnergy: t.lowEnergy ?? false })),
   }))

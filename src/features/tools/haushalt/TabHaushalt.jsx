@@ -10,15 +10,12 @@ import {
   addTask, updateTask, deleteTask,
   resetToDefaults,
 } from './haushaltData'
+import { Glyph, ROOM_GLYPHS } from '../_shared/glyphs'
+import GlyphPicker from '../_shared/GlyphPicker'
 import s from './TabHaushalt.module.css'
 
 // ─── Icons ────────────────────────────────────────────────
-const HausIcon = () => (
-  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    <polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-)
+const HausIcon = () => <Glyph name="home" size={22} />
 
 const PencilIcon = () => (
   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -209,7 +206,7 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
   return (
     <div className={s.roomCard}>
       <div className={s.roomHeader} onClick={onToggle}>
-        <span className={s.roomIcon}>{room.icon}</span>
+        <span className={s.roomIcon}><Glyph name={room.icon} size={20} /></span>
         {editing ? (
           <>
             <input
@@ -290,6 +287,12 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
                 />
                 <button className={s.addTaskBtn} onClick={handleAddTask}>+</button>
               </div>
+              <span className={s.iconPickerLabel}>Raum-Icon</span>
+              <GlyphPicker
+                glyphs={ROOM_GLYPHS}
+                value={room.icon}
+                onChange={name => onUpdateRoom({ icon: name })}
+              />
               <button className={s.deleteRoomBtn} onClick={onDeleteRoom}>
                 Raum löschen
               </button>
@@ -330,7 +333,7 @@ export default function TabHaushalt({ onBack }) {
   const toggleEdit  = (id) => setEditRooms(p => ({ ...p, [id]: !p[id] }))
 
   const handleAddRoom = () => {
-    const room = { id: crypto.randomUUID(), name: 'Neuer Raum', icon: '🏠', tasks: [] }
+    const room = { id: crypto.randomUUID(), name: 'Neuer Raum', icon: 'home', tasks: [] }
     updateConfig(addRoom(config, room))
     setOpenRooms(p => ({ ...p, [room.id]: true }))
     setEditRooms(p => ({ ...p, [room.id]: true }))

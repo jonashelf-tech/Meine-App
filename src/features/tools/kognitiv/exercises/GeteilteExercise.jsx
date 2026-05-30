@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './GeteilteExercise.module.css'
 
 const NUM_CIRCLES  = 5
@@ -137,8 +138,7 @@ export default function GeteilteExercise({ variant, onDone, onAbort }) {
   }, [getCtx])
 
   return (
-    <div className={s.root} onClick={handleTap}>
-      <button className={s.closeBtn} onClick={e => { e.stopPropagation(); onAbort() }}>✕</button>
+    <ExerciseShell moduleId="geteilt" durationMs={DURATION_MS} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
         <div className={s.circles}>
           {circles.map((closed, i) => (
@@ -149,6 +149,6 @@ export default function GeteilteExercise({ variant, onDone, onAbort }) {
           {toneLabel ?? '· · ·'}
         </div>
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

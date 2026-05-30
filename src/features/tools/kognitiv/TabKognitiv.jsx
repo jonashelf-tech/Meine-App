@@ -111,9 +111,10 @@ export default function TabKognitiv({ onBack, onExercising }) {
   }
 
   if (countdown !== null) {
+    const cdColor = MODULE_CONFIG[pendingExerciseRef.current?.moduleId]?.color ?? 'var(--primary)'
     return (
       <div className={s.countdown}>
-        <div key={countdown} className={s.countdownNum}>{countdown}</div>
+        <div key={countdown} className={s.countdownNum} style={{ color: cdColor }}>{countdown}</div>
         <div className={s.countdownLabel}>gleich geht's los</div>
       </div>
     )

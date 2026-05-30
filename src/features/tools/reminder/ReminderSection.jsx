@@ -133,7 +133,7 @@ export default function ReminderSection({ onStartDrag }) {
           const isSelected = !deselected.has(item.id)
           const fakeTodo = {
             id:       item.id,
-            text:     `${item.icon || '🔔'} ${item.text}`,
+            text:     item.text,
             color:    item.color ?? toolColor,
             done:     false,
             priority: 2,

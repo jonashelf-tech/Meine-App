@@ -2,6 +2,8 @@ export const MODULE_CONFIG = {
   alertness: {
     id: 'alertness',
     name: 'Alertness',
+    color: '#2DD4BF',
+    domain: 'Reaktion',
     desc: 'Tippe so schnell wie möglich wenn der Kreis erscheint.',
     duration: 'ca. 2,5 Minuten',
     measured: ['Reaktionszeit (ms)', 'Fehler (Falschtippen)', 'Auslasser (verpasst)'],
@@ -14,6 +16,8 @@ export const MODULE_CONFIG = {
   zahlensuche: {
     id: 'zahlensuche',
     name: 'Zahlensuche',
+    color: '#38BDF8',
+    domain: 'Tempo',
     desc: '25 Felder mit Zahlen 01–25. Tippe sie in Reihenfolge so schnell wie möglich.',
     duration: 'ca. 2–4 Minuten',
     measured: ['Gesamtzeit (s)', 'Fehler', 'Zeit pro Zahl'],
@@ -26,6 +30,8 @@ export const MODULE_CONFIG = {
   gedaechtnis: {
     id: 'gedaechtnis',
     name: 'Arbeitsgedächtnis',
+    color: '#A78BFA',
+    domain: 'Gedächtnis',
     desc: '12 Kreise leuchten nacheinander auf — merke dir die Sequenz.',
     duration: 'ca. 5 Minuten',
     measured: ['Korrekte Sequenzen', 'Fehler gesamt', 'Max. Sequenzlänge'],
@@ -38,6 +44,8 @@ export const MODULE_CONFIG = {
   gonogo: {
     id: 'gonogo',
     name: 'Go / No-Go',
+    color: '#34D399',
+    domain: 'Impulskontrolle',
     desc: 'Tippe bei Grün, halte still bei Rot.',
     duration: 'ca. 3 Minuten',
     measured: ['Reaktionszeit bei Go', 'Fehlerrate bei No-Go (Impulsivität)', 'Auslasser'],
@@ -50,6 +58,8 @@ export const MODULE_CONFIG = {
   nback: {
     id: 'nback',
     name: 'N-Back',
+    color: '#818CF8',
+    domain: 'Arbeitsgedächtnis',
     desc: 'Tippe wenn das aktuelle Symbol dasselbe ist wie das vorherige.',
     duration: 'ca. 4 Minuten',
     measured: ['Treffer', 'Fehler', 'Auslasser'],
@@ -62,6 +72,8 @@ export const MODULE_CONFIG = {
   taskswitching: {
     id: 'taskswitching',
     name: 'Task Switching',
+    color: '#FBBF24',
+    domain: 'Flexibilität',
     desc: 'Die Regel wechselt — einmal Form, einmal Farbe matchen.',
     duration: 'ca. 4 Minuten',
     measured: ['Reaktionszeit', 'Switch Cost (RT-Einbruch nach Regelwechsel)', 'Fehler nach Wechsel'],
@@ -74,6 +86,8 @@ export const MODULE_CONFIG = {
   cpt: {
     id: 'cpt',
     name: 'Vigilanz',
+    color: '#F472B6',
+    domain: 'Daueraufmerksamkeit',
     desc: '3 Minuten: nur beim Ziel-Symbol tippen, beim anderen nicht.',
     duration: 'ca. 3 Minuten',
     measured: ['Treffer', 'Auslasser', 'False Alarms', 'Aufmerksamkeits-Abfall über Zeit'],
@@ -86,6 +100,8 @@ export const MODULE_CONFIG = {
   selektiv: {
     id: 'selektiv',
     name: 'Selektive Aufmerksamkeit',
+    color: '#FB923C',
+    domain: 'Fokus',
     desc: 'Symbole blitzen auf — tippe nur bei der Zielfarbe.',
     duration: 'ca. 3 Minuten',
     measured: ['Treffer', 'Fehler', 'Auslasser', 'Reaktionszeit'],
@@ -98,6 +114,8 @@ export const MODULE_CONFIG = {
   geteilt: {
     id: 'geteilt',
     name: 'Geteilte Aufmerksamkeit',
+    color: '#22D3EE',
+    domain: 'Multitasking',
     desc: 'Bild und Ton gleichzeitig beobachten und reagieren.',
     duration: 'ca. 3 Minuten',
     measured: ['Treffer visuell', 'Treffer auditiv', 'Fehler gesamt'],

@@ -23,6 +23,8 @@ import TabKlaeren      from './features/tools/klaeren/TabKlaeren'
 import TabKognitiv     from './features/tools/kognitiv/TabKognitiv'
 import TabProjekte     from './features/tools/projekte/TabProjekte'
 import TodoModal       from './components/TodoModal/TodoModal'
+import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
+import BackupNudge     from './components/BackupNudge/BackupNudge'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
 const IconTagesplaner = () => (
@@ -116,6 +118,8 @@ export default function App() {
   return (
     <div className={styles.app}>
       <div className={styles.content}>
+        {currentTab === 0 && <BackupNudge />}
+        <ErrorBoundary key={currentTab}>
         {currentTab === 0  && <TabHeute />}
         {currentTab === 1  && <TabKalender />}
         {currentTab === 2  && <TabTools />}
@@ -134,6 +138,7 @@ export default function App() {
         {currentTab === TOOL_TAB.klaeren      && <TabKlaeren      onBack={goBack} />}
         {currentTab === TOOL_TAB.kognitiv     && <TabKognitiv     onBack={goBack} onExercising={setExercising} />}
         {currentTab === TOOL_TAB.projekte     && <TabProjekte     onBack={goBack} />}
+        </ErrorBoundary>
       </div>
 
       {!isToolTab && currentTab !== 3 && (

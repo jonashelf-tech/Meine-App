@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import { ToolIcon } from '../toolRegistry'
 import {
   isoToday, isoAddDays, isoLabel, isoNavLabel,
   loadEntries, saveEntries, upsertEntry, SK_WEIGHT,
@@ -193,7 +194,7 @@ export default function TabGewicht({ onBack }) {
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
-      <ToolHeader onBack={onBack} icon="⚖" eyebrow="Tracking" title={<>Gewicht<em>tracker</em></>} />
+      <ToolHeader onBack={onBack} icon={<ToolIcon id="gewicht" size={20} />} eyebrow="Tracking" title={<>Gewicht<em>tracker</em></>} />
 
       {/* Tab nav */}
       <div className={s.tabs}>

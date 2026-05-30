@@ -51,9 +51,17 @@
 }
 
 .welcomeIcon {
-  font-size: 2.5rem;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  color: var(--primary);
   margin-bottom: 4px;
+}
+
+.inlineGlyph {
+  display: inline-flex;
+  vertical-align: -2px;
+  color: var(--emerald);
+  margin-right: 4px;
 }
 
 .stepTitle {
@@ -125,7 +133,9 @@
 }
 
 .lowBadge {
-  font-size: 0.72rem;
+  display: inline-flex;
+  vertical-align: -2px;
+  color: var(--emerald);
   margin-left: 4px;
 }
 
@@ -147,7 +157,9 @@
 }
 
 .roomChipIcon {
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  color: var(--primary);
   flex-shrink: 0;
 }
 
@@ -202,22 +214,6 @@
   border-color: var(--primary);
 }
 
-.addIconInput {
-  width: 44px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 9px 8px;
-  font-size: 1rem;
-  text-align: center;
-  color: var(--text);
-  outline: none;
-}
-
-.addIconInput:focus {
-  border-color: var(--primary);
-}
-
 .addBtn {
   background: var(--primary);
   border: none;
@@ -248,6 +244,12 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding-top: 4px;
+}
+
+.checkGroupIcon {
+  display: flex;
+  align-items: center;
+  color: var(--primary);
 }
 
 .checkRow {
@@ -343,7 +345,8 @@
 }
 
 .distIcon {
-  font-size: 1.4rem;
+  display: flex;
+  color: var(--primary);
   margin-bottom: 4px;
 }
 

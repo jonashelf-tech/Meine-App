@@ -130,7 +130,7 @@ export default function HaushaltSection({ onStartDrag }) {
           }
         } else {
           updated.push(createBlock({
-            text:            `${room.icon} ${room.name}`,
+            text:            room.name,
             duration:        newTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
             subItems:        newTasks.map(t => ({ id: crypto.randomUUID(), text: t.text, done: false })),
             color:           toolColor,
@@ -185,7 +185,7 @@ export default function HaushaltSection({ onStartDrag }) {
               const isSelected = !deselected.has(room.id)
               const fakeTodo = {
                 id:       room.id,
-                text:     `${room.icon} ${room.name}`,
+                text:     room.name,
                 color:    toolColor,
                 toolId:   'haushalt',
                 done:     false,

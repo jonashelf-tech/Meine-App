@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './SelektivExercise.module.css'
 
 const SHAPES      = ['circle', 'triangle', 'square', 'star']
@@ -97,8 +98,7 @@ export default function SelektivExercise({ variant, onDone, onAbort }) {
   const tc = targetColor.current
 
   return (
-    <div className={s.root} onClick={handleTap}>
-      <button className={s.closeBtn} onClick={e => { e.stopPropagation(); onAbort() }}>✕</button>
+    <ExerciseShell moduleId="selektiv" durationMs={DURATION_MS} onAbort={onAbort} onTap={handleTap}>
       <div
         className={s.indicator}
         style={{ opacity: showIndicator ? 1 : 0, color: tc, borderColor: `${tc}55`, background: `${tc}18` }}
@@ -109,6 +109,6 @@ export default function SelektivExercise({ variant, onDone, onAbort }) {
       <div className={s.arena}>
         {stim && <ShapeIcon type={stim.shape} color={stim.color} />}
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

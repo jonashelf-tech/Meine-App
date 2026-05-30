@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import { ToolIcon } from '../toolRegistry'
 import s from './TabElvi.module.css'
 
 // ─── PK Model ────────────────────────────────────────────────
@@ -173,7 +174,7 @@ export default function TabElvi({ onBack }) {
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
-      <ToolHeader onBack={onBack} icon="💊" eyebrow="Pharmakokinetik" title={<>Elvi<em>Rechner</em></>} />
+      <ToolHeader onBack={onBack} icon={<ToolIcon id="elvi" size={20} />} eyebrow="Pharmakokinetik" title={<>Elvi<em>Rechner</em></>} />
 
       <div className={s.secTabs}>
         <button className={`${s.secBtn} ${section==="kurve"?s.active:""}`} onClick={()=>setSection("kurve")}>Kurve</button>

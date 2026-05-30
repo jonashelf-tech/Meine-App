@@ -418,7 +418,7 @@ export default function TabKalender() {
         delete clickTimers.current[ck]
         // Einzel-Tap → Abhaken
         handleToggleSlotDone(dk, key, slot, slotTodo)
-      }, 250)
+      }, 200)
     }
   }
 
@@ -427,10 +427,12 @@ export default function TabKalender() {
       if (!el) continue
       const rect = el.getBoundingClientRect()
       if (clientX >= rect.left && clientX <= rect.right) {
-        const relY  = clientY - rect.top
-        const idx   = Math.max(0, Math.floor(relY / SLOT_H))
-        const h     = Math.min(visibleEnd - 0.5, visibleStart + idx * 0.5)
-        const key   = String(h)
+        const relY   = clientY - rect.top
+        const durH   = (draggingRef.current?.slot?.duration ?? 30) / 60
+        const maxIdx = Math.max(0, Math.round((visibleEnd - visibleStart - durH) * 2))
+        const idx    = Math.min(maxIdx, Math.max(0, Math.floor(relY / SLOT_H)))
+        const h      = visibleStart + idx * 0.5
+        const key    = String(h)
         dragTargetRef.current = { dk: colDk, key }
         setDragTarget({ dk: colDk, key })
         return
@@ -442,14 +444,15 @@ export default function TabKalender() {
 
   const handleDrop = (oldDk, oldKey, slot, newDk, newKey) => {
     if (oldDk === newDk && oldKey === newKey) return
+    if ((days[newDk] ?? {})[newKey]) return // Zielslot belegt → nicht überschreiben
     setDays(prev => {
-      const oldDay = { ...(prev[oldDk] ?? {}) }
+      const next = { ...prev }
+      const oldDay = { ...(next[oldDk] ?? {}) }
       delete oldDay[oldKey]
-      return {
-        ...prev,
-        [oldDk]: oldDay,
-        [newDk]: { ...(prev[newDk] ?? {}), [newKey]: { ...slot } },
-      }
+      next[oldDk] = oldDay
+      const base = oldDk === newDk ? oldDay : { ...(next[newDk] ?? {}) }
+      next[newDk] = { ...base, [newKey]: { ...slot } }
+      return next
     })
     if (slot.todoId) {
       const hh = String(Math.floor(parseFloat(newKey))).padStart(2, '0')
@@ -526,6 +529,11 @@ export default function TabKalender() {
     weekScrollRef.current.scrollTop = scrollTo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view])
+
+  useEffect(() => {
+    const timers = clickTimers.current
+    return () => { Object.values(timers).forEach(clearTimeout) }
+  }, [])
 
   useEffect(() => {
     if (!calendarDate) return
@@ -734,7 +742,7 @@ export default function TabKalender() {
                       key={dk}
                       className={[s.weekDayCol, isColToday ? s.weekDayColToday : ''].join(' ')}
                       style={{ height: colHeight }}
-                      ref={el => { if (el) colRefs.current[dk] = el }}
+                      ref={el => { if (el) colRefs.current[dk] = el; else delete colRefs.current[dk] }}
                       onClick={(e) => {
                         if (e.target !== e.currentTarget) return
                         if (dragJustEnded.current) return
@@ -762,24 +770,6 @@ export default function TabKalender() {
                           style={{ left: clickRipple.x, top: clickRipple.y }}
                         />
                       )}
-                      {dragTarget?.dk === dk && dragging && (() => {
-                        const ghostTop    = slotToTop(dragTarget.key, visibleStart)
-                        const ghostHeight = slotToHeight(dragging.slot.duration)
-                        return (
-                          <div
-                            className={s.weekSlotGhost}
-                            style={{
-                              top:            ghostTop,
-                              height:         ghostHeight,
-                              '--slot-color': dragging.slot.color || '#8B5CF6',
-                            }}
-                          >
-                            {ghostHeight >= 14 && (
-                              <span className={s.weekSlotName}>{dragging.slot.text}</span>
-                            )}
-                          </div>
-                        )
-                      })()}
                       {entries.map(([key, slot]) => {
                         const isTodo   = Boolean(slot.todoId)
                         if (!showTermine && !isTodo) return null
@@ -788,6 +778,8 @@ export default function TabKalender() {
                         if (!showTools && slotTodo?.toolId) return null
                         const top    = slotToTop(key, visibleStart)
                         const height = slotToHeight(slot.duration)
+                        const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
+                        const mm     = parseFloat(key) % 1 ? '30' : '00'
                         return (
                           <div
                             key={key}
@@ -823,11 +815,12 @@ export default function TabKalender() {
                                 }
                               }
 
-                              const onUp = () => {
+                              const finish = (commit) => {
                                 document.removeEventListener('pointermove', onMove)
                                 document.removeEventListener('pointerup', onUp)
+                                document.removeEventListener('pointercancel', onCancel)
                                 if (dragStarted) {
-                                  if (dragTargetRef.current) {
+                                  if (commit && dragTargetRef.current) {
                                     handleDrop(
                                       draggingRef.current.dk,
                                       draggingRef.current.key,
@@ -842,16 +835,20 @@ export default function TabKalender() {
                                   setDragTarget(null)
                                   dragJustEnded.current = true
                                   setTimeout(() => { dragJustEnded.current = false }, 50)
-                                } else {
+                                } else if (commit) {
                                   handleSlotTap(dk, key, slot, slotTodo)
                                 }
                               }
+                              const onUp     = () => finish(true)
+                              const onCancel = () => finish(false)
 
                               document.addEventListener('pointermove', onMove)
                               document.addEventListener('pointerup', onUp)
+                              document.addEventListener('pointercancel', onCancel)
                             }}
                           >
                             {height >= 14 && <span className={s.weekSlotName}>{slot.text}</span>}
+                            {height >= 34 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
                           </div>
                         )
                       })}
@@ -1009,6 +1006,28 @@ export default function TabKalender() {
           onClose={() => setQuickCreate(null)}
         />
       )}
+
+      {dragging && dragTarget && (function() {
+        const colEl = colRefs.current[dragTarget.dk]
+        if (!colEl) return null
+        const colRect  = colEl.getBoundingClientRect()
+        const chipH    = slotToHeight(dragging.slot.duration)
+        const slotPx   = slotToTop(dragTarget.key, visibleStart)
+        return (
+          <div
+            className={s.weekDragChip}
+            style={{
+              left:           colRect.left + 2,
+              top:            colRect.top  + slotPx,
+              width:          colRect.width - 4,
+              height:         chipH,
+              '--slot-color': dragging.slot.color || '#8B5CF6',
+            }}
+          >
+            {chipH >= 14 && <span className={s.weekSlotName}>{dragging.slot.text}</span>}
+          </div>
+        )
+      })()}
     </div>
   )
 }

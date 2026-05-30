@@ -40,7 +40,7 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
   }
 
   return (
-    <div className={s.root}>
+    <div className={s.root} style={{ '--accent': m.color }}>
       <div className={s.topBar}>
         <button className={s.backBtn} onClick={onBack}>
           <span className={s.arrow}>←</span> {fromArchive ? 'Zurück' : 'Fertig'}
@@ -136,7 +136,7 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
               const h     = Math.max(10, Math.min(100, (t / maxTime) * 100))
               const color = !tap.correct ? 'var(--rose)'
                 : t < maxTime * 0.4 ? 'var(--emerald)'
-                : 'rgba(139,92,246,0.5)'
+                : 'color-mix(in srgb, var(--accent) 55%, transparent)'
               return <div key={i} className={s.tapBar} style={{ height: `${h}%`, background: color }} />
             })}
           </div>
@@ -154,7 +154,7 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
                   className={s.tapBarInline}
                   style={{
                     width: `${Math.max(4, Math.min(100, ((tap.time ?? 0) / maxTime) * 100))}%`,
-                    background: tap.correct ? 'var(--primary)' : 'var(--rose)',
+                    background: tap.correct ? 'var(--accent)' : 'var(--rose)',
                   }}
                 />
               </div>

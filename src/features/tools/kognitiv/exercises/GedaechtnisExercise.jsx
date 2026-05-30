@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './GedaechtnisExercise.module.css'
 
 const CIRCLE_POSITIONS = Array.from({ length: 12 }, (_, i) => {
@@ -124,8 +125,7 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
   }, [phase, userInput, roundIdx, finishSession])
 
   return (
-    <div className={s.root}>
-      <button className={s.closeBtn} onClick={onAbort}>✕</button>
+    <ExerciseShell moduleId="gedaechtnis" progress={roundIdx} total={BASE_ROUNDS.length} onAbort={onAbort}>
       <div className={s.arena}>
         {CIRCLE_POSITIONS.map((pos, i) => {
           const isLit   = litCircle === i
@@ -140,6 +140,6 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
           )
         })}
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

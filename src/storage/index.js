@@ -54,6 +54,7 @@ export const SK = {
   kognitivCheckin:  `${PREFIX}kognitiv_checkin`,
   kognitivSchedule: `${PREFIX}kognitiv_schedule`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
+  lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
   projects:        `${PREFIX}projects`,
 }
 
@@ -75,16 +76,17 @@ export const importData = (data) => {
 // ─── Backup categories ────────────────────────────────────
 export const BACKUP_CATS = {
   kalender: [
-    SK.todos, SK.routines, SK.todoOrder, SK.cats,
+    SK.todos, SK.routines, SK.todoOrder, SK.cats, SK.projects,
     SK.days, SK.doneCounters, SK.templates, SK.blockers,
-    SK.lastPoolReturn, SK.poolSort, SK.visStart, SK.visEnd, SK.calView,
+    SK.lastPoolReturn, SK.poolSort, SK.visStart, SK.visEnd,
+    SK.weekVisStart, SK.weekVisEnd, SK.calView,
   ],
   tools: [
     SK.recipes, SK.shopping, SK.shoppingStates, SK.selectedDishes,
     SK.weight, `${PREFIX}wdash`,
     SK.birthdays, SK.haushalt, SK.haushaltEnergie,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
-    SK.kognitivCheckin, SK.kognitivSchedule,
+    SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule,
   ],
   einstellungen: [
     SK.settings, SK.theme, SK.modules,
@@ -107,6 +109,28 @@ export const importDataByCategories = (data, cats) => {
   Object.entries(data).forEach(([key, val]) => {
     if (keys.has(key)) localStorage.setItem(key, val)
   })
+}
+
+// ─── Off-Device-Backup (Download — überlebt Browser-Löschung) ──
+// Browser dürfen nicht still auf die Platte schreiben → braucht 1 Tipp.
+export const markOffDeviceBackup = () => sv(SK.lastOffDeviceBackup, Date.now())
+
+export const offDeviceBackupAgeDays = () => {
+  const last = lv(SK.lastOffDeviceBackup, 0)
+  if (!last) return Infinity
+  return (Date.now() - last) / (24 * 60 * 60 * 1000)
+}
+
+export const downloadFullBackup = () => {
+  const data = exportDataByCategories(['kalender', 'tools', 'einstellungen'])
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement('a')
+  a.href     = url
+  a.download = `adhs-backup-${new Date().toISOString().slice(0, 10)}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+  markOffDeviceBackup()
 }
 
 // ─── OPFS auto-backup ─────────────────────────────────────
@@ -171,8 +195,8 @@ export const exportDataReadable = () => {
         text: t.text,
         erledigt: t.done ?? false,
         erledigt_am: t.doneAt ?? null,
-        prioritaet: t.prio ?? null,
-        kategorie: t.cat ?? null,
+        prioritaet: t.priority ?? null,
+        kategorie: t.category ?? null,
         faelligkeit: t.date ?? null,
       })),
     },
@@ -189,8 +213,8 @@ export const exportDataReadable = () => {
       eintraege: blockers.map(b => ({
         titel: b.text,
         datum: b.date ?? null,
-        uhrzeit: b.slotKey ?? null,
-        dauer_min: b.duration ?? null,
+        von_stunde: b.startHour ?? null,
+        bis_stunde: b.endHour ?? null,
         wiederholung: b.repeat ?? null,
       })),
     },

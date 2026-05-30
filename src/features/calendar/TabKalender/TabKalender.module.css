@@ -382,24 +382,41 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2px 3px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 1px;
+  padding: 2px 5px;
   min-height: 10px;
   cursor: pointer;
   touch-action: none;
   background: linear-gradient(
     135deg,
-    var(--slot-color, var(--primary)),
-    color-mix(in srgb, var(--slot-color, var(--primary)) 70%, #000)
+    color-mix(in srgb, var(--slot-color, var(--primary)) 88%, #fff),
+    var(--slot-color, var(--primary))
   );
   box-shadow: 0 1px 6px color-mix(in srgb, var(--slot-color, var(--primary)) 40%, transparent);
   user-select: none;
   -webkit-user-select: none;
 }
 
-.weekSlotTodo { opacity: 0.65; }
+.weekSlotTodo {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--slot-color, var(--primary)) 50%, #000),
+    color-mix(in srgb, var(--slot-color, var(--primary)) 30%, #000)
+  );
+}
+
+.weekSlotTodo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.55);
+}
 
 .weekSlotName {
   font-family: 'Outfit', sans-serif;
@@ -413,6 +430,13 @@
   max-width: 100%;
 }
 
+.weekSlotTime {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.46rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1;
+}
 
 .weekNowLine {
   position: absolute;
@@ -1023,26 +1047,31 @@
 }
 
 .weekSlotDone {
-  background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(5,150,105,0.2)) !important;
-  border: 1px solid rgba(16,185,129,0.4);
+  opacity: 0.5;
   box-shadow: none !important;
-  opacity: 0.65;
 }
 
 .weekSlotDone .weekSlotName {
   text-decoration: line-through;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.7);
 }
 
 .weekSlotDone::after {
   content: '✓';
   position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.55rem;
-  color: #10B981;
+  right: 3px;
+  top: 3px;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #10B981;
+  font-size: 0.5rem;
+  color: #fff;
   font-weight: 700;
+  line-height: 1;
   pointer-events: none;
 }
 
@@ -1099,4 +1128,29 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+/* ─── Wochenansicht: Drag-Chip (snapped, kein Finger-follow) */
+.weekDragChip {
+  position: fixed;
+  border-radius: 6px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--slot-color, var(--primary)) 88%, #fff),
+    var(--slot-color, var(--primary))
+  );
+  box-shadow:
+    0 6px 20px color-mix(in srgb, var(--slot-color, var(--primary)) 60%, transparent),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+  padding: 2px 5px;
+  pointer-events: none;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  transform: scale(1.03);
+  transform-origin: top left;
+  overflow: hidden;
+  will-change: left, top;
 }

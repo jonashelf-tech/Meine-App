@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './GoNoGoExercise.module.css'
 
 const TOTAL      = 30
@@ -20,6 +21,7 @@ function buildSeq() {
 export default function GoNoGoExercise({ variant, onDone, onAbort }) {
   const isiRange = variant === 'Schwer' ? [800, 2500] : [1500, 4000]
   const [stimType, setStimType] = useState(null)
+  const [done, setDone]         = useState(0)
 
   const seqRef      = useRef(buildSeq())
   const idxRef      = useRef(0)
@@ -50,6 +52,7 @@ export default function GoNoGoExercise({ variant, onDone, onAbort }) {
     if (finishedRef.current) return
     if (idxRef.current >= TOTAL) { finish(); return }
     const type = seqRef.current[idxRef.current++]
+    setDone(idxRef.current)
     appearedAt.current = Date.now()
     setStimType(type)
     timerRef.current = setTimeout(() => {
@@ -87,12 +90,11 @@ export default function GoNoGoExercise({ variant, onDone, onAbort }) {
   }, [stimType, finish])
 
   return (
-    <div className={s.root} onClick={handleTap}>
-      <button className={s.closeBtn} onClick={e => { e.stopPropagation(); onAbort() }}>✕</button>
+    <ExerciseShell moduleId="gonogo" progress={done} total={TOTAL} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
         {stimType === 'go'   && <div className={s.go} />}
         {stimType === 'nogo' && <div className={s.nogo} />}
       </div>
-    </div>
+    </ExerciseShell>
   )
 }

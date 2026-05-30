@@ -8,6 +8,8 @@ import {
 } from './reminderData'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import RepeatPicker from '../../../components/RepeatPicker/RepeatPicker'
+import { Glyph, GLYPH_NAMES, CARE_GLYPHS } from '../_shared/glyphs'
+import GlyphPicker from '../_shared/GlyphPicker'
 import s from './TabReminder.module.css'
 
 const CheckIcon = () => (
@@ -15,6 +17,8 @@ const CheckIcon = () => (
     <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
+
+const iconName = (icon) => (GLYPH_NAMES.includes(icon) ? icon : 'bell')
 
 // Konvertierung zwischen Reminder-Intervall und RepeatPicker-Format
 function intervalToRepeat(interval) {
@@ -71,7 +75,7 @@ function ItemRow({ item, onUpdate, onDelete }) {
           <div className={s.toggleThumb} />
         </div>
         <button className={s.itemBtn} onClick={() => setOpen(v => !v)}>
-          <span className={s.itemIcon}>{item.icon || '🔔'}</span>
+          <span className={s.itemIcon}><Glyph name={iconName(item.icon)} size={19} /></span>
           <div className={s.itemInfo}>
             <span className={s.itemText}>{item.text}</span>
             <div className={s.itemMetaRow}>
@@ -133,7 +137,7 @@ function ItemRow({ item, onUpdate, onDelete }) {
 // ─── AddForm ──────────────────────────────────────────────
 function AddForm({ onAdd, onCancel }) {
   const [text,       setText]       = useState('')
-  const [icon,       setIcon]       = useState('🔔')
+  const [icon,       setIcon]       = useState('bell')
   const [interval,   setInterval]   = useState({ every: 1, unit: 'days' })
   const [time,       setTime]       = useState('')
   const [actionType, setActionType] = useState('slot')
@@ -143,11 +147,11 @@ function AddForm({ onAdd, onCancel }) {
     onAdd({
       id:         Date.now(),
       text:       text.trim(),
-      icon:       icon || '🔔',
+      icon,
       interval,
       time:       time || null,
       actionType,
-      color:      '#00CFFF',
+      color:      '#8B5CF6',
       active:     true,
       curated:    false,
       lastAdded:  null,
@@ -156,17 +160,14 @@ function AddForm({ onAdd, onCancel }) {
 
   return (
     <div className={s.addForm}>
-      <div className={s.addFormRow}>
-        <input
-          className={s.iconInput} value={icon} maxLength={2} placeholder="🔔"
-          onChange={e => setIcon(e.target.value)}
-        />
-        <input
-          className={s.addFormText} autoFocus value={text} placeholder="Beschreibung…"
-          onChange={e => setText(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleAdd()}
-        />
-      </div>
+      <input
+        className={s.addFormText} autoFocus value={text} placeholder="Beschreibung…"
+        onChange={e => setText(e.target.value)}
+        onKeyDown={e => e.key === 'Enter' && handleAdd()}
+      />
+      <span className={s.editLabel}>Icon</span>
+      <GlyphPicker glyphs={CARE_GLYPHS} value={icon} onChange={setIcon} />
+      <span className={s.editLabel}>Intervall</span>
       <RepeatPicker value={intervalToRepeat(interval)} onChange={r => setInterval(repeatToInterval(r) ?? { every: 1, unit: 'days' })} />
       <div className={s.addFormRow}>
         <input
@@ -207,7 +208,7 @@ export default function TabReminder({ onBack }) {
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
-      <ToolHeader onBack={onBack} icon="🔔" eyebrow="Tool" title={<>Re<em>minder</em></>} />
+      <ToolHeader onBack={onBack} icon={<Glyph name="bell" size={20} />} eyebrow="Tool" title={<>Re<em>minder</em></>} />
 
       <div className={s.section}>
         <span className={s.sectionLabel}>Vorschläge</span>

@@ -1,16 +1,54 @@
-.list { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.card { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; transition: background 0.15s; }
-.card:active { background: rgba(255,255,255,0.08); }
-.cardDisabled { opacity: 0.35; cursor: default; pointer-events: none; }
-.iconWrap { width: 38px; height: 38px; border-radius: var(--r-sm); background: rgba(139,92,246,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--primary); }
+.list { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
+
+.card {
+  position: relative;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 14px 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.card:active { transform: scale(0.985); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
+
+.accentBar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.iconWrap {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
 .info { flex: 1; min-width: 0; }
-.name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
-.desc { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }
-.right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-.donePill { font-size: 0.62rem; font-weight: 600; color: var(--emerald); background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: 20px; padding: 2px 8px; }
-.soonPill { font-size: 0.62rem; font-weight: 600; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; }
-.lastVal { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--text); }
-.miniChart { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
-.miniBar { width: 5px; border-radius: 2px 2px 0 0; background: rgba(139,92,246,0.3); }
-.miniBarLast { background: var(--primary); }
-.phase2Header { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); padding: 8px 2px 4px; opacity: 0.5; }
+.domain {
+  font-size: 0.55rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--accent);
+}
+.name { font-size: 0.98rem; font-weight: 600; color: var(--text); margin-top: 1px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desc { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.donePill { font-size: 0.62rem; font-weight: 700; color: var(--emerald); background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); border-radius: 20px; padding: 3px 9px; }
+.newPill { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); background: var(--surface-low); border: 1px solid var(--border); border-radius: 20px; padding: 3px 9px; }
+.lastVal { font-family: 'Orbitron', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--text); }
+.unit { font-size: 0.62rem; font-weight: 600; color: var(--text-dim); margin-left: 1px; }
+
+.miniChart { display: flex; align-items: flex-end; gap: 2px; height: 20px; }
+.miniBar { width: 5px; border-radius: 2px 2px 0 0; background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.miniBarLast { background: var(--accent); }

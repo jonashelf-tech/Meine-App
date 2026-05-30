@@ -1,4 +1,7 @@
-.root { position: fixed; inset: 0; background: #05050e; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
-.closeBtn { position: absolute; top: 16px; left: 16px; width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.04); border: none; color: rgba(255,255,255,0.18); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
 .arena { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; }
-.stimulus { width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle at 38% 38%, rgba(139,92,246,0.95), #8B5CF6); box-shadow: 0 0 40px rgba(139,92,246,0.5), 0 0 80px rgba(139,92,246,0.2); }
+.stimulus {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, color-mix(in srgb, var(--accent) 92%, white), var(--accent));
+  box-shadow: 0 0 50px color-mix(in srgb, var(--accent) 55%, transparent),
+              0 0 100px color-mix(in srgb, var(--accent) 25%, transparent);
+}

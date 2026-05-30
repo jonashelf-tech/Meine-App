@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import { ToolIcon } from '../toolRegistry'
 import s from './TabPizza.module.css'
 
 const REF_TOTAL = 1986.5
@@ -74,7 +75,7 @@ export default function TabPizza({ onBack }) {
 
       <ToolHeader
         onBack={onBack}
-        icon="🍕"
+        icon={<ToolIcon id="pizza" size={20} />}
         eyebrow="Impasto Napoletano"
         title={<>Pizza<em>rechner</em></>}
         actions={<button className={s.resetBtn} onClick={reset}>↺</button>}

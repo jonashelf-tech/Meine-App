@@ -14,7 +14,7 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
   const fmtTime = (iso) => new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className={s.root}>
+    <div className={s.root} style={{ '--accent': m.color }}>
       <div className={s.topBar}>
         <button className={s.backBtn} onClick={onBack}>
           <span className={s.arrow}>←</span> Zurück
@@ -22,7 +22,7 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
       </div>
       <div className={s.scroll}>
       <div className={s.hdInfo}>
-        <div className={s.ey}>Dashboard → Modul</div>
+        <div className={s.ey}>{m.domain}</div>
         <div className={s.tt}>{m.name}</div>
       </div>
 

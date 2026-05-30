@@ -4,6 +4,7 @@ import {
   lv, SK,
   exportDataByCategories, importDataByCategories,
   saveAutoBackup, loadAutoBackup, exportDataReadable,
+  markOffDeviceBackup,
 } from '../../../storage'
 import { useToast } from '../../../components/Toast/Toast'
 import s from './TabSettings.module.css'
@@ -97,6 +98,7 @@ export default function TabSettings() {
     a.click()
     URL.revokeObjectURL(url)
     saveAutoBackup()
+    markOffDeviceBackup()
     showToast('Backup gespeichert', 'success')
     setBackupOpen(false)
   }

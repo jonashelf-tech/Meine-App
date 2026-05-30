@@ -3,6 +3,7 @@ import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import { lv, sv } from '../../../storage'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import { ToolIcon } from '../toolRegistry'
 import s from './TabRezepte.module.css'
 
 const SK_R = 'adhs_recipes_list'
@@ -148,7 +149,7 @@ export default function TabRezepte({ onBack }) {
 
       <ToolHeader
         onBack={onBack}
-        icon="🍳"
+        icon={<ToolIcon id="rezepte" size={20} />}
         eyebrow="Tool"
         title={<>Re<em>zepte</em></>}
         actions={<>

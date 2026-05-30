@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { MODULE_CONFIG } from './moduleConfig'
 import { isPracticeAvailable } from './sessionStore'
-import { ToolIcon } from '../toolRegistry'
+import ModuleIcon from './ModuleIcon'
 import s from './Briefing.module.css'
 
 export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
@@ -13,7 +13,7 @@ export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
   useEffect(() => { localStorage.setItem(`briefing-seen-${moduleId}`, '1') }, [moduleId])
 
   return (
-    <div className={s.root}>
+    <div className={s.root} style={{ '--accent': m.color }}>
       <div className={s.topBar}>
         <button className={s.backBtn} onClick={onBack}>
           <span className={s.arrow}>←</span> Zurück
@@ -23,8 +23,9 @@ export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
       <div className={s.scroll}>
         <div className={s.hero}>
           <div className={s.iconWrap}>
-            <ToolIcon id="kognitiv" size={26} />
+            <ModuleIcon id={moduleId} size={28} />
           </div>
+          <div className={s.domain}>{m.domain}</div>
           <div className={s.name}>{m.name}</div>
           <div className={s.durationPill}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>

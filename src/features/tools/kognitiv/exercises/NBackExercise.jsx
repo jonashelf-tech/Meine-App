@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
+import ExerciseShell from './ExerciseShell'
 import s from './NBackExercise.module.css'
 
 const SHAPES = ['circle', 'triangle', 'square', 'star']
@@ -37,6 +38,7 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
   const isHard  = variant === 'Schwer'
   const showMs  = isHard ? 800 : 1200
   const [current, setCurrent] = useState(null)
+  const [done, setDone]       = useState(0)
 
   const seqRef      = useRef(buildSeq())
   const idxRef      = useRef(0)
@@ -72,6 +74,7 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
     const prev  = idx > 0 ? seqRef.current[idx - 1] : null
     const isMatch = shape === prev
     idxRef.current++
+    setDone(idxRef.current)
     tappedRef.current = false
     setCurrent(shape)
     timerRef.current = setTimeout(() => {
@@ -101,11 +104,10 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
   const fill  = current ? (isHard ? 'none' : FILL[current]) : 'none'
 
   return (
-    <div className={s.root} onClick={handleTap}>
-      <button className={s.closeBtn} onClick={e => { e.stopPropagation(); onAbort() }}>✕</button>
+    <ExerciseShell moduleId="nback" progress={done} total={TOTAL} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
         {current && <ShapeIcon type={current} color={color} fill={fill} />}
       </div>
-    </div>
+    </ExerciseShell>
   )
 }
