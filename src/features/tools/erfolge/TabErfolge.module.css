@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -16,7 +16,7 @@
   border: 1.5px solid var(--tool-color);
   border-radius: 50px;
   padding: 8px 22px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--tool-color);
@@ -45,7 +45,7 @@
   box-shadow: 0 0 16px color-mix(in srgb, var(--tool-color) 15%, transparent);
 }
 .pointsNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 2.6rem;
   font-weight: 800;
   color: var(--tool-color);
@@ -56,7 +56,7 @@
   font-weight: 600;
 }
 .pointsSub {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.74rem;
   color: var(--text-dim);
   margin-top: 2px;
@@ -69,7 +69,7 @@
   gap: 6px;
 }
 .sectionLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.64rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -77,7 +77,7 @@
   padding-bottom: 2px;
 }
 .catLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.66rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -103,13 +103,13 @@
   flex: 1;
 }
 .unlockName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--text);
 }
 .unlockPts {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -118,7 +118,7 @@
   border: 1.5px solid var(--btn-color);
   border-radius: var(--r-sm);
   color: var(--btn-color);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.76rem;
   font-weight: 700;
   padding: 6px 14px;
@@ -139,7 +139,7 @@
   border: 1px dashed var(--btn-color);
   border-radius: var(--r-sm);
   color: var(--btn-color);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 700;
   padding: 10px;
@@ -156,7 +156,7 @@
   cursor: not-allowed;
 }
 .limitNote {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   color: var(--text-dim);
   text-align: center;
@@ -173,12 +173,12 @@
   padding: 8px 12px;
 }
 .claimedName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   color: var(--text);
 }
 .claimedPts {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.7rem;
   color: var(--text-dim);
 }
@@ -190,7 +190,7 @@
   gap: 8px;
 }
 .progressName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.74rem;
   color: var(--text-dim);
   min-width: 110px;
@@ -208,7 +208,7 @@
   transition: width 0.3s ease;
 }
 .progressVal {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.64rem;
   color: var(--text-dim);
   min-width: 40px;
@@ -224,7 +224,7 @@
   border: 1px solid rgba(251,113,133,0.25);
   border-radius: var(--r-sm);
   color: var(--rose);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;

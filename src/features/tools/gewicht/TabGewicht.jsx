@@ -136,7 +136,7 @@ export default function TabGewicht({ onBack }) {
     ctx.clearRect(0,0,W,H)
 
     const drawGrid=()=>{ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;for(let i=0;i<=4;i++){const y=PAD.t+i*(ch/4);ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cw,y);ctx.stroke()}}
-    const drawYLabels=(mn,mx,fmt)=>{ctx.fillStyle='rgba(255,255,255,0.28)';ctx.font=`9px Outfit,sans-serif`;ctx.textAlign='right';for(let i=0;i<=4;i++){const v=mn+((mx-mn)*(4-i)/4);ctx.fillText(fmt(v),PAD.l-4,PAD.t+i*(ch/4)+3)}}
+    const drawYLabels=(mn,mx,fmt)=>{ctx.fillStyle='rgba(255,255,255,0.28)';ctx.font=`9px Geist,sans-serif`;ctx.textAlign='right';for(let i=0;i<=4;i++){const v=mn+((mx-mn)*(4-i)/4);ctx.fillText(fmt(v),PAD.l-4,PAD.t+i*(ch/4)+3)}}
     const ty=(v,mn,mx)=>PAD.t+ch-((v-mn)/(mx-mn))*ch
 
     if (chartView==='weight') {
@@ -157,7 +157,7 @@ export default function TabGewicht({ onBack }) {
       if(!allV.length) return
       const mx=Math.max(Math.abs(Math.min(...allV)),Math.abs(Math.max(...allV)),0.5), mn=-mx
       drawGrid()
-      ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font=`9px Outfit,sans-serif`;ctx.textAlign='right';ctx.fillText('0',PAD.l-4,PAD.t+ch/2+3)
+      ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font=`9px Geist,sans-serif`;ctx.textAlign='right';ctx.fillText('0',PAD.l-4,PAD.t+ch/2+3)
       ctx.strokeStyle='var(--cyan)';ctx.lineWidth=2;ctx.setLineDash([]);let st=false;ctx.beginPath()
       changes.forEach((v,i)=>{if(v==null)return;const x=txI(i),y=ty(v,mn,mx);if(!st){ctx.moveTo(x,y);st=true}else ctx.lineTo(x,y)})
       ctx.stroke()
@@ -186,7 +186,7 @@ export default function TabGewicht({ onBack }) {
       if(chartOpts.show14)drawLine(m14s,'#00CFFF')
       if(chartOpts.show21)drawLine(m21s,'#8e9eff')
     }
-    ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font=`9px Outfit,sans-serif`;ctx.textAlign='center'
+    ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font=`9px Geist,sans-serif`;ctx.textAlign='center'
     dates.forEach((d,i)=>{if(i%7!==0&&i!==winDays-1)return;ctx.fillText(isoLabel(d),txI(i),H-5)})
   }, [entries, chartView, chartOpts, activeTab])
 

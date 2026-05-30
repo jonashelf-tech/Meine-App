@@ -1,4 +1,4 @@
-.overlay {
+﻿.overlay {
   position: fixed;
   inset: 0;
   background: var(--bg);
@@ -65,7 +65,7 @@
 }
 
 .stepTitle {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
@@ -74,7 +74,7 @@
 }
 
 .stepText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.87rem;
   color: var(--text-dim);
   line-height: 1.5;
@@ -83,7 +83,7 @@
 }
 
 .stepHint {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   color: var(--text-dim);
   line-height: 1.5;
@@ -110,13 +110,13 @@
 }
 
 .exampleLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   color: var(--text);
 }
 
 .exampleDue {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 600;
 }
@@ -164,7 +164,7 @@
 }
 
 .roomChipName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.87rem;
   font-weight: 600;
   color: var(--text);
@@ -172,7 +172,7 @@
 }
 
 .roomChipCount {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   color: var(--text-dim);
 }
@@ -204,7 +204,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   padding: 9px 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   color: var(--text);
   outline: none;
@@ -237,7 +237,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-dim);
@@ -286,14 +286,14 @@
 }
 
 .checkLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   color: var(--text);
   flex: 1;
 }
 
 .checkFreq {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   color: var(--text-dim);
 }
@@ -303,7 +303,7 @@
 }
 
 .emptyRoom {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   color: var(--text-dim);
   padding: 6px 0;
@@ -312,7 +312,7 @@
 
 .emptyState {
   text-align: center;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   color: var(--text-dim);
   padding: 24px;
@@ -351,14 +351,14 @@
 }
 
 .distLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
 }
 
 .distSub {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   color: var(--text-dim);
   line-height: 1.4;
@@ -376,7 +376,7 @@
   background: none;
   border: none;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.87rem;
   cursor: pointer;
   padding: 10px 0;
@@ -387,7 +387,7 @@
   border: none;
   border-radius: var(--r-sm);
   color: #fff;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.9rem;
   font-weight: 700;
   padding: 11px 24px;
@@ -399,7 +399,7 @@
   border: none;
   border-radius: var(--r-sm);
   color: #fff;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.9rem;
   font-weight: 700;
   padding: 11px 24px;

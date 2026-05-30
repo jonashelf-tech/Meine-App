@@ -1,4 +1,4 @@
-/* ─── Page ───────────────────────────────────────────────── */
+﻿/* ─── Page ───────────────────────────────────────────────── */
 .page {
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@
   background: none;
   border: none;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   cursor: pointer;
   padding: 0;
@@ -33,7 +33,7 @@
   border: 1px solid var(--border);
   border-radius: 50%;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   line-height: 1.5em;
   width: 32px;
@@ -64,7 +64,7 @@
 }
 
 .title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--text);
@@ -102,7 +102,7 @@
   border-radius: var(--r-sm);
   padding: 8px;
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.9rem;
   text-align: center;
   width: 100%;
@@ -130,7 +130,7 @@
 
 /* ─── Total ──────────────────────────────────────────────── */
 .total {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   color: var(--text-dim);
 }
@@ -171,7 +171,7 @@
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 4px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text);
@@ -195,14 +195,14 @@
 }
 
 .rowVal {
-  font-family: 'Orbitron', sans-serif;
+  font-family: var(--font-num);
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--tool-color, var(--cyan));
 }
 
 .rowUnit {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.6rem;
   color: var(--text-dim);
   margin-left: 2px;
@@ -248,7 +248,7 @@
 }
 
 .stepTime {
-  font-family: 'Orbitron', sans-serif;
+  font-family: var(--font-num);
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--tool-color, var(--cyan));
@@ -261,7 +261,7 @@
 
 .stepTitle {
   flex: 1;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.84rem;
   color: var(--text);
 }

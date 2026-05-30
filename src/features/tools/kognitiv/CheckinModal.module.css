@@ -1,4 +1,4 @@
-.backdrop {
+﻿.backdrop {
   position: fixed; inset: 0; background: rgba(0,0,0,0.72);
   display: flex; align-items: flex-end; justify-content: center;
   z-index: 200; backdrop-filter: blur(4px);
@@ -11,7 +11,7 @@
   max-height: 90vh; overflow-y: auto;
 }
 .header { display: flex; flex-direction: column; gap: 4px; }
-.title { font-family: 'Outfit', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text); }
+.title { font-family: var(--font); font-size: 1.05rem; font-weight: 700; color: var(--text); }
 .sub { font-size: 0.72rem; color: var(--text-dim); }
 
 .body { display: flex; flex-direction: column; gap: 14px; }
@@ -35,7 +35,7 @@
 
 .input {
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px; color: var(--text); font-family: 'Outfit', sans-serif;
+  border-radius: 8px; color: var(--text); font-family: var(--font);
   font-size: 0.82rem; padding: 8px 10px; width: 100%; outline: none;
 }
 .input:focus { border-color: rgba(139,92,246,0.4); }
@@ -43,7 +43,7 @@
 
 .textarea {
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px; color: var(--text); font-family: 'Outfit', sans-serif;
+  border-radius: 8px; color: var(--text); font-family: var(--font);
   font-size: 0.82rem; padding: 8px 10px; width: 100%; resize: none; outline: none;
 }
 .textarea:focus { border-color: rgba(139,92,246,0.4); }
@@ -52,12 +52,12 @@
 .skipBtn {
   flex: 1; padding: 11px; background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
-  color: var(--text-dim); font-family: 'Outfit', sans-serif; font-size: 0.82rem; cursor: pointer;
+  color: var(--text-dim); font-family: var(--font); font-size: 0.82rem; cursor: pointer;
 }
 .saveBtn {
   flex: 2; padding: 11px; background: rgba(139,92,246,0.18);
   border: 1.5px solid rgba(139,92,246,0.5); border-radius: 10px;
-  color: var(--primary); font-family: 'Outfit', sans-serif;
+  color: var(--primary); font-family: var(--font);
   font-size: 0.82rem; font-weight: 700; cursor: pointer;
 }
 
@@ -72,4 +72,4 @@
 .timerSvg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .timerTrack { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 3; }
 .timerArc { fill: none; stroke: var(--primary); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-.timerCount { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--primary); position: relative; z-index: 1; }
+.timerCount { font-family: var(--font-num); font-size: 1.3rem; font-weight: 700; color: var(--primary); position: relative; z-index: 1; }

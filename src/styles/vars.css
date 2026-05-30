@@ -28,6 +28,10 @@
   --text-ghost:  rgba(255,255,255,0.20);
   --text-faint:  rgba(255,255,255,0.32);
 
+  /* ─── Fonts ──────────────────────────────────────────── */
+  --font:     'Geist', system-ui, sans-serif;
+  --font-num: 'Orbitron', sans-serif;
+
   /* ─── Border Radius ──────────────────────────────────── */
   --r:       14px;
   --r-sm:    8px;
@@ -53,7 +57,7 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Outfit', system-ui, sans-serif;
+  font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;

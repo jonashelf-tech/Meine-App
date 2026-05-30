@@ -1,4 +1,4 @@
-.list { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
+﻿.list { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
 
 .card {
   position: relative;
@@ -46,7 +46,7 @@
 .right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
 .donePill { font-size: 0.62rem; font-weight: 700; color: var(--emerald); background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); border-radius: 20px; padding: 3px 9px; }
 .newPill { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); background: var(--surface-low); border: 1px solid var(--border); border-radius: 20px; padding: 3px 9px; }
-.lastVal { font-family: 'Orbitron', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--text); }
+.lastVal { font-family: var(--font-num); font-size: 0.92rem; font-weight: 700; color: var(--text); }
 .unit { font-size: 0.62rem; font-weight: 600; color: var(--text-dim); margin-left: 1px; }
 
 .miniChart { display: flex; align-items: flex-end; gap: 2px; height: 20px; }

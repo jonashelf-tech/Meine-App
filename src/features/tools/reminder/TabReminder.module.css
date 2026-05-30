@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -17,7 +17,7 @@
   background: none;
   border: none;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   cursor: pointer;
   padding: 4px 0;
@@ -32,13 +32,13 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(139, 92, 246, 0.45);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
 }
 
 .title {
   font-size: 1.1rem;
   font-weight: 700;
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   color: var(--text);
 }
 
@@ -73,7 +73,7 @@
   background: none;
   border: 1px solid rgba(139, 92, 246, 0.25);
   color: var(--tool-color, var(--cyan));
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 4px 10px;
@@ -138,7 +138,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -155,13 +155,13 @@
 .itemMeta {
   font-size: 0.62rem;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
 }
 
 .itemDue {
   font-size: 0.6rem;
   font-weight: 600;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   color: var(--text-faint);
   flex-shrink: 0;
   white-space: nowrap;
@@ -241,7 +241,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   padding: 8px 10px;
   outline: none;
@@ -261,7 +261,7 @@
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 5px 12px;
@@ -286,7 +286,7 @@
 .customLabel {
   font-size: 0.8rem;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
 }
 
 .customInput {
@@ -295,7 +295,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.85rem;
   padding: 6px 8px;
   outline: none;
@@ -309,7 +309,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   padding: 6px 8px;
   outline: none;
@@ -341,7 +341,7 @@
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 5px 14px;
@@ -361,7 +361,7 @@
   border: 1px solid rgba(251, 113, 133, 0.25);
   border-radius: 20px;
   color: var(--pink);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 5px 14px;
@@ -394,7 +394,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 600;
   padding: 8px 10px;
@@ -415,7 +415,7 @@
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   padding: 6px 14px;
   cursor: pointer;
@@ -426,7 +426,7 @@
   border: 1px solid rgba(139, 92, 246, 0.4);
   border-radius: 20px;
   color: var(--tool-color, var(--cyan));
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 6px 16px;

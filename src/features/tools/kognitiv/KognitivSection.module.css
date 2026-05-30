@@ -1,4 +1,4 @@
-.body { padding: 12px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
+﻿.body { padding: 12px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
 
 .checkinRow {
   display: flex; flex-wrap: wrap; gap: 8px 16px;
@@ -15,7 +15,7 @@
 .pending { display: flex; flex-direction: column; gap: 5px; }
 .pendingRow { display: flex; align-items: center; gap: 8px; }
 .pendingName { font-size: 0.75rem; color: var(--text); flex: 1; }
-.pendingTime { font-family: 'Orbitron', sans-serif; font-size: 0.62rem; color: var(--text-dim); }
+.pendingTime { font-family: var(--font-num); font-size: 0.62rem; color: var(--text-dim); }
 .pendingStart {
   width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
   background: rgba(139,92,246,0.18); border: 1px solid rgba(139,92,246,0.3);
@@ -30,5 +30,5 @@
 .sessions { display: flex; flex-direction: column; gap: 6px; }
 .sessRow { display: flex; align-items: center; gap: 8px; }
 .sessName { font-size: 0.75rem; color: var(--text-dim); flex: 1; }
-.sessVal { font-family: 'Orbitron', sans-serif; font-size: 0.68rem; color: var(--primary); }
+.sessVal { font-family: var(--font-num); font-size: 0.68rem; color: var(--primary); }
 .sessTime { font-size: 0.65rem; color: var(--text-faint); }

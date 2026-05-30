@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   padding-bottom: 80px;
   display: flex;
   flex-direction: column;
@@ -16,7 +16,7 @@
   background: none;
   border: none;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   cursor: pointer;
   padding: 4px 0;
@@ -26,7 +26,7 @@
 .titleBlock { text-align: right; }
 
 .eyebrow {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -35,7 +35,7 @@
 }
 
 .title {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text);
@@ -59,7 +59,7 @@
   border: none;
   border-radius: calc(var(--r) - 3px);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -120,7 +120,7 @@
 .dateNavLabel {
   flex: 1;
   text-align: center;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--text);
@@ -147,7 +147,7 @@
 }
 
 .editBadge {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   color: var(--tool-color, var(--cyan));
   background: rgba(0,207,255,0.08);
@@ -170,7 +170,7 @@
 }
 
 .inputUnit {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -182,7 +182,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 1rem;
   font-weight: 700;
   padding: 8px 10px;
@@ -197,7 +197,7 @@
   border: 1.5px solid rgba(0,207,255,0.3);
   border-radius: var(--r-sm);
   color: var(--tool-color, var(--cyan));
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 1.1rem;
   font-weight: 700;
   padding: 10px 16px;
@@ -230,14 +230,14 @@
 }
 
 .kpiVal {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--tool-color, var(--cyan));
 }
 
 .kpiLbl {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.56rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -254,7 +254,7 @@
 }
 
 .maintTitle {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -272,13 +272,13 @@
 .maintRow:last-child { border-bottom: none; }
 
 .maintLbl {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   color: var(--text-dim);
 }
 
 .maintVal {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--tool-color, var(--cyan));
@@ -307,7 +307,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
@@ -335,7 +335,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.7rem;
   cursor: pointer;
   transition: all 0.15s;
@@ -357,14 +357,14 @@
   align-items: center;
   justify-content: center;
   min-height: 165px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   color: var(--text-dim);
 }
 
 /* ─── Insight ────────────────────────────────────────────── */
 .insight {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   color: var(--text-dim);
   background: var(--surface);
@@ -395,14 +395,14 @@
 .histRow:only-child  { border-radius: var(--r); border-bottom: none; }
 
 .histDate {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.68rem;
   color: var(--text-dim);
   min-width: 36px;
 }
 
 .histKg {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--tool-color, var(--cyan));
@@ -410,7 +410,7 @@
 }
 
 .histKcal {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   color: var(--text-dim);
   flex: 1;
@@ -435,7 +435,7 @@
 }
 
 .settingsTitle {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -492,7 +492,7 @@
 }
 
 .toggleLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   color: var(--text);
 }
@@ -501,7 +501,7 @@
 .empty {
   text-align: center;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   padding: 32px 0;
   line-height: 1.6;
@@ -516,7 +516,7 @@
   border: 1px solid rgba(251,113,133,0.25);
   border-radius: var(--r-sm);
   color: var(--rose);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;

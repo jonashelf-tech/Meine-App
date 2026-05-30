@@ -5,7 +5,9 @@
 ```
 src/
   components/
+    BackupNudge/      BackupNudge.jsx         — Hinweis-Balken auf Tagesplaner wenn letzte Off-Device-Sicherung > 7 Tage; "Jetzt sichern" → downloadFullBackup()
     DayNav/           DayNav.jsx              — Datums-Pille oben im Tagesplaner; zeigt "heute" Badge wenn viewDate === today
+    ErrorBoundary/    ErrorBoundary.jsx       — fängt Render-Crash in einem Tab/Tool ab (kein Whitescreen); in App.jsx mit key={currentTab} → Tab-Wechsel resettet
     NavPill/          NavPill.jsx             — Pille mit Pfeil-Buttons; optionaler `badge`-Prop (z.B. "heute") als Chip rechts neben Label
     PrioBadge/        PrioBadge.jsx
     RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
@@ -190,3 +192,21 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 - `localStorage` direkt — immer `sv/lv/SK` aus `storage/index.js`
 - TOOL_TAB lokal definieren — immer aus `toolTabs.js` importieren
 - `awaitingClockResponse` setzen — deprecated, ClockPopup entfernt
+
+---
+
+## Fehlertoleranz & Off-Device-Backup
+
+**ErrorBoundary** (`components/ErrorBoundary/`): wraps den Tab-Content in `App.jsx` mit `key={currentTab}`. Ein Render-Crash in einem Tool zeigt einen ruhigen Fallback (kein Whitescreen) — Tab-Wechsel mountet neu und resettet den Fehler.
+
+**Backup-Schichten** (alles in `storage/index.js`):
+- `localStorage` — primärer Speicher, jeder `sv()` schreibt sofort.
+- OPFS-Auto-Backup (`saveAutoBackup`, throttle 30 Min) — Spiegel same-origin. Rettet bei Reload/Crash, **stirbt** mit localStorage bei "Browserdaten löschen".
+- **Off-Device-Download** — der einzige Pfad, der eine Browser-Löschung überlebt (Datei landet außerhalb des Browsers).
+
+**Helfer für Off-Device:**
+- `downloadFullBackup()` — exportiert alle Kategorien als JSON-Download + `markOffDeviceBackup()`.
+- `offDeviceBackupAgeDays()` / `markOffDeviceBackup()` — Alter seit letzter echter Sicherung (Key `SK.lastOffDeviceBackup`).
+- `BackupNudge` (Tagesplaner) erinnert ab > 7 Tagen.
+
+**BACKUP_CATS** (kategorisierter Export/Restore) muss **vollständig** bleiben — jeder neue Storage-Key, der echte Nutzdaten hält, gehört in eine Kategorie (`kalender` / `tools` / `einstellungen`), sonst geht er bei Teil-Restore still verloren. (Historischer Bug: Kognitiv-Sessions + Projekte fehlten.)

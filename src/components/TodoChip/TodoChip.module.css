@@ -1,4 +1,4 @@
-/* ── Entrance animation ──────────────────────────────────── */
+﻿/* ── Entrance animation ──────────────────────────────────── */
 @keyframes chipIn {
   from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -109,7 +109,7 @@
   border: 1.5px solid var(--border);
   background: none;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.62rem;
   font-weight: 700;
   display: flex;
@@ -157,7 +157,7 @@
 
 /* ── Text ────────────────────────────────────────────────── */
 .text {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--text);
@@ -238,7 +238,7 @@
 }
 
 .klaerenCircleNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.65rem;
   font-weight: 800;
   color: #34D399;
@@ -246,7 +246,7 @@
 }
 
 .klaerenCircleUnit {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.46rem;
   font-weight: 600;
   color: rgba(52, 211, 153, 0.6);
@@ -279,7 +279,7 @@
 
 .klaerenLabel {
   display: block;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.58rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -289,7 +289,7 @@
 }
 
 .klaerenText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   color: var(--text-dim);
   line-height: 1.4;
@@ -404,7 +404,7 @@
 /* Text */
 .itemText {
   flex: 1;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text);
@@ -470,7 +470,7 @@
   outline: none;
   color: var(--text-dim);
   font-size: 0.76rem;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   padding: 9px 6px 9px 0;
   caret-color: var(--primary);
 }

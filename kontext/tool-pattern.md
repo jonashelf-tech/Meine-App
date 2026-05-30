@@ -405,3 +405,42 @@ export default function ToolnameSection({ onStartDrag }) {
 6. **Extra-Badge** (z.B. Prozentwert): `badge`-Prop an ToolSection — erscheint links vom Action-Button.
 7. **Header-Reihenfolge:** `[Name ↗]` → `[badge wenn vorhanden]` → `[+ N hinzufügen]` → `[▾]`
 8. **Sub-Items:** Wenn Items Unter-Aufgaben haben → `subItems` im fakeTodo befüllen, `disableExpand` weglassen.
+
+---
+
+## Kognitiv-Tool — Struktur (Muster für mehr-Modul-Tools)
+
+Tool mit mehreren eigenständigen Übungs-Modulen + Session-Historie. Referenz für ähnliche Tools.
+
+**`moduleConfig.js` — Single Source of Truth pro Modul:**
+```js
+MODULE_CONFIG[id] = {
+  id, name, color, domain,        // color = Modulfarbe, domain = Kategorie-Label
+  desc, duration,                 // Anzeige in Briefing
+  measured, notMeasured,          // string[] — was gemessen wird / nicht
+  mainMetricLabel, mainMetricUnit,// Hauptkennzahl in Results/Dashboard
+  variants, defaultVariant,       // Schwierigkeitsvarianten
+}
+MODULE_ORDER  // Reihenfolge der Module
+```
+9 Module: alertness · zahlensuche · gedaechtnis · gonogo · nback · taskswitching · cpt · selektiv · geteilt.
+
+**Färbung:** Komponenten (ModuleList/Briefing/Results/Dashboard/ModuleDetail) setzen `style={{ '--accent': m.color }}` und leiten Töne via `color-mix()` ab. Grün/Rot bleiben **semantisch** (Erfolg/Fehler), nicht modulgefärbt.
+
+**`ModuleIcon.jsx`:** distinktes Linien-SVG pro Modul-ID (`<ModuleIcon id={id} size={20} />`). `currentColor` folgt der Modulfarbe. Fallback = Kreis.
+
+**`exercises/ExerciseShell.jsx`:** gemeinsame Chrome für alle 9 Übungen — immersive Bühne (#05050e) + dünne Fortschrittsleiste in Modulfarbe + dezenter SVG-Abbrechen-Button.
+```jsx
+<ExerciseShell
+  moduleId={id}
+  progress={n} total={N}   // trial-basiert: Leiste = progress/total
+  durationMs={ms}          // ODER zeitbasiert: CSS-Animation exFill
+  onAbort={...}
+  onTap={...}              // liegt auf der Bühne (Spiele mit "irgendwo tippen")
+>{stimuli}</ExerciseShell>
+```
+Stimuli nutzen `var(--accent)`. Übungs-CSS hat **kein** eigenes `.root`/`.closeBtn` mehr (kommt aus der Shell).
+
+**Dashboard:** Leerzustand wenn nichts trainiert; zeigt nur Module mit Sessions.
+
+**Session-Historie:** via `sessionStore.js` (kein globaler Store) — siehe Abschnitt "Standalone SessionStore" oben. **Wichtig:** Session-Key `SK.kognitiv` gehört in `BACKUP_CATS.tools`, sonst geht die Historie bei Teil-Restore verloren.

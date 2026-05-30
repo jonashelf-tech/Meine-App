@@ -1,4 +1,4 @@
-.body {
+﻿.body {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -40,7 +40,7 @@
   background: none;
   border: none;
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 700;
   text-align: center;
@@ -65,7 +65,7 @@
 }
 
 .editBadge {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.62rem;
   color: var(--primary);
   background: rgba(139,92,246,0.1);
@@ -91,7 +91,7 @@
 }
 
 .unit {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -103,7 +103,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.95rem;
   font-weight: 700;
   padding: 7px 8px;

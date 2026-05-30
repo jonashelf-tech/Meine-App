@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   padding-bottom: 24px;
   overflow-x: hidden;
 }
@@ -21,7 +21,7 @@
   border: none;
   border-radius: calc(var(--r) - 3px);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -50,14 +50,14 @@
   padding: 6px 12px;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
 }
 
 .navBtn:hover { color: var(--primary); border-color: var(--primary); }
 
 .navLabel {
   flex: 1;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
@@ -69,7 +69,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--primary);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 600;
   padding: 5px 10px;
@@ -90,7 +90,7 @@
 }
 
 .monthHeader {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-dim);
@@ -126,7 +126,7 @@
 .monthCellEmpty { background: transparent; cursor: default; border-color: transparent !important; }
 
 .monthDay {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text);
@@ -147,7 +147,7 @@
 }
 
 .cellBarText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.52rem;
   font-weight: 600;
   color: var(--text);
@@ -160,7 +160,7 @@
 .cellBarTodo { opacity: 0.65; }
 
 .cellMore {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.48rem;
   color: var(--text-dim);
   padding: 0 2px;
@@ -211,7 +211,7 @@
 }
 
 .weekDayHeadName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -220,7 +220,7 @@
 }
 
 .weekDayHeadNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text);
@@ -265,7 +265,7 @@
 .weekAlldayLabel {
   width: 32px;
   flex-shrink: 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.58rem;
   color: var(--text-dim);
   display: flex;
@@ -297,7 +297,7 @@
 }
 
 .weekAlldayBarText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.32rem;
   font-weight: 600;
   color: var(--text);
@@ -320,7 +320,7 @@
 }
 
 .weekTimeLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.52rem;
   color: var(--text-ghost);
   text-align: right;
@@ -419,7 +419,7 @@
 }
 
 .weekSlotName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.52rem;
   font-weight: 700;
   color: #fff;
@@ -431,7 +431,7 @@
 }
 
 .weekSlotTime {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.46rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.8);
@@ -481,7 +481,7 @@
   background: rgba(139,92,246,0.18);
   border: 1px solid rgba(139,92,246,0.3);
   color: var(--primary);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.7rem;
   font-weight: 700;
   display: flex;
@@ -508,7 +508,7 @@
   border: 1px solid rgba(139,92,246,0.25);
   border-radius: 5px;
   padding: 2px 6px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.52rem;
   font-weight: 600;
   color: var(--text);
@@ -523,7 +523,7 @@
 .weekPillChip:active { background: rgba(139,92,246,0.25); }
 
 .weekPillEmpty {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.5rem;
   color: var(--text-ghost);
   padding: 0 4px;
@@ -541,7 +541,7 @@
 .toggleChip {
   flex: 1;
   text-align: center;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 6px 4px;
@@ -591,7 +591,7 @@
 }
 
 .todayBadge {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.58rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -605,7 +605,7 @@
 }
 
 .dayPanelDate {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--primary);
@@ -639,7 +639,7 @@
 }
 
 .dayPanelSectionLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.09em;
@@ -650,7 +650,7 @@
 }
 
 .dayPanelSectionCount {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-dim);
@@ -682,7 +682,7 @@
 }
 
 .dayPanelAlldayName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text);
@@ -693,7 +693,7 @@
 }
 
 .dayPanelAlldayDate {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   color: var(--text-dim);
   flex-shrink: 0;
@@ -712,21 +712,21 @@
 }
 
 .dayPanelGewichtVal {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.9rem;
   font-weight: 700;
   color: #00FF94;
 }
 
 .dayPanelGewichtKcal {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   color: var(--text-dim);
 }
 
 .dayPanelGewichtLink {
   margin-left: auto;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   color: #00FF94;
   opacity: 0.75;
@@ -748,7 +748,7 @@
 }
 
 .dayPanelEmpty {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   color: var(--text-dim);
   opacity: 0.45;
@@ -773,7 +773,7 @@
 .dayPanelEntryTodo { opacity: 0.7; }
 
 .dayPanelEntryTime {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.65rem;
   font-weight: 700;
   min-width: 34px;
@@ -782,7 +782,7 @@
 }
 
 .dayPanelEntryText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.8rem;
   color: var(--text);
   flex: 1;
@@ -792,7 +792,7 @@
 }
 
 .dayPanelBadge {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.52rem;
   font-weight: 700;
   color: var(--text-dim);
@@ -917,7 +917,7 @@
 }
 
 .terminTitle {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text);
@@ -930,7 +930,7 @@
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 10px;
   padding: 10px 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.9rem;
   color: var(--text);
   outline: none;
@@ -943,7 +943,7 @@
 }
 
 .terminLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   font-weight: 600;
   color: var(--text-dim);
@@ -963,7 +963,7 @@
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.05);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
@@ -1011,7 +1011,7 @@
   border: none;
   background: var(--primary);
   color: #fff;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -1026,7 +1026,7 @@
   border: 1px solid rgba(255,255,255,0.12);
   background: transparent;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;

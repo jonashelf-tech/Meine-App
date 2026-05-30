@@ -1,4 +1,4 @@
-/* ── Energie-Strip ──────────────────────────────────────── */
+﻿/* ── Energie-Strip ──────────────────────────────────────── */
 .energieStrip {
   display: flex;
   gap: 8px;
@@ -15,7 +15,7 @@
   border: 1px solid var(--border);
   background: var(--surface-low);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
@@ -100,5 +100,5 @@
   padding: 12px 0;
   font-size: 0.8rem;
   color: var(--text-faint);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
 }

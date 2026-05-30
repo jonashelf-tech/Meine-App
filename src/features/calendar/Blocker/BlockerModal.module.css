@@ -1,4 +1,4 @@
-.overlay {
+﻿.overlay {
   position: fixed;
   inset: 0;
   z-index: 400;
@@ -43,7 +43,7 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 1rem;
   font-weight: 600;
   padding: 10px 12px;
@@ -70,7 +70,7 @@
 }
 
 .rowLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -95,7 +95,7 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text);
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.9rem;
   padding: 9px 10px;
   cursor: pointer;
@@ -133,7 +133,7 @@
   background: none;
   border: none;
   color: var(--text);
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 0.88rem;
   padding: 9px 12px;
   cursor: pointer;
@@ -156,7 +156,7 @@
 }
 
 .overnightBadge {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.7rem;
   font-weight: 700;
   color: rgba(251,191,36,0.9);
@@ -181,7 +181,7 @@
   border: none;
   color: var(--text-faint);
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 700;
   padding: 10px 8px;
@@ -213,7 +213,7 @@
   border-radius: 20px;
   color: var(--text-dim);
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 600;
   padding: 5px 12px;
@@ -242,7 +242,7 @@
   border: 1px solid var(--border);
   color: var(--text-dim);
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 700;
   transition: all 0.15s;
@@ -289,7 +289,7 @@
   border-radius: 12px;
   color: #fff;
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.95rem;
   font-weight: 700;
   padding: 13px;
@@ -305,7 +305,7 @@
   border-radius: 12px;
   color: var(--rose);
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.88rem;
   font-weight: 600;
   padding: 11px;
@@ -320,7 +320,7 @@
   border: none;
   color: var(--text-faint);
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   padding: 8px;
   text-align: center;

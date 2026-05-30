@@ -1,4 +1,4 @@
-.card {
+﻿.card {
   margin: 5px 0;
   border-radius: 12px;
   overflow: hidden;
@@ -23,7 +23,7 @@
 }
 
 .name {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 12px;
   font-weight: 700;
   color: var(--text);
@@ -31,13 +31,13 @@
 }
 
 .time {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 10px;
   opacity: 0.8;
 }
 
 .pill {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -78,7 +78,7 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: 5px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.62rem;
   font-weight: 700;
   color: var(--text-faint);
@@ -117,7 +117,7 @@
 .halfTime {
   font-size: 0.54rem;
   color: var(--text-ghost);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   user-select: none;
 }
 

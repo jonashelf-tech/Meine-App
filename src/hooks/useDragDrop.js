@@ -46,7 +46,7 @@ export function useDragDrop() {
     ghost.style.cssText =
       'position:fixed;z-index:9999;display:flex;align-items:center;' +
       `border-radius:8px;background:rgba(7,7,14,0.97);border:1px solid ${color}55;` +
-      `color:#fff;font-family:'Outfit',sans-serif;pointer-events:none;opacity:0.96;` +
+      `color:#fff;font-family:var(--font);pointer-events:none;opacity:0.96;` +
       `box-shadow:0 4px 20px ${color}44;overflow:hidden;`
     document.body.appendChild(ghost)
 

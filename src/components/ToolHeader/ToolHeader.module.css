@@ -1,4 +1,4 @@
-.header {
+﻿.header {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -15,7 +15,7 @@
   border: 1px solid var(--border);
   font-size: 0.75rem;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
@@ -65,7 +65,7 @@
   font-weight: 700;
   color: var(--text);
   line-height: 1.1;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
 }
 
 .name em {

@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   padding-bottom: 24px;
 }
 
@@ -19,7 +19,7 @@
   border: none;
   border-radius: calc(var(--r) - 3px);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -42,7 +42,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -72,7 +72,7 @@
 .empty {
   text-align: center;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   padding: 32px 16px;
   line-height: 1.6;
@@ -80,14 +80,14 @@
 
 /* ─── Shared chip parts ─────────────────────────────────── */
 .cardName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
 }
 
 .cardDesc {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   color: var(--text-dim);
   line-height: 1.35;
@@ -276,7 +276,7 @@
   flex-shrink: 0;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   line-height: 1;
 }
 

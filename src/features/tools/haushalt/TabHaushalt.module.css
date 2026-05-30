@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   display: flex;
   flex-direction: column;
   padding-bottom: 40px;
@@ -18,7 +18,7 @@
   background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: var(--r-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-dim);
@@ -56,13 +56,13 @@
 }
 
 .scoreLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.95rem;
   font-weight: 700;
 }
 
 .scoreSub {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   color: var(--text-dim);
 }
@@ -110,7 +110,7 @@
 }
 
 .roomName {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.87rem;
   font-weight: 700;
   color: var(--text);
@@ -123,7 +123,7 @@
   border: 1px solid var(--primary);
   border-radius: 6px;
   padding: 4px 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.87rem;
   font-weight: 700;
   color: var(--text);
@@ -142,7 +142,7 @@
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-faint);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.65rem;
   font-weight: 700;
   cursor: pointer;
@@ -156,7 +156,7 @@
 }
 
 .statusBadge {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   font-weight: 600;
   flex-shrink: 0;
@@ -197,7 +197,7 @@
 }
 
 .emptyRoom {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   color: var(--text-dim);
   font-style: italic;
@@ -227,7 +227,7 @@
 }
 
 .taskText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.83rem;
   color: var(--text);
   flex: 1;
@@ -243,7 +243,7 @@
 }
 
 .taskDue {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   font-weight: 600;
   flex-shrink: 0;
@@ -299,7 +299,7 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 6px 10px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.83rem;
   color: var(--text);
   outline: none;
@@ -323,7 +323,7 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 5px 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   color: var(--text);
   outline: none;
@@ -340,7 +340,7 @@
 }
 
 .lowPill {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   padding: 4px 8px;
   border-radius: 20px;
@@ -380,7 +380,7 @@
   background: none;
   border: none;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   cursor: pointer;
   padding: 2px 0;
@@ -394,7 +394,7 @@
 
 /* ── Hidden tasks hint ── */
 .hiddenHint {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   color: var(--text-dim);
   opacity: 0.6;
@@ -413,7 +413,7 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 7px 10px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   color: var(--text);
   outline: none;
@@ -441,7 +441,7 @@
   border: 1px solid rgba(251, 113, 133, 0.3);
   border-radius: 6px;
   color: var(--rose);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   padding: 7px 12px;
   cursor: pointer;
@@ -459,7 +459,7 @@
   border: 1px dashed var(--border);
   border-radius: var(--r);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   padding: 12px;
   cursor: pointer;
@@ -476,7 +476,7 @@
   background: none;
   border: none;
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   cursor: pointer;
   padding: 20px 16px 0;
@@ -498,7 +498,7 @@
   border: 1px solid rgba(251,113,133,0.25);
   border-radius: var(--r-sm);
   color: var(--rose);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;

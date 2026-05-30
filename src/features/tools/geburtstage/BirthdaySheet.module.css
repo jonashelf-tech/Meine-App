@@ -1,4 +1,4 @@
-/* BirthdaySheet.module.css */
+﻿/* BirthdaySheet.module.css */
 
 .overlay {
   position: fixed;
@@ -34,7 +34,7 @@
 }
 
 .label {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .08em;
@@ -48,7 +48,7 @@
   border: 1.5px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 14px;
   padding: 10px 12px;
   outline: none;
@@ -70,7 +70,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 13px;
   padding: 8px 12px;
   outline: none;
@@ -86,7 +86,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 12px;
   padding: 8px 10px;
   outline: none;
@@ -152,7 +152,7 @@
 }
 
 .presetLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 11px;
   color: var(--text-dim);
   flex-shrink: 0;
@@ -169,7 +169,7 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 11px;
   color: var(--text-dim);
   cursor: pointer;
@@ -191,7 +191,7 @@
 
 /* ─── Notizen ──────────────────────────────────────────────── */
 .notesLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .06em;
@@ -206,7 +206,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 12px;
   padding: 9px 12px;
   outline: none;
@@ -226,7 +226,7 @@
   border: none;
   border-radius: var(--r-sm);
   color: #fff;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 14px;
   font-weight: 700;
   padding: 11px;

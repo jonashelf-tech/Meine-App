@@ -1,8 +1,8 @@
-.root { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
+﻿.root { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
 
 .summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 12px; display: flex; align-items: center; }
 .sumCol { flex: 1; text-align: center; }
-.sumVal { font-family: 'Orbitron', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--text); }
+.sumVal { font-family: var(--font-num); font-size: 1.45rem; font-weight: 700; color: var(--text); }
 .sumOf { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); }
 .sumLbl { font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 4px; }
 .sumDivider { width: 1px; height: 34px; background: var(--border); }

@@ -44,7 +44,7 @@ function drawDrum(canvas, segs, offset, glow) {
   const dpr = window.devicePixelRatio || 1
   const W = canvas.width / dpr, H = canvas.height / dpr, cx = W / 2, cy = H / 2
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-  const F = "'Outfit',sans-serif"
+  const F = "'Geist',system-ui,sans-serif"
 
   const rx = W * 0.46, ry = H * 0.44, radius = 14
   const VISIBLE = 5

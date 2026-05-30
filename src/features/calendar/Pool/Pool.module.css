@@ -1,4 +1,4 @@
-/* ─── Pool Container ─────────────────────────────────── */
+﻿/* ─── Pool Container ─────────────────────────────────── */
 .pool {
   background: var(--surface-low);
   border: 1px solid var(--border);
@@ -20,7 +20,7 @@
 }
 
 .poolLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -38,7 +38,7 @@
 }
 
 .sortChip {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.58rem;
   font-weight: 600;
   padding: 3px 7px;
@@ -137,7 +137,7 @@
   border: 1px solid var(--border-dim);
   border-radius: 10px;
   color: var(--text-faint);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.68rem;
   font-weight: 600;
   cursor: pointer;
@@ -166,7 +166,7 @@
 }
 
 .cleanupBtn {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.65rem;
   font-weight: 600;
   color: rgba(16, 185, 129, 0.75);
@@ -208,7 +208,7 @@
 }
 
 .doneLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -217,14 +217,14 @@
 }
 
 .doneHint {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.56rem;
   color: var(--text-ghost);
   font-style: italic;
 }
 
 .doneEmpty {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.72rem;
   color: var(--border);
   padding: 4px 14px 8px;
@@ -274,7 +274,7 @@
 }
 
 .doneText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-dim);
@@ -286,7 +286,7 @@
 }
 
 .doneMeta {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.56rem;
   color: var(--text-ghost);
   padding: 0 10px 0 6px;
@@ -319,7 +319,7 @@
 }
 
 .dialogTitle {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text);
@@ -331,7 +331,7 @@
 }
 
 .dialogBtnDelete {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 700;
   padding: 11px;
@@ -347,7 +347,7 @@
 .dialogBtnDelete:hover { background: rgba(251, 113, 133, 0.2); }
 
 .dialogBtnCancel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 500;
   padding: 9px;

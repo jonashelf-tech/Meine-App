@@ -143,7 +143,7 @@ export default function TabElvi({ onBack }) {
       const x=tx(t)
       ctx.strokeStyle="rgba(255,255,255,0.06)";ctx.lineWidth=1
       ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+ch);ctx.stroke()
-      ctx.fillStyle="rgba(255,255,255,0.25)";ctx.font=`9px Outfit,sans-serif`;ctx.textAlign="center"
+      ctx.fillStyle="rgba(255,255,255,0.25)";ctx.font=`9px Geist,sans-serif`;ctx.textAlign="center"
       ctx.fillText(String(Math.floor(t%24)).padStart(2,"0"),x,PAD.t+ch+14)
     }
     activeDoses.forEach((d,i)=>{
@@ -153,7 +153,7 @@ export default function TabElvi({ onBack }) {
       ctx.strokeStyle=COLORS[i%4]+"66";ctx.lineWidth=1;ctx.setLineDash([4,3])
       ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+ch);ctx.stroke()
       ctx.setLineDash([])
-      ctx.fillStyle=COLORS[i%4];ctx.font=`bold 9px Outfit,sans-serif`;ctx.textAlign="center"
+      ctx.fillStyle=COLORS[i%4];ctx.font=`bold 9px Geist,sans-serif`;ctx.textAlign="center"
       ctx.fillText(`${d.mg}mg`,x,PAD.t+8+(i%2)*11)
     })
     if(pts.length<2) return

@@ -75,7 +75,7 @@ function RingScore({ score }) {
           transform="rotate(-90 35 35)"
           style={{ transition: 'stroke-dasharray 0.4s ease' }}
         />
-        <text x={35} y={40} textAnchor="middle" fill={color} fontSize={13} fontWeight={800} fontFamily="Outfit, sans-serif">
+        <text x={35} y={40} textAnchor="middle" fill={color} fontSize={13} fontWeight={800} fontFamily="Geist, system-ui, sans-serif">
           {score}%
         </text>
       </svg>

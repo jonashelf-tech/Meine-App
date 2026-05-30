@@ -1,4 +1,4 @@
-.root { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+﻿.root { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 
 .card {
   background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
@@ -13,7 +13,7 @@
 }
 .modeBtn {
   background: none; border: none; color: var(--text-dim);
-  font-family: 'Outfit', sans-serif; font-size: 0.72rem;
+  font-family: var(--font); font-size: 0.72rem;
   padding: 5px 14px; cursor: pointer; transition: all 0.15s;
 }
 .modeBtnOn { background: rgba(139,92,246,0.2); color: var(--primary); }
@@ -23,7 +23,7 @@
 .timeLabel { font-size: 0.72rem; color: var(--text-dim); }
 .timeInput {
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px; color: var(--text); font-family: 'Outfit', sans-serif;
+  border-radius: 8px; color: var(--text); font-family: var(--font);
   font-size: 0.85rem; padding: 6px 10px; outline: none; width: 108px;
 }
 .timeInput:focus { border-color: rgba(139,92,246,0.4); }
@@ -32,7 +32,7 @@
 .dayChip {
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px; color: var(--text-dim); font-size: 0.68rem;
-  font-family: 'Outfit', sans-serif; padding: 4px 10px; cursor: pointer; transition: all 0.15s;
+  font-family: var(--font); padding: 4px 10px; cursor: pointer; transition: all 0.15s;
 }
 .dayChipOn {
   background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.5); color: var(--primary);

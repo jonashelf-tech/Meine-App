@@ -1,4 +1,4 @@
-.form {
+﻿.form {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -17,7 +17,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r);
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.88rem;
   padding: 9px 12px;
   outline: none;
@@ -45,7 +45,7 @@
   color: var(--primary);
   cursor: pointer;
   font-size: 0.78rem;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-weight: 700;
   letter-spacing: 0.04em;
   display: flex;
@@ -83,7 +83,7 @@
 }
 
 .previewText {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.82rem;
   color: var(--text);
   flex: 1;
@@ -91,7 +91,7 @@
 }
 
 .tag {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.6rem;
   font-weight: 700;
   color: var(--primary);
@@ -103,7 +103,7 @@
 }
 
 .tagPrio {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--rose);

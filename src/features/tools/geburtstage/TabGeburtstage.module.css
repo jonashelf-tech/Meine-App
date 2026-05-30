@@ -1,4 +1,4 @@
-/* TabGeburtstage.module.css */
+﻿/* TabGeburtstage.module.css */
 
 .page { padding-bottom: 40px; }
 
@@ -18,7 +18,7 @@
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 5px 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 11px;
   font-weight: 600;
   color: var(--text-dim);
@@ -35,7 +35,7 @@
 
 /* ─── Sektion ──────────────────────────────────────────── */
 .sectionLabel {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .08em;
@@ -104,7 +104,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 14px;
   font-weight: 700;
 }
@@ -121,7 +121,7 @@
 .info { flex: 1; min-width: 0; }
 
 .name {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
@@ -132,7 +132,7 @@
 }
 
 .meta {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 11px;
   color: var(--text-dim);
   margin-bottom: 4px;
@@ -150,14 +150,14 @@
   gap: 3px;
   border-radius: 5px;
   padding: 2px 6px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 10px;
   border: 1px solid;
 }
 
 /* ─── Badge ────────────────────────────────────────────── */
 .badge {
-  font-family: 'Orbitron', monospace;
+  font-family: var(--font-num);
   font-size: 11px;
   font-weight: 600;
   border-radius: 6px;
@@ -167,7 +167,7 @@
 
 /* ─── Empty ────────────────────────────────────────────── */
 .empty {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.85rem;
   color: var(--text-dim);
   text-align: center;
@@ -184,7 +184,7 @@
   border: 1px solid rgba(251,113,133,0.25);
   border-radius: var(--r-sm);
   color: var(--rose);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
