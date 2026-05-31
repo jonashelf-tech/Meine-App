@@ -91,10 +91,13 @@ export function getUrgentTasks(config, limit = 5) {
 }
 
 // ─── Default rooms ────────────────────────────────────────
-// ADHS-getreu: wenige, konkrete, sichtbar-wirksame Tasks. Keine
-// Perfektionismus-/Schuld-Tasks (Fenster, Kühlschrank ausräumen), die nur
-// dauerhaft rot stehen. Kein tägliches "Bett machen" als Tracker. Vieles als
-// Low-Energy markiert, damit auch an schlechten Tagen was geht.
+// ADHS-getreu: Routine-Räume halten wenige, konkrete, sichtbar-wirksame Tasks
+// (vieles Low-Energy, damit auch an schlechten Tagen was geht). Kein tägliches
+// "Bett machen" als Tracker (täglich rot = nur Lärm).
+// Die seltenen Brocken (Fenster, Staub, Böden, Mülleimer), die man sonst nie
+// macht, stehen gesammelt im Bereich "Großputz" mit niedriger Priorität und
+// ehrlich langen Intervallen — so vergisst man sie nicht, ohne dass sie die
+// tägliche Liste vollmüllen oder dauernd rot mahnen.
 export const DEFAULT_ROOMS = [
   {
     id: 'kueche', name: 'Küche', icon: 'kitchen', priority: 1,
@@ -132,6 +135,15 @@ export const DEFAULT_ROOMS = [
     tasks: [
       { id: 's-1', text: 'Bettwäsche wechseln', duration: 10, freq: 'custom', customDays: 14,   lowEnergy: false, lastDone: null, subItems: [] },
       { id: 's-2', text: 'Staubsaugen',         duration: 10, freq: 'weekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+    ],
+  },
+  {
+    id: 'grossputz', name: 'Großputz', icon: 'sparkle', priority: 3,
+    tasks: [
+      { id: 'g-1', text: 'Staub wischen (Regale & Flächen)', duration: 15, freq: 'monthly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-2', text: 'Böden wischen (Wohn-/Schlafräume)', duration: 20, freq: 'monthly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-3', text: 'Mülleimer auswaschen',             duration:  5, freq: 'custom',  customDays: 60,   lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-4', text: 'Fenster putzen',                   duration: 25, freq: 'custom',  customDays: 90,   lowEnergy: false, lastDone: null, subItems: [] },
     ],
   },
 ]
