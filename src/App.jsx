@@ -1,27 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useAppStore } from './store'
 import { hexToGlow } from './utils'
-import { TOOL_TAB } from './features/tools/toolTabs'
+import { TOOL_TAB, TOOL_REGISTRY } from './features/tools/toolRegistry.jsx'
 import { saveAutoBackup } from './storage'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
 import TabKalender     from './features/calendar/TabKalender/TabKalender'
 import TabTools        from './features/tools/TabTools/TabTools'
 import TabSettings     from './features/settings/TabSettings/TabSettings'
-import TabGeburtstage  from './features/tools/geburtstage/TabGeburtstage'
-import TabTimer        from './features/tools/timer/TabTimer'
-import TabRezepte      from './features/tools/rezepte/TabRezepte'
-import TabPizza        from './features/tools/pizza/TabPizza'
-import TabElvi         from './features/tools/elvi/TabElvi'
-import TabGewicht      from './features/tools/gewicht/TabGewicht'
-import TabErfolge      from './features/tools/erfolge/TabErfolge'
-import TabRad          from './features/tools/rad/TabRad'
-import TabReminder     from './features/tools/reminder/TabReminder'
-import TabHaushalt     from './features/tools/haushalt/TabHaushalt'
-import TabWasJetzt     from './features/tools/wasjetzt/TabWasJetzt'
-import TabKlaeren      from './features/tools/klaeren/TabKlaeren'
-import TabKognitiv     from './features/tools/kognitiv/TabKognitiv'
-import TabProjekte     from './features/tools/projekte/TabProjekte'
 import TodoModal       from './components/TodoModal/TodoModal'
 import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
 import BackupNudge     from './components/BackupNudge/BackupNudge'
@@ -124,20 +110,16 @@ export default function App() {
         {currentTab === 1  && <TabKalender />}
         {currentTab === 2  && <TabTools />}
         {currentTab === 3  && <TabSettings />}
-        {currentTab === TOOL_TAB.geburtstage  && <TabGeburtstage  onBack={goBack} />}
-        {currentTab === TOOL_TAB.timer        && <TabTimer        onBack={goBack} />}
-        {currentTab === TOOL_TAB.rezepte      && <TabRezepte      onBack={goBack} />}
-        {currentTab === TOOL_TAB.pizza        && <TabPizza        onBack={goBack} />}
-        {currentTab === TOOL_TAB.elvi         && <TabElvi         onBack={goBack} />}
-        {currentTab === TOOL_TAB.gewicht      && <TabGewicht      onBack={goBack} />}
-        {currentTab === TOOL_TAB.erfolge      && <TabErfolge      onBack={goBack} />}
-        {currentTab === TOOL_TAB.rad          && <TabRad          onBack={goBack} />}
-        {currentTab === TOOL_TAB.reminder     && <TabReminder     onBack={goBack} />}
-        {currentTab === TOOL_TAB.haushalt     && <TabHaushalt     onBack={goBack} />}
-        {currentTab === TOOL_TAB.wasjetzt     && <TabWasJetzt     onBack={goBack} />}
-        {currentTab === TOOL_TAB.klaeren      && <TabKlaeren      onBack={goBack} />}
-        {currentTab === TOOL_TAB.kognitiv     && <TabKognitiv     onBack={goBack} onExercising={setExercising} />}
-        {currentTab === TOOL_TAB.projekte     && <TabProjekte     onBack={goBack} />}
+        {TOOL_REGISTRY.map(entry => {
+          if (currentTab !== entry.tabId) return null
+          const Cmp = entry.component
+          const extra = entry.id === 'kognitiv' ? { onExercising: setExercising } : {}
+          return (
+            <Suspense key={entry.id} fallback={null}>
+              <Cmp onBack={goBack} {...extra} />
+            </Suspense>
+          )
+        })}
         </ErrorBoundary>
       </div>
 

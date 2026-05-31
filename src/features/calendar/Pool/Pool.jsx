@@ -1,8 +1,8 @@
 import { useState, useCallback, useMemo } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
-import { isFaelligkeit, isTermin } from '../../todos/Block'
 import { todayKey } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
+import { sortTodos, getActiveTodos } from '../poolLogic'
 import s from './Pool.module.css'
 
 // ─── Icons ────────────────────────────────────────────────
@@ -34,31 +34,6 @@ const ChevronIcon = ({ collapsed }) => (
     <polyline points="2 3 5 7 8 3"/>
   </svg>
 )
-
-// ─── Sort ──────────────────────────────────────────────────
-function sortTodos(list, sort) {
-  if (sort === 'alter') {
-    return [...list].sort((a, b) =>
-      new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
-    )
-  }
-  if (sort === 'kategorie') {
-    return [...list].sort((a, b) => {
-      const ca = a.category || '￿'
-      const cb = b.category || '￿'
-      return ca.localeCompare(cb) || (a.priority - b.priority)
-    })
-  }
-  // Standard: fällig (heute/vergangen) zuerst → prio → alter
-  const today = todayKey()
-  return [...list].sort((a, b) => {
-    const fa = isFaelligkeit(a) && a.date <= today ? 0 : 1
-    const fb = isFaelligkeit(b) && b.date <= today ? 0 : 1
-    if (fa !== fb) return fa - fb
-    if (a.priority !== b.priority) return a.priority - b.priority
-    return new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
-  })
-}
 
 // ─── PoolChip ─────────────────────────────────────────────
 function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced, onKlaeren }) {
@@ -118,38 +93,23 @@ export default function Pool({
   }, [])
   const [pendingDoneIds, setPendingDoneIds] = useState(() => new Set())
 
-  // ─── Placed detection ───────────────────────────────────
-  const { placedIds, placedTexts } = useMemo(() => {
-    const slotValues = Object.values(todaySlots).filter(Boolean)
-    return {
-      placedIds:   new Set(slotValues.map(sl => sl.todoId).filter(Boolean)),
-      placedTexts: new Set(slotValues.filter(sl => !sl.todoId).map(sl => sl.text).filter(Boolean)),
-    }
-  }, [todaySlots])
-
-  // Text-Match nur wenn der Text unter allen Todos eindeutig ist (verhindert false positives bei Duplikaten)
-  const uniqueTexts = useMemo(() => {
+  // ─── Placed detection (für „verplant"-Icon) ─────────────
+  const isPlaced = useMemo(() => {
+    const slotValues  = Object.values(todaySlots).filter(Boolean)
+    const placedIds   = new Set(slotValues.map(sl => sl.todoId).filter(Boolean))
+    const placedTexts = new Set(slotValues.filter(sl => !sl.todoId).map(sl => sl.text).filter(Boolean))
     const counts = {}
     todos.forEach(t => { counts[t.text] = (counts[t.text] || 0) + 1 })
-    return new Set(Object.keys(counts).filter(txt => counts[txt] === 1))
-  }, [todos])
-
-  const isPlaced = useCallback(
-    (t) => placedIds.has(t.id) || (uniqueTexts.has(t.text) && placedTexts.has(t.text)),
-    [placedIds, placedTexts, uniqueTexts]
-  )
+    const uniqueTexts = new Set(Object.keys(counts).filter(txt => counts[txt] === 1))
+    return (t) => placedIds.has(t.id) || (uniqueTexts.has(t.text) && placedTexts.has(t.text))
+  }, [todos, todaySlots])
 
   // ─── Derived lists ──────────────────────────────────────
   const activePool = useMemo(() => {
-    const today  = todayKey()
-    const undone = todos
-      .filter(t => !t.done)
-      .filter(t => !isTermin(t))
-      .filter(t => !t.showFromDate || t.showFromDate <= today)
-      .filter(t => !isPlaced(t))
+    const undone  = sortTodos(getActiveTodos(todos, todaySlots), sort)
     const pending = todos.filter(t => t.done && pendingDoneIds.has(t.id))
-    return [...sortTodos(undone, sort), ...pending]
-  }, [todos, pendingDoneIds, sort, isPlaced])
+    return [...undone, ...pending]
+  }, [todos, todaySlots, pendingDoneIds, sort])
 
   const doneCount = useMemo(() => {
     const today = todayKey()

@@ -22,7 +22,6 @@ export const createBlock = (partial = {}) => ({
   date:                  null,
   time:                  null,
   repeat:                null, // { type: 'daily'|'weekly'|'monthly'|'custom', every?, unit? }
-  awaitingClockResponse: false,
   subItems:              [],
   category:              null,
   notes:                 null,

@@ -24,10 +24,11 @@ import { useTimeEvents } from './useTimeEvents'
 import KognitivSection from '../../tools/kognitiv/KognitivSection'
 import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
+import FokusView from './FokusView'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays, heuteModus, setHeuteModus } = useAppStore()
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
@@ -472,6 +473,20 @@ export default function TabHeute() {
         onChange={setViewDate}
         onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
       />
+      {heuteModus === 'fokus' ? (
+        <FokusView
+          viewDate={viewDate}
+          todaySlots={todaySlots}
+          todos={todos}
+          onToggleSlotDone={handleToggleSlotDone}
+          onToggleTodoDone={handleToggleDone}
+          onShowFull={() => setHeuteModus('voll')}
+        />
+      ) : (
+        <>
+          <button className={s.fokusBackBtn} onClick={() => setHeuteModus('fokus')}>
+            ← Fokus
+          </button>
       <div ref={swipeRef} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <Zeitplan
           slots={todaySlots}
@@ -524,6 +539,8 @@ export default function TabHeute() {
             .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
         })()}
       </div>
+        </>
+      )}
 
       {editingTodo && (
         <TodoModal

@@ -4,16 +4,38 @@
 
 const PREFIX = 'adhs_'
 
+// Kaputte Rohdaten EINMAL pro Key in einen Notfall-Slot retten,
+// damit ein Parse-Fehler keine stille Datenlöschung wird.
+const rescueCorrupt = (key, raw) => {
+  try {
+    const already = Object.keys(localStorage)
+      .some(k => k.startsWith(`adhs_corrupt_${key}_`))
+    if (!already) {
+      localStorage.setItem(`adhs_corrupt_${key}_${Date.now()}`, raw)
+    }
+  } catch {
+    // Notfall-Rettung selbst gescheitert (z.B. Quota) — nicht weiter eskalieren
+  }
+}
+
 export const sv = (key, value) => {
-  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch (e) {
+    console.warn(`[storage] sv("${key}") fehlgeschlagen — nicht gespeichert:`, e)
+  }
 }
 
 export const lv = (key, fallback) => {
+  const raw = localStorage.getItem(key)
+  if (raw === null) return fallback
   try {
-    const raw = localStorage.getItem(key)
-    if (raw !== null) return JSON.parse(raw)
-  } catch {}
-  return fallback
+    return JSON.parse(raw)
+  } catch (e) {
+    console.warn(`[storage] lv("${key}") korrupt — Rohdaten gerettet, Default wird benutzt:`, e)
+    rescueCorrupt(key, raw)
+    return fallback
+  }
 }
 
 // ─── Storage keys ────────────────────────────────────────
@@ -26,7 +48,6 @@ export const SK = {
   doneCounters:   `${PREFIX}calendar_done`,
   settings:       `${PREFIX}app_settings`,
   theme:          `${PREFIX}app_theme`,
-  modules:        `${PREFIX}app_modules`,
   templates:      `${PREFIX}calendar_templates`,
   recipes:        `${PREFIX}recipes_list`,
   shopping:       `${PREFIX}recipes_shopping`,
@@ -44,6 +65,7 @@ export const SK = {
   lastPoolReturn: `${PREFIX}view_last_pool_return`,
   poolSort:       `${PREFIX}view_pool_sort`,
   calView:        `${PREFIX}view_cal_view`,
+  heuteModus:     `${PREFIX}view_heute_modus`,
   weekVisStart:   `${PREFIX}view_week_vis_start`,
   weekVisEnd:     `${PREFIX}view_week_vis_end`,
   blockers:        `${PREFIX}blockers`,
@@ -79,7 +101,7 @@ export const BACKUP_CATS = {
     SK.todos, SK.routines, SK.todoOrder, SK.cats, SK.projects,
     SK.days, SK.doneCounters, SK.templates, SK.blockers,
     SK.lastPoolReturn, SK.poolSort, SK.visStart, SK.visEnd,
-    SK.weekVisStart, SK.weekVisEnd, SK.calView,
+    SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus,
   ],
   tools: [
     SK.recipes, SK.shopping, SK.shoppingStates, SK.selectedDishes,
@@ -89,7 +111,7 @@ export const BACKUP_CATS = {
     SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule,
   ],
   einstellungen: [
-    SK.settings, SK.theme, SK.modules,
+    SK.settings, SK.theme,
     SK.accentColor, SK.toolColors, SK.activeTools,
   ],
 }
@@ -148,7 +170,9 @@ export const saveAutoBackup = async () => {
     await writable.write(JSON.stringify(data))
     await writable.close()
     sv(SK.lastAutoBackup, Date.now())
-  } catch {}
+  } catch (e) {
+    console.warn('[storage] Auto-Backup (OPFS) fehlgeschlagen:', e)
+  }
 }
 
 export const loadAutoBackup = async () => {
@@ -163,7 +187,6 @@ export const loadAutoBackup = async () => {
 // ─── Readable / KI export ────────────────────────────────
 export const exportDataReadable = () => {
   const todos     = lv(SK.todos, [])
-  const routines  = lv(SK.routines, [])
   const blockers  = lv(SK.blockers, [])
   const birthdays = lv(SK.birthdays, [])
   const weight    = lv(SK.weight, [])
@@ -198,14 +221,6 @@ export const exportDataReadable = () => {
         prioritaet: t.priority ?? null,
         kategorie: t.category ?? null,
         faelligkeit: t.date ?? null,
-      })),
-    },
-    routinen: {
-      _info: 'Wiederkehrende Aufgaben',
-      eintraege: routines.map(r => ({
-        text: r.text,
-        wiederholung: r.repeat ?? null,
-        prioritaet: r.prio ?? null,
       })),
     },
     zeitplan: {
@@ -262,11 +277,3 @@ export const exportDataReadable = () => {
   }
 }
 
-// ─── Default module config ────────────────────────────────
-export const DEFAULT_MODULES = {
-  timer:   true,
-  rezepte: true,
-  pizza:   true,
-  elvi:    true,
-  weight:  true,
-}

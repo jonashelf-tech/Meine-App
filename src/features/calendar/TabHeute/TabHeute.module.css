@@ -5,3 +5,16 @@
   padding-bottom: 80px;
   overflow-x: hidden;
 }
+
+.fokusBackBtn {
+  align-self: flex-start;
+  margin: 2px 0 4px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}

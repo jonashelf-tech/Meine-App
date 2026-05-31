@@ -130,7 +130,7 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
 
       setTodos(prev => prev.map(t =>
         todoIds.has(t.id)
-          ? { ...t, done: true, doneAt: new Date().toISOString(), awaitingClockResponse: false }
+          ? { ...t, done: true, doneAt: new Date().toISOString() }
           : t
       ))
     }
@@ -161,13 +161,8 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
     const todoIds   = new Set(sel.filter(i => i.type === 'todo').map(i => i.todoId))
     const newTodos  = textItems.map(i => createBlock({ text: i.text, color: i.color, priority: 3 }))
 
-    if (newTodos.length > 0 || todoIds.size > 0) {
-      setTodos(prev => {
-        const updated = todoIds.size > 0
-          ? prev.map(t => todoIds.has(t.id) ? { ...t, awaitingClockResponse: false } : t)
-          : prev
-        return newTodos.length > 0 ? [...updated, ...newTodos] : updated
-      })
+    if (newTodos.length > 0) {
+      setTodos(prev => [...prev, ...newTodos])
     }
 
     // Slots aus days entfernen
