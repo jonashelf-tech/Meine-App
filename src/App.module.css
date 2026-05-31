@@ -11,7 +11,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 16px 0;
+  padding: max(16px, env(safe-area-inset-top, 16px)) 16px 0;
 }
 
 /* ─── Placeholder ───────────────────────────────────────── */
