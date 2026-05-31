@@ -50,7 +50,7 @@ export default function Dashboard({ onSelectModule }) {
             <div className={s.tileInfo}>
               <div className={s.tileName}>{m.name}</div>
               <div className={s.tileLast}>
-                Zuletzt {stats.latest}{m.mainMetricUnit} · {stats.sessions} {stats.sessions === 1 ? 'Session' : 'Sessions'}
+                {stats.latest > 0 ? `${stats.latest}${m.mainMetricUnit}` : '—'}{stats.latestDuration != null ? ` · ${stats.latestDuration}s` : ''} · {stats.sessions} {stats.sessions === 1 ? 'Session' : 'Sessions'}
               </div>
             </div>
             <div className={s.tileRight}>
@@ -62,7 +62,7 @@ export default function Dashboard({ onSelectModule }) {
                   <div
                     key={i}
                     className={[s.miniBar, i === stats.last7.length - 1 ? s.miniBarLast : ''].join(' ')}
-                    style={{ height: `${Math.max(20, Math.min(100, (stats.best / sess.mainMetric) * 100))}%` }}
+                    style={{ height: `${stats.best > 0 && sess.mainMetric > 0 ? Math.max(20, Math.min(100, (stats.best / sess.mainMetric) * 100)) : 50}%` }}
                   />
                 ))}
               </div>

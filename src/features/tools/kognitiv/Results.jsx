@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { MODULE_CONFIG } from './moduleConfig'
 import { getDelta, getModuleSessions } from './sessionStore'
 import { loadCheckin } from './checkinStore'
@@ -16,8 +15,6 @@ function DotRow({ value }) {
 }
 
 export default function Results({ session, fromArchive = false, onBack, onSaveToCalendar }) {
-  const [saved, setSaved] = useState(false)
-
   const m        = MODULE_CONFIG[session.moduleId]
   const delta    = getDelta(session.moduleId, session.mainMetric)
   const last7    = getModuleSessions(session.moduleId).slice(-7)
@@ -33,11 +30,6 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
         ? `▲ ${Math.abs(delta)}${m.mainMetricUnit} besser`
         : `▼ ${Math.abs(delta)}${m.mainMetricUnit} schlechter`)
     : null
-
-  const handleSave = () => {
-    setSaved(true)
-    onSaveToCalendar(session)
-  }
 
   return (
     <div className={s.root} style={{ '--accent': m.color }}>
@@ -166,15 +158,6 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
         </div>
       )}
 
-      {!fromArchive && (
-        <button
-          className={[s.calBtn, saved ? s.calBtnSaved : ''].join(' ')}
-          onClick={handleSave}
-          disabled={saved}
-        >
-          {saved ? '✓ Gespeichert' : 'Einheit speichern'}
-        </button>
-      )}
       <button className={s.backBtn2} onClick={onBack}>
         {fromArchive ? 'Zurück' : 'Fertig'}
       </button>

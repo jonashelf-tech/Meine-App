@@ -135,7 +135,7 @@ export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
 
   return (
     <ExerciseShell moduleId="taskswitching" progress={done} total={PER_PHASE * numPhases} onAbort={onAbort} onTap={handleTap}>
-      <div className={s.arena}>
+      <div className={s.ruleHeader}>
         <div
           className={s.rulePill}
           style={{ color: ruleColor, borderColor: `${ruleColor}55`, background: `${ruleColor}18` }}
@@ -143,6 +143,8 @@ export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
           <div className={s.ruleDot} style={{ background: ruleColor }} />
           {ruleLabel}
         </div>
+      </div>
+      <div className={s.arena}>
         {stim && <div className={s.stimulus} style={{ color: stim.color }}>{stim.symbol}</div>}
       </div>
     </ExerciseShell>

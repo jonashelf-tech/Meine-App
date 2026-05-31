@@ -1,6 +1,7 @@
-﻿.arena { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.rulePill { display: flex; align-items: center; gap: 8px; border-radius: 20px; padding: 5px 18px; margin-bottom: 44px; border: 1px solid; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+﻿.ruleHeader { display: flex; justify-content: center; padding: 12px 16px 0; flex-shrink: 0; }
+.rulePill { display: flex; align-items: center; gap: 8px; border-radius: 20px; padding: 6px 20px; border: 1px solid; font-size: 12px; font-weight: 700; letter-spacing: 1px; font-family: var(--font); }
 .ruleDot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.arena { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; }
 .stimulus { font-family: var(--font); font-size: 110px; font-weight: 900; line-height: 1; }
 .switchScreen { position: fixed; inset: 0; z-index: 100; background: #05050e; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
 .switchLabel { font-size: 22px; font-weight: 800; color: var(--teal); letter-spacing: 2px; }

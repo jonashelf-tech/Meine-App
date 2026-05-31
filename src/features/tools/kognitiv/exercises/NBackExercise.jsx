@@ -7,7 +7,7 @@ const SHAPES = ['circle', 'triangle', 'square', 'star']
 const STROKE = { circle: '#8B5CF6', triangle: '#14B8A6', square: '#10B981', star: '#FB7185' }
 const FILL   = { circle: 'rgba(139,92,246,0.15)', triangle: 'rgba(20,184,166,0.15)', square: 'rgba(16,185,129,0.15)', star: 'rgba(251,113,133,0.15)' }
 const GREY   = 'rgba(255,255,255,0.45)'
-const TOTAL  = 22
+const TOTAL  = 44
 const GAP_MS = 400
 
 function buildSeq() {

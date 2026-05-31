@@ -9,6 +9,6 @@
 
 .gridWrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px; overflow: hidden; }
 .grid { width: 100%; max-width: 360px; display: grid; gap: 7px; }
-.cell { aspect-ratio: 1; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: var(--text); font-family: var(--font-num); font-size: clamp(0.9rem, 3.2vw, 1.1rem); font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+.cell { aspect-ratio: 1; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: var(--text); font-family: var(--font-num); font-size: clamp(1.1rem, 4.2vw, 1.4rem); font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
 .cell:active { transform: scale(0.94); }
-.done { background: color-mix(in srgb, var(--accent) 12%, transparent); border-color: color-mix(in srgb, var(--accent) 20%, transparent); color: color-mix(in srgb, var(--accent) 55%, transparent); cursor: default; }
+.done { visibility: hidden; pointer-events: none; }

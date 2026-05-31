@@ -32,6 +32,13 @@ export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
             {m.duration}
           </div>
           <p className={s.desc}>{m.desc}</p>
+          {m.steps && (
+            <ol className={s.steps}>
+              {m.steps.map((step, i) => (
+                <li key={i}>{step}</li>
+              ))}
+            </ol>
+          )}
         </div>
 
         <button className={s.infoToggle} onClick={() => setInfoOpen(v => !v)}>

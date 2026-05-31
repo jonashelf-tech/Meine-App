@@ -325,7 +325,7 @@
   color: var(--text-ghost);
   text-align: right;
   padding-right: 4px;
-  height: 40px;
+  height: 28px;
   display: flex;
   align-items: flex-start;
   padding-top: 1px;
@@ -349,9 +349,9 @@
   background-image: repeating-linear-gradient(
     to bottom,
     transparent,
-    transparent 79px,
-    var(--border-dim) 79px,
-    var(--border-dim) 80px
+    transparent 55px,
+    var(--border-dim) 55px,
+    var(--border-dim) 56px
   );
   pointer-events: none;
 }
@@ -363,9 +363,9 @@
   background-image: repeating-linear-gradient(
     to bottom,
     transparent,
-    transparent 39px,
-    var(--border-dim) 39px,
-    var(--border-dim) 40px
+    transparent 27px,
+    var(--border-dim) 27px,
+    var(--border-dim) 28px
   );
   pointer-events: none;
 }

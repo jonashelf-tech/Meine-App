@@ -96,36 +96,38 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
 
     setHighlight({ idx: circIdx, correct })
     setTimeout(() => setHighlight(null), 300)
+    tapsRef.current.push({ round: roundIdx, pos, expected, got: circIdx, correct })
+
+    if (!correct) {
+      mistakesRef.current++
+      clearTimers()
+      if (mistakesRef.current >= 2) {
+        setTimeout(finishSession, 800)
+      } else {
+        setUserInput([])
+        setTimeout(() => playSequence(seqRef.current), 1000)
+      }
+      return
+    }
 
     const newInput = [...userInput, circIdx]
     setUserInput(newInput)
-    tapsRef.current.push({ round: roundIdx, pos, expected, got: circIdx, correct })
 
-    if (newInput.length === roundsQueueRef.current[roundIdx]) {
-      const hasError  = newInput.some((tap, i) => tap !== seqRef.current[i])
+    if (newInput.length === seqRef.current.length) {
       const nextRound = roundIdx + 1
-
-      if (hasError) {
-        mistakesRef.current++
-        if (mistakesRef.current >= 2) {
-          setTimeout(finishSession, 2000)
-        } else {
-          // append retry round and continue
-          roundsQueueRef.current = [...roundsQueueRef.current, roundsQueueRef.current[roundIdx]]
-          setTimeout(() => setRoundIdx(nextRound), 2000)
-        }
+      if (nextRound >= roundsQueueRef.current.length) {
+        setTimeout(finishSession, 800)
       } else {
-        if (nextRound >= roundsQueueRef.current.length) {
-          setTimeout(finishSession, 2000)
-        } else {
-          setTimeout(() => setRoundIdx(nextRound), 2000)
-        }
+        setTimeout(() => setRoundIdx(nextRound), 800)
       }
     }
-  }, [phase, userInput, roundIdx, finishSession])
+  }, [phase, userInput, roundIdx, finishSession, playSequence])
 
   return (
     <ExerciseShell moduleId="gedaechtnis" progress={roundIdx} total={BASE_ROUNDS.length} onAbort={onAbort}>
+      <div className={s.phaseLabel}>
+        {phase === 'show' ? 'Merken' : 'Eingeben'}
+      </div>
       <div className={s.arena}>
         {CIRCLE_POSITIONS.map((pos, i) => {
           const isLit   = litCircle === i

@@ -4,7 +4,7 @@
   z-index: 200; backdrop-filter: blur(4px);
 }
 .modal {
-  background: #0f0f1a; border-radius: 20px 20px 0 0;
+  background: var(--bg3); border-radius: 20px 20px 0 0;
   border: 1.5px solid rgba(139,92,246,0.2); border-bottom: none;
   width: 100%; max-width: 480px; padding: 24px 20px 32px;
   display: flex; flex-direction: column; gap: 16px;
@@ -66,10 +66,10 @@
   display: flex; flex-direction: column; align-items: center;
   gap: 16px; padding: 8px 0 4px; text-align: center;
 }
-.timerTitle { font-size: 1.05rem; font-weight: 700; color: var(--text); }
-.timerSub { font-size: 0.72rem; color: var(--text-dim); line-height: 1.6; max-width: 260px; }
-.timerRing { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
+.timerTitle { font-size: 1.05rem; font-weight: 700; color: var(--text); font-family: var(--font); }
+.timerSub { font-size: 0.72rem; color: var(--text-dim); line-height: 1.6; max-width: 260px; font-family: var(--font); }
+.timerRing { position: relative; width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; }
 .timerSvg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
-.timerTrack { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 3; }
-.timerArc { fill: none; stroke: var(--primary); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-.timerCount { font-family: var(--font-num); font-size: 1.3rem; font-weight: 700; color: var(--primary); position: relative; z-index: 1; }
+.timerTrack { fill: none; stroke: rgba(255,255,255,0.04); stroke-width: 8; }
+.timerArc { fill: none; stroke: var(--primary); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timerCount { font-family: var(--font-num); font-size: 2rem; font-weight: 900; color: var(--text); position: relative; z-index: 1; letter-spacing: 0.04em; }

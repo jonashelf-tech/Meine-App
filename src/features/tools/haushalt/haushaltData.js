@@ -91,45 +91,47 @@ export function getUrgentTasks(config, limit = 5) {
 }
 
 // ─── Default rooms ────────────────────────────────────────
+// ADHS-getreu: wenige, konkrete, sichtbar-wirksame Tasks. Keine
+// Perfektionismus-/Schuld-Tasks (Fenster, Kühlschrank ausräumen), die nur
+// dauerhaft rot stehen. Kein tägliches "Bett machen" als Tracker. Vieles als
+// Low-Energy markiert, damit auch an schlechten Tagen was geht.
 export const DEFAULT_ROOMS = [
   {
     id: 'kueche', name: 'Küche', icon: 'kitchen', priority: 1,
     tasks: [
-      { id: 'k-1', text: 'Abwasch / Spülmaschine', duration: 15, freq: 'daily',    customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'k-2', text: 'Müll rausbringen',        duration:  5, freq: 'biweekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'k-3', text: 'Herd & Arbeitsflächen',   duration: 10, freq: 'weekly',   customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 'k-4', text: 'Kühlschrank ausräumen',   duration: 30, freq: 'monthly',  customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'k-1', text: 'Abwasch / Spülmaschine',       duration: 10, freq: 'daily',  customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 'k-2', text: 'Müll & Altglas rausbringen',   duration:  5, freq: 'weekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 'k-3', text: 'Arbeitsflächen & Herd wischen', duration: 10, freq: 'weekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 'k-4', text: 'Boden wischen',                duration: 10, freq: 'weekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'bad', name: 'Bad', icon: 'bath', priority: 1,
     tasks: [
-      { id: 'b-1', text: 'WC reinigen',           duration: 10, freq: 'weekly',   customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'b-2', text: 'Waschbecken & Spiegel', duration:  5, freq: 'weekly',   customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'b-3', text: 'Dusche reinigen',        duration: 15, freq: 'biweekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'b-1', text: 'WC & Waschbecken', duration: 10, freq: 'weekly', customDays: null,  lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 'b-2', text: 'Dusche / Wanne',   duration: 15, freq: 'custom', customDays: 14,    lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'b-3', text: 'Boden wischen',    duration:  5, freq: 'weekly', customDays: null,  lowEnergy: true,  lastDone: null, subItems: [] },
+    ],
+  },
+  {
+    id: 'waesche', name: 'Wäsche', icon: 'washer', priority: 1,
+    tasks: [
+      { id: 'l-1', text: 'Waschen & aufhängen',         duration: 10, freq: 'biweekly', customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
+      { id: 'l-2', text: 'Zusammenlegen & wegräumen',   duration: 15, freq: 'weekly',   customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'wohnzimmer', name: 'Wohnzimmer', icon: 'sofa', priority: 2,
     tasks: [
-      { id: 'w-1', text: 'Aufräumen / Sachen wegräumen', duration: 15, freq: 'weekly',  customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'w-2', text: 'Staubsaugen',                  duration: 15, freq: 'weekly',  customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 'w-3', text: 'Fenster putzen',                duration: 20, freq: 'monthly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'w-1', text: 'Flächen freiräumen / aufräumen', duration: 10, freq: 'biweekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 'w-2', text: 'Staubsaugen',                    duration: 15, freq: 'weekly',   customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'schlafzimmer', name: 'Schlafzimmer', icon: 'bed', priority: 2,
     tasks: [
-      { id: 's-1', text: 'Wäsche waschen', duration: 10, freq: 'weekly',   customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 's-2', text: 'Bett machen',    duration:  5, freq: 'daily',    customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 's-3', text: 'Staubsaugen',    duration: 15, freq: 'biweekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
-    ],
-  },
-  {
-    id: 'flur', name: 'Flur', icon: 'door', priority: 3,
-    tasks: [
-      { id: 'f-1', text: 'Staubsaugen',      duration: 10, freq: 'weekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 'f-2', text: 'Schuhe wegräumen', duration:  5, freq: 'weekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 's-1', text: 'Bettwäsche wechseln', duration: 10, freq: 'custom', customDays: 14,   lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 's-2', text: 'Staubsaugen',         duration: 10, freq: 'weekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
     ],
   },
 ]

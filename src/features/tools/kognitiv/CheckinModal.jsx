@@ -28,7 +28,6 @@ function ArrivalTimer({ entry, onDone }) {
       setRemaining(prev => {
         if (prev <= 1) {
           clearInterval(intervalRef.current)
-          onDone(entry)
           return 0
         }
         return prev - 1
@@ -38,9 +37,16 @@ function ArrivalTimer({ entry, onDone }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (remaining === 0) onDone(entry)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [remaining])
+
   const mins = String(Math.floor(remaining / 60)).padStart(2, '0')
   const secs = String(remaining % 60).padStart(2, '0')
   const pct  = (remaining / TIMER_SECS) * 100
+  const R = 86
+  const C = 2 * Math.PI * R
 
   return (
     <div className={s.timerWrap}>
@@ -49,13 +55,13 @@ function ArrivalTimer({ entry, onDone }) {
         Nimm dir einen Moment, bevor du startest — damit deine Werte aussagekräftiger sind.
       </div>
       <div className={s.timerRing}>
-        <svg viewBox="0 0 56 56" className={s.timerSvg}>
-          <circle cx="28" cy="28" r="24" className={s.timerTrack} />
+        <svg viewBox="0 0 200 200" className={s.timerSvg}>
+          <circle cx="100" cy="100" r={R} className={s.timerTrack} />
           <circle
-            cx="28" cy="28" r="24"
+            cx="100" cy="100" r={R}
             className={s.timerArc}
-            strokeDasharray={`${2 * Math.PI * 24}`}
-            strokeDashoffset={`${2 * Math.PI * 24 * (1 - pct / 100)}`}
+            strokeDasharray={C}
+            strokeDashoffset={C * (1 - pct / 100)}
           />
         </svg>
         <div className={s.timerCount}>{mins}:{secs}</div>

@@ -76,13 +76,15 @@ export function getModuleStats(moduleId) {
   const first  = metrics[0]
   const best   = Math.min(...metrics)
   const latest = metrics[metrics.length - 1]
+  const lastSession = sessions[sessions.length - 1]
   return {
     sessions: sessions.length,
     best,
     latest,
-    improvement: first - latest,   // positive = got faster/better
+    improvement: first - latest,
     last7: sessions.slice(-7),
-    latestScore: sessions[sessions.length - 1].score ?? null,
+    latestScore: lastSession.score ?? null,
+    latestDuration: lastSession.duration ?? null,
   }
 }
 
