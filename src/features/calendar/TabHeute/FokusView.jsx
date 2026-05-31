@@ -44,9 +44,9 @@ export default function FokusView({ viewDate, todaySlots, todos, onToggleSlotDon
                 className={[s.frow, slot.done ? s.done : ''].join(' ')}
                 onClick={() => onToggleSlotDone(slotKey)}
               >
+                <span className={s.ftick}>{CheckIcon}</span>
                 <span className={s.time}>{skLabel(slotKey)}</span>
                 <span className={s.ftext}>{slot.text}</span>
-                <span className={s.ftick}>{CheckIcon}</span>
               </button>
             ))}
           </div>

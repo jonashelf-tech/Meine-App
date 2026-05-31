@@ -90,7 +90,11 @@ function ItemRow({ item, onUpdate, onDelete }) {
             </div>
             <FälligBar item={item} />
           </div>
-          <span className={s.chevron}>{open ? '▾' : '▸'}</span>
+          <span className={s.chevron}>
+            <svg width={10} height={10} viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'none' : 'rotate(-90deg)', transition: 'transform 0.2s' }}>
+              <polyline points="2 3 5 7 8 3"/>
+            </svg>
+          </span>
         </button>
         <button
           className={s.doneBtn}

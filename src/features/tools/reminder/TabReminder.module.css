@@ -5,45 +5,6 @@
   padding-bottom: 32px;
 }
 
-/* ─── Header ─────────────────────────────────────────────── */
-.header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 16px 0;
-}
-
-.back {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-family: var(--font);
-  font-size: 0.82rem;
-  cursor: pointer;
-  padding: 4px 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.titleBlock { display: flex; flex-direction: column; }
-
-.eyebrow {
-  font-size: 0.5rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(139, 92, 246, 0.45);
-  font-family: var(--font);
-}
-
-.title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  font-family: var(--font-num);
-  color: var(--text);
-}
-
-.title em { color: var(--tool-color, var(--cyan)); font-style: normal; }
-
 /* ─── Sections ───────────────────────────────────────────── */
 .section {
   display: flex;
