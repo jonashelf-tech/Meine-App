@@ -483,11 +483,7 @@ export default function TabHeute() {
           onShowFull={() => setHeuteModus('voll')}
         />
       ) : (
-        <>
-          <button className={s.fokusBackBtn} onClick={() => setHeuteModus('fokus')}>
-            ← Fokus
-          </button>
-      <div ref={swipeRef} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div ref={swipeRef} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <Zeitplan
           slots={todaySlots}
           todos={todos}
@@ -499,13 +495,10 @@ export default function TabHeute() {
           onToggleSlotDone={handleToggleSlotDone}
           onEditTodo={handleEdit}
           onRemoveSlot={handleRemoveSlot}
-          onShiftAll={handleShiftAll}
-          onExpandUp={handleExpandUp}
-          onExpandDown={handleExpandDown}
           onExpandUpTo={handleExpandUpTo}
           onExpandDownTo={handleExpandDownTo}
-          onRemoveHour={handleRemoveHour}
           onToggleLock={handleToggleLock}
+          onFokusMode={() => setHeuteModus('fokus')}
           registerHalf={registerHalf}
           startSlotDrag={startSlotDrag}
           blockers={blockers}
@@ -538,8 +531,7 @@ export default function TabHeute() {
             .filter(id => SECTIONS[id])
             .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
         })()}
-      </div>
-        </>
+        </div>
       )}
 
       {editingTodo && (

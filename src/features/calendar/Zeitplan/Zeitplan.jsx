@@ -44,7 +44,7 @@ function SlotChipPreview({ slotKey, slot, onTap }) {
 }
 
 // ─── PillStrip ────────────────────────────────────────────
-function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink, onExpandTo, birthdayPills = [] }) {
+function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpandTo, birthdayPills = [] }) {
   const outSlots = Object.entries(slots)
     .filter(([k, v]) => {
       if (!v) return false
@@ -57,7 +57,6 @@ function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink,
 
   return (
     <div className={s.pillStrip}>
-      <button className={[s.pillBtn, s.pillBtnMinus].join(' ')} onClick={onShrink}>−</button>
       <div className={s.pillChips}>
         {showBirthdays && birthdayPills.map(b => (
           <div
@@ -76,7 +75,6 @@ function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink,
           <SlotChipPreview key={k} slotKey={k} slot={slot} onTap={onExpandTo} />
         ))}
       </div>
-      <button className={[s.pillBtn, s.pillBtnPlus].join(' ')} onClick={onExpand}>+</button>
     </div>
   )
 }
@@ -93,12 +91,8 @@ export default function Zeitplan({
   onToggleSlotDone,
   onEditTodo,
   onRemoveSlot,
-  onShiftAll,
-  onExpandUp,
-  onExpandDown,
   onExpandUpTo,
   onExpandDownTo,
-  onRemoveHour,
   onToggleLock,
   registerHalf,
   startSlotDrag,
@@ -106,6 +100,7 @@ export default function Zeitplan({
   onCreateBlocker,
   onEditBlocker,
   onToggleBlockerLocked,
+  onFokusMode,
   birthdayPills = [],
   birthdayPillsDate = null,
 }) {
@@ -281,17 +276,15 @@ export default function Zeitplan({
   return (
     <div className={s.zeitplan}>
 
-      {/* Shift controls */}
+      {/* Controls */}
       <div className={s.controls}>
-        <button className={s.shiftBtn} onClick={() => onShiftAll?.(-1)}>▲ 30min</button>
-        <button className={s.shiftBtn} onClick={() => onShiftAll?.(1)}>▼ 30min</button>
         <div style={{ flex: 1 }} />
         {onCreateBlocker && (
           <button className={s.blockerBtn} onClick={onCreateBlocker}>+ Fenster</button>
         )}
         <div className={s.viewToggle}>
           <button className={[s.viewBtn, !hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(false)}>Alles</button>
-          <button className={[s.viewBtn,  hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(true)}>Minimal</button>
+          <button className={s.viewBtn} onClick={() => onFokusMode?.()}>Minimal</button>
         </div>
       </div>
 
@@ -301,8 +294,6 @@ export default function Zeitplan({
         visibleStart={visibleStart}
         visibleEnd={visibleEnd}
         isTop={true}
-        onExpand={() => onExpandUp?.()}
-        onShrink={() => onRemoveHour?.(visibleStart)}
         onExpandTo={(h) => onExpandUpTo?.(h)}
         birthdayPills={activeBirthdayPills}
       />
@@ -345,8 +336,6 @@ export default function Zeitplan({
         visibleStart={visibleStart}
         visibleEnd={visibleEnd}
         isTop={false}
-        onExpand={() => onExpandDown?.()}
-        onShrink={() => onRemoveHour?.(visibleEnd)}
         onExpandTo={(h) => onExpandDownTo?.(h)}
       />
 
