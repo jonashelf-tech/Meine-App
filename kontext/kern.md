@@ -191,12 +191,11 @@ SK.accentColor    → 'adhs_app_accent'
 SK.toolColors     → 'adhs_app_tool_colors'
 
 // View-State (kein Reload nötig — wird beim Tab-Wechsel gelesen)
-SK.visStart         → 'adhs_view_vis_start'             // Zeitplan sichtbarer Start (Stunde)
-SK.visEnd           → 'adhs_view_vis_end'               // Zeitplan sichtbares Ende (Stunde)
-SK.lastPoolReturn   → 'adhs_view_last_pool_return'
-SK.poolSort         → 'adhs_view_pool_sort'             // 'standard'|'kategorie'|'alter'
-SK.calView          → 'adhs_view_cal_view'              // 'woche'|'monat'
-SK.weekVisibleDays  → 'adhs_view_week_visible_days'     // Anzahl sichtbarer Spalten in Wochenansicht (Default 7, Range 3–7)
+SK.visStart       → 'adhs_view_vis_start'       // Zeitplan sichtbarer Start (Stunde)
+SK.visEnd         → 'adhs_view_vis_end'          // Zeitplan sichtbares Ende (Stunde)
+SK.lastPoolReturn → 'adhs_view_last_pool_return'
+SK.poolSort       → 'adhs_view_pool_sort'        // 'standard'|'kategorie'|'alter'
+SK.calView        → 'adhs_view_cal_view'         // 'woche'|'monat'
 
 // Tools
 SK.recipes        → 'adhs_recipes_list'
@@ -281,8 +280,6 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
   - Klick auf Datum-Header → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
 - **Wochenansicht Allday-Streifen:** zeigt Geburtstags-Balken + Todos ohne Uhrzeit. Erscheint wenn `showTodos || showTermine`.
 - **Wochenansicht Drag & Drop:** Blöcke per Pointer verschiebbar über Zeit **und** Tag (colRefs für Spalten-Trefferflächen). Unified Pointer-Handler unterscheidet tap / dblTap / drag-start. Block-Redesign: SLOT_H 28px, top-aligned, Verlauf in Item-Farbe, Done-Badge mit Farberhalt, Zeit-Label nur auf hohen Blöcken.
-- **Wochenansicht Scroll:** freies horizontales Scrollen (kein 7-Tage-Sprung). Einrastung auf Tagesgrenzen via CSS scroll-snap. Gerenderter Bereich ~12 Wochen, erweitert sich dynamisch am Rand. Tag-Header sticky oben, Zeitachse sticky links — beide im selben Scroll-Container. NavPill ‹/› scrollt 1 Woche weich, Doppeltipp auf Datum → scroll zu heute.
-- **Wochenansicht Spaltenbreite:** `SK.weekVisibleDays` (Default 7, Range 3–7) steuert sichtbare Spalten. Einstellbar unter Einstellungen → Kalender. CSS-Variable `--week-col-w` = `(containerWidth - 32) / weekVisibleDays`, gesetzt via ResizeObserver.
 
 ---
 
@@ -322,8 +319,6 @@ Damit geht Swipe-Back innerhalb eines Tools eine Ebene zurück (statt das Tool z
 Läuft beim Mount von TabHeute (`useTimeEvents`-Hook in `TabHeute/useTimeEvents.js`).
 Variante 2 hat Priorität — nie beide gleichzeitig aktiv.
 
-**Grundprinzip:** Nichts darf vergessen werden. Ein Eintrag verschwindet nur dauerhaft aus der Abfrage durch **Erledigt** (abhaken) oder **In Pool** (entterminieren). **Ignorieren** = nur für den Rest des heutigen Tages weg, am nächsten Tag wieder abgefragt.
-
 **Variante 1 — selber Tag (abgelaufene Slots):**
 - Trigger: `viewDate === today` UND Slots heute mit `endzeit ≤ jetzt` + `!done && !ignored && !reviewed`
 - Aktionen (jeweils auf aktuelle Auswahl):
@@ -333,12 +328,9 @@ Variante 2 hat Priorität — nie beide gleichzeitig aktiv.
 
 **Variante 2 — neuer Tag:**
 - Trigger: `SK.lastPoolReturn !== todayKey()`
-- Zeigt: alle Slots aus `days[dk < heute]` mit `!done && !reviewed` (**inkl. `ignored: true`**) **plus** überfällige Fälligkeiten (`isFaelligkeit(t) && t.date < heute && !done`, sofern nicht schon als Slot verplant)
-- Aktionen:
-  - **Erledigt** → Slot `done+reviewed`, Todo `done=true, doneAt=now`; Fälligkeit → Todo `done=true`
-  - **Ignorieren** → **nichts persistiert**, Eintrag bleibt offen → kommt beim nächsten Tageswechsel wieder
-  - **In Pool** → Slot löschen; Fälligkeit → `date=null, time=null` (wird normales Pool-Todo)
-- Abschluss: `sv(SK.lastPoolReturn, today)` (auch wenn alles nur ignoriert wurde — verhindert Re-Trigger heute, morgen kommt es wieder)
+- Zeigt: alle Slots aus `days[dk < heute]` mit `!done && !reviewed` — **inkl. `ignored: true`**
+- Aktionen identisch, aber **Ignorieren** → `slot.reviewed = true` *(endgültig weg)*
+- Abschluss: `sv(SK.lastPoolReturn, today)`
 
-**Item-Typen:** `type: 'text'` (Slot ohne todoId) · `type: 'todo'` (Slot mit todoId) · `type: 'faellig'` (überfällige Fälligkeit, `slotKey: null`)
+**Item-Typen:** `type: 'text'` (Slot ohne todoId) · `type: 'todo'` (Slot mit todoId)
 **Auto-close:** Modal schließt wenn Liste leer. Alle Items sind beim Öffnen vorausgewählt.
