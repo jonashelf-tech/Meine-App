@@ -18,11 +18,6 @@ const MONTH_NAMES = [
 ]
 
 const SLOT_H = 28
-const TIME_AXIS_W = 32
-
-function daysBetween(a, b) {
-  return Math.round((b - a) / 86400000)
-}
 
 function getMonday(date) {
   const d = new Date(date)
@@ -360,48 +355,7 @@ export default function TabKalender() {
   }, [])
   const todayKey = toDateKey(today)
 
-  const [rangeStart, _setRangeStart] = useState(() => addDays(getMonday(today), -42))
-  const [rangeDays,  _setRangeDays]  = useState(84)
-  const [weekVisibleDays, setWeekVisibleDays] = useState(() => lv(SK.weekVisibleDays, 7))
-
-  // Reagiert auf Änderungen aus dem Einstellungen-Tab (anderer Tab → storage-Event)
-  useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key === SK.weekVisibleDays && e.newValue !== null) {
-        const n = parseInt(e.newValue, 10)
-        if (n >= 3 && n <= 7) setWeekVisibleDays(n)
-      }
-    }
-    window.addEventListener('storage', onStorage)
-    return () => window.removeEventListener('storage', onStorage)
-  }, [])
-
-  const [colW, _setColW]             = useState(0)
-  const [visibleLabel, setVisibleLabel]         = useState('')
-  const [visibleIsCurrent, setVisibleIsCurrent] = useState(true)
-
-  const rangeStartRef      = useRef(addDays(getMonday(today), -42))
-  const rangeDaysRef       = useRef(84)
-  const colWRef            = useRef(0)
-  const weekVisibleRef     = useRef(lv(SK.weekVisibleDays, 7))
-  const scrollContainerRef = useRef(null)
-  const rafRef             = useRef(null)
-
-  const setRangeStart = (val) => {
-    const v = typeof val === 'function' ? val(rangeStartRef.current) : val
-    rangeStartRef.current = v
-    _setRangeStart(v)
-  }
-  const setRangeDays = (val) => {
-    const v = typeof val === 'function' ? val(rangeDaysRef.current) : val
-    rangeDaysRef.current = v
-    _setRangeDays(v)
-  }
-  const setColW = (val) => {
-    colWRef.current = val
-    _setColW(val)
-  }
-
+  const [weekStart, setWeekStart]     = useState(() => getMonday(today))
   const [monthRef, setMonthRef]       = useState(() => ({ year: today.getFullYear(), month: today.getMonth() }))
   const [selectedDay, setSelectedDay] = useState(todayKey)
   const [showTermine, setShowTermine] = useState(true)
@@ -546,59 +500,35 @@ export default function TabKalender() {
   const [restoreTodo, setRestoreTodo] = useState(null)
   const weightEntries   = useMemo(() => loadEntries(), [])
   const kognitivSessions = useMemo(() => loadKognitivSessions(), [])
+  const weekScrollRef  = useRef(null)
   const colRefs        = useRef({})
   const dragJustEnded  = useRef(false)
 
   const kalenderSwipeRef = useRef(null)
   usePageSwipe(kalenderSwipeRef, {
-    onPrev: view === 'monat' ? () => setMonthRef(r => {
-      const m = r.month === 0 ? 11 : r.month - 1
-      const y = r.month === 0 ? r.year - 1 : r.year
-      return { year: y, month: m }
-    }) : undefined,
-    onNext: view === 'monat' ? () => setMonthRef(r => {
-      const m = r.month === 11 ? 0 : r.month + 1
-      const y = r.month === 11 ? r.year + 1 : r.year
-      return { year: y, month: m }
-    }) : undefined,
+    onPrev: view === 'woche'
+      ? () => setWeekStart(d => addDays(d, -7))
+      : () => setMonthRef(r => {
+          const m = r.month === 0 ? 11 : r.month - 1
+          const y = r.month === 0 ? r.year - 1 : r.year
+          return { year: y, month: m }
+        }),
+    onNext: view === 'woche'
+      ? () => setWeekStart(d => addDays(d, 7))
+      : () => setMonthRef(r => {
+          const m = r.month === 11 ? 0 : r.month + 1
+          const y = r.month === 11 ? r.year + 1 : r.year
+          return { year: y, month: m }
+        }),
     disabled: restoreTodo !== null,
   })
 
-  // ResizeObserver: Spaltenbreite berechnen
   useEffect(() => {
-    const el = scrollContainerRef.current
-    if (!el) return
-    const update = () => {
-      const cw = Math.floor((el.clientWidth - TIME_AXIS_W) / weekVisibleRef.current)
-      setColW(cw)
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    return () => ro.disconnect()
+    if (view !== 'woche' || !weekScrollRef.current) return
+    const scrollTo = Math.max(0, (new Date().getHours() - visibleStart) * 2 * SLOT_H - 80)
+    weekScrollRef.current.scrollTop = scrollTo
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Spaltenbreite neu berechnen wenn weekVisibleDays sich ändert
-  useEffect(() => {
-    weekVisibleRef.current = weekVisibleDays
-    const el = scrollContainerRef.current
-    if (!el) return
-    const cw = Math.floor((el.clientWidth - TIME_AXIS_W) / weekVisibleDays)
-    setColW(cw)
-  }, [weekVisibleDays])
-
-  // Mount: scroll zu heute (horizontal) + aktueller Uhrzeit (vertikal)
-  useEffect(() => {
-    if (view !== 'woche') return
-    const el = scrollContainerRef.current
-    if (!el || colWRef.current === 0) return
-    const todayIdx = daysBetween(rangeStartRef.current, today)
-    el.scrollLeft = todayIdx * colWRef.current
-    const scrollTop = Math.max(0, (new Date().getHours() - visibleStart) * 2 * SLOT_H - 80)
-    el.scrollTop = scrollTop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, colW])
+  }, [view])
 
   useEffect(() => {
     const timers = clickTimers.current
@@ -611,13 +541,7 @@ export default function TabKalender() {
     if (view === 'monat') {
       setMonthRef({ year: yr, month: mo - 1 })
     } else {
-      const targetDate = new Date(yr, mo - 1, d)
-      setTimeout(() => {
-        const el = scrollContainerRef.current
-        if (!el || colWRef.current === 0) return
-        const idx = daysBetween(rangeStartRef.current, targetDate)
-        el.scrollTo({ left: idx * colWRef.current, behavior: 'smooth' })
-      }, 50)
+      setWeekStart(getMonday(new Date(yr, mo - 1, d)))
     }
     setSelectedDay(calendarDate)
     setCalendarDate(null)
@@ -633,82 +557,16 @@ export default function TabKalender() {
     setRestoreTodo(null)
   }
 
-  const handleScroll = () => {
-    const el = scrollContainerRef.current
-    if (!el) return
-    const sl = el.scrollLeft
-    const cw = colWRef.current
-    if (cw === 0) return
-
-    // Bereich links erweitern
-    if (sl < 2 * cw) {
-      const add = 28
-      setRangeStart(d => addDays(d, -add))
-      setRangeDays(n => n + add)
-      requestAnimationFrame(() => {
-        if (scrollContainerRef.current)
-          scrollContainerRef.current.scrollLeft = sl + add * cw
-      })
-    }
-
-    // Bereich rechts erweitern
-    const totalW = rangeDaysRef.current * cw
-    if (sl > totalW - el.clientWidth - 2 * cw) {
-      setRangeDays(n => n + 28)
-    }
-
-    // NavPill-Label via RAF aktualisieren
-    if (rafRef.current) return
-    rafRef.current = requestAnimationFrame(() => {
-      rafRef.current = null
-      const el2 = scrollContainerRef.current
-      if (!el2) return
-      const firstIdx = Math.round(el2.scrollLeft / colWRef.current)
-      const lastIdx  = firstIdx + weekVisibleRef.current - 1
-      const firstDay = addDays(rangeStartRef.current, firstIdx)
-      const lastDay  = addDays(rangeStartRef.current, lastIdx)
-      const todayIdx = daysBetween(rangeStartRef.current, today)
-      setVisibleIsCurrent(todayIdx >= firstIdx && todayIdx <= lastIdx)
-      const fmt  = (d) => d.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })
-      const fmtY = (d) => d.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })
-      setVisibleLabel(`${fmt(firstDay)} – ${fmtY(lastDay)}`)
-    })
-  }
-
-  const scrollToToday = () => {
-    const el = scrollContainerRef.current
-    if (!el || colWRef.current === 0) return
-    const todayIdx = daysBetween(rangeStartRef.current, today)
-    el.scrollTo({ left: todayIdx * colWRef.current, behavior: 'smooth' })
-  }
-
-  const scrollWeekBy = (weeks) => {
-    const el = scrollContainerRef.current
-    if (!el || colWRef.current === 0) return
-    el.scrollBy({ left: weeks * 7 * colWRef.current, behavior: 'smooth' })
-  }
-
-  const allDays = useMemo(
-    () => Array.from({ length: rangeDays }, (_, i) => addDays(rangeStart, i)),
-    [rangeStart, rangeDays]
-  )
-
-  const visibleDays = useMemo(() => {
-    if (colW === 0) return allDays.slice(0, weekVisibleDays)
-    const el = scrollContainerRef.current
-    if (!el) return allDays.slice(0, weekVisibleDays)
-    const firstIdx = Math.floor(el.scrollLeft / colW)
-    return allDays.slice(firstIdx, firstIdx + weekVisibleDays)
-  }, [allDays, colW, weekVisibleDays])
-
-  const isCurrentWeek = true // allDays enthält immer heute
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
+  const isCurrentWeek  = weekDays.some(d => toDateKey(d) === todayKey)
   const nowTop = useMemo(() => {
+    if (!isCurrentWeek) return null
     const n = new Date()
     const h = n.getHours()
     const m = n.getMinutes()
     if (h < visibleStart || h >= visibleEnd) return null
     return ((h - visibleStart) * 60 + m) / 30 * SLOT_H
-  }, [visibleStart, visibleEnd])
+  }, [isCurrentWeek, visibleStart, visibleEnd])
   const isCurrentMonth = monthRef.year === today.getFullYear() && monthRef.month === today.getMonth()
 
   const handleDayClick = (dateKey) => {
@@ -733,13 +591,13 @@ export default function TabKalender() {
     <div className={s.page}>
       {view === 'woche' ? (
         <NavPill
-          label={visibleLabel || today.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}
-          onPrev={() => scrollWeekBy(-1)}
-          onNext={() => scrollWeekBy(1)}
-          isCurrent={visibleIsCurrent}
-          leftGlows={!visibleIsCurrent}
-          rightGlows={false}
-          onLabelDoubleClick={visibleIsCurrent ? undefined : scrollToToday}
+          label={`${addDays(weekStart, 0).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })} – ${addDays(weekStart, 6).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}`}
+          onPrev={() => setWeekStart(d => addDays(d, -7))}
+          onNext={() => setWeekStart(d => addDays(d, 7))}
+          isCurrent={isCurrentWeek}
+          leftGlows={!isCurrentWeek && toDateKey(weekStart) > toDateKey(getMonday(today))}
+          rightGlows={!isCurrentWeek && toDateKey(weekStart) < toDateKey(getMonday(today))}
+          onLabelDoubleClick={isCurrentWeek ? undefined : () => setWeekStart(getMonday(today))}
         />
       ) : (
         <NavPill
@@ -781,231 +639,236 @@ export default function TabKalender() {
       {view === 'woche' && (
         <>
           <div className={s.weekWrapper}>
-            <div
-              ref={scrollContainerRef}
-              className={s.weekScrollContainer}
-              style={{ '--week-col-w': colW > 0 ? `${colW}px` : `${Math.floor((window.innerWidth - TIME_AXIS_W) / weekVisibleDays)}px` }}
-              onScroll={handleScroll}
-            >
-              {/* ─── Sticky Header-Zeile ─── */}
-              <div className={s.weekHeaderRow}>
-                <div className={s.weekCorner} />
-                {allDays.map(date => {
-                  const dk      = toDateKey(date)
-                  const isToday = dk === todayKey
-                  const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions)
+            {/* Spalten-Header */}
+            <div className={s.weekHeaderRow}>
+              <div className={s.weekTimeCorner} />
+              {weekDays.map(date => {
+                const dk       = toDateKey(date)
+                const isToday  = dk === todayKey
+                const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions)
+                return (
+                  <div key={dk} className={[s.weekDayHead, isToday ? s.weekDayHeadToday : ''].join(' ')}>
+                    <span className={s.weekDayHeadName}>
+                      {DAY_SHORT[date.getDay() === 0 ? 6 : date.getDay() - 1]}
+                    </span>
+                    <span className={s.weekDayHeadNum}>{date.getDate()}</span>
+                    {toolDots.length > 0 && (
+                      <div className={s.weekDayToolDots}>
+                        {toolDots.map(dot => (
+                          <span
+                            key={dot.id}
+                            className={s.toolDot}
+                            style={{ background: dot.color }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* PillStrip oben */}
+            <WeekPillStrip
+              days={days}
+              weekDays={weekDays}
+              visibleStart={visibleStart}
+              visibleEnd={visibleEnd}
+              isTop={true}
+              onExpand={expandStart}
+              onShrink={shrinkStart}
+              onExpandTo={expandToStart}
+            />
+
+            {/* Allday-Streifen — Geburtstage + Todos ohne Uhrzeit */}
+            {(showTodos || showTermine) && (
+              <div className={s.weekAlldayRow}>
+                <div className={s.weekAlldayLabel}>Ganzt.</div>
+                {weekDays.map(date => {
+                  const dk          = toDateKey(date)
+                  const bdays       = getBirthdaysForCalendarDate(birthdays, dk)
+                  const alldayTodos = showTodos ? todos.filter(t => t.date === dk && !t.time) : []
                   return (
-                    <div key={dk} className={[s.weekDayHead, isToday ? s.weekDayHeadToday : ''].join(' ')}>
-                      <span className={s.weekDayHeadName}>
-                        {DAY_SHORT[date.getDay() === 0 ? 6 : date.getDay() - 1]}
-                      </span>
-                      <span className={s.weekDayHeadNum}>{date.getDate()}</span>
-                      {toolDots.length > 0 && (
-                        <div className={s.weekDayToolDots}>
-                          {toolDots.map(dot => (
-                            <span key={dot.id} className={s.toolDot} style={{ background: dot.color }} />
-                          ))}
+                    <div key={dk} className={s.weekAlldayCol}>
+                      {bdays.map(b => (
+                        <div
+                          key={b.id}
+                          className={s.weekAlldayBar}
+                          style={{ background: getToolColor('geburtstage', toolColors) }}
+                        >
+                          <span className={s.weekAlldayBarText}>{b.name}</span>
                         </div>
-                      )}
+                      ))}
+                      {alldayTodos.map(t => (
+                        <div
+                          key={t.id}
+                          className={s.weekAlldayBar}
+                          style={{ background: t.color || 'var(--primary)' }}
+                        >
+                          <span className={s.weekAlldayBarText}>{t.text}</span>
+                        </div>
+                      ))}
                     </div>
                   )
                 })}
               </div>
+            )}
 
-              {/* ─── Allday-Streifen ─── */}
-              {(showTodos || showTermine) && (
-                <div className={s.weekAlldayRow}>
-                  <div className={s.weekAlldayLabel}>Ganzt.</div>
-                  {allDays.map(date => {
-                    const dk          = toDateKey(date)
-                    const bdays       = getBirthdaysForCalendarDate(birthdays, dk)
-                    const alldayTodos = showTodos ? todos.filter(t => t.date === dk && !t.time) : []
-                    return (
-                      <div key={dk} className={s.weekAlldayCol}>
-                        {bdays.map(b => (
-                          <div key={b.id} className={s.weekAlldayBar} style={{ background: getToolColor('geburtstage', toolColors) }}>
-                            <span className={s.weekAlldayBarText}>{b.name}</span>
-                          </div>
-                        ))}
-                        {alldayTodos.map(t => (
-                          <div key={t.id} className={s.weekAlldayBar} style={{ background: t.color || 'var(--primary)' }}>
-                            <span className={s.weekAlldayBarText}>{t.text}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* ─── PillStrip oben ─── */}
-              <WeekPillStrip
-                days={days}
-                weekDays={visibleDays}
-                visibleStart={visibleStart}
-                visibleEnd={visibleEnd}
-                isTop={true}
-                onExpand={expandStart}
-                onShrink={shrinkStart}
-                onExpandTo={expandToStart}
-              />
-
-              {/* ─── Gitter: sticky Zeitachse + Tagesspalten ─── */}
-              <div className={s.weekGridBody}>
-                <div className={s.weekTimeAxis}>
-                  {Array.from({ length: (visibleEnd - visibleStart) * 2 }, (_, i) => {
-                    const h      = visibleStart + i * 0.5
-                    const isHour = h === Math.floor(h)
-                    if (!isHour) return <div key={i} className={s.weekTimeLabel} />
-                    return (
-                      <div key={i} className={s.weekTimeLabel}>
-                        {String(Math.floor(h)).padStart(2, '0')}:00
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className={s.weekColsBody}>
-                  {allDays.map(date => {
-                    const dk         = toDateKey(date)
-                    const slots      = days[dk] ?? {}
-                    const isColToday = dk === todayKey
-                    const entries    = Object.entries(slots).filter(([key]) => {
-                      const h = parseFloat(key)
-                      return h >= visibleStart && h < visibleEnd
-                    })
-                    return (
-                      <div
-                        key={dk}
-                        className={[s.weekDayCol, isColToday ? s.weekDayColToday : ''].join(' ')}
-                        style={{ height: colHeight }}
-                        ref={el => { if (el) colRefs.current[dk] = el; else delete colRefs.current[dk] }}
-                        onClick={(e) => {
-                          if (e.target !== e.currentTarget) return
-                          if (dragJustEnded.current) return
-                          const slotIndex = Math.floor(e.nativeEvent.offsetY / SLOT_H)
-                          const h  = visibleStart + slotIndex * 0.5
-                          const hh = String(Math.floor(h)).padStart(2, '0')
-                          const mm = h % 1 ? '30' : '00'
-                          const rect = e.currentTarget.getBoundingClientRect()
-                          const rx = e.clientX - rect.left
-                          const ry = e.clientY - rect.top
-                          const rid = Date.now()
-                          setClickRipple({ dk, x: rx, y: ry, id: rid })
-                          setTimeout(() => setClickRipple(r => r?.id === rid ? null : r), 420)
-                          setQuickCreate({ date: dk, time: `${hh}:${mm}` })
-                        }}
-                      >
-                        {isColToday && nowTop !== null && (
-                          <div className={s.weekNowLine} style={{ top: nowTop }}>
-                            <div className={s.weekNowDot} />
-                          </div>
-                        )}
-                        {clickRipple?.dk === dk && (
-                          <div
-                            className={s.weekClickRipple}
-                            style={{ left: clickRipple.x, top: clickRipple.y }}
-                          />
-                        )}
-                        {entries.map(([key, slot]) => {
-                          const isTodo   = Boolean(slot.todoId)
-                          if (!showTermine && !isTodo) return null
-                          if (!showTodos   &&  isTodo) return null
-                          const slotTodo = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
-                          if (!showTools && slotTodo?.toolId) return null
-                          const top    = slotToTop(key, visibleStart)
-                          const height = slotToHeight(slot.duration)
-                          const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
-                          const mm     = parseFloat(key) % 1 ? '30' : '00'
-                          return (
-                            <div
-                              key={key}
-                              className={[
-                                s.weekSlotBlock,
-                                isTodo ? s.weekSlotTodo : '',
-                                (slot.done || slotTodo?.done) ? s.weekSlotDone : '',
-                                flashingSlotKey === `${dk}-${key}` ? s.weekSlotDoneFlash : '',
-                                (dragging?.dk === dk && dragging?.key === key) ? s.weekSlotDragging : '',
-                              ].join(' ')}
-                              style={{ top, height, '--slot-color': slot.color || '#8B5CF6' }}
-                              onPointerDown={(e) => {
-                                e.stopPropagation()
-                                if (e.button !== 0 && e.pointerType === 'mouse') return
-                                const startX = e.clientX
-                                const startY = e.clientY
-                                let dragStarted = false
-
-                                const onMove = (me) => {
-                                  if (dragStarted) {
-                                    updateDragTarget(me.clientX, me.clientY)
-                                    return
-                                  }
-                                  if (Math.hypot(me.clientX - startX, me.clientY - startY) > 4) {
-                                    dragStarted = true
-                                    const ck = `${dk}-${key}`
-                                    if (clickTimers.current[ck]) {
-                                      clearTimeout(clickTimers.current[ck])
-                                      delete clickTimers.current[ck]
-                                    }
-                                    draggingRef.current = { dk, key, slot }
-                                    setDragging({ dk, key, slot })
-                                  }
-                                }
-
-                                const finish = (commit) => {
-                                  document.removeEventListener('pointermove', onMove)
-                                  document.removeEventListener('pointerup', onUp)
-                                  document.removeEventListener('pointercancel', onCancel)
-                                  if (dragStarted) {
-                                    if (commit && dragTargetRef.current) {
-                                      handleDrop(
-                                        draggingRef.current.dk,
-                                        draggingRef.current.key,
-                                        draggingRef.current.slot,
-                                        dragTargetRef.current.dk,
-                                        dragTargetRef.current.key,
-                                      )
-                                    }
-                                    draggingRef.current = null
-                                    dragTargetRef.current = null
-                                    setDragging(null)
-                                    setDragTarget(null)
-                                    dragJustEnded.current = true
-                                    setTimeout(() => { dragJustEnded.current = false }, 50)
-                                  } else if (commit) {
-                                    handleSlotTap(dk, key, slot, slotTodo)
-                                  }
-                                }
-                                const onUp     = () => finish(true)
-                                const onCancel = () => finish(false)
-
-                                document.addEventListener('pointermove', onMove)
-                                document.addEventListener('pointerup', onUp)
-                                document.addEventListener('pointercancel', onCancel)
-                              }}
-                            >
-                              {height >= 14 && <span className={s.weekSlotName}>{slot.text}</span>}
-                              {height >= 34 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })}
-                </div>
+            {/* Scrollbares Zeitgitter */}
+            <div className={s.weekScrollBody} ref={weekScrollRef}>
+              <div className={s.weekTimeAxis}>
+                {Array.from({ length: (visibleEnd - visibleStart) * 2 }, (_, i) => {
+                  const h      = visibleStart + i * 0.5
+                  const isHour = h === Math.floor(h)
+                  if (!isHour) return <div key={i} className={s.weekTimeLabel} />
+                  return (
+                    <div key={i} className={s.weekTimeLabel}>
+                      {String(Math.floor(h)).padStart(2, '0')}:00
+                    </div>
+                  )
+                })}
               </div>
+              <div className={s.weekColsBody}>
+                {weekDays.map(date => {
+                  const dk    = toDateKey(date)
+                  const slots = days[dk] ?? {}
+                  const isColToday = dk === todayKey
+                  const entries = Object.entries(slots).filter(([key]) => {
+                    const h = parseFloat(key)
+                    return h >= visibleStart && h < visibleEnd
+                  })
+                  return (
+                    <div
+                      key={dk}
+                      className={[s.weekDayCol, isColToday ? s.weekDayColToday : ''].join(' ')}
+                      style={{ height: colHeight }}
+                      ref={el => { if (el) colRefs.current[dk] = el; else delete colRefs.current[dk] }}
+                      onClick={(e) => {
+                        if (e.target !== e.currentTarget) return
+                        if (dragJustEnded.current) return
+                        const slotIndex = Math.floor(e.nativeEvent.offsetY / SLOT_H)
+                        const h  = visibleStart + slotIndex * 0.5
+                        const hh = String(Math.floor(h)).padStart(2, '0')
+                        const mm = h % 1 ? '30' : '00'
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        const rx = e.clientX - rect.left
+                        const ry = e.clientY - rect.top
+                        const rid = Date.now()
+                        setClickRipple({ dk, x: rx, y: ry, id: rid })
+                        setTimeout(() => setClickRipple(r => r?.id === rid ? null : r), 420)
+                        setQuickCreate({ date: dk, time: `${hh}:${mm}` })
+                      }}
+                    >
+                      {isColToday && nowTop !== null && (
+                        <div className={s.weekNowLine} style={{ top: nowTop }}>
+                          <div className={s.weekNowDot} />
+                        </div>
+                      )}
+                      {clickRipple?.dk === dk && (
+                        <div
+                          className={s.weekClickRipple}
+                          style={{ left: clickRipple.x, top: clickRipple.y }}
+                        />
+                      )}
+                      {entries.map(([key, slot]) => {
+                        const isTodo   = Boolean(slot.todoId)
+                        if (!showTermine && !isTodo) return null
+                        if (!showTodos   &&  isTodo) return null
+                        const slotTodo = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
+                        if (!showTools && slotTodo?.toolId) return null
+                        const top    = slotToTop(key, visibleStart)
+                        const height = slotToHeight(slot.duration)
+                        const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
+                        const mm     = parseFloat(key) % 1 ? '30' : '00'
+                        return (
+                          <div
+                            key={key}
+                            className={[
+                              s.weekSlotBlock,
+                              isTodo ? s.weekSlotTodo : '',
+                              (slot.done || slotTodo?.done) ? s.weekSlotDone : '',
+                              flashingSlotKey === `${dk}-${key}` ? s.weekSlotDoneFlash : '',
+                              (dragging?.dk === dk && dragging?.key === key) ? s.weekSlotDragging : '',
+                            ].join(' ')}
+                            style={{ top, height, '--slot-color': slot.color || '#8B5CF6' }}
+                            onPointerDown={(e) => {
+                              e.stopPropagation()
+                              if (e.button !== 0 && e.pointerType === 'mouse') return
+                              const startX = e.clientX
+                              const startY = e.clientY
+                              let dragStarted = false
 
-              {/* ─── PillStrip unten ─── */}
-              <WeekPillStrip
-                days={days}
-                weekDays={visibleDays}
-                visibleStart={visibleStart}
-                visibleEnd={visibleEnd}
-                isTop={false}
-                onExpand={expandEnd}
-                onShrink={shrinkEnd}
-                onExpandTo={expandToEnd}
-              />
+                              const onMove = (me) => {
+                                if (dragStarted) {
+                                  updateDragTarget(me.clientX, me.clientY)
+                                  return
+                                }
+                                if (Math.hypot(me.clientX - startX, me.clientY - startY) > 4) {
+                                  dragStarted = true
+                                  const ck = `${dk}-${key}`
+                                  if (clickTimers.current[ck]) {
+                                    clearTimeout(clickTimers.current[ck])
+                                    delete clickTimers.current[ck]
+                                  }
+                                  draggingRef.current = { dk, key, slot }
+                                  setDragging({ dk, key, slot })
+                                }
+                              }
+
+                              const finish = (commit) => {
+                                document.removeEventListener('pointermove', onMove)
+                                document.removeEventListener('pointerup', onUp)
+                                document.removeEventListener('pointercancel', onCancel)
+                                if (dragStarted) {
+                                  if (commit && dragTargetRef.current) {
+                                    handleDrop(
+                                      draggingRef.current.dk,
+                                      draggingRef.current.key,
+                                      draggingRef.current.slot,
+                                      dragTargetRef.current.dk,
+                                      dragTargetRef.current.key,
+                                    )
+                                  }
+                                  draggingRef.current = null
+                                  dragTargetRef.current = null
+                                  setDragging(null)
+                                  setDragTarget(null)
+                                  dragJustEnded.current = true
+                                  setTimeout(() => { dragJustEnded.current = false }, 50)
+                                } else if (commit) {
+                                  handleSlotTap(dk, key, slot, slotTodo)
+                                }
+                              }
+                              const onUp     = () => finish(true)
+                              const onCancel = () => finish(false)
+
+                              document.addEventListener('pointermove', onMove)
+                              document.addEventListener('pointerup', onUp)
+                              document.addEventListener('pointercancel', onCancel)
+                            }}
+                          >
+                            {height >= 14 && <span className={s.weekSlotName}>{slot.text}</span>}
+                            {height >= 34 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
+
+            {/* PillStrip unten */}
+            <WeekPillStrip
+              days={days}
+              weekDays={weekDays}
+              visibleStart={visibleStart}
+              visibleEnd={visibleEnd}
+              isTop={false}
+              onExpand={expandEnd}
+              onShrink={shrinkEnd}
+              onExpandTo={expandToEnd}
+            />
           </div>
         </>
       )}

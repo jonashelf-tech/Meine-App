@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import {
-  lv, sv, SK,
+  lv, SK,
   exportDataByCategories, importDataByCategories,
   saveAutoBackup, loadAutoBackup, exportDataReadable,
   markOffDeviceBackup,
@@ -71,12 +71,6 @@ export default function TabSettings() {
   const [backupCats, setBackupCats]     = useState({ kalender: true, tools: true, einstellungen: true })
   const [restoreCats, setRestoreCats]   = useState({ kalender: true, tools: true, einstellungen: true })
   const [restoreData, setRestoreData]   = useState(null)
-  const [weekVisibleDays, setWeekVisibleDays] = useState(() => lv(SK.weekVisibleDays, 7))
-
-  const handleSetWeekVisibleDays = (n) => {
-    sv(SK.weekVisibleDays, n)
-    setWeekVisibleDays(n)
-  }
 
   const fileRestoreRef = useRef(null)
   const accentInputRef = useRef(null)
@@ -244,22 +238,6 @@ export default function TabSettings() {
             onChange={e => setAccentColor(e.target.value)}
             className={s.hidden}
           />
-        </div>
-      </section>
-
-      <section className={s.card}>
-        <h3 className={s.cardTitle}>Kalender</h3>
-        <div className={s.rowLabel}>Wochentage sichtbar</div>
-        <div className={s.segmented}>
-          {[3, 4, 5, 6, 7].map(n => (
-            <button
-              key={n}
-              className={[s.seg, weekVisibleDays === n ? s.segActive : ''].join(' ')}
-              onClick={() => handleSetWeekVisibleDays(n)}
-            >
-              {n}
-            </button>
-          ))}
         </div>
       </section>
 
