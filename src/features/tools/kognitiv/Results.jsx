@@ -3,6 +3,8 @@ import { getDelta, getModuleSessions } from './sessionStore'
 import { loadCheckin } from './checkinStore'
 import s from './Results.module.css'
 
+function avg(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0 }
+
 function DotRow({ value }) {
   if (value == null) return null
   return (
@@ -21,9 +23,16 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
 
   const checkin  = session.checkinId ? loadCheckin(session.date) : null
 
-  const taps     = session.taps ?? []
-  const hitTimes = taps.filter(t => t.correct && t.time != null).map(t => t.time)
-  const maxTime  = Math.max(...hitTimes, 1)
+  const taps        = session.taps ?? []
+  const hitTimes    = taps.filter(t => t.correct && t.time != null).map(t => t.time)
+  const maxTime     = Math.max(...hitTimes, 1)
+  const sessionAvg  = avg(hitTimes)
+  const allSessions = getModuleSessions(session.moduleId)
+  const allHitTimes = allSessions.flatMap(s => (s.taps ?? []).filter(t => t.correct && t.time != null).map(t => t.time))
+  const allTimeAvg  = avg(allHitTimes)
+  const chartMax    = Math.max(maxTime, allTimeAvg) * 1.05
+  const sessAvgPct  = chartMax > 0 ? (sessionAvg / chartMax) * 100 : 50
+  const globAvgPct  = chartMax > 0 ? (allTimeAvg / chartMax) * 100 : 50
 
   const deltaLabel = delta !== null
     ? (delta > 0
@@ -119,42 +128,48 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
         </div>
       </div>
 
-      {hitTimes.length > 0 && (
-        <div className={s.tapSection}>
-          <div className={s.tapLabel}>Tipp-Zeiten</div>
-          <div className={s.tapBars}>
-            {taps.map((tap, i) => {
-              const t     = tap.time ?? 0
-              const h     = Math.max(10, Math.min(100, (t / maxTime) * 100))
-              const color = !tap.correct ? 'var(--rose)'
-                : t < maxTime * 0.4 ? 'var(--emerald)'
-                : 'color-mix(in srgb, var(--accent) 55%, transparent)'
-              return <div key={i} className={s.tapBar} style={{ height: `${h}%`, background: color }} />
-            })}
-          </div>
-        </div>
-      )}
-
-      {taps.length > 0 && (
-        <div className={s.tapDetail}>
-          <div className={s.tapDetailLabel}>Jeder Tipp</div>
-          {taps.map((tap, i) => (
-            <div key={i} className={[s.tapRow, !tap.correct ? s.tapRowError : ''].join(' ')}>
-              <div className={s.tapIdx}>{String(tap.target ?? i + 1).padStart(2, '0')}</div>
-              <div className={s.tapBarWrap}>
-                <div
-                  className={s.tapBarInline}
-                  style={{
-                    width: `${Math.max(4, Math.min(100, ((tap.time ?? 0) / maxTime) * 100))}%`,
-                    background: tap.correct ? 'var(--accent)' : 'var(--rose)',
-                  }}
-                />
-              </div>
-              <div className={s.tapTime} style={{ color: tap.correct ? 'var(--text-dim)' : 'var(--rose)' }}>
-                {tap.time != null ? `${tap.time.toFixed(2)}s` : '—'}
-              </div>
+      {hitTimes.length > 1 && (
+        <div className={s.auswertung}>
+          <div className={s.auswLabel}>Auswertung</div>
+          <div className={s.chartArea}>
+            <div className={s.refLine} style={{ bottom: `${sessAvgPct}%` }}>
+              <span className={s.refTag} style={{ color: 'var(--accent)' }}>{sessionAvg.toFixed(2)}s</span>
             </div>
-          ))}
+            {allHitTimes.length > hitTimes.length && (
+              <div className={s.refLineGlob} style={{ bottom: `${globAvgPct}%` }}>
+                <span className={s.refTag} style={{ color: 'var(--text-dim)' }}>{allTimeAvg.toFixed(2)}s</span>
+              </div>
+            )}
+            <div className={s.chartBars}>
+              {taps.map((tap, i) => {
+                const t  = tap.time ?? 0
+                const h  = tap.correct && t > 0 ? Math.max(5, (t / chartMax) * 100) : 5
+                const bg = !tap.correct ? 'var(--rose)'
+                  : t <= sessionAvg ? 'var(--emerald)'
+                  : 'var(--accent)'
+                return (
+                  <div key={i} className={s.chartBar} style={{ height: `${h}%`, background: bg, opacity: !tap.correct ? 0.7 : 1 }} />
+                )
+              })}
+            </div>
+          </div>
+          <div className={s.auswFooter}>
+            <div className={s.auswStat}>
+              <div className={s.auswVal}>{sessionAvg.toFixed(2)}s</div>
+              <div className={s.auswLbl}>Ø Session</div>
+            </div>
+            {allHitTimes.length > hitTimes.length && (
+              <div className={s.auswStat}>
+                <div className={s.auswVal} style={{ color: 'var(--text-dim)' }}>{allTimeAvg.toFixed(2)}s</div>
+                <div className={s.auswLbl}>Ø Gesamt</div>
+              </div>
+            )}
+            <div className={s.auswLegend}>
+              <span className={s.legendDot} style={{ background: 'var(--emerald)' }} />schnell
+              <span className={s.legendDot} style={{ background: 'var(--accent)' }} />normal
+              <span className={s.legendDot} style={{ background: 'var(--rose)' }} />Fehler
+            </div>
+          </div>
         </div>
       )}
 

@@ -102,48 +102,45 @@ export const DEFAULT_ROOMS = [
   {
     id: 'kueche', name: 'Küche', icon: 'kitchen', priority: 1,
     tasks: [
-      { id: 'k-1', text: 'Abwasch / Spülmaschine',       duration: 10, freq: 'daily',  customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'k-2', text: 'Müll & Altglas rausbringen',   duration:  5, freq: 'weekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'k-3', text: 'Arbeitsflächen & Herd wischen', duration: 10, freq: 'weekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'k-4', text: 'Boden wischen',                duration: 10, freq: 'weekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'k-1', text: 'Abwasch / Spülmaschine',        duration: 10, freq: 'daily',  customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
+      { id: 'k-2', text: 'Müll & Altglas rausbringen',    duration:  5, freq: 'weekly', customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
+      { id: 'k-3', text: 'Arbeitsflächen & Herd wischen', duration: 10, freq: 'weekly', customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'bad', name: 'Bad', icon: 'bath', priority: 1,
     tasks: [
-      { id: 'b-1', text: 'WC & Waschbecken', duration: 10, freq: 'weekly', customDays: null,  lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'b-2', text: 'Dusche / Wanne',   duration: 15, freq: 'custom', customDays: 14,    lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 'b-3', text: 'Boden wischen',    duration:  5, freq: 'weekly', customDays: null,  lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 'b-1', text: 'WC & Waschbecken', duration: 10, freq: 'weekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
+      { id: 'b-2', text: 'Dusche / Wanne',   duration: 15, freq: 'custom', customDays: 14,   lowEnergy: false, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'waesche', name: 'Wäsche', icon: 'washer', priority: 1,
     tasks: [
-      { id: 'l-1', text: 'Waschen & aufhängen',         duration: 10, freq: 'biweekly', customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
-      { id: 'l-2', text: 'Zusammenlegen & wegräumen',   duration: 15, freq: 'weekly',   customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
+      { id: 'l-1', text: 'Waschen & aufhängen',       duration: 10, freq: 'biweekly', customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
+      { id: 'l-2', text: 'Zusammenlegen & wegräumen', duration: 15, freq: 'weekly',   customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'wohnzimmer', name: 'Wohnzimmer', icon: 'sofa', priority: 2,
     tasks: [
-      { id: 'w-1', text: 'Flächen freiräumen / aufräumen', duration: 10, freq: 'biweekly', customDays: null, lowEnergy: true,  lastDone: null, subItems: [] },
-      { id: 'w-2', text: 'Staubsaugen',                    duration: 15, freq: 'weekly',   customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'w-1', text: 'Flächen freiräumen / aufräumen', duration: 10, freq: 'biweekly', customDays: null, lowEnergy: true, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'schlafzimmer', name: 'Schlafzimmer', icon: 'bed', priority: 2,
     tasks: [
-      { id: 's-1', text: 'Bettwäsche wechseln', duration: 10, freq: 'custom', customDays: 14,   lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 's-2', text: 'Staubsaugen',         duration: 10, freq: 'weekly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 's-1', text: 'Bettwäsche wechseln', duration: 10, freq: 'custom', customDays: 14, lowEnergy: false, lastDone: null, subItems: [] },
     ],
   },
   {
     id: 'grossputz', name: 'Großputz', icon: 'sparkle', priority: 3,
     tasks: [
-      { id: 'g-1', text: 'Staub wischen (Regale & Flächen)', duration: 15, freq: 'monthly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 'g-2', text: 'Böden wischen (Wohn-/Schlafräume)', duration: 20, freq: 'monthly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 'g-3', text: 'Mülleimer auswaschen',             duration:  5, freq: 'custom',  customDays: 60,   lowEnergy: false, lastDone: null, subItems: [] },
-      { id: 'g-4', text: 'Fenster putzen',                   duration: 25, freq: 'custom',  customDays: 90,   lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-1', text: 'Saugen (ganze Wohnung)',         duration: 20, freq: 'custom',  customDays:  4,   lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-2', text: 'Böden wischen (ganze Wohnung)',  duration: 25, freq: 'custom',  customDays: 14,   lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-3', text: 'Staub wischen (Regale & Flächen)', duration: 15, freq: 'monthly', customDays: null, lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-4', text: 'Mülleimer auswaschen',           duration:  5, freq: 'custom',  customDays: 60,   lowEnergy: false, lastDone: null, subItems: [] },
+      { id: 'g-5', text: 'Fenster putzen',                 duration: 25, freq: 'custom',  customDays: 90,   lowEnergy: false, lastDone: null, subItems: [] },
     ],
   },
 ]

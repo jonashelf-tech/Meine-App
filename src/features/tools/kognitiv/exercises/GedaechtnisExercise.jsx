@@ -124,7 +124,7 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
   }, [phase, userInput, roundIdx, finishSession, playSequence])
 
   return (
-    <ExerciseShell moduleId="gedaechtnis" progress={roundIdx} total={BASE_ROUNDS.length} onAbort={onAbort}>
+    <ExerciseShell moduleId="gedaechtnis" hideProgress onAbort={onAbort}>
       <div className={s.phaseLabel}>
         {phase === 'show' ? 'Merken' : 'Eingeben'}
       </div>

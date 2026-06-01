@@ -1,4 +1,4 @@
-﻿.page {
+.page {
   display: flex;
   flex-direction: column;
   padding-bottom: 40px;
@@ -100,15 +100,6 @@
   color: var(--primary);
 }
 
-.iconPickerLabel {
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-top: 4px;
-}
-
 .roomName {
   font-family: var(--font);
   font-size: 0.87rem;
@@ -119,21 +110,85 @@
 
 .roomNameInput {
   flex: 1;
-  background: var(--surface-low);
-  border: 1px solid var(--primary);
-  border-radius: 6px;
-  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--primary);
   font-family: var(--font);
   font-size: 0.87rem;
   font-weight: 700;
   color: var(--text);
   outline: none;
+  padding: 1px 2px;
+  min-width: 0;
+}
+
+.statusBadge {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.editBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editBtn:hover {
+  color: var(--primary);
+}
+
+.editBtnOn {
+  color: var(--primary);
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.chevron {
+  color: var(--text-dim);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Room settings panel ── */
+.roomSettingsPanel {
+  border-top: 1px solid var(--border);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  background: var(--surface-low);
+}
+
+.setRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.setLabel {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  width: 64px;
+  flex-shrink: 0;
+  padding-top: 8px;
 }
 
 .prioBtnGroup {
   display: flex;
   gap: 3px;
-  flex-shrink: 0;
 }
 
 .prioBtn {
@@ -155,45 +210,17 @@
   color: var(--primary);
 }
 
-.statusBadge {
-  font-family: var(--font);
-  font-size: 0.68rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.editBtn {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  border-radius: 4px;
-  transition: color 0.15s;
-  flex-shrink: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.editBtn:hover {
-  color: var(--primary);
-}
-
-.chevron {
-  color: var(--text-dim);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-
 /* ── Room body ── */
 .roomBody {
   border-top: 1px solid var(--border);
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+}
+
+.roomBodyAfterSettings {
+  border-top: none;
 }
 
 .emptyRoom {
@@ -214,10 +241,29 @@
   pointer-events: none;
 }
 
-.taskViewContent {
+/* Always-visible task view */
+.taskView {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
+  padding: 8px 6px;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  transition: background 0.15s;
+}
+
+.taskView:hover {
+  background: var(--surface-low);
+}
+
+.taskViewEditing {
+  background: var(--surface-low);
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  cursor: default;
+}
+
+.taskViewEditing:hover {
+  background: var(--surface-low);
 }
 
 .taskTop {
@@ -232,10 +278,26 @@
   color: var(--text);
   flex: 1;
   line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Inline name input — same visual weight as the text */
+.taskNameInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--primary);
+  font-family: var(--font);
+  font-size: 0.83rem;
+  color: var(--text);
+  outline: none;
+  padding: 1px 2px;
+  min-width: 0;
 }
 
 .lowBadge {
-  margin-left: 5px;
   display: inline-flex;
   align-items: center;
   vertical-align: middle;
@@ -248,6 +310,24 @@
   font-weight: 600;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+.editHintIcon {
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.taskView:hover .editHintIcon {
+  opacity: 1;
+}
+
+.editHintIconOn {
+  opacity: 1;
+  color: var(--primary);
 }
 
 .doneBtn {
@@ -284,112 +364,167 @@
   transition: background 0.3s;
 }
 
-/* ── Task edit mode ── */
-.taskEditContent {
+/* ── Task edit drawer ── */
+.taskEditDrawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+}
+
+.taskEditDrawerOpen {
+  grid-template-rows: 1fr;
+}
+
+.taskEditInner {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px;
-  background: var(--surface-low);
-  border-radius: var(--r-sm);
+  gap: 9px;
+  padding: 0 6px;
 }
 
-.taskEditInput {
-  background: var(--surface-low);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 10px;
+.editDivider {
+  height: 1px;
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.fieldLabel {
   font-family: var(--font);
-  font-size: 0.83rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+/* Frequency chips */
+.freqChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.freqChip {
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.freqChip:hover {
   color: var(--text);
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-.taskEditInput:focus {
+.freqChipOn {
+  background: rgba(139, 92, 246, 0.18);
   border-color: var(--primary);
+  color: var(--primary);
 }
 
-.taskEditControls {
+/* Custom days input */
+.customDaysRow {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.taskSelect {
-  flex: 1;
-  background: var(--surface-low);
+.customDaysInput {
+  width: 60px;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 5px 8px;
   font-family: var(--font);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text);
   outline: none;
-  cursor: pointer;
+  text-align: center;
 }
 
-.lowToggle {
-  cursor: pointer;
-  flex-shrink: 0;
+.customDaysInput:focus {
+  border-color: var(--primary);
 }
 
-.hiddenCheck {
-  display: none;
+/* Effort toggle */
+.effortRow {
+  display: flex;
+  gap: 6px;
 }
 
-.lowPill {
-  font-family: var(--font);
-  font-size: 0.72rem;
-  padding: 4px 8px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  transition: all 0.15s;
-  white-space: nowrap;
+.effortBtn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.lowPillActive {
+.effortBtn:hover {
+  color: var(--text);
+}
+
+.effortBtnOn {
   background: rgba(139, 92, 246, 0.15);
   border-color: var(--primary);
   color: var(--primary);
 }
 
-.deleteTaskBtn {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  font-size: 0.82rem;
-  padding: 4px 6px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  transition: color 0.15s;
-  -webkit-tap-highlight-color: transparent;
+/* Drawer footer */
+.editFoot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.deleteTaskBtn:hover {
-  color: var(--rose);
-}
-
-.resetBtn {
+.linkBtn {
   background: none;
   border: none;
   color: var(--text-dim);
   font-family: var(--font);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   cursor: pointer;
-  padding: 2px 0;
-  text-align: left;
-  transition: color 0.15s;
+  padding: 4px 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.resetBtn:hover {
+.linkBtn:hover {
   color: var(--text);
+}
+
+.linkBtnDanger:hover {
+  color: var(--rose);
+}
+
+.doneEditBtn {
+  background: var(--primary);
+  border: none;
+  border-radius: 7px;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 0.77rem;
+  font-weight: 700;
+  padding: 7px 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ── Hidden tasks hint ── */
@@ -398,13 +533,16 @@
   font-size: 0.68rem;
   color: var(--text-dim);
   opacity: 0.6;
-  padding-top: 2px;
+  padding: 2px 6px;
 }
 
-/* ── Add task row ── */
+/* ── Add task row (only shown when room editing) ── */
 .addTaskRow {
   display: flex;
   gap: 6px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
 }
 
 .addTaskInput {
@@ -445,6 +583,7 @@
   font-size: 0.78rem;
   padding: 7px 12px;
   cursor: pointer;
+  align-self: flex-start;
   transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -504,6 +643,7 @@
   cursor: pointer;
   transition: border-color 0.15s;
 }
+
 .toolResetConfirm {
   border-color: var(--rose);
   background: rgba(251,113,133,0.08);

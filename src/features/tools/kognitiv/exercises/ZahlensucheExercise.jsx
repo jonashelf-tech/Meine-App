@@ -23,8 +23,17 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
   const [cells]  = useState(() => shuffle(numbers))
 
   const [nextIdx,  setNextIdx]  = useState(0)
-  const [doneSet,  setDoneSet]  = useState(new Set())
+  const [flashes,  setFlashes]  = useState({}) // { [num]: 'ok' | 'err' }
   const [feedback, setFeedback] = useState(null) // 'ok' | 'err' | null
+
+  const flashCell = useCallback((num, type) => {
+    setFlashes(prev => ({ ...prev, [num]: type }))
+    setTimeout(() => setFlashes(prev => {
+      const next = { ...prev }
+      delete next[num]
+      return next
+    }), 350)
+  }, [])
 
   const tapsRef     = useRef([])
   const startRef    = useRef(Date.now())
@@ -43,7 +52,7 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
     if (correct) {
       setFeedback('ok')
       setTimeout(() => setFeedback(null), 350)
-      setDoneSet(prev => new Set([...prev, num]))
+      flashCell(num, 'ok')
       const newIdx = nextIdx + 1
       setNextIdx(newIdx)
       if (newIdx >= total) {
@@ -63,8 +72,9 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
     } else {
       setFeedback('err')
       setTimeout(() => setFeedback(null), 350)
+      flashCell(num, 'err')
     }
-  }, [nextIdx, sequence, total, variant, onDone])
+  }, [nextIdx, sequence, total, variant, onDone, flashCell])
 
   const fmt = (n) => String(n).padStart(2, '0')
   const nextTarget = sequence[nextIdx]
@@ -82,13 +92,12 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
       <div className={s.gridWrap}>
         <div className={s.grid} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
           {cells.map(num => {
-            const isDone = doneSet.has(num)
+            const flash = flashes[num]
             return (
               <button
                 key={num}
-                className={[s.cell, isDone ? s.done : ''].join(' ')}
-                onClick={() => !isDone && handleTap(num)}
-                disabled={isDone}
+                className={[s.cell, flash === 'ok' ? s.flashOk : flash === 'err' ? s.flashErr : ''].join(' ')}
+                onClick={() => handleTap(num)}
               >
                 {fmt(num)}
               </button>

@@ -497,6 +497,10 @@ export default function TabHeute() {
           onRemoveSlot={handleRemoveSlot}
           onExpandUpTo={handleExpandUpTo}
           onExpandDownTo={handleExpandDownTo}
+          onExpandUp={handleExpandUp}
+          onExpandDown={handleExpandDown}
+          onRemoveHour={handleRemoveHour}
+          onShiftAll={handleShiftAll}
           onToggleLock={handleToggleLock}
           onFokusMode={() => setHeuteModus('fokus')}
           registerHalf={registerHalf}

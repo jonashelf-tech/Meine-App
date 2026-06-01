@@ -76,7 +76,7 @@ export default function GeteilteExercise({ variant, onDone, onAbort }) {
     if (Date.now() - startTimeRef.current >= DURATION_MS) { finish(); return }
 
     const newCircles   = Array(NUM_CIRCLES).fill(false).map(() => Math.random() < 0.22)
-    const visualTarget = newCircles.some(c => c)
+    const visualTarget = newCircles.filter(c => c).length === 1
 
     const prev = lastToneRef.current
     let tone

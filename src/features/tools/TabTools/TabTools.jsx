@@ -17,7 +17,7 @@ const SWATCHES = [
 const allToolsSorted = [...TOOL_REGISTRY].sort((a, b) => a.name.localeCompare(b.name, 'de'))
 
 export default function TabTools() {
-  const [showAll, setShowAll] = useState(true)
+  const [showAll, setShowAll] = useState(false)
   const { activeTools, toggleTool, setCurrentTab, setToolColors, toolColors } = useAppStore()
 
   const [dragId,           setDragId]           = useState(null)

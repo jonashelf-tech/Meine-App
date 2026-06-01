@@ -3,7 +3,7 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { useAppStore } from '../../../store'
 import { ToolIcon } from '../toolRegistry'
 import { MODULE_CONFIG } from './moduleConfig'
-import { isDoneToday, saveSession, markPracticeUsed } from './sessionStore'
+import { isDoneToday, saveSession, markPracticeUsed, seedDemoSessions } from './sessionStore'
 import { isCheckinDoneToday } from './checkinStore'
 import CheckinModal     from './CheckinModal'
 import KognitivSettings from './KognitivSettings'
@@ -29,6 +29,7 @@ import s from './TabKognitiv.module.css'
 // 'briefing' | 'done-today' | 'exercise' | 'results' | 'module-detail' | 'session-detail'
 
 export default function TabKognitiv({ onBack, onExercising }) {
+  useEffect(() => { seedDemoSessions() }, [])
   const [tab, setTab] = useState('modules')
   const [nav, setNav] = useState(null)
   const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null

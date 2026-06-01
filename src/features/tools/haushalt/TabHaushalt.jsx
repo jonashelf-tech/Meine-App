@@ -8,7 +8,6 @@ import {
   markTaskDone, resetTaskDone,
   addRoom, updateRoom, deleteRoom,
   addTask, updateTask, deleteTask,
-  resetToDefaults,
 } from './haushaltData'
 import { Glyph, ROOM_GLYPHS } from '../_shared/glyphs'
 import GlyphPicker from '../_shared/GlyphPicker'
@@ -113,7 +112,7 @@ function SegmentBar({ task }) {
 // ─── Task Row ─────────────────────────────────────────────
 const FREQ_OPTIONS = ['daily', 'biweekly', 'weekly', 'monthly', 'custom']
 
-function TaskRow({ task, editing, dimmed, onDone, onReset, onUpdate, onDelete }) {
+function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdate, onDelete }) {
   const { color, overdue } = taskSegments(task)
   const since = (() => {
     if (!task.lastDone) return 'noch nie erledigt'
@@ -129,57 +128,93 @@ function TaskRow({ task, editing, dimmed, onDone, onReset, onUpdate, onDelete })
 
   return (
     <div className={[s.taskRow, dimmed ? s.taskRowDimmed : ''].join(' ')}>
-      {editing ? (
-        <div className={s.taskEditContent}>
-          <input
-            className={s.taskEditInput}
-            value={task.text}
-            onChange={e => onUpdate({ text: e.target.value })}
-          />
-          <div className={s.taskEditControls}>
-            <select
-              className={s.taskSelect}
-              value={task.freq}
-              onChange={e => onUpdate({ freq: e.target.value })}
-            >
-              {FREQ_OPTIONS.map(f => <option key={f} value={f}>{FREQ_LABELS[f]}</option>)}
-            </select>
-            <label className={s.lowToggle}>
-              <input
-                type="checkbox"
-                checked={!!task.lowEnergy}
-                onChange={e => onUpdate({ lowEnergy: e.target.checked })}
-                className={s.hiddenCheck}
-              />
-              <span className={[s.lowPill, task.lowEnergy ? s.lowPillActive : ''].join(' ')}>
-                <BatteryLowIcon /> Low
-              </span>
-            </label>
-            <button className={s.deleteTaskBtn} onClick={onDelete}>✕</button>
-          </div>
-          {editing && (
-            <button className={s.resetBtn} onClick={onReset}>↺ Reset</button>
-          )}
-        </div>
-      ) : (
-        <div className={s.taskViewContent}>
-          <div className={s.taskTop}>
+      {/* Always-visible view — click toggles drawer */}
+      <div
+        className={[s.taskView, editing ? s.taskViewEditing : ''].join(' ')}
+        onClick={onToggleEdit}
+      >
+        <div className={s.taskTop}>
+          {editing ? (
+            <input
+              className={s.taskNameInput}
+              value={task.text}
+              onChange={e => onUpdate({ text: e.target.value })}
+              onClick={e => e.stopPropagation()}
+            />
+          ) : (
             <span className={s.taskText}>
               {task.text}
               {task.lowEnergy && <span className={s.lowBadge}><BatteryLowIcon /></span>}
             </span>
-            <span className={s.taskDue} style={{ color: overdue ? 'var(--rose)' : color }}>
-              {since}
-            </span>
-            {!dimmed && (
-              <button className={s.doneBtn} onClick={onDone} title="Erledigt">
-                <CheckIcon />
-              </button>
-            )}
-          </div>
-          <SegmentBar task={task} />
+          )}
+          <span className={s.taskDue} style={{ color: overdue ? 'var(--rose)' : color }}>
+            {since}
+          </span>
+          <span className={[s.editHintIcon, editing ? s.editHintIconOn : ''].join(' ')}>
+            <PencilIcon />
+          </span>
+          {!dimmed && (
+            <button className={s.doneBtn} onClick={e => { e.stopPropagation(); onDone() }} title="Erledigt">
+              <CheckIcon />
+            </button>
+          )}
         </div>
-      )}
+        <SegmentBar task={task} />
+      </div>
+
+      {/* Expandable edit drawer */}
+      <div className={[s.taskEditDrawer, editing ? s.taskEditDrawerOpen : ''].join(' ')}>
+        <div className={s.taskEditInner} style={editing ? { padding: '10px 6px 10px' } : {}}>
+          <div className={s.editDivider} />
+          <span className={s.fieldLabel}>Wie oft?</span>
+          <div className={s.freqChips}>
+            {FREQ_OPTIONS.map(f => (
+              <button
+                key={f}
+                className={[s.freqChip, task.freq === f ? s.freqChipOn : ''].join(' ')}
+                onClick={() => onUpdate({ freq: f })}
+              >
+                {FREQ_LABELS[f]}
+              </button>
+            ))}
+          </div>
+          {task.freq === 'custom' && (
+            <div className={s.customDaysRow}>
+              <span className={s.fieldLabel}>Alle</span>
+              <input
+                type="number"
+                className={s.customDaysInput}
+                value={task.customDays ?? 7}
+                min={1}
+                onChange={e => onUpdate({ customDays: Number(e.target.value) })}
+                onClick={e => e.stopPropagation()}
+              />
+              <span className={s.fieldLabel}>Tage</span>
+            </div>
+          )}
+          <span className={s.fieldLabel}>Aufwand</span>
+          <div className={s.effortRow}>
+            <button
+              className={[s.effortBtn, !task.lowEnergy ? s.effortBtnOn : ''].join(' ')}
+              onClick={() => onUpdate({ lowEnergy: false })}
+            >
+              <BoltIcon /> Normal
+            </button>
+            <button
+              className={[s.effortBtn, task.lowEnergy ? s.effortBtnOn : ''].join(' ')}
+              onClick={() => onUpdate({ lowEnergy: true })}
+            >
+              <BatteryLowIcon /> Low Energy
+            </button>
+          </div>
+          <div className={s.editFoot}>
+            <button className={s.linkBtn} onClick={onReset}>↺ Zurücksetzen</button>
+            <button className={[s.linkBtn, s.linkBtnDanger].join(' ')} onClick={onDelete}>✕ Löschen</button>
+            <span style={{ flex: 1 }} />
+            <button className={s.doneEditBtn} onClick={onToggleEdit}>Fertig</button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -189,6 +224,7 @@ const PRIO_LABELS = { 1: 'P1', 2: 'P2', 3: 'P3' }
 
 function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTaskDone, onTaskReset, onUpdateTask, onAddTask, onDeleteTask, onUpdateRoom, onDeleteRoom }) {
   const [newTaskText, setNewTaskText] = useState('')
+  const [editTaskId, setEditTaskId]   = useState(null)
   const status = roomStatus(room)
   const sm     = STATUS_META[status]
 
@@ -203,19 +239,48 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
     setNewTaskText('')
   }
 
+  const toggleTaskEdit = (taskId) => {
+    setEditTaskId(prev => prev === taskId ? null : taskId)
+  }
+
   return (
     <div className={s.roomCard}>
       <div className={s.roomHeader} onClick={onToggle}>
         <span className={s.roomIcon}><Glyph name={room.icon} size={20} /></span>
         {editing ? (
-          <>
-            <input
-              className={s.roomNameInput}
-              value={room.name}
-              onChange={e => onUpdateRoom({ name: e.target.value })}
-              onClick={e => e.stopPropagation()}
+          <input
+            className={s.roomNameInput}
+            value={room.name}
+            onChange={e => onUpdateRoom({ name: e.target.value })}
+            onClick={e => e.stopPropagation()}
+          />
+        ) : (
+          <span className={s.roomName}>{room.name}</span>
+        )}
+        <span className={s.statusBadge} style={{ color: sm.color }}>{sm.label}</span>
+        <button
+          className={[s.editBtn, editing ? s.editBtnOn : ''].join(' ')}
+          onClick={e => { e.stopPropagation(); onToggleEdit() }}
+          title={editing ? 'Fertig' : 'Bearbeiten'}
+        >
+          {editing ? <CheckIcon /> : <PencilIcon />}
+        </button>
+        <span className={s.chevron}><ChevronIcon open={open} /></span>
+      </div>
+
+      {editing && (
+        <div className={s.roomSettingsPanel}>
+          <div className={s.setRow}>
+            <span className={s.setLabel}>Icon</span>
+            <GlyphPicker
+              glyphs={ROOM_GLYPHS}
+              value={room.icon}
+              onChange={name => onUpdateRoom({ icon: name })}
             />
-            <div className={s.prioBtnGroup} onClick={e => e.stopPropagation()}>
+          </div>
+          <div className={s.setRow}>
+            <span className={s.setLabel}>Priorität</span>
+            <div className={s.prioBtnGroup}>
               {[1, 2, 3].map(p => (
                 <button
                   key={p}
@@ -226,25 +291,17 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
                 </button>
               ))}
             </div>
-          </>
-        ) : (
-          <span className={s.roomName}>{room.name}</span>
-        )}
-        <span className={s.statusBadge} style={{ color: sm.color }}>{sm.label}</span>
-        <button
-          className={s.editBtn}
-          onClick={e => { e.stopPropagation(); onToggleEdit() }}
-          title={editing ? 'Fertig' : 'Bearbeiten'}
-        >
-          {editing ? <CheckIcon /> : <PencilIcon />}
-        </button>
-        <span className={s.chevron}><ChevronIcon open={open} /></span>
-      </div>
+          </div>
+          <button className={s.deleteRoomBtn} onClick={onDeleteRoom}>
+            Raum löschen
+          </button>
+        </div>
+      )}
 
       {open && (
-        <div className={s.roomBody}>
+        <div className={[s.roomBody, editing ? s.roomBodyAfterSettings : ''].join(' ')}>
           {room.tasks.length === 0 && !editing && (
-            <div className={s.emptyRoom}>Keine Tasks — Stift-Icon zum Hinzufügen</div>
+            <div className={s.emptyRoom}>Keine Tasks — Stift zum Hinzufügen</div>
           )}
 
           {room.tasks.map(task => {
@@ -253,50 +310,37 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
               <TaskRow
                 key={task.id}
                 task={task}
-                editing={editing}
+                editing={editTaskId === task.id}
                 dimmed={dimmed}
+                onToggleEdit={() => toggleTaskEdit(task.id)}
                 onDone={() => onTaskDone(task.id)}
                 onReset={() => onTaskReset(task.id)}
                 onUpdate={patch => onUpdateTask(task.id, patch)}
-                onDelete={() => onDeleteTask(task.id)}
+                onDelete={() => { onDeleteTask(task.id); if (editTaskId === task.id) setEditTaskId(null) }}
               />
             )
           })}
 
-          {/* Hidden tasks indicator in low energy mode */}
-          {!editing && energie === 'low' && (
-            (() => {
-              const hidden = room.tasks.filter(t => !t.lowEnergy).length
-              return hidden > 0 ? (
-                <div className={s.hiddenHint}>
-                  {hidden} {hidden === 1 ? 'Task' : 'Tasks'} ausgeblendet — Normal für alle
-                </div>
-              ) : null
-            })()
-          )}
+          {!editing && energie === 'low' && (() => {
+            const hidden = room.tasks.filter(t => !t.lowEnergy).length
+            return hidden > 0 ? (
+              <div className={s.hiddenHint}>
+                {hidden} {hidden === 1 ? 'Task' : 'Tasks'} ausgeblendet — Normal für alle
+              </div>
+            ) : null
+          })()}
 
           {editing && (
-            <>
-              <div className={s.addTaskRow}>
-                <input
-                  className={s.addTaskInput}
-                  placeholder="Neue Aufgabe…"
-                  value={newTaskText}
-                  onChange={e => setNewTaskText(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleAddTask()}
-                />
-                <button className={s.addTaskBtn} onClick={handleAddTask}>+</button>
-              </div>
-              <span className={s.iconPickerLabel}>Raum-Icon</span>
-              <GlyphPicker
-                glyphs={ROOM_GLYPHS}
-                value={room.icon}
-                onChange={name => onUpdateRoom({ icon: name })}
+            <div className={s.addTaskRow}>
+              <input
+                className={s.addTaskInput}
+                placeholder="Neue Aufgabe…"
+                value={newTaskText}
+                onChange={e => setNewTaskText(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAddTask()}
               />
-              <button className={s.deleteRoomBtn} onClick={onDeleteRoom}>
-                Raum löschen
-              </button>
-            </>
+              <button className={s.addTaskBtn} onClick={handleAddTask}>+</button>
+            </div>
           )}
         </div>
       )}
@@ -329,17 +373,22 @@ export default function TabHaushalt({ onBack }) {
     sv(SK.haushaltEnergie, val)
   }
 
-  const toggleRoom  = (id) => setOpenRooms(p => ({ ...p, [id]: !p[id] }))
-  const toggleEdit  = (id) => setEditRooms(p => ({ ...p, [id]: !p[id] }))
+  const toggleRoom = (id) => setOpenRooms(p => ({ ...p, [id]: !p[id] }))
+
+  const toggleEdit = (id) => {
+    const isCurrentlyOpen = editRooms[id]
+    setEditRooms(p => ({ ...p, [id]: !p[id] }))
+    // open room when entering edit mode so tasks + add row are visible
+    if (!isCurrentlyOpen) setOpenRooms(p => ({ ...p, [id]: true }))
+  }
 
   const handleAddRoom = () => {
-    const room = { id: crypto.randomUUID(), name: 'Neuer Raum', icon: 'home', tasks: [] }
+    const room = { id: crypto.randomUUID(), name: 'Neuer Raum', icon: 'home', tasks: [], priority: 3 }
     updateConfig(addRoom(config, room))
     setOpenRooms(p => ({ ...p, [room.id]: true }))
     setEditRooms(p => ({ ...p, [room.id]: true }))
   }
 
-  // Show briefing overlay if not done
   if (!config.briefingDone) {
     return <HaushaltBriefing config={config} onComplete={updateConfig} onBack={onBack} />
   }
@@ -350,7 +399,6 @@ export default function TabHaushalt({ onBack }) {
     <div className={s.page}>
       <ToolHeader onBack={onBack} icon={<HausIcon />} eyebrow="Tool" title="Haushalt" />
 
-      {/* Energie selector */}
       <div className={s.energieStrip}>
         <button
           className={[s.energieBtn, energie === 'normal' ? s.energieBtnActive : ''].join(' ')}
@@ -366,10 +414,8 @@ export default function TabHaushalt({ onBack }) {
         </button>
       </div>
 
-      {/* Ring score */}
       <RingScore score={score} />
 
-      {/* Room cards */}
       <div className={s.rooms}>
         {config.rooms.map(room => (
           <RaumKarte
@@ -399,7 +445,6 @@ export default function TabHaushalt({ onBack }) {
         </button>
       </div>
 
-      {/* Setup restart */}
       <button
         className={s.setupLink}
         onClick={() => updateConfig({ ...config, briefingDone: false })}

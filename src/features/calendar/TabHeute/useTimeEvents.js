@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { todayKey } from '../../../utils'
 import { sv, lv, SK } from '../../../storage'
-import { createBlock } from '../../todos/Block'
+import { createBlock, isFaelligkeit } from '../../todos/Block'
 import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '../../tools/haushalt/haushaltData'
 
 /**
@@ -46,6 +46,22 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
             type:    slot.todoId ? 'todo' : 'text',
             todoId:  slot.todoId || null,
           })
+        })
+      })
+
+      // Überfällige Fälligkeiten (Todo mit Datum, ohne Uhrzeit) ergänzen.
+      // Bereits als Slot verplante Todos nicht doppelt aufnehmen.
+      const placedTodoIds = new Set(collected.map(c => c.todoId).filter(Boolean))
+      todos.forEach(t => {
+        if (t.done || !isFaelligkeit(t) || t.date >= today || placedTodoIds.has(t.id)) return
+        collected.push({
+          id:      `faellig|${t.id}`,
+          dateKey: t.date,
+          slotKey: null,
+          text:    t.text,
+          color:   t.color || '#8B5CF6',
+          type:    'faellig',
+          todoId:  t.id,
         })
       })
 
@@ -116,7 +132,7 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
   // ── Erledigt ─────────────────────────────────────────────
   const handleDone = useCallback((selectedIds) => {
     const sel     = items.filter(i => selectedIds.has(i.id))
-    const todoIds = new Set(sel.filter(i => i.type === 'todo').map(i => i.todoId))
+    const todoIds = new Set(sel.filter(i => i.type === 'todo' || i.type === 'faellig').map(i => i.todoId))
 
     if (todoIds.size > 0) {
       const haushaltIds = todos
@@ -134,7 +150,7 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
           : t
       ))
     }
-    applyDaysUpdates(sel.map(i => ({
+    applyDaysUpdates(sel.filter(i => i.slotKey != null).map(i => ({
       dateKey: i.dateKey, slotKey: i.slotKey,
       patch: { done: true, reviewed: true },
     })))
@@ -143,26 +159,35 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
 
   // ── Ignorieren ───────────────────────────────────────────
   const handleIgnore = useCallback((selectedIds) => {
-    const sel   = items.filter(i => selectedIds.has(i.id))
-    const patch = variantRef.current === 'same-day'
-      ? { ignored: true }                      // kommt bei new-day wieder
-      : { ignored: false, reviewed: true }     // endgültig weg
-
-    applyDaysUpdates(sel.map(i => ({
-      dateKey: i.dateKey, slotKey: i.slotKey, patch,
-    })))
+    // Ignorieren = nur für heute weg. Am neuen Tag wieder abgefragt.
+    // same-day: ignored=true (verschwindet aus Variante 1, kommt bei new-day wieder).
+    // new-day: nichts persistieren — der Eintrag bleibt offen und wird beim
+    //          nächsten Tageswechsel erneut eingesammelt.
+    if (variantRef.current === 'same-day') {
+      const sel = items.filter(i => selectedIds.has(i.id) && i.slotKey != null)
+      applyDaysUpdates(sel.map(i => ({
+        dateKey: i.dateKey, slotKey: i.slotKey, patch: { ignored: true },
+      })))
+    }
     finish(items.filter(i => !selectedIds.has(i.id)))
   }, [items, applyDaysUpdates, finish])
 
   // ── Zurück in Pool ───────────────────────────────────────
   const handleMoveToPool = useCallback((selectedIds) => {
-    const sel       = items.filter(i => selectedIds.has(i.id))
-    const textItems = sel.filter(i => i.type === 'text')
-    const todoIds   = new Set(sel.filter(i => i.type === 'todo').map(i => i.todoId))
-    const newTodos  = textItems.map(i => createBlock({ text: i.text, color: i.color, priority: 3 }))
+    const sel        = items.filter(i => selectedIds.has(i.id))
+    const textItems  = sel.filter(i => i.type === 'text')
+    const faelligIds = new Set(sel.filter(i => i.type === 'faellig').map(i => i.todoId))
+    const newTodos   = textItems.map(i => createBlock({ text: i.text, color: i.color, priority: 3 }))
 
     if (newTodos.length > 0) {
       setTodos(prev => [...prev, ...newTodos])
+    }
+
+    // Fälligkeiten: Datum entfernen → bleiben als normales Pool-Todo
+    if (faelligIds.size > 0) {
+      setTodos(prev => prev.map(t =>
+        faelligIds.has(t.id) ? { ...t, date: null, time: null } : t
+      ))
     }
 
     // Slots aus days entfernen

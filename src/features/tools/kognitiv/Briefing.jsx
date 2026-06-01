@@ -6,7 +6,7 @@ import s from './Briefing.module.css'
 
 export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
   const m = MODULE_CONFIG[moduleId]
-  const [variant, setVariant] = useState(m.defaultVariant)
+  const variant = m.defaultVariant
   const [infoOpen, setInfoOpen] = useState(() => !localStorage.getItem(`briefing-seen-${moduleId}`))
   const canPractice = isPracticeAvailable(moduleId)
 
@@ -69,19 +69,6 @@ export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
             </div>
           </>
         )}
-
-        <div className={s.diffLabel}>Schwierigkeit</div>
-        <div className={s.diffRow}>
-          {m.variants.map(v => (
-            <button
-              key={v}
-              className={[s.diffBtn, variant === v ? s.diffOn : ''].join(' ')}
-              onClick={() => setVariant(v)}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
 
         <button className={s.startBtn} onClick={() => onStart(variant)}>
           Starten →

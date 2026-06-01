@@ -91,7 +91,7 @@ export const MODULE_CONFIG = {
     desc: 'Bild und Ton gleichzeitig im Blick behalten — tippe sobald eines der Signale auftritt.',
     steps: [
       'Jede Runde: 5 Kreise erscheinen, dazu ein Ton (HOCH oder TIEF).',
-      'Tippe wenn mindestens ein Kreis ausgefüllt ist.',
+      'Tippe wenn genau ein Kreis ausgefüllt ist (nicht bei keinem, nicht bei mehreren).',
       'Tippe auch wenn der Ton derselbe ist wie im vorherigen Beat (Wiederholung).',
       'Treffen beide gleichzeitig zu — einmal tippen genügt.',
       'Kein Signal → nicht tippen.',

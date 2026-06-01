@@ -17,6 +17,8 @@ function formatSlotLabel(dateKey, slotKey) {
   const dayName = weekdays[date.getDay()]
   const dd = String(day).padStart(2, '0')
   const mm = String(month).padStart(2, '0')
+  // slotKey == null → Fälligkeit ohne Uhrzeit
+  if (slotKey == null) return `${dayName} ${dd}.${mm} · fällig`
   const h = Math.floor(parseFloat(slotKey))
   const min = parseFloat(slotKey) % 1 !== 0 ? '30' : '00'
   return `${dayName} ${dd}.${mm} · ${String(h).padStart(2, '0')}:${min}`
