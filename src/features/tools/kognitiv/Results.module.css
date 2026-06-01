@@ -24,13 +24,7 @@
 .auswertung { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 14px; margin-bottom: 10px; }
 .auswLabel { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
 
-.chartArea { position: relative; height: 120px; margin-bottom: 10px; }
-.chartBars { position: absolute; inset: 0; display: flex; align-items: flex-end; gap: 2px; }
-.chartBar { flex: 1; border-radius: 2px 2px 0 0; min-width: 3px; transition: height 0.3s ease; }
-
-.refLine { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--accent); pointer-events: none; }
-.refLineGlob { position: absolute; left: 0; right: 0; border-top: 1.5px dashed rgba(255,255,255,0.2); pointer-events: none; }
-.refTag { position: absolute; right: 0; top: -16px; font-size: 0.55rem; font-family: var(--font-num); font-weight: 700; white-space: nowrap; }
+.chart { width: 100%; height: auto; display: block; overflow: visible; margin-bottom: 10px; }
 
 .auswFooter { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .auswStat { display: flex; flex-direction: column; align-items: center; min-width: 52px; }

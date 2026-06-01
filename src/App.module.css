@@ -12,6 +12,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: max(16px, env(safe-area-inset-top, 16px)) 16px 0;
+  background: var(--bg);
 }
 
 /* ─── Placeholder ───────────────────────────────────────── */

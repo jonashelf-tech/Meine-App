@@ -23,16 +23,25 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
 
   const checkin  = session.checkinId ? loadCheckin(session.date) : null
 
-  const taps        = session.taps ?? []
-  const hitTimes    = taps.filter(t => t.correct && t.time != null).map(t => t.time)
-  const maxTime     = Math.max(...hitTimes, 1)
-  const sessionAvg  = avg(hitTimes)
-  const allSessions = getModuleSessions(session.moduleId)
-  const allHitTimes = allSessions.flatMap(s => (s.taps ?? []).filter(t => t.correct && t.time != null).map(t => t.time))
-  const allTimeAvg  = avg(allHitTimes)
-  const chartMax    = Math.max(maxTime, allTimeAvg) * 1.05
-  const sessAvgPct  = chartMax > 0 ? (sessionAvg / chartMax) * 100 : 50
-  const globAvgPct  = chartMax > 0 ? (allTimeAvg / chartMax) * 100 : 50
+  const taps       = session.taps ?? []
+  const hitTimes   = taps.filter(t => t.correct && t.time != null).map(t => t.time)
+  const sessionAvg = avg(hitTimes)
+
+  // SVG chart constants
+  const VW = 300, VH = 80
+  const pl = 5, pr = 46, pt = 8, pb = 20
+  const iW = VW - pl - pr, iH = VH - pt - pb
+  const errY = VH - 7
+  const cMin = hitTimes.length > 0 ? Math.min(...hitTimes) * 0.85 : 0
+  const cMax = hitTimes.length > 0 ? Math.max(...hitTimes) * 1.15 : 1
+  const cRange = cMax - cMin || 1
+  const cToX = i => pl + (i / Math.max(taps.length - 1, 1)) * iW
+  const cToY = t => pt + iH - ((t - cMin) / cRange) * iH
+  const cAvgY = cToY(sessionAvg)
+  const cPoints = taps
+    .map((tap, i) => tap.correct && tap.time != null
+      ? `${cToX(i).toFixed(1)},${cToY(tap.time).toFixed(1)}` : null)
+    .filter(Boolean).join(' ')
 
   const deltaLabel = delta !== null
     ? (delta > 0
@@ -131,39 +140,51 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
       {hitTimes.length > 1 && (
         <div className={s.auswertung}>
           <div className={s.auswLabel}>Auswertung</div>
-          <div className={s.chartArea}>
-            <div className={s.refLine} style={{ bottom: `${sessAvgPct}%` }}>
-              <span className={s.refTag} style={{ color: 'var(--accent)' }}>{sessionAvg.toFixed(2)}s</span>
-            </div>
-            {allHitTimes.length > hitTimes.length && (
-              <div className={s.refLineGlob} style={{ bottom: `${globAvgPct}%` }}>
-                <span className={s.refTag} style={{ color: 'var(--text-dim)' }}>{allTimeAvg.toFixed(2)}s</span>
-              </div>
+          <svg className={s.chart} viewBox={`0 0 ${VW} ${VH}`}>
+            {/* avg dashed line */}
+            <line x1={pl} x2={VW - pr} y1={cAvgY} y2={cAvgY}
+              stroke="var(--accent)" strokeWidth="1" strokeDasharray="4 3" opacity="0.45" />
+            <text x={VW - pr + 4} y={cAvgY + 2.5} fontSize="6.5" fill="var(--accent)"
+              fontFamily="var(--font-num)" fontWeight="700" opacity="0.9">
+              {sessionAvg.toFixed(2)}s
+            </text>
+            <text x={VW - pr + 4} y={cAvgY + 10} fontSize="5" fill="var(--accent)" opacity="0.5">Ø</text>
+
+            {/* connecting line through correct taps */}
+            {cPoints && (
+              <polyline points={cPoints} fill="none"
+                stroke="var(--accent)" strokeWidth="1.3" opacity="0.25" strokeLinejoin="round" />
             )}
-            <div className={s.chartBars}>
-              {taps.map((tap, i) => {
-                const t  = tap.time ?? 0
-                const h  = tap.correct && t > 0 ? Math.max(5, (t / chartMax) * 100) : 5
-                const bg = !tap.correct ? 'var(--rose)'
-                  : t <= sessionAvg ? 'var(--emerald)'
-                  : 'var(--accent)'
-                return (
-                  <div key={i} className={s.chartBar} style={{ height: `${h}%`, background: bg, opacity: !tap.correct ? 0.7 : 1 }} />
-                )
-              })}
-            </div>
-          </div>
+
+            {/* dots */}
+            {taps.map((tap, i) => {
+              if (!tap.correct || tap.time == null) {
+                return <circle key={i} cx={cToX(i)} cy={errY} r="2.8" fill="var(--rose)" opacity="0.85" />
+              }
+              return (
+                <circle key={i} cx={cToX(i)} cy={cToY(tap.time)} r="2.8"
+                  fill={tap.time <= sessionAvg ? 'var(--emerald)' : 'var(--accent)'} opacity="0.9" />
+              )
+            })}
+
+            {/* error zone separator */}
+            {taps.some(t => !t.correct) && (
+              <>
+                <line x1={pl} x2={VW - pr} y1={VH - pb + 2} y2={VH - pb + 2}
+                  stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+                <text x={pl} y={VH - 1} fontSize="5" fill="var(--rose)" opacity="0.5">Fehler</text>
+              </>
+            )}
+          </svg>
           <div className={s.auswFooter}>
             <div className={s.auswStat}>
               <div className={s.auswVal}>{sessionAvg.toFixed(2)}s</div>
               <div className={s.auswLbl}>Ø Session</div>
             </div>
-            {allHitTimes.length > hitTimes.length && (
-              <div className={s.auswStat}>
-                <div className={s.auswVal} style={{ color: 'var(--text-dim)' }}>{allTimeAvg.toFixed(2)}s</div>
-                <div className={s.auswLbl}>Ø Gesamt</div>
-              </div>
-            )}
+            <div className={s.auswStat}>
+              <div className={s.auswVal}>{hitTimes.length > 0 ? Math.min(...hitTimes).toFixed(2) : '—'}s</div>
+              <div className={s.auswLbl}>Beste</div>
+            </div>
             <div className={s.auswLegend}>
               <span className={s.legendDot} style={{ background: 'var(--emerald)' }} />schnell
               <span className={s.legendDot} style={{ background: 'var(--accent)' }} />normal

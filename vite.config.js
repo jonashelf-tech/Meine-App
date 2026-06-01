@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
-      workbox: { cleanupOutdatedCaches: true },
+      registerType: 'prompt',
+      workbox: { cleanupOutdatedCaches: true, clientsClaim: true },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
         name: 'ADHS Planner',

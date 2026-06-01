@@ -11,6 +11,7 @@ import TabSettings     from './features/settings/TabSettings/TabSettings'
 import TodoModal       from './components/TodoModal/TodoModal'
 import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
 import BackupNudge     from './components/BackupNudge/BackupNudge'
+import UpdatePrompt     from './components/UpdatePrompt/UpdatePrompt'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
 const IconTagesplaner = () => (
@@ -134,6 +135,8 @@ export default function App() {
       )}
 
       {addOpen && <TodoModal onClose={() => setAddOpen(false)} />}
+
+      <UpdatePrompt />
 
       {!exercising && <nav className={styles.tabBar}>
         {TABS.map(({ id, label, Icon }) => {
