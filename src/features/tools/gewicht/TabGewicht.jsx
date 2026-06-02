@@ -37,6 +37,7 @@ function weeklyChangeTrend(entries, refDate) {
 
 // ── Dashboard settings ────────────────────────────────────────
 const DEFAULT_DASH = {
+  weightOnly:false,
   showCurrentWeight:true, showAvgWeight7:true, showAvgKcal7:true,
   showWeekChangeTrend:true, showDiffFromTrend:true, showMaintenance:true,
 }
@@ -60,7 +61,13 @@ export default function TabGewicht({ onBack }) {
   const dateInputRef = useRef(null)
 
   const setDashSettings= d => { setDashSettingsRaw(d); saveDash(d) }
+  const weightOnly = dashSettings.weightOnly
   const [confirmReset, setConfirmReset] = useState(false)
+
+  // Falls Kcal-Charts aktiv sind, beim Wechsel in Nur-Gewicht-Modus zurücksetzen
+  useEffect(() => {
+    if (weightOnly && (chartView==='calories'||chartView==='maintenance')) setChartView('weight')
+  }, [weightOnly, chartView])
 
   const handleReset = () => {
     if (!confirmReset) { setConfirmReset(true); return }
@@ -234,12 +241,14 @@ export default function TabGewicht({ onBack }) {
               placeholder="—" value={inputKg} onChange={e=>setInputKg(e.target.value)}
               onKeyDown={e=>e.key==='Enter'&&submitEntry()} />
           </div>
-          <div className={s.inputField}>
-            <span className={s.inputUnit}>kcal</span>
-            <input className={s.numInput} type="number" step="10" min="0" max="20000"
-              placeholder="—" value={inputKcal} onChange={e=>setInputKcal(e.target.value)}
-              onKeyDown={e=>e.key==='Enter'&&submitEntry()} />
-          </div>
+          {!weightOnly && (
+            <div className={s.inputField}>
+              <span className={s.inputUnit}>kcal</span>
+              <input className={s.numInput} type="number" step="10" min="0" max="20000"
+                placeholder="—" value={inputKcal} onChange={e=>setInputKcal(e.target.value)}
+                onKeyDown={e=>e.key==='Enter'&&submitEntry()} />
+            </div>
+          )}
           <button className={s.saveBtn} onClick={submitEntry} disabled={!inputKg.trim()}>✓</button>
         </div>
       </div>
@@ -250,12 +259,12 @@ export default function TabGewicht({ onBack }) {
           <div className={s.kpiGrid}>
             {dashSettings.showCurrentWeight && <div className={s.kpi}><div className={s.kpiVal}>{fmtKg(currentWeight)}</div><div className={s.kpiLbl}>Aktuell</div></div>}
             {dashSettings.showAvgWeight7    && <div className={s.kpi}><div className={s.kpiVal}>{fmtKg(avg7!=null?+avg7.toFixed(1):null)}</div><div className={s.kpiLbl}>Ø 7 Tage</div></div>}
-            {dashSettings.showAvgKcal7      && <div className={s.kpi}><div className={s.kpiVal}>{fmtKcal(avgKcal7)}</div><div className={s.kpiLbl}>Ø Kcal 7T</div></div>}
+            {!weightOnly && dashSettings.showAvgKcal7 && <div className={s.kpi}><div className={s.kpiVal}>{fmtKcal(avgKcal7)}</div><div className={s.kpiLbl}>Ø Kcal 7T</div></div>}
             {dashSettings.showWeekChangeTrend && <div className={s.kpi}><div className={s.kpiVal} style={{color:deltaClr(wChangeTrend)}}>{fmtDelta(wChangeTrend)}</div><div className={s.kpiLbl}>Trend/Wo.</div></div>}
             {dashSettings.showDiffFromTrend && <div className={s.kpi}><div className={s.kpiVal} style={{color:deltaClr(diffFromTrend)}}>{fmtDelta(diffFromTrend)}</div><div className={s.kpiLbl}>vs. Trend</div></div>}
           </div>
 
-          {dashSettings.showMaintenance && (maint7!=null||maint14!=null||maint21!=null) && (
+          {!weightOnly && dashSettings.showMaintenance && (maint7!=null||maint14!=null||maint21!=null) && (
             <div className={s.maintCard}>
               <div className={s.maintTitle}>Geschätzte Erhaltungskalorien</div>
               {maint7  != null && <div className={s.maintRow}><span className={s.maintLbl}>7 Tage</span> <span className={s.maintVal}>{maint7}  kcal</span></div>}
@@ -266,7 +275,7 @@ export default function TabGewicht({ onBack }) {
 
           <div className={s.chartSection}>
             <div className={s.chartTabs}>
-              {[['weight','Gewicht'],['change','Veränderung'],['calories','Kalorien'],['maintenance','Bedarf']].map(([id,lb])=>(
+              {[['weight','Gewicht'],['change','Veränderung'],...(weightOnly?[]:[['calories','Kalorien'],['maintenance','Bedarf']])].map(([id,lb])=>(
                 <button key={id} className={[s.chartTab,chartView===id?s.chartTabActive:''].join(' ')} onClick={()=>setChartView(id)}>{lb}</button>
               ))}
             </div>
@@ -313,15 +322,23 @@ export default function TabGewicht({ onBack }) {
       {/* ══ EINSTELLUNGEN ══ */}
       {activeTab==='einstellungen' && (
         <div className={s.settings}>
+          <div className={s.settingsTitle}>Modus</div>
+          <div className={s.toggleRow} onClick={()=>setDashSettings({...dashSettings,weightOnly:!weightOnly})}>
+            <div className={[s.toggleTrack,weightOnly?s.toggleOn:''].join(' ')}>
+              <div className={s.toggleThumb}/>
+            </div>
+            <span className={s.toggleLabel}>Nur Gewicht (Kalorien ausblenden)</span>
+          </div>
+
           <div className={s.settingsTitle}>Dashboard anpassen</div>
           {[
             {key:'showCurrentWeight',  label:'Aktuelles Gewicht'},
             {key:'showAvgWeight7',     label:'7-Tage-Ø Gewicht'},
-            {key:'showAvgKcal7',       label:'7-Tage-Ø Kalorien'},
+            {key:'showAvgKcal7',       label:'7-Tage-Ø Kalorien', kcal:true},
             {key:'showWeekChangeTrend',label:'Wochenveränderung (Trend)'},
             {key:'showDiffFromTrend',  label:'Differenz vs. Trend'},
-            {key:'showMaintenance',    label:'Bedarfskalorien-Tabelle'},
-          ].map(({key,label})=>(
+            {key:'showMaintenance',    label:'Bedarfskalorien-Tabelle', kcal:true},
+          ].filter(({kcal})=>!(weightOnly&&kcal)).map(({key,label})=>(
             <div key={key} className={s.toggleRow} onClick={()=>setDashSettings({...dashSettings,[key]:!dashSettings[key]})}>
               <div className={[s.toggleTrack,dashSettings[key]?s.toggleOn:''].join(' ')}>
                 <div className={s.toggleThumb}/>
