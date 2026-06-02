@@ -574,17 +574,12 @@
 
 /* ─── Day Panel ──────────────────────────────────────────── */
 .dayPanel {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  margin-top: 12px;
-  overflow: hidden;
+  margin-top: 10px;
   animation: fadeInUp 0.18s ease both;
 }
 
 .dayPanelHeader {
-  padding: 10px 14px 9px;
-  border-bottom: 1px solid var(--border-dim);
+  padding: 2px 2px 8px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -606,9 +601,9 @@
 
 .dayPanelDate {
   font-family: var(--font);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text);
 }
 
 .dayPanelDateLink {
@@ -617,7 +612,7 @@
 }
 
 .dayPanelDateLink:hover {
-  color: var(--teal);
+  color: var(--primary);
 }
 
 .dayPanelSection {
@@ -1183,6 +1178,15 @@
 .toolCardArrow {
   font-size: 10px;
   color: var(--text-faint);
+}
+
+.toolCardCount {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  font-family: var(--font);
 }
 
 .toolCardOpenBtn {

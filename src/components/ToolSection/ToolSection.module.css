@@ -1,37 +1,26 @@
-﻿/* ── Section-Wrapper ──────────────────────────────── */
+/* ── Section-Wrapper ──────────────────────────────── */
 .section {
-  border: 1px solid var(--border-dim);
+  border-top: 2px solid var(--border);
   border-radius: var(--r);
   background: var(--surface-low);
   overflow: hidden;
 }
 
-/* ── Pill-Header ─────────────────────────────────── */
-/* gap: 1px + background = sichtbare Trennlinie zwischen Pills */
+/* ── Header-Zeile ────────────────────────────────── */
 .header {
   display: flex;
-  align-items: stretch;
-  gap: 1px;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* Name-Pill (flex: 1, nimmt restlichen Platz) */
-.namePill {
-  display: flex;
   align-items: center;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
+  gap: 8px;
   padding: 9px 12px;
-  background: var(--surface-low);
-  border: none;
+  background: rgba(255, 255, 255, 0.025);
   cursor: pointer;
-  text-align: left;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s;
 }
-.namePill:hover { background: var(--surface); }
 
+.header:hover { background: rgba(255, 255, 255, 0.045); }
+
+/* Icon */
 .iconWrap {
   display: flex;
   align-items: center;
@@ -39,80 +28,78 @@
   flex-shrink: 0;
 }
 
+/* Titel */
 .title {
   font-family: var(--font);
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--tc, var(--text));
   display: flex;
   align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .titleLink { cursor: pointer; }
 
 .linkArr {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--tc, var(--text-ghost));
-  opacity: 0.6;
+  opacity: 0.65;
   pointer-events: none;
 }
 
-/* Badge-Pill (z.B. "42%" oder Session-Count) */
+/* Badge (z.B. "42%", Session-Count) */
 .badge {
   display: flex;
   align-items: center;
-  padding: 0 9px;
-  background: rgba(255, 255, 255, 0.06);
-  font-size: 0.62rem;
+  padding: 1px 7px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  font-size: 10px;
   font-weight: 700;
   font-family: var(--font);
-  color: var(--text-dim);
-  letter-spacing: 0.03em;
+  color: var(--tc, var(--text-dim));
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-/* Action-Pill (tool-farbig) */
-.actionPill {
-  display: flex;
-  align-items: center;
-  padding: 0 11px;
-  background: color-mix(in srgb, var(--tc, #8B5CF6) 14%, transparent);
+/* Action-Button (tool-farbig, kein festes Lila mehr) */
+.actionBtn {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
   border: none;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--tc, #8B5CF6) 15%, transparent);
+  color: var(--tc, #a78bfa);
   cursor: pointer;
   font-family: var(--font);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--tc, #a78bfa);
   white-space: nowrap;
   flex-shrink: 0;
   transition: background 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
-.actionPill:hover:not(:disabled) { background: color-mix(in srgb, var(--tc, #8B5CF6) 26%, transparent); }
-.actionPill:disabled {
+.actionBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--tc, #8B5CF6) 26%, transparent);
+}
+.actionBtn:disabled {
   background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.18);
   cursor: not-allowed;
 }
 
-/* Chevron-Pill */
-.chevronPill {
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  background: var(--surface-low);
-  border: none;
-  cursor: pointer;
+/* Chevron */
+.chevron {
   color: var(--tc, var(--text-faint));
-  opacity: 0.55;
+  opacity: 0.5;
   flex-shrink: 0;
-  transition: background 0.12s, opacity 0.12s;
-  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.12s;
 }
-.chevronPill:hover { background: var(--surface); opacity: 0.85; }
+.header:hover .chevron { opacity: 0.8; }
 
 /* ── Body ────────────────────────────────────────── */
 .body {

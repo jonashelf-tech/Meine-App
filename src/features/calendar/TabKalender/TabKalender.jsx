@@ -151,17 +151,19 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
         {dateKey === todayKey && <span className={s.todayBadge}>heute</span>}
       </div>
 
-      {/* Zeitplan */}
-      <div className={s.dayPanelSection}>
-        <button className={s.dayPanelSectionHead} onClick={() => toggle('zeitplan')}>
-          <span className={s.dayPanelSectionLabel}>Zeitplan</span>
+      {/* Zeitplan — Tool-Card */}
+      <div className={s.toolCard} style={{ borderTop: '2px solid var(--primary)' }}>
+        <div className={s.toolCardHead} onClick={() => toggle('zeitplan')}>
+          <span className={s.toolCardTitle} style={{ color: 'var(--primary)' }}>Zeitplan</span>
           {totalZeitplan > 0 && (
-            <span className={s.dayPanelSectionCount}>{totalZeitplan}</span>
+            <span className={s.toolCardCount} style={{ color: 'var(--primary)', background: 'color-mix(in srgb, var(--primary) 12%, transparent)' }}>
+              {totalZeitplan}
+            </span>
           )}
-          <span className={s.dayPanelArrow}>{open.zeitplan ? '▾' : '▸'}</span>
-        </button>
+          <span className={s.toolCardArrow}>{open.zeitplan ? '▾' : '▸'}</span>
+        </div>
         {open.zeitplan && (
-          <div className={s.dayPanelList}>
+          <div className={s.toolCardBody}>
             {birthdayEntries.map(b => (
               <div key={b.id} className={s.dayPanelAlldayEntry}>
                 <span className={s.dayPanelAlldayStar}>
@@ -196,17 +198,19 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
         )}
       </div>
 
-      {/* Abgehakte Todos */}
-      <div className={s.dayPanelSection}>
-        <button className={s.dayPanelSectionHead} onClick={() => toggle('done')}>
-          <span className={s.dayPanelSectionLabel}>Erledigt</span>
+      {/* Erledigt — Tool-Card */}
+      <div className={s.toolCard} style={{ borderTop: '2px solid var(--emerald)' }}>
+        <div className={s.toolCardHead} onClick={() => toggle('done')}>
+          <span className={s.toolCardTitle} style={{ color: 'var(--emerald)' }}>Erledigt</span>
           {doneCount > 0 && (
-            <span className={s.dayPanelSectionCount}>{doneCount}</span>
+            <span className={s.toolCardCount} style={{ color: 'var(--emerald)', background: 'color-mix(in srgb, var(--emerald) 12%, transparent)' }}>
+              {doneCount}
+            </span>
           )}
-          <span className={s.dayPanelArrow}>{open.done ? '▾' : '▸'}</span>
-        </button>
+          <span className={s.toolCardArrow}>{open.done ? '▾' : '▸'}</span>
+        </div>
         {open.done && (
-          <div className={s.dayPanelList}>
+          <div className={s.toolCardBody}>
             {doneCount === 0 ? (
               <p className={s.dayPanelEmpty}>Keine erledigten Todos</p>
             ) : (
