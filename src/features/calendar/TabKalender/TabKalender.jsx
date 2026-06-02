@@ -4,7 +4,8 @@ import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor 
 import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geburtstage/birthdayUtils'
 import { loadEntries } from '../../tools/gewicht/gewichtData'
-import { loadSessions as loadKognitivSessions } from '../../tools/kognitiv/sessionStore'
+import { loadSessions as loadKognitivSessions, getDelta } from '../../tools/kognitiv/sessionStore'
+import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
@@ -82,9 +83,33 @@ function getCellBars(dk, days, todos, showTools) {
     .filter(bar => showTools || !bar.isTool)
 }
 
+function formatDur(secs) {
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  return m > 0 ? `${m}min ${s}s` : `${s}s`
+}
+
+function fmtScore(sess) {
+  const sc = sess.score
+  if (!sc) return null
+  if (sc.correct      != null) return `${sc.correct} korrekt · ${sc.errors ?? 0} Fehler`
+  if (sc.hits         != null) return `${sc.hits} korrekt · ${sc.errors ?? 0} Fehler`
+  if (sc.correctRounds != null) return `${sc.correctRounds} Runden korrekt`
+  return null
+}
+
+function fmtDelta(moduleId, delta) {
+  if (delta === null) return null
+  const cfg  = MODULE_CONFIG[moduleId]
+  const unit = cfg?.mainMetricUnit ?? ''
+  const lowerIsBetter = ['ms', 's'].includes(unit)
+  const improved = lowerIsBetter ? delta > 0 : delta < 0
+  return { text: `${improved ? '−' : '+'}${Math.abs(delta)}${unit} vs. vorher`, improved }
+}
+
 // ─── Day Panel ────────────────────────────────────────────
 function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
-  const [open, setOpen] = useState({ zeitplan: true, done: false, gewicht: true })
+  const [open, setOpen] = useState({ zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false })
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
 
@@ -93,6 +118,17 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
     .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
 
   const doneTodos = todos.filter(t => t.doneAt?.startsWith(dateKey))
+  const kognitivSessions = loadKognitivSessions().filter(sess => sess.date === dateKey)
+  const kognitivColor = getToolColor('kognitiv', toolColors)
+  const doneCount = doneTodos.length
+
+  const elviDay = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('adhs_elvi_v1')
+      if (!raw) return null
+      return JSON.parse(raw)?.savedDays?.find(d => d.date === dateKey) ?? null
+    } catch { return null }
+  }, [dateKey])
 
   const [y, m, d] = dateKey.split('-')
   const dateObj  = new Date(parseInt(y), parseInt(m) - 1, parseInt(d))
@@ -164,50 +200,170 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
       <div className={s.dayPanelSection}>
         <button className={s.dayPanelSectionHead} onClick={() => toggle('done')}>
           <span className={s.dayPanelSectionLabel}>Erledigt</span>
-          {doneTodos.length > 0 && (
-            <span className={s.dayPanelSectionCount}>{doneTodos.length}</span>
+          {doneCount > 0 && (
+            <span className={s.dayPanelSectionCount}>{doneCount}</span>
           )}
           <span className={s.dayPanelArrow}>{open.done ? '▾' : '▸'}</span>
         </button>
         {open.done && (
           <div className={s.dayPanelList}>
-            {doneTodos.length === 0 ? (
+            {doneCount === 0 ? (
               <p className={s.dayPanelEmpty}>Keine erledigten Todos</p>
-            ) : doneTodos.map(t => (
-              <div
-                key={t.id}
-                className={s.dayPanelTodoEntry}
-                style={{ borderLeftColor: t.color || 'var(--primary)' }}
-                onClick={() => setRestoreTodo(t)}
-              >
-                <span className={s.dayPanelCheck}>✓</span>
-                <span className={s.dayPanelEntryText}>{t.text}</span>
-              </div>
-            ))}
+            ) : (
+              doneTodos.map(t => (
+                <div
+                  key={t.id}
+                  className={s.dayPanelTodoEntry}
+                  style={{ borderLeftColor: t.color || 'var(--primary)' }}
+                  onClick={() => setRestoreTodo(t)}
+                >
+                  <span className={s.dayPanelCheck}>✓</span>
+                  <span className={s.dayPanelEntryText}>{t.text}</span>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
 
-      {/* Gewicht — nur wenn Eintrag für diesen Tag */}
+      {/* Kognitiv-Karte */}
+      {kognitivSessions.length > 0 && (
+        <div
+          className={s.toolCard}
+          style={{ borderTop: `2px solid ${kognitivColor}` }}
+        >
+          <div className={s.toolCardHead} onClick={() => toggle('kognitiv')}>
+            <span className={s.toolCardTitle} style={{ color: kognitivColor }}>Kognitiv</span>
+            <button
+              className={s.toolCardOpenBtn}
+              style={{ color: kognitivColor, background: `color-mix(in srgb, ${kognitivColor} 15%, transparent)` }}
+              onClick={e => { e.stopPropagation(); setCurrentTab(TOOL_TAB.kognitiv) }}
+            >
+              → Öffnen
+            </button>
+            <span className={s.toolCardArrow}>{open.kognitiv ? '▾' : '▸'}</span>
+          </div>
+          {open.kognitiv && (
+            <div className={s.toolCardBody}>
+              {kognitivSessions.map(sess => {
+                const cfg   = MODULE_CONFIG[sess.moduleId]
+                const time  = new Date(sess.startedAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                const score = fmtScore(sess)
+                const delta = fmtDelta(sess.moduleId, getDelta(sess.moduleId, sess.mainMetric))
+                return (
+                  <div key={sess.id} className={s.cardEntry}>
+                    <div className={s.cardEntryTop}>
+                      <span className={s.cardEntryCheck} style={{ color: kognitivColor }}>✓</span>
+                      <span className={s.cardEntryName}>{cfg?.name ?? sess.moduleId}</span>
+                      <span className={s.cardEntryTime}>{time} · {formatDur(sess.duration)}</span>
+                    </div>
+                    <div className={s.cardTags}>
+                      <span className={s.cardTag} style={{ background: `color-mix(in srgb, ${kognitivColor} 18%, transparent)`, color: kognitivColor }}>
+                        {sess.mainMetric}{cfg?.mainMetricUnit ?? ''}
+                      </span>
+                      {score && <span className={s.cardTag}>{score}</span>}
+                      {delta && (
+                        <span className={[s.cardTag, delta.improved ? s.cardTagPos : s.cardTagNeg].join(' ')}>
+                          {delta.text}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Gewicht-Karte */}
       {weightEntry && (
-        <div className={s.dayPanelSection}>
-          <button className={s.dayPanelSectionHead} onClick={() => toggle('gewicht')}>
-            <span className={s.dayPanelSectionLabel}>Gewicht</span>
-            <span className={s.dayPanelArrow}>{open.gewicht ? '▾' : '▸'}</span>
-          </button>
+        <div
+          className={s.toolCard}
+          style={{ borderTop: `2px solid ${getToolColor('gewicht', toolColors)}` }}
+        >
+          <div className={s.toolCardHead} onClick={() => toggle('gewicht')}>
+            <span className={s.toolCardTitle} style={{ color: getToolColor('gewicht', toolColors) }}>Gewicht</span>
+            <button
+              className={s.toolCardOpenBtn}
+              style={{ color: getToolColor('gewicht', toolColors), background: `color-mix(in srgb, ${getToolColor('gewicht', toolColors)} 15%, transparent)` }}
+              onClick={e => { e.stopPropagation(); setCurrentTab(TOOL_TAB.gewicht) }}
+            >
+              → Öffnen
+            </button>
+            <span className={s.toolCardArrow}>{open.gewicht ? '▾' : '▸'}</span>
+          </div>
           {open.gewicht && (
-            <div className={s.dayPanelGewichtRow}>
-              <span className={s.dayPanelGewichtIcon}>⚖️</span>
-              <span className={s.dayPanelGewichtVal}>{weightEntry.kg} kg</span>
-              {weightEntry.kcal && (
-                <span className={s.dayPanelGewichtKcal}>{weightEntry.kcal.toLocaleString('de-DE')} kcal</span>
+            <div className={s.toolCardBody}>
+              <div className={s.gewCardRow}>
+                <span className={s.gewVal} style={{ color: getToolColor('gewicht', toolColors) }}>
+                  {weightEntry.kg}
+                </span>
+                <span className={s.gewUnit}>kg</span>
+                {weightEntry.kcal && (
+                  <span className={s.gewKcal}>{weightEntry.kcal.toLocaleString('de-DE')} kcal</span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Elvi-Karte */}
+      {elviDay && (
+        <div
+          className={s.toolCard}
+          style={{ borderTop: `2px solid ${getToolColor('elvi', toolColors)}` }}
+        >
+          <div className={s.toolCardHead} onClick={() => toggle('elvi')}>
+            <span className={s.toolCardTitle} style={{ color: getToolColor('elvi', toolColors) }}>Elvi</span>
+            <button
+              className={s.toolCardOpenBtn}
+              style={{ color: getToolColor('elvi', toolColors), background: `color-mix(in srgb, ${getToolColor('elvi', toolColors)} 15%, transparent)` }}
+              onClick={e => { e.stopPropagation(); setCurrentTab(TOOL_TAB.elvi) }}
+            >
+              → Öffnen
+            </button>
+            <span className={s.toolCardArrow}>{open.elvi ? '▾' : '▸'}</span>
+          </div>
+          {open.elvi && (
+            <div className={s.toolCardBody}>
+              {elviDay.doses?.length > 0 && (
+                <div className={s.elviDoses}>
+                  {elviDay.doses.map((d, i) => (
+                    <span
+                      key={i}
+                      className={s.elviDosePill}
+                      style={{
+                        color: getToolColor('elvi', toolColors),
+                        background: `color-mix(in srgb, ${getToolColor('elvi', toolColors)} 18%, transparent)`,
+                      }}
+                    >
+                      {d.mg}mg · {d.time}
+                    </span>
+                  ))}
+                </div>
               )}
-              <button
-                className={s.dayPanelGewichtLink}
-                onClick={() => setCurrentTab(TOOL_TAB.gewicht)}
-              >
-                → Gewicht
-              </button>
+              {elviDay.ratings && (
+                <div className={s.elviRatings}>
+                  {[
+                    { key: 'fokus',    label: 'Fokus'    },
+                    { key: 'stimmung', label: 'Stimmung' },
+                    { key: 'crash',    label: 'Crash'    },
+                    { key: 'impulse',  label: 'Impuls'   },
+                  ]
+                    .filter(r => elviDay.ratings[r.key] != null)
+                    .map(r => (
+                      <span key={r.key} className={s.elviRatingTag}>
+                        {r.label} {elviDay.ratings[r.key]}/10
+                      </span>
+                    ))
+                  }
+                </div>
+              )}
+              {elviDay.notes?.trim() && (
+                <div className={s.elviNotes}>{elviDay.notes.trim()}</div>
+              )}
             </div>
           )}
         </div>
