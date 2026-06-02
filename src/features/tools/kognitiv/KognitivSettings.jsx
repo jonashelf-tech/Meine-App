@@ -19,9 +19,8 @@ export default function KognitivSettings() {
   return (
     <div className={s.root}>
       {MODULE_ORDER.map(id => {
-        const m           = MODULE_CONFIG[id]
-        const cfg         = schedule[id] ?? { mode: 'free' }
-        const isScheduled = cfg.mode === 'scheduled'
+        const m   = MODULE_CONFIG[id]
+        const cfg = schedule[id] ?? { mode: 'free' }
 
         return (
           <div key={id} className={s.card}>
@@ -29,13 +28,19 @@ export default function KognitivSettings() {
               <span className={s.name}>{m.name}</span>
               <div className={s.modeToggle}>
                 <button
-                  className={[s.modeBtn, !isScheduled ? s.modeBtnOn : ''].join(' ')}
+                  className={[s.modeBtn, cfg.mode === 'free' ? s.modeBtnOn : ''].join(' ')}
                   onClick={() => update(id, { mode: 'free' })}
                 >
                   Frei
                 </button>
                 <button
-                  className={[s.modeBtn, isScheduled ? s.modeBtnOn : ''].join(' ')}
+                  className={[s.modeBtn, cfg.mode === 'reminder' ? s.modeBtnOn : ''].join(' ')}
+                  onClick={() => update(id, { mode: 'reminder' })}
+                >
+                  Erinnerung
+                </button>
+                <button
+                  className={[s.modeBtn, cfg.mode === 'scheduled' ? s.modeBtnOn : ''].join(' ')}
                   onClick={() => update(id, {
                     mode: 'scheduled',
                     time: cfg.time ?? '09:00',
@@ -47,7 +52,7 @@ export default function KognitivSettings() {
               </div>
             </div>
 
-            {isScheduled && (
+            {cfg.mode === 'scheduled' && (
               <div className={s.scheduleConfig}>
                 <div className={s.timeRow}>
                   <span className={s.timeLabel}>Uhrzeit</span>

@@ -93,65 +93,21 @@ export function getWeeklyCount() {
   return loadSessions().filter(s => s.date >= weekAgo).length
 }
 
-export function seedDemoSessions() {
-  if (loadSessions().length > 0) return
-  const day = (offset) => {
-    const d = new Date(); d.setDate(d.getDate() - offset)
-    return d.toISOString().slice(0, 10)
-  }
-  const tap = (time, correct = true, target) => ({ time, correct, target })
-  // Zahlensuche: Tap pro Zahl (mit index) + optionale Fehl-Taps für die Balken-Auswertung
-  const zsTaps = (avgTime, total, errAt = []) => {
-    const out = []
-    for (let i = 0; i < total; i++) {
-      if (errAt.includes(i)) out.push({ index: i, target: i + 1, got: i + 3, correct: false, time: 0.5 })
-      const t = +(avgTime + Math.sin(i * 1.7) * avgTime * 0.4).toFixed(2)
-      out.push({ index: i, target: i + 1, got: i + 1, correct: true, time: Math.max(0.4, t) })
-    }
-    return out
-  }
-  const demos = [
-    // alertness – 3 sessions
-    { moduleId: 'alertness', variant: 'Ohne Ton', date: day(6), startedAt: `${day(6)}T09:12:00.000Z`, duration: 148, score: { correct: 18, errors: 1, misses: 1 }, mainMetric: 378, taps: [tap(0.41), tap(0.35), tap(0.38), tap(0.44), tap(0.36), tap(0.42), tap(0.33), tap(0.40), tap(0.38), tap(0.46), tap(null, false), tap(0.37), tap(0.35), tap(0.41), tap(0.39), tap(0.43), tap(0.36), tap(0.38)] },
-    { moduleId: 'alertness', variant: 'Ohne Ton', date: day(3), startedAt: `${day(3)}T10:05:00.000Z`, duration: 143, score: { correct: 19, errors: 1, misses: 0 }, mainMetric: 354, taps: [tap(0.38), tap(0.33), tap(0.35), tap(0.42), tap(0.31), tap(0.39), tap(0.36), tap(0.34), tap(0.37), tap(0.40), tap(0.33), tap(0.35), tap(0.38), tap(0.32), tap(null, false), tap(0.36), tap(0.34), tap(0.37), tap(0.35)] },
-    { moduleId: 'alertness', variant: 'Ohne Ton', date: day(1), startedAt: `${day(1)}T08:47:00.000Z`, duration: 141, score: { correct: 19, errors: 0, misses: 1 }, mainMetric: 338, taps: [tap(0.35), tap(0.31), tap(0.34), tap(0.38), tap(0.30), tap(0.36), tap(0.33), tap(0.32), tap(0.35), tap(0.37), tap(0.29), tap(0.33), tap(0.36), tap(0.31), tap(0.34), tap(0.32), tap(0.35), tap(0.30), tap(0.33)] },
-    // zahlensuche – 2 sessions
-    { moduleId: 'zahlensuche', variant: 'Normal', date: day(5), startedAt: `${day(5)}T11:00:00.000Z`, duration: 93, score: { correct: 25, errors: 2, total: 25 }, mainMetric: 93, taps: zsTaps(3.7, 25, [7, 18]) },
-    { moduleId: 'zahlensuche', variant: 'Normal', date: day(1), startedAt: `${day(1)}T11:20:00.000Z`, duration: 81, score: { correct: 25, errors: 1, total: 25 }, mainMetric: 81, taps: zsTaps(3.24, 25, [11]) },
-    // gedaechtnis – 2 sessions
-    { moduleId: 'gedaechtnis', variant: 'Normal', date: day(4), startedAt: `${day(4)}T09:30:00.000Z`, duration: 210, score: { correctRounds: 6, mistakes: 3 }, mainMetric: 6, taps: [] },
-    { moduleId: 'gedaechtnis', variant: 'Normal', date: day(1), startedAt: `${day(1)}T09:45:00.000Z`, duration: 224, score: { correctRounds: 8, mistakes: 2 }, mainMetric: 8, taps: [] },
-    // gonogo – 3 sessions
-    { moduleId: 'gonogo', variant: 'Normal', date: day(5), startedAt: `${day(5)}T14:10:00.000Z`, duration: 182, score: { correct: 34, falseAlarms: 4, misses: 2 }, mainMetric: 312, taps: [tap(0.32), tap(0.29), tap(0.34), tap(null, false), tap(0.31), tap(0.28), tap(0.33), tap(0.30), tap(null, false), tap(0.27), tap(0.31), tap(0.30)] },
-    { moduleId: 'gonogo', variant: 'Normal', date: day(2), startedAt: `${day(2)}T14:25:00.000Z`, duration: 178, score: { correct: 36, falseAlarms: 2, misses: 2 }, mainMetric: 291, taps: [tap(0.30), tap(0.27), tap(0.31), tap(0.28), tap(0.26), tap(null, false), tap(0.29), tap(0.28), tap(0.30), tap(0.27), tap(0.31), tap(0.28)] },
-    { moduleId: 'gonogo', variant: 'Normal', date: day(1), startedAt: `${day(1)}T13:58:00.000Z`, duration: 174, score: { correct: 37, falseAlarms: 2, misses: 1 }, mainMetric: 278, taps: [tap(0.28), tap(0.26), tap(0.29), tap(0.27), tap(0.25), tap(0.28), tap(0.26), tap(null, false), tap(0.27), tap(0.25), tap(0.28), tap(0.26), tap(0.27)] },
-    // nback – 2 sessions
-    { moduleId: 'nback', variant: 'Normal', date: day(4), startedAt: `${day(4)}T16:00:00.000Z`, duration: 195, score: { hits: 26, errors: 5, misses: 3 }, mainMetric: 74, taps: [] },
-    { moduleId: 'nback', variant: 'Normal', date: day(1), startedAt: `${day(1)}T16:15:00.000Z`, duration: 192, score: { hits: 29, errors: 3, misses: 2 }, mainMetric: 83, taps: [] },
-    // taskswitching – 2 sessions
-    { moduleId: 'taskswitching', variant: 'Normal', date: day(3), startedAt: `${day(3)}T15:30:00.000Z`, duration: 225, score: { correct: 28, errors: 6 }, mainMetric: 162, taps: [] },
-    { moduleId: 'taskswitching', variant: 'Normal', date: day(1), startedAt: `${day(1)}T15:45:00.000Z`, duration: 218, score: { correct: 31, errors: 4 }, mainMetric: 138, taps: [] },
-    // geteilt – 2 sessions
-    { moduleId: 'geteilt', variant: 'Normal', date: day(2), startedAt: `${day(2)}T17:00:00.000Z`, duration: 175, score: { hits: 44, errors: 7 }, mainMetric: 76, taps: [] },
-    { moduleId: 'geteilt', variant: 'Normal', date: day(1), startedAt: `${day(1)}T17:10:00.000Z`, duration: 171, score: { hits: 48, errors: 5 }, mainMetric: 83, taps: [] },
-  ]
-  const withIds = demos.map(d => ({ ...d, id: crypto.randomUUID?.() ?? `demo-${Math.random().toString(36).slice(2)}`, checkinId: null }))
-  sv(SK.kognitiv, withIds)
-}
-
 export function getScheduledToday() {
-  const schedule   = lv(SK.kognitivSchedule, {})
-  const today      = new Date().toISOString().slice(0, 10)
-  const dayOfWeek  = new Date().getDay()
+  const schedule     = lv(SK.kognitivSchedule, {})
+  const today        = new Date().toISOString().slice(0, 10)
+  const dayOfWeek    = new Date().getDay()
   const doneTodayIds = loadSessions()
     .filter(s => s.date === today)
     .map(s => s.moduleId)
 
   return MODULE_ORDER.filter(id => {
     const cfg = schedule[id]
-    if (!cfg || cfg.mode !== 'scheduled') return false
-    if (!(cfg.days ?? []).includes(dayOfWeek)) return false
+    if (!cfg || cfg.mode === 'free' || !cfg.mode) return false
     if (doneTodayIds.includes(id)) return false
+    if (cfg.mode === 'scheduled') {
+      if (!(cfg.days ?? []).includes(dayOfWeek)) return false
+    }
     return true
-  }).map(id => ({ moduleId: id, time: schedule[id].time ?? null }))
+  }).map(id => ({ moduleId: id, time: schedule[id].mode === 'scheduled' ? (schedule[id].time ?? null) : null }))
 }

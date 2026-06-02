@@ -2,6 +2,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
   gap: 6px;
+  flex: 1;
+  min-width: 0;
 }
 
 .cell {
