@@ -34,10 +34,11 @@ export default function TabKognitiv({ onBack, onExercising }) {
   const [nav, setNav] = useState(null)
   const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null
   const pendingExerciseRef = useRef(null)
-  const { setDays, kognitivAutoStart, setKognitivAutoStart, setBackInterceptor } = useAppStore()
+  const { kognitivAutoStart, setKognitivAutoStart, setBackInterceptor } = useAppStore()
 
-  const isTraining = nav?.screen === 'exercise' || countdown !== null
-  useEffect(() => { onExercising?.(isTraining) }, [isTraining, onExercising])
+  // Sub-Screens (Briefing, Übung, Auswertung …) sind immersiv: Vollbild + untere Nav aus.
+  const isImmersive = nav !== null || countdown !== null
+  useEffect(() => { onExercising?.(isImmersive) }, [isImmersive, onExercising])
 
   useEffect(() => {
     setBackInterceptor(nav !== null ? () => setNav(null) : null)
@@ -72,26 +73,6 @@ export default function TabKognitiv({ onBack, onExercising }) {
     }, 1000)
   }, [])
 
-  const handleSaveToCalendar = useCallback((session) => {
-    const m       = MODULE_CONFIG[session.moduleId]
-    const hour    = new Date(session.startedAt).getHours()
-    const slotKey = String(hour)
-    setDays(prev => ({
-      ...prev,
-      [session.date]: {
-        ...(prev[session.date] ?? {}),
-        [slotKey]: {
-          text:     `Kognitiv: ${m.name} (${session.mainMetric}${m.mainMetricUnit})`,
-          color:    '#8B5CF6',
-          duration: Math.max(1, Math.ceil(session.duration / 60)),
-          locked:   true,
-          done:     true,
-          toolId:   'kognitiv',
-        },
-      },
-    }))
-  }, [setDays])
-
   const handleSelectModule = useCallback((moduleId) => {
     if (isDoneToday(moduleId)) {
       setNav({ screen: 'done-today', moduleId })
@@ -122,7 +103,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
   }
 
   if (nav?.screen === 'briefing') {
-    return <Briefing
+    return <div className={s.overlay}><Briefing
       moduleId={nav.moduleId}
       onBack={goBack}
       onStart={(variant) => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant })}
@@ -130,10 +111,10 @@ export default function TabKognitiv({ onBack, onExercising }) {
         markPracticeUsed(nav.moduleId)
         startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant, practice: true })
       }}
-    />
+    /></div>
   }
   if (nav?.screen === 'done-today') {
-    return <DoneToday
+    return <div className={s.overlay}><DoneToday
       moduleId={nav.moduleId}
       onBack={goBack}
       onViewResult={(session) => setNav({ screen: 'results', session, fromArchive: true })}
@@ -142,7 +123,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
         markPracticeUsed(nav.moduleId)
         startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant: defaultVariant, practice: true })
       }}
-    />
+    /></div>
   }
   if (nav?.screen === 'exercise') {
     const ExMap = {
@@ -169,22 +150,21 @@ export default function TabKognitiv({ onBack, onExercising }) {
       saveSession(nav.session)
       setNav(prev => ({ ...prev, saved: true }))
     }
-    return <Results
+    return <div className={s.overlay}><Results
       session={nav.session}
       fromArchive={nav.fromArchive}
       onBack={goBack}
-      onSaveToCalendar={handleSaveToCalendar}
-    />
+    /></div>
   }
   if (nav?.screen === 'module-detail') {
-    return <ModuleDetail
+    return <div className={s.overlay}><ModuleDetail
       moduleId={nav.moduleId}
       onBack={goBack}
       onSelectSession={(session) => setNav({ screen: 'results', session, fromArchive: true })}
-    />
+    /></div>
   }
   if (nav?.screen === 'session-detail') {
-    return <SessionDetail session={nav.session} onBack={goBack} />
+    return <div className={s.overlay}><SessionDetail session={nav.session} onBack={goBack} /></div>
   }
 
   return (
@@ -192,7 +172,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
       <ToolHeader onBack={onBack} icon={<ToolIcon id="kognitiv" size={20} />} eyebrow="Tool" title="Kognitiv" />
       <div className={s.tabBar}>
         <button className={[s.tabBtn, tab === 'modules'   ? s.tabOn : ''].join(' ')} onClick={() => setTab('modules')}>Module</button>
-        <button className={[s.tabBtn, tab === 'dashboard' ? s.tabOn : ''].join(' ')} onClick={() => setTab('dashboard')}>Dashboard</button>
+        <button className={[s.tabBtn, tab === 'dashboard' ? s.tabOn : ''].join(' ')} onClick={() => setTab('dashboard')}>Statistik</button>
         <button className={[s.tabBtn, tab === 'settings'  ? s.tabOn : ''].join(' ')} onClick={() => setTab('settings')}>Einstellungen</button>
       </div>
       <div className={s.content}>

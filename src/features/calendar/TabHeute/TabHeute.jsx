@@ -409,19 +409,17 @@ export default function TabHeute() {
       return
     }
 
-    const duration = 30
     startDrag(chip.text, chipColor, (dropKey) => {
       const newTodo = createBlock({
         text:           chip.text,
         priority:       chip.type === 'birthday' ? 2 : 3,
         color:          chipColor,
         toolId:         'geburtstage',
-        duration,
         birthdayChipId: `${chip.type}-${chip.birthday.id}`,
       })
       setTodos(prev => [...prev, newTodo])
       if (dropKey !== 'pool') {
-        handleSetSlot(dropKey, { text: chip.text, todoId: newTodo.id, color: chipColor, duration, locked: false, done: false })
+        handleSetSlot(dropKey, { text: chip.text, todoId: newTodo.id, color: chipColor, locked: false, done: false })
         // Geburtstags-Chip in Zeitplan platziert → Kalender-Entry ausblenden
         if (chip.type === 'birthday') {
           const currentYear = new Date().getFullYear()

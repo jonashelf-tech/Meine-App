@@ -35,7 +35,7 @@
 .iconWrap {
   display: flex;
   align-items: center;
-  color: var(--text-faint);
+  color: var(--tc, var(--text-faint));
   flex-shrink: 0;
 }
 
@@ -43,7 +43,7 @@
   font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--tc, var(--text));
   display: flex;
   align-items: center;
   gap: 5px;
@@ -54,7 +54,8 @@
 
 .linkArr {
   font-size: 0.62rem;
-  color: var(--text-ghost);
+  color: var(--tc, var(--text-ghost));
+  opacity: 0.6;
   pointer-events: none;
 }
 
@@ -73,24 +74,24 @@
   flex-shrink: 0;
 }
 
-/* Action-Pill (lila, "+ N hinzufügen") */
+/* Action-Pill (tool-farbig) */
 .actionPill {
   display: flex;
   align-items: center;
   padding: 0 11px;
-  background: rgba(139, 92, 246, 0.14);
+  background: color-mix(in srgb, var(--tc, #8B5CF6) 14%, transparent);
   border: none;
   cursor: pointer;
   font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 700;
-  color: #a78bfa;
+  color: var(--tc, #a78bfa);
   white-space: nowrap;
   flex-shrink: 0;
   transition: background 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
-.actionPill:hover:not(:disabled) { background: rgba(139, 92, 246, 0.24); }
+.actionPill:hover:not(:disabled) { background: color-mix(in srgb, var(--tc, #8B5CF6) 26%, transparent); }
 .actionPill:disabled {
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.2);
@@ -105,12 +106,13 @@
   background: var(--surface-low);
   border: none;
   cursor: pointer;
-  color: var(--text-faint);
+  color: var(--tc, var(--text-faint));
+  opacity: 0.55;
   flex-shrink: 0;
-  transition: background 0.12s;
+  transition: background 0.12s, opacity 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
-.chevronPill:hover { background: var(--surface); }
+.chevronPill:hover { background: var(--surface); opacity: 0.85; }
 
 /* ── Body ────────────────────────────────────────── */
 .body {

@@ -375,3 +375,52 @@
 }
 
 .link:hover { opacity: 0.7; }
+
+/* ─── Tool-Reset ─────────────────────────────────────────── */
+.toolResetList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.toolResetRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.toolResetName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.toolResetName svg { color: var(--text-dim); flex-shrink: 0; }
+
+.toolResetBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.toolResetBtn:hover { border-color: var(--rose); color: var(--rose); }
+
+.toolResetBtnConfirm {
+  background: rgba(251,113,133,0.1);
+  border-color: var(--rose);
+  color: var(--rose);
+}

@@ -1,16 +1,4 @@
-﻿.body { padding: 12px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
-
-.checkinRow {
-  display: flex; flex-wrap: wrap; gap: 8px 16px;
-  padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.checkinItem { display: flex; align-items: center; gap: 6px; }
-.lbl { font-size: 0.68rem; color: var(--text-dim); }
-.dotDisp { display: flex; gap: 3px; align-items: center; }
-.dotD { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.1); }
-.dotDOn { background: var(--primary); }
-.mediInfo { font-size: 0.72rem; color: var(--text-dim); }
-.note { font-size: 0.72rem; color: var(--text-dim); font-style: italic; width: 100%; }
+.body { padding: 12px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
 
 .pending { display: flex; flex-direction: column; gap: 5px; }
 .pendingRow { display: flex; align-items: center; gap: 8px; }
@@ -22,13 +10,3 @@
   color: var(--primary); font-size: 0.65rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-
-.sessDivider { height: 1px; background: rgba(255,255,255,0.05); }
-
-.empty { font-size: 0.75rem; color: var(--text-faint); padding: 2px 0; }
-
-.sessions { display: flex; flex-direction: column; gap: 6px; }
-.sessRow { display: flex; align-items: center; gap: 8px; }
-.sessName { font-size: 0.75rem; color: var(--text-dim); flex: 1; }
-.sessVal { font-family: var(--font-num); font-size: 0.68rem; color: var(--primary); }
-.sessTime { font-size: 0.65rem; color: var(--text-faint); }

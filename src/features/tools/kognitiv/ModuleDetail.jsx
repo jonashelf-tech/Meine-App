@@ -67,12 +67,10 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
             <button key={sess.id} className={s.sessRow} onClick={() => onSelectSession(sess)}>
               <div className={s.sessDate}>{fmtDate(sess.startedAt)} · {fmtTime(sess.startedAt)} · {sess.variant}</div>
               <div className={s.sessRight}>
+                <span className={[s.sessDelta, delta == null ? '' : delta > 0 ? s.deltaGood : s.deltaBad].join(' ')}>
+                  {delta == null ? '' : delta > 0 ? `▲${delta}` : `▼${Math.abs(delta)}`}
+                </span>
                 <span className={s.sessVal}>{sess.mainMetric}{m.mainMetricUnit}</span>
-                {delta !== null && (
-                  <span className={[s.sessDelta, delta > 0 ? s.deltaGood : s.deltaBad].join(' ')}>
-                    {delta > 0 ? `▲${delta}` : `▼${Math.abs(delta)}`}
-                  </span>
-                )}
                 <span className={s.sessArr}>›</span>
               </div>
             </button>

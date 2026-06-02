@@ -36,6 +36,7 @@ export default function ToolSection({
   const sectionStyle = color ? {
     border:    `1.5px solid ${color}77`,
     boxShadow: `0 0 10px ${color}22`,
+    '--tc':    color,
   } : undefined
 
   return (

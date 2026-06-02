@@ -42,6 +42,42 @@ export default function HaushaltSection({ onStartDrag }) {
   const [config,  setConfig]  = useState(() => loadHaushalt())
   const [energie, setEnergie] = useState(() => lv(SK.haushaltEnergie, 'normal'))
 
+  const toolColor = getToolColor('haushalt', toolColors)
+
+  if (!config.briefingDone) {
+    return (
+      <ToolSection
+        toolId="haushalt"
+        title="Haushalt"
+        color={toolColor}
+        onTitleClick={() => setCurrentTab(TOOL_TAB.haushalt)}
+      >
+        <div style={{ padding: '4px 0 8px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontFamily: 'var(--font)', lineHeight: 1.4 }}>
+            Richte Haushalt einmal kurz ein — dann siehst du hier was fällig ist.
+          </span>
+          <button
+            onClick={() => setCurrentTab(TOOL_TAB.haushalt)}
+            style={{
+              alignSelf: 'flex-start',
+              background: `${toolColor}22`,
+              border: `1px solid ${toolColor}55`,
+              borderRadius: 8,
+              color: toolColor,
+              fontFamily: 'var(--font)',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              padding: '7px 14px',
+              cursor: 'pointer',
+            }}
+          >
+            Haushalt einrichten →
+          </button>
+        </div>
+      </ToolSection>
+    )
+  }
+
   // Re-sync wenn Haushalt-Pool-Todos ihren done-State ändern (TabHeute schreibt direkt in localStorage)
   const haushaltDoneKey = todos
     .filter(t => t.toolId === 'haushalt')
@@ -66,7 +102,6 @@ export default function HaushaltSection({ onStartDrag }) {
     sv(SK.haushaltEnergie, val)
   }
 
-  const toolColor = getToolColor('haushalt', toolColors)
   const dueRooms  = getDueRooms(config, energie)
   const score     = calcRingScore(config.rooms)
   const badgeBg   = score >= 70

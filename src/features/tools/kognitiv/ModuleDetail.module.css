@@ -19,9 +19,9 @@
 .list { display: flex; flex-direction: column; gap: 5px; }
 .sessRow { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: left; }
 .sessDate { font-size: 0.65rem; color: var(--text-dim); }
-.sessRight { display: flex; align-items: center; gap: 6px; }
-.sessVal { font-family: var(--font-num); font-size: 0.75rem; font-weight: 700; color: var(--text); }
-.sessDelta { font-size: 0.6rem; font-weight: 600; }
+.sessRight { display: flex; align-items: center; gap: 8px; }
+.sessVal { font-family: var(--font-num); font-size: 0.75rem; font-weight: 700; color: var(--text); min-width: 50px; text-align: right; }
+.sessDelta { font-family: var(--font-num); font-size: 0.6rem; font-weight: 600; min-width: 34px; text-align: right; }
 .deltaGood { color: var(--emerald); }
 .deltaBad  { color: var(--rose); }
 .sessArr { color: var(--text-dim); font-size: 0.8rem; }

@@ -16,7 +16,7 @@ function DotRow({ value }) {
   )
 }
 
-export default function Results({ session, fromArchive = false, onBack, onSaveToCalendar }) {
+export default function Results({ session, fromArchive = false, onBack }) {
   const m        = MODULE_CONFIG[session.moduleId]
   const delta    = getDelta(session.moduleId, session.mainMetric)
   const last7    = getModuleSessions(session.moduleId).slice(-7)
@@ -29,7 +29,7 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
 
   // SVG chart constants
   const VW = 300, VH = 80
-  const pl = 5, pr = 46, pt = 8, pb = 20
+  const pl = 27, pr = 46, pt = 8, pb = 20
   const iW = VW - pl - pr, iH = VH - pt - pb
   const errY = VH - 7
   const cMin = hitTimes.length > 0 ? Math.min(...hitTimes) * 0.85 : 0
@@ -140,55 +140,171 @@ export default function Results({ session, fromArchive = false, onBack, onSaveTo
       {hitTimes.length > 1 && (
         <div className={s.auswertung}>
           <div className={s.auswLabel}>Auswertung</div>
-          <svg className={s.chart} viewBox={`0 0 ${VW} ${VH}`}>
-            {/* avg dashed line */}
-            <line x1={pl} x2={VW - pr} y1={cAvgY} y2={cAvgY}
-              stroke="var(--accent)" strokeWidth="1" strokeDasharray="4 3" opacity="0.45" />
-            <text x={VW - pr + 4} y={cAvgY + 2.5} fontSize="6.5" fill="var(--accent)"
-              fontFamily="var(--font-num)" fontWeight="700" opacity="0.9">
-              {sessionAvg.toFixed(2)}s
-            </text>
-            <text x={VW - pr + 4} y={cAvgY + 10} fontSize="5" fill="var(--accent)" opacity="0.5">Ø</text>
 
-            {/* connecting line through correct taps */}
-            {cPoints && (
-              <polyline points={cPoints} fill="none"
-                stroke="var(--accent)" strokeWidth="1.3" opacity="0.25" strokeLinejoin="round" />
-            )}
+          {session.moduleId === 'zahlensuche' ? (
+            // ── Zahlensuche: Balken pro Zahl (Zeit) mit Y-Skala ──────────
+            (() => {
+              const bVW = 300, bVH = 84
+              const bPl = 22, bPr = 4, bPt = 6, bPb = 16  // links Platz für Y-Achse
+              const bIW = bVW - bPl - bPr, bIH = bVH - bPt - bPb
+              const total = session.score?.total ?? hitTimes.length
+              const slots = Array.from({ length: total }, (_, i) => {
+                const correctTap = taps.find(t => t.correct && t.index === i)
+                const hasErr     = taps.some(t => !t.correct && t.index === i)
+                return { i, time: correctTap?.time ?? null, hasErr }
+              })
+              const maxTime = Math.max(...slots.map(sl => sl.time ?? 0), sessionAvg) || 1
+              const bW    = (bIW / total) * 0.72
+              const bGap  = (bIW / total) * 0.28
+              const toX   = i => bPl + i * (bIW / total) + bGap / 2
+              const toH   = t => Math.max(2, (t / maxTime) * bIH)
+              const toY   = t => bPt + bIH - (t / maxTime) * bIH
+              const avgY  = toY(sessionAvg)
 
-            {/* dots */}
-            {taps.map((tap, i) => {
-              if (!tap.correct || tap.time == null) {
-                return <circle key={i} cx={cToX(i)} cy={errY} r="2.8" fill="var(--rose)" opacity="0.85" />
-              }
+              // Y-Achse: 3 saubere Ticks (0, Mitte, Max — aufgerundet)
+              const tickMax  = Math.ceil(maxTime * 10) / 10
+              const tickMid  = Math.round(tickMax / 2 * 10) / 10
+              const yTicks   = [{ val: 0, y: bPt + bIH }, { val: tickMid, y: toY(tickMid) }, { val: tickMax, y: toY(tickMax) }]
+
               return (
-                <circle key={i} cx={cToX(i)} cy={cToY(tap.time)} r="2.8"
-                  fill={tap.time <= sessionAvg ? 'var(--emerald)' : 'var(--accent)'} opacity="0.9" />
-              )
-            })}
+                <svg className={s.chart} viewBox={`0 0 ${bVW} ${bVH}`}>
+                  {/* Y-Achse Linie */}
+                  <line x1={bPl} x2={bPl} y1={bPt} y2={bPt + bIH}
+                    stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
 
-            {/* error zone separator */}
-            {taps.some(t => !t.correct) && (
-              <>
-                <line x1={pl} x2={VW - pr} y1={VH - pb + 2} y2={VH - pb + 2}
-                  stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-                <text x={pl} y={VH - 1} fontSize="5" fill="var(--rose)" opacity="0.5">Fehler</text>
-              </>
-            )}
-          </svg>
+                  {/* Y-Achse Ticks + Labels */}
+                  {yTicks.map(({ val, y }) => (
+                    <g key={val}>
+                      <line x1={bPl - 2} x2={bPl} y1={y} y2={y}
+                        stroke="rgba(255,255,255,0.2)" strokeWidth="0.5" />
+                      <text x={bPl - 4} y={y + 2} fontSize="5.5" fill="rgba(255,255,255,0.35)"
+                        textAnchor="end" fontFamily="var(--font-num)">
+                        {val === 0 ? '0' : `${val}s`}
+                      </text>
+                      {val > 0 && (
+                        <line x1={bPl} x2={bPl + bIW} y1={y} y2={y}
+                          stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                      )}
+                    </g>
+                  ))}
+
+                  {/* Ø-Linie */}
+                  <line x1={bPl} x2={bPl + bIW} y1={avgY} y2={avgY}
+                    stroke="var(--accent)" strokeWidth="0.8" strokeDasharray="3 2" opacity="0.5" />
+                  <text x={bPl + bIW + 2} y={avgY + 2} fontSize="5" fill="var(--accent)"
+                    fontFamily="var(--font-num)" opacity="0.7">Ø</text>
+
+                  {/* Balken */}
+                  {slots.map(({ i, time, hasErr }) => {
+                    const x = toX(i)
+                    const h = time != null ? toH(time) : 0
+                    const y = bPt + bIH - h
+                    const fill = time == null ? 'rgba(255,255,255,0.08)'
+                      : time <= sessionAvg ? 'var(--emerald)' : 'var(--accent)'
+                    return (
+                      <g key={i}>
+                        <rect x={x} y={y} width={bW} height={Math.max(h, 2)}
+                          fill={fill} opacity={time == null ? 0.3 : 0.85} rx="1" />
+                        {hasErr && (
+                          <circle cx={x + bW / 2} cy={bPt + bIH + 5} r="1.5"
+                            fill="var(--rose)" opacity="0.9" />
+                        )}
+                      </g>
+                    )
+                  })}
+
+                  {/* X-Achse: Zahl-Label alle 5 */}
+                  {slots.filter(sl => sl.i % 5 === 0).map(({ i }) => (
+                    <text key={i} x={toX(i) + bW / 2} y={bVH - 3}
+                      fontSize="5" fill="rgba(255,255,255,0.25)"
+                      textAnchor="middle" fontFamily="var(--font-num)">
+                      {i + 1}
+                    </text>
+                  ))}
+
+                  {/* X-Achse Label */}
+                  <text x={bPl + bIW / 2} y={bVH} fontSize="4.5"
+                    fill="rgba(255,255,255,0.18)" textAnchor="middle">
+                    Zahl
+                  </text>
+                </svg>
+              )
+            })()
+          ) : (
+          // ── Reaktionszeit-Scatter mit Y-Skala (Sekunden) ───────────────
+          (() => {
+            const tickLo  = Math.min(...hitTimes)
+            const tickHi  = Math.max(...hitTimes)
+            const tickMid = (tickLo + tickHi) / 2
+            const yTicks  = [tickLo, tickMid, tickHi].map(val => ({ val, y: cToY(val) }))
+
+            return (
+              <svg className={s.chart} viewBox={`0 0 ${VW} ${VH}`}>
+                {/* Y-Achse + Skala */}
+                <line x1={pl} x2={pl} y1={pt} y2={pt + iH}
+                  stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+                {yTicks.map(({ val, y }) => (
+                  <g key={val}>
+                    <line x1={pl} x2={VW - pr} y1={y} y2={y}
+                      stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+                    <line x1={pl - 2} x2={pl} y1={y} y2={y}
+                      stroke="rgba(255,255,255,0.2)" strokeWidth="0.5" />
+                    <text x={pl - 4} y={y + 2} fontSize="5.5" fill="rgba(255,255,255,0.4)"
+                      textAnchor="end" fontFamily="var(--font-num)">
+                      {val.toFixed(2)}s
+                    </text>
+                  </g>
+                ))}
+
+                {/* Ø-Linie */}
+                <line x1={pl} x2={VW - pr} y1={cAvgY} y2={cAvgY}
+                  stroke="var(--accent)" strokeWidth="1" strokeDasharray="4 3" opacity="0.45" />
+                <text x={VW - pr + 4} y={cAvgY + 2.5} fontSize="6.5" fill="var(--accent)"
+                  fontFamily="var(--font-num)" fontWeight="700" opacity="0.9">
+                  {sessionAvg.toFixed(2)}s
+                </text>
+                <text x={VW - pr + 4} y={cAvgY + 10} fontSize="5" fill="var(--accent)" opacity="0.5">Ø</text>
+
+                {cPoints && (
+                  <polyline points={cPoints} fill="none"
+                    stroke="var(--accent)" strokeWidth="1.3" opacity="0.25" strokeLinejoin="round" />
+                )}
+                {taps.map((tap, i) => {
+                  if (!tap.correct || tap.time == null) {
+                    return <circle key={i} cx={cToX(i)} cy={errY} r="2.8" fill="var(--rose)" opacity="0.85" />
+                  }
+                  return (
+                    <circle key={i} cx={cToX(i)} cy={cToY(tap.time)} r="2.8"
+                      fill={tap.time <= sessionAvg ? 'var(--emerald)' : 'var(--accent)'} opacity="0.9" />
+                  )
+                })}
+                {taps.some(t => !t.correct) && (
+                  <>
+                    <line x1={pl} x2={VW - pr} y1={VH - pb + 2} y2={VH - pb + 2}
+                      stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+                    <text x={pl} y={VH - 1} fontSize="5" fill="var(--rose)" opacity="0.5">Fehler</text>
+                  </>
+                )}
+              </svg>
+            )
+          })()
+          )}
+
           <div className={s.auswFooter}>
             <div className={s.auswStat}>
               <div className={s.auswVal}>{sessionAvg.toFixed(2)}s</div>
-              <div className={s.auswLbl}>Ø Session</div>
+              <div className={s.auswLbl}>Ø / Zahl</div>
             </div>
             <div className={s.auswStat}>
               <div className={s.auswVal}>{hitTimes.length > 0 ? Math.min(...hitTimes).toFixed(2) : '—'}s</div>
-              <div className={s.auswLbl}>Beste</div>
+              <div className={s.auswLbl}>Schnellste</div>
             </div>
             <div className={s.auswLegend}>
               <span className={s.legendDot} style={{ background: 'var(--emerald)' }} />schnell
-              <span className={s.legendDot} style={{ background: 'var(--accent)' }} />normal
-              <span className={s.legendDot} style={{ background: 'var(--rose)' }} />Fehler
+              <span className={s.legendDot} style={{ background: 'var(--accent)' }} />langsam
+              {taps.some(t => !t.correct) && (
+                <><span className={s.legendDot} style={{ background: 'var(--rose)' }} />Fehler</>
+              )}
             </div>
           </div>
         </div>

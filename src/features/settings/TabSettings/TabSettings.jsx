@@ -7,7 +7,33 @@ import {
   markOffDeviceBackup,
 } from '../../../storage'
 import { useToast } from '../../../components/Toast/Toast'
+import { TOOL_REGISTRY, ToolIcon } from '../../tools/toolRegistry'
+import { TOOL_RESETS, resetTool } from '../../tools/toolReset'
 import s from './TabSettings.module.css'
+
+const RESETTABLE_TOOLS = TOOL_REGISTRY.filter(t => TOOL_RESETS[t.id])
+
+function ToolResetRow({ tool }) {
+  const [confirm, setConfirm] = useState(false)
+  const handle = () => {
+    if (!confirm) { setConfirm(true); return }
+    resetTool(tool.id)
+  }
+  return (
+    <div className={s.toolResetRow}>
+      <span className={s.toolResetName}>
+        <ToolIcon id={tool.id} size={18} /> {tool.name}
+      </span>
+      <button
+        className={[s.toolResetBtn, confirm ? s.toolResetBtnConfirm : ''].join(' ')}
+        onClick={handle}
+        onBlur={() => setConfirm(false)}
+      >
+        {confirm ? '⚠ Wirklich?' : '↺ Zurücksetzen'}
+      </button>
+    </div>
+  )
+}
 
 const THEMES = [
   { id: 'system', label: 'System' },
@@ -306,6 +332,19 @@ export default function TabSettings() {
           >
             {confirmReset ? '⚠ Wirklich löschen? (nochmal tippen)' : '✕ Alles zurücksetzen'}
           </button>
+        </div>
+      </section>
+
+      <section className={s.card}>
+        <h3 className={s.cardTitle}>Tools zurücksetzen</h3>
+        <p className={s.infoText}>
+          Setzt ein Tool auf den Urzustand zurück — alle eigenen Daten des Tools
+          werden gelöscht und die Standard-Vorlagen wiederhergestellt.
+        </p>
+        <div className={s.toolResetList}>
+          {RESETTABLE_TOOLS.map(tool => (
+            <ToolResetRow key={tool.id} tool={tool} />
+          ))}
         </div>
       </section>
     </div>
