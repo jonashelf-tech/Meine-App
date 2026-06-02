@@ -259,7 +259,7 @@
   border-bottom: 1px solid var(--border);
   background: var(--surface-low);
   flex-shrink: 0;
-  min-height: 18px;
+  min-height: 26px;
 }
 
 .weekAlldayLabel {
@@ -1153,4 +1153,161 @@
   transform-origin: top left;
   overflow: hidden;
   will-change: left, top;
+}
+
+/* ─── Tool-Karten (DayPanel) ──────────────────────────────── */
+.toolCard {
+  background: var(--surface);
+  border-radius: var(--r);
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.toolCardHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.toolCardTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex: 1;
+  font-family: var(--font);
+}
+
+.toolCardArrow {
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+.toolCardOpenBtn {
+  font-size: 10px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+
+.toolCardBody {
+  padding: 0 10px 8px;
+}
+
+.cardEntry {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.cardEntry:last-child {
+  border-bottom: none;
+}
+
+.cardEntryTop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.cardEntryCheck {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.cardEntryName {
+  font-size: 12px;
+  font-weight: 600;
+  flex: 1;
+  color: var(--text);
+}
+
+.cardEntryTime {
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-left: 17px;
+}
+
+.cardTag {
+  font-size: 10px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  background: rgba(255,255,255,0.07);
+  color: var(--text-dim);
+}
+
+.cardTagPos { color: var(--emerald); }
+.cardTagNeg { color: var(--rose); }
+
+.gewCardRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0 2px;
+}
+
+.gewVal {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.gewUnit {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-left: -2px;
+}
+
+.gewKcal {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.elviDoses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.elviDosePill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-family: var(--font);
+}
+
+.elviRatings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.elviRatingTag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.07);
+  color: var(--text-dim);
+}
+
+.elviNotes {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  font-style: italic;
+  border-left: 2px solid var(--border);
+  padding-left: 6px;
 }
