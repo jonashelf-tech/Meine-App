@@ -53,6 +53,9 @@ export default function ToolSection({
           {onTitleClick && <span className={s.linkArr}>↗</span>}
         </span>
 
+        {/* Spacer — füllt restliche Breite, gehört zum toggle-Bereich */}
+        <span className={s.spacer} />
+
         {/* Badge — optional (z.B. "42%" bei Haushalt, Session-Count bei Kognitiv) */}
         {badge != null && (
           <span

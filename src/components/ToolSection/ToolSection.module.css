@@ -28,7 +28,7 @@
   flex-shrink: 0;
 }
 
-/* Titel */
+/* Titel — nur so breit wie der Text, Rest = Spacer */
 .title {
   font-family: var(--font);
   font-size: 11px;
@@ -39,9 +39,11 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 1;
-  min-width: 0;
+  flex-shrink: 0;
 }
+
+/* Spacer — nimmt restliche Breite, togglet per Header-Click */
+.spacer { flex: 1; }
 
 .titleLink { cursor: pointer; }
 
