@@ -132,7 +132,7 @@ export default function TodoChip({
 
 
   const { toolColors, klaerenSettings } = useAppStore()
-  const threshold = klaerenSettings?.threshold ?? 30
+  const threshold = klaerenSettings?.threshold ?? 7
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
   const color     = todo.color || '#8B5CF6'
   const glowColor = todo.toolId ? getToolColor(todo.toolId, toolColors) : null

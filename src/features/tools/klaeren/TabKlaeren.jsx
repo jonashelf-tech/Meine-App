@@ -18,38 +18,42 @@ const KlaerenIcon = () => (
 )
 
 export default function TabKlaeren({ onBack }) {
-  const { todos, setTodos, toolColors, klaerenSettings, setKlaerenSettings } = useAppStore()
+  const { todos, setTodos, days, toolColors, klaerenSettings, setKlaerenSettings } = useAppStore()
   const [klaerenTodo,  setKlaerenTodo]  = useState(null)
-  const [pickerOpen,   setPickerOpen]   = useState(false)
-  const [search,       setSearch]       = useState('')
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-  const threshold = klaerenSettings?.threshold ?? 30
+  const threshold = klaerenSettings?.threshold ?? 7
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
 
   const AGE_COLOR_PRESETS = ['#FB923C', '#F87171', '#FACC15', '#34D399', '#60A5FA']
 
   const toolColor = getToolColor('klaeren', toolColors)
 
+  // IDs aller Todos die irgendwo im Zeitplan verplant sind
+  const scheduledIds = useMemo(() => {
+    const ids = new Set()
+    Object.values(days).forEach(daySlots => {
+      Object.values(daySlots ?? {}).forEach(slot => {
+        if (slot?.todoId) ids.add(slot.todoId)
+      })
+    })
+    return ids
+  }, [days])
+
   const oldTodos = useMemo(() => (
     todos
-      .filter(t => !t.done && getAgeDays(t.createdAt) >= threshold)
-      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-  ), [todos, threshold])
-
-  const pickerTodos = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    return todos
-      .filter(t => !t.done)
-      .filter(t => !q || t.text.toLowerCase().includes(q))
-      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-  }, [todos, search])
-
-  const openPicker = (todo) => {
-    setPickerOpen(false)
-    setSearch('')
-    setKlaerenTodo(todo)
-  }
+      .filter(t =>
+        !t.done &&
+        !scheduledIds.has(t.id) &&
+        getAgeDays(t.createdAt) >= threshold
+      )
+      .sort((a, b) => {
+        const pa = a.priority ?? 3
+        const pb = b.priority ?? 3
+        if (pa !== pb) return pa - pb                          // Prio 1 zuerst
+        return new Date(a.createdAt) - new Date(b.createdAt)  // dann älteste
+      })
+  ), [todos, scheduledIds, threshold])
 
   return (
     <div className={s.page}>
@@ -78,14 +82,6 @@ export default function TabKlaeren({ onBack }) {
             )
           })
         )}
-
-        <button
-          className={s.pickBtn}
-          style={{ '--tool-color': toolColor }}
-          onClick={() => setPickerOpen(true)}
-        >
-          + Beliebiges Todo wählen
-        </button>
 
         {/* ── Einstellungen ──────────────────────────────── */}
         <div className={s.settingsSection}>
@@ -135,44 +131,6 @@ export default function TabKlaeren({ onBack }) {
           )}
         </div>
       </div>
-
-      {/* ── Picker overlay ─────────────────────────────────── */}
-      {pickerOpen && (
-        <div className={s.pickerOverlay} onClick={() => { setPickerOpen(false); setSearch('') }}>
-          <div className={s.pickerModal} onClick={e => e.stopPropagation()}>
-            <div className={s.pickerHeader}>
-              <span className={s.pickerTitle}>Todo auswählen</span>
-              <button className={s.pickerClose} onClick={() => { setPickerOpen(false); setSearch('') }}>✕</button>
-            </div>
-            <input
-              className={s.pickerSearch}
-              placeholder="Suchen…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              autoFocus
-            />
-            <div className={s.pickerList}>
-              {pickerTodos.length === 0 ? (
-                <div className={s.pickerEmpty}>Keine Todos gefunden</div>
-              ) : (
-                pickerTodos.map(todo => (
-                  <button
-                    key={todo.id}
-                    className={s.pickerRow}
-                    style={{ '--tool-color': toolColor }}
-                    onClick={() => openPicker(todo)}
-                  >
-                    <span className={s.pickerAge}>
-                      {getAgeDays(todo.createdAt) > 0 ? `${getAgeDays(todo.createdAt)} T` : 'neu'}
-                    </span>
-                    <span className={s.pickerText}>{todo.text}</span>
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── Klären-Modal ───────────────────────────────────── */}
       {klaerenTodo && (
