@@ -1,10 +1,29 @@
 import { useState, useMemo } from 'react'
-import { createZutat, createRezept, SLOTS, SLOT_LABELS, BEHAELTER, EINKAUF_KATEGORIEN } from './mealprepModel'
+import { createZutat, createRezept, SLOTS, BEHAELTER, EINKAUF_KATEGORIEN } from './mealprepModel'
 import { findUsages } from './mealprepStore'
 import { rezeptProPortion } from './naehrwerte'
 import { istBasis } from './mealprepModel'
 import Naehrwert from './Naehrwert'
 import s from './Editor.module.css'
+
+// Kurze Chip-Labels für lange Strings
+const KAT_KURZ = {
+  'Fleisch & Fisch': 'Fleisch',
+  'Milchprodukte': 'Milch',
+  'Brot & Getreide': 'Getreide',
+  'Konserven & Trockenwaren': 'Konserven',
+  'Gemüse & Obst': 'Gemüse',
+  'Gewürze': 'Gewürze',
+  'Sonstiges': 'Sonstiges',
+}
+
+const SLOT_CHIPS = [
+  { val: null,       label: '—' },
+  { val: 'protein',  label: 'Protein' },
+  { val: 'kh',       label: 'KH' },
+  { val: 'gemuese',  label: 'Gemüse' },
+  { val: 'sauce',    label: 'Sauce' },
+]
 
 export default function Editor({
   form, data, zutaten, rezepte, koerbe,
@@ -21,7 +40,7 @@ export default function Editor({
   const [addZutatMenge, setAddZutatMenge] = useState('')
   const [addKompId, setAddKompId] = useState('')
   const [addKompMenge, setAddKompMenge] = useState('')
-  const [usageWarning, setUsageWarning] = useState(null)  // { rezepte, koerbe } | null
+  const [usageWarning, setUsageWarning] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   const set = (field, val) => setDraft(d => ({ ...d, [field]: val }))
@@ -109,32 +128,57 @@ export default function Editor({
 
         {/* ── FORM A: ZUTAT ── */}
         {form === 'zutat' && <>
-          <div className={s.row2}>
-            <div className={s.field}>
-              <label className={s.label}>Einheit</label>
-              <select className={s.select} value={draft.einheit} onChange={e => set('einheit', e.target.value)}>
-                {['g','ml','Stk','EL','TL','Bund','Dose','Pck','Becher'].map(u => <option key={u}>{u}</option>)}
-              </select>
+
+          {/* Einheit */}
+          <div className={s.field}>
+            <label className={s.label}>Einheit</label>
+            <div className={s.chipGroup}>
+              {['g','ml','Stk','EL','TL','Bund','Dose','Pck','Becher'].map(u => (
+                <button key={u}
+                  className={`${s.optChip} ${draft.einheit === u ? s.optChipOn : ''}`}
+                  onClick={() => set('einheit', u)}>
+                  {u}
+                </button>
+              ))}
             </div>
-            <div className={s.field}>
-              <label className={s.label}>Einkauf-Kategorie</label>
-              <select className={s.select} value={draft.einkaufKategorie} onChange={e => set('einkaufKategorie', e.target.value)}>
-                {EINKAUF_KATEGORIEN.map(k => <option key={k}>{k}</option>)}
-              </select>
+          </div>
+
+          {/* Einkauf-Kategorie */}
+          <div className={s.field}>
+            <label className={s.label}>Einkauf-Kategorie</label>
+            <div className={s.chipGroup}>
+              {EINKAUF_KATEGORIEN.map(k => (
+                <button key={k}
+                  className={`${s.optChip} ${draft.einkaufKategorie === k ? s.optChipOn : ''}`}
+                  onClick={() => set('einkaufKategorie', k)}>
+                  {KAT_KURZ[k] ?? k}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Konfigurator-Slot + g/Portion */}
+          <div className={s.field}>
+            <label className={s.label}>Konfigurator-Slot</label>
+            <div className={s.chipGroup}>
+              {SLOT_CHIPS.map(({ val, label }) => (
+                <button key={label}
+                  className={`${s.optChip} ${(draft.bausteinTyp ?? null) === val ? s.optChipOn : ''}`}
+                  onClick={() => set('bausteinTyp', val)}>
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className={s.row2}>
             <div className={s.field}>
-              <label className={s.label}>Konfigurator-Slot</label>
-              <select className={s.select} value={draft.bausteinTyp ?? ''} onChange={e => set('bausteinTyp', e.target.value || null)}>
-                <option value="">keiner</option>
-                {SLOTS.map(slot => <option key={slot} value={slot}>{SLOT_LABELS[slot]}</option>)}
-              </select>
-            </div>
-            <div className={s.field}>
               <label className={s.label}>g / Portion</label>
               <input className={s.input} type="number" value={draft.gProPortion ?? ''} onChange={e => set('gProPortion', parseFloat(e.target.value) || null)} placeholder="—"/>
+            </div>
+            <div className={s.field}>
+              <label className={s.label}>Garnotiz</label>
+              <input className={s.input} value={draft.garNotiz ?? ''} onChange={e => set('garNotiz', e.target.value || null)} placeholder="z.B. scharf anbraten"/>
             </div>
           </div>
 
@@ -146,11 +190,6 @@ export default function Editor({
                 <input className={s.input} type="number" value={draft.naehrwert?.[f] ?? 0} onChange={e => setNaehrwert(f, e.target.value)}/>
               </div>
             ))}
-          </div>
-
-          <div className={s.field}>
-            <label className={s.label}>Garnotiz (kurz)</label>
-            <input className={s.input} value={draft.garNotiz ?? ''} onChange={e => set('garNotiz', e.target.value || null)} placeholder="z.B. scharf anbraten"/>
           </div>
         </>}
 
@@ -219,9 +258,15 @@ export default function Editor({
             </div>
             <div className={s.field}>
               <label className={s.label}>Einheit</label>
-              <select className={s.select} value={draft.ergibtEinheit ?? 'ml'} onChange={e => set('ergibtEinheit', e.target.value)}>
-                {['ml','g','Stk','Portionen'].map(u => <option key={u}>{u}</option>)}
-              </select>
+              <div className={s.chipGroup}>
+                {['ml','g','Stk','Portionen'].map(u => (
+                  <button key={u}
+                    className={`${s.optChip} ${(draft.ergibtEinheit ?? 'ml') === u ? s.optChipOn : ''}`}
+                    onClick={() => set('ergibtEinheit', u)}>
+                    {u}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -253,7 +298,7 @@ export default function Editor({
           })}
           <div className={s.addRow}>
             <select className={s.select} value={addZutatId} onChange={e => setAddZutatId(e.target.value)}>
-              <option value="">+ Zutat wählen…</option>
+              <option value="">Zutat wählen…</option>
               {zutaten.filter(z => !(draft.zutaten ?? []).some(x => x.zutatId === z.id)).map(z => (
                 <option key={z.id} value={z.id}>{z.name}</option>
               ))}
@@ -263,7 +308,7 @@ export default function Editor({
           </div>
 
           {/* Komponenten */}
-          <div className={s.sectionHead}>Kann abgeleitet werden aus</div>
+          <div className={s.sectionHead}>Abgeleitet aus Basis</div>
           {(draft.komponenten ?? []).map(k => {
             const r = rById(k.rezeptId)
             return (
@@ -276,7 +321,7 @@ export default function Editor({
           })}
           <div className={s.addRow}>
             <select className={s.select} value={addKompId} onChange={e => setAddKompId(e.target.value)}>
-              <option value="">+ Basis wählen…</option>
+              <option value="">Basis wählen…</option>
               {basenRezepte.filter(r => !(draft.komponenten ?? []).some(k => k.rezeptId === r.id)).map(r => (
                 <option key={r.id} value={r.id}>{r.name}</option>
               ))}

@@ -1,4 +1,4 @@
-.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 16px; }
+.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
 .topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
 
 .addBtn {
@@ -7,11 +7,12 @@
 }
 
 /* ── Card ──────────────────────────────────────────────────────────────── */
-.card { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+.card { border: 1px solid var(--border); border-radius: var(--r); background: var(--bg2); overflow: hidden; }
 
 .cardHeader {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; cursor: pointer; user-select: none;
+  padding: 11px 14px; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent; min-height: 44px;
 }
 .cardHeaderLeft  { display: flex; align-items: center; gap: 6px; }
 .cardHeaderRight { display: flex; align-items: center; gap: 6px; }

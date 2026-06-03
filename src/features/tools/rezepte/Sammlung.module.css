@@ -1,4 +1,4 @@
-.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 16px; }
+.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
 
 .topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
 
@@ -6,16 +6,20 @@
   background: none;
   border: 1px solid var(--border);
   color: var(--text-dim);
-  padding: 6px 12px;
+  padding: 8px 14px;
+  min-height: 36px;
   border-radius: var(--r-sm);
   font-size: 0.82rem;
   cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
+.newKatBtn:hover { color: var(--text); border-color: var(--text-dim); }
 
 .card {
   border: 1px solid var(--border);
   border-radius: var(--r);
-  background: var(--surface);
+  background: var(--bg2);
   overflow: hidden;
 }
 
@@ -23,9 +27,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
+  padding: 11px 14px;
   cursor: pointer;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
 }
 
 .cardTitle { font-weight: 600; font-size: 0.9rem; }
@@ -59,7 +65,7 @@
 .rowSelected { background: rgba(255,255,255,0.04); }
 
 .selectBtn {
-  width: 28px; min-width: 28px; height: 28px;
+  width: 32px; min-width: 32px; height: 32px;
   border-radius: var(--r-sm);
   border: 1px solid var(--border-dim);
   background: none;
@@ -69,6 +75,7 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .selectBtnOn {
   color: var(--tool-color);
@@ -91,10 +98,12 @@
   color: var(--text-dim);
   font-size: 0.85rem;
   cursor: pointer;
-  padding: 4px 6px;
+  padding: 6px 8px;
+  min-height: 36px;
   border-radius: var(--r-sm);
   flex-shrink: 0;
   transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .konfBtn:hover, .editBtn:hover { color: var(--text); }
 

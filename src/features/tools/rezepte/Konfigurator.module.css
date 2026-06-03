@@ -1,11 +1,11 @@
-.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 80px; }
+.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 80px; }
 .gesamtRow { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 4px; }
 .gesamtLabel { font-weight: 600; }
 .stepper { display: flex; align-items: center; gap: 8px; }
 .stepBtn { width: 32px; height: 32px; border-radius: var(--r-sm); border: 1px solid var(--border); background: none; color: var(--text); font-size: 1.1rem; cursor: pointer; }
 .stepVal { font-family: Orbitron, monospace; font-size: 1rem; min-width: 24px; text-align: center; }
-.slotCard { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
-.slotHeader { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; cursor: pointer; user-select: none; }
+.slotCard { border: 1px solid var(--border); border-radius: var(--r); background: var(--bg2); overflow: hidden; }
+.slotHeader { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; min-height: 44px; }
 .slotTitle { font-weight: 600; font-size: 0.9rem; }
 .slotHeaderRight { display: flex; align-items: center; gap: 8px; }
 .dist { font-size: 0.75rem; color: var(--text-dim); font-family: Orbitron, monospace; }

@@ -42,10 +42,11 @@
 
 .actions { display: flex; gap: 8px; padding: 4px 0; }
 .actionBtn {
-  flex: 1; padding: 10px; border-radius: var(--r);
+  flex: 1; padding: 12px 10px; min-height: 44px; border-radius: var(--r);
   border: 1px solid var(--border); background: none;
-  color: var(--text); font-size: 0.85rem; cursor: pointer;
+  color: var(--text); font-size: 0.85rem; font-weight: 600; cursor: pointer;
   transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .actionBtn:hover { background: var(--surface); }
 

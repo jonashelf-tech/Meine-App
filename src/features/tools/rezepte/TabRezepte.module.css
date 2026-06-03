@@ -15,22 +15,25 @@
 
 .subtab {
   flex: 1;
-  padding: 8px 4px;
+  padding: 10px 4px;
+  min-height: 42px;
   border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: none;
   color: var(--text-dim);
   font-family: Outfit, sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.83rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
+.subtab:hover { color: var(--text); }
 
 .subtabActive {
   background: var(--tool-color);
   color: #fff;
   border-color: var(--tool-color);
-  font-weight: 600;
 }
 
 .overlay {
