@@ -50,7 +50,7 @@ export const TOOL_REGISTRY = [
   {
     id: 'rezepte',
     tabId: 6,
-    name: 'Rezepte',
+    name: 'Mealprep',
     icon: '🍳',
     color: '#FF9F43',
     description: 'Rezepte, Einkauf, Vorräte',
