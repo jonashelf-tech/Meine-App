@@ -1,0 +1,516 @@
+/* ─── Bottom Sheet Modal ─────────────────────────────────── */
+.modal {
+  background: var(--bg2);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 -8px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: slideUp 0.22s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 0;
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 1;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.title {
+  font-family: Outfit, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.closeBtn:hover { color: var(--text); background: var(--surface); }
+
+/* ─── Body ───────────────────────────────────────────────── */
+.body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* ─── Name Input ─────────────────────────────────────────── */
+.nameInput {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: Outfit, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nameInput::placeholder { color: var(--text-ghost); }
+.nameInput:focus {
+  border-color: var(--tool-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tool-color) 18%, transparent);
+}
+
+/* ─── Section Header ─────────────────────────────────────── */
+.sectionHead {
+  font-family: Outfit, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+/* ─── Field + Label ──────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.label {
+  font-family: Outfit, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+
+/* ─── Generic Input ──────────────────────────────────────── */
+.input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: Outfit, sans-serif;
+  font-size: 0.9rem;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: dark;
+}
+.input::placeholder { color: var(--text-ghost); }
+.input:focus { border-color: var(--tool-color); }
+
+/* ─── Select ─────────────────────────────────────────────── */
+.select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: Outfit, sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  outline: none;
+  cursor: pointer;
+  color-scheme: dark;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.select:focus { border-color: var(--tool-color); }
+
+/* ─── 2-Column Row ───────────────────────────────────────── */
+.row2 {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* ─── Nährwert Grid (2x2) ────────────────────────────────── */
+.nutGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.nutField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ─── Chips ──────────────────────────────────────────────── */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+  font-family: Outfit, sans-serif;
+  font-size: 0.78rem;
+  padding: 4px 8px 4px 10px;
+}
+
+.chipRemove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-ghost);
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0 2px;
+  transition: color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.chipRemove:hover { color: var(--rose); }
+
+/* ─── Add Row ────────────────────────────────────────────── */
+.addRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.addBtn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: color-mix(in srgb, var(--tool-color) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 40%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.addBtn:hover { background: color-mix(in srgb, var(--tool-color) 22%, transparent); }
+
+.mengeInput {
+  width: 72px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: Outfit, sans-serif;
+  font-size: 0.88rem;
+  padding: 9px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: dark;
+}
+.mengeInput::placeholder { color: var(--text-ghost); }
+.mengeInput:focus { border-color: var(--tool-color); }
+
+/* ─── Ingredient Row ─────────────────────────────────────── */
+.ingredRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  font-family: Outfit, sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.ingredRow > span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dim {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  font-family: Orbitron, monospace;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-ghost);
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 2px 4px;
+  flex-shrink: 0;
+  transition: color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.removeBtn:hover { color: var(--rose); }
+
+/* ─── Toggle Button ──────────────────────────────────────── */
+.toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: Outfit, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.toggle:hover { border-color: var(--emerald); color: var(--emerald); }
+
+.toggleOn {
+  background: color-mix(in srgb, var(--emerald) 14%, transparent);
+  border-color: color-mix(in srgb, var(--emerald) 50%, transparent);
+  color: var(--emerald);
+}
+
+/* ─── Behälter Row ───────────────────────────────────────── */
+.behaelterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.behaelterBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+  font-family: Outfit, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.behaelterBtn:hover { border-color: var(--emerald); color: var(--emerald); }
+
+.behaelterBtnOn {
+  background: color-mix(in srgb, var(--emerald) 14%, transparent);
+  border-color: color-mix(in srgb, var(--emerald) 50%, transparent);
+  color: var(--emerald);
+}
+
+/* ─── Nährwert Row (read-only) ───────────────────────────── */
+.naehrwertRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+}
+
+/* ─── Checkbox Label ─────────────────────────────────────── */
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Outfit, sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Textarea ───────────────────────────────────────────── */
+.textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: Outfit, sans-serif;
+  font-size: 0.9rem;
+  padding: 11px 12px;
+  outline: none;
+  resize: none;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+.textarea::placeholder { color: var(--text-ghost); }
+.textarea:focus { border-color: var(--tool-color); }
+
+/* ─── Konfigurator Button ────────────────────────────────── */
+.konfBtn {
+  background: color-mix(in srgb, var(--tool-color) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 35%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color);
+  font-family: Outfit, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.konfBtn:hover { background: color-mix(in srgb, var(--tool-color) 18%, transparent); }
+
+/* ─── Save Button ────────────────────────────────────────── */
+.saveBtn {
+  background: color-mix(in srgb, var(--tool-color) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 55%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color);
+  font-family: Outfit, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 14px 16px;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 16px color-mix(in srgb, var(--tool-color) 12%, transparent);
+}
+.saveBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--tool-color) 28%, transparent);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--tool-color) 24%, transparent);
+}
+.saveBtn:disabled { opacity: 0.3; cursor: default; }
+
+/* ─── Delete Area ────────────────────────────────────────── */
+.deleteArea {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-dim);
+}
+
+.deleteBtn {
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--rose) 30%, transparent);
+  border-radius: var(--r-sm);
+  color: color-mix(in srgb, var(--rose) 70%, transparent);
+  font-family: Outfit, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.deleteBtn:hover {
+  background: color-mix(in srgb, var(--rose) 10%, transparent);
+  border-color: color-mix(in srgb, var(--rose) 55%, transparent);
+  color: var(--rose);
+}
+
+.deleteConfirmBtn {
+  background: color-mix(in srgb, var(--rose) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rose) 55%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--rose);
+  font-family: Outfit, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  flex: 1;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.deleteConfirmBtn:hover { background: color-mix(in srgb, var(--rose) 28%, transparent); }
+
+.confirmRow {
+  display: flex;
+  gap: 8px;
+}
+
+.cancelBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: Outfit, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  flex: 1;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.cancelBtn:hover { background: var(--surface-low); color: var(--text); }
+
+/* ─── Usage Warning ──────────────────────────────────────── */
+.usageWarning {
+  background: color-mix(in srgb, var(--rose) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rose) 25%, transparent);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.usageWarning p {
+  font-family: Outfit, sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.usageWarning p:first-child {
+  font-weight: 700;
+  color: var(--rose);
+}
