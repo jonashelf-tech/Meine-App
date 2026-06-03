@@ -223,7 +223,7 @@ export default function Konfigurator({
       {hasAnyActive && (
         <div className={s.actions}>
           <button className={s.kochBtn} style={{ '--tool-color': toolColor }} onClick={handleAddToKorb}>Zu Kochen</button>
-          <button className={s.saveBtn} onClick={() => setSaveDialog(true)}>Als Rezept speichern</button>
+          <button className={s.saveBtn} style={{ '--tool-color': toolColor }} onClick={() => setSaveDialog(true)}>Als Preset speichern</button>
         </div>
       )}
 

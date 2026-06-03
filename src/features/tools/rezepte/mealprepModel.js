@@ -1,7 +1,7 @@
 export const genId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 
-export const SCHEMA_VERSION = 2   // 1 = altes Rezepte-Tool, 2 = Mealprep
+export const SCHEMA_VERSION = 3   // 1 = altes Rezepte-Tool, 2 = Mealprep v1, 3 = erweiterter Seed
 
 export const SLOTS = ['protein', 'kh', 'gemuese', 'sauce']
 export const SLOT_LABELS = { protein: 'Protein', kh: 'Kohlenhydrate', gemuese: 'Gemüse', sauce: 'Sauce' }

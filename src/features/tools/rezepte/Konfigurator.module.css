@@ -30,9 +30,10 @@
 .sumRow { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--surface); border-radius: var(--r); border: 1px solid var(--border); }
 .sumLabel { font-size: 0.82rem; color: var(--text-dim); }
 .actions { display: flex; gap: 8px; }
-.kochBtn, .saveBtn { flex: 1; padding: 10px; border-radius: var(--r); border: 1px solid var(--border); background: none; color: var(--text); font-size: 0.88rem; cursor: pointer; transition: all 0.15s; }
-.kochBtn { background: var(--tool-color); color: #fff; border-color: var(--tool-color); font-weight: 600; }
-.saveBtn:hover { background: var(--surface); }
+.kochBtn, .saveBtn { flex: 1; padding: 10px; border-radius: var(--r); border: 1px solid var(--border); background: none; color: var(--text); font-size: 0.88rem; cursor: pointer; transition: all 0.15s; font-weight: 600; }
+.kochBtn { background: var(--tool-color); color: #fff; border-color: var(--tool-color); }
+.saveBtn { border-color: var(--tool-color); color: var(--tool-color); }
+.saveBtn:hover { background: rgba(255,255,255,0.05); }
 .saveDialogOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
 .saveDialog { background: var(--bg2); border-radius: var(--r-lg); padding: 20px; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
 .saveDialogTitle { font-weight: 600; }

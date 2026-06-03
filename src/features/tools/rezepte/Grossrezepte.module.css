@@ -2,62 +2,95 @@
 .topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
 
 .addBtn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 6px 12px;
-  border-radius: var(--r-sm);
-  font-size: 0.82rem;
-  cursor: pointer;
+  background: none; border: 1px solid var(--border); color: var(--text-dim);
+  padding: 6px 12px; border-radius: var(--r-sm); font-size: 0.82rem; cursor: pointer;
 }
 
+/* ── Card ──────────────────────────────────────────────────────────────── */
 .card { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
 
 .cardHeader {
   display: flex; justify-content: space-between; align-items: center;
   padding: 10px 12px; cursor: pointer; user-select: none;
 }
-.cardHeaderLeft { display: flex; align-items: center; gap: 6px; }
-.cardHeaderRight { display: flex; align-items: center; gap: 8px; }
-.cardTitle { font-weight: 600; font-size: 0.9rem; }
-.langBadge { font-size: 0.75rem; opacity: 0.7; }
-.dim { font-size: 0.75rem; color: var(--text-dim); }
-.count { font-size: 0.75rem; color: var(--text-dim); }
-.editBtn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px 6px; border-radius: var(--r-sm); font-size: 0.85rem; transition: color 0.15s; }
+.cardHeaderLeft  { display: flex; align-items: center; gap: 6px; }
+.cardHeaderRight { display: flex; align-items: center; gap: 6px; }
+.cardTitle  { font-weight: 600; font-size: 0.9rem; }
+.langBadge  { font-size: 0.75rem; opacity: 0.7; }
+.dim        { font-size: 0.72rem; color: var(--text-dim); }
+.ablCount   { font-size: 0.72rem; color: var(--text-dim); min-width: 14px; text-align: center; }
+
+.bedarfBadge {
+  font-size: 0.72rem; font-weight: 600;
+  color: var(--tool-color); opacity: 0.9;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--tool-color);
+  border-radius: 20px; padding: 2px 7px;
+}
+
+.editBtn {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  padding: 4px 5px; border-radius: var(--r-sm); font-size: 0.85rem; transition: color 0.15s;
+}
 .editBtn:hover { color: var(--text); }
 .chevron { font-size: 0.75rem; color: var(--text-dim); }
 
+/* ── Body ──────────────────────────────────────────────────────────────── */
 .cardBody { border-top: 1px solid var(--border-dim); }
 
 .row {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 12px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
   border-bottom: 1px solid var(--border-dim);
-  transition: background 0.1s;
+  transition: background 0.15s; opacity: 0.55;
 }
 .row:last-child { border-bottom: none; }
-.rowSelected { background: rgba(255,255,255,0.04); }
+.rowActive { opacity: 1; background: rgba(255,255,255,0.03); }
 
-.selectBtn {
-  width: 28px; min-width: 28px; height: 28px;
-  border-radius: var(--r-sm); border: 1px solid var(--border-dim);
-  background: none; color: var(--text-dim); font-size: 0.72rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: all 0.15s;
+/* ── Stepper ───────────────────────────────────────────────────────────── */
+.stepper {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+  overflow: hidden; flex-shrink: 0;
 }
-.selectBtnOn { color: var(--tool-color); border-color: var(--tool-color); background: rgba(255,255,255,0.06); }
+.stepBtn {
+  background: none; border: none; color: var(--text-dim);
+  width: 26px; height: 26px; font-size: 0.9rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s;
+}
+.stepBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.stepVal {
+  width: 22px; text-align: center; font-size: 0.82rem; color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.stepValActive { color: var(--tool-color); font-weight: 600; }
 
-.rowMain { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+/* ── Row content ───────────────────────────────────────────────────────── */
+.rowMain { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .rowName { font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tag { font-size: 0.7rem; opacity: 0.7; flex-shrink: 0; }
+.portionenHint {
+  font-size: 0.72rem; color: var(--tool-color); font-weight: 600;
+  background: rgba(255,255,255,0.05); border-radius: 10px; padding: 1px 6px;
+  flex-shrink: 0;
+}
+.tag { font-size: 0.7rem; opacity: 0.6; flex-shrink: 0; }
 
+/* ── Footer ────────────────────────────────────────────────────────────── */
+.cardFooter {
+  border-top: 1px solid var(--border-dim);
+  display: flex; align-items: center; justify-content: space-between;
+}
 .addAbleitungBtn {
-  display: block; width: 100%; padding: 8px 12px; text-align: left;
-  background: none; border: none; border-top: 1px solid var(--border-dim);
+  padding: 8px 12px; background: none; border: none;
   color: var(--text-dim); font-size: 0.82rem; cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s; text-align: left;
 }
 .addAbleitungBtn:hover { color: var(--text); }
 
+.bedarfRow { padding: 4px 12px; }
+.bedarfText { font-size: 0.72rem; color: var(--text-dim); }
+
+/* ── Empty ─────────────────────────────────────────────────────────────── */
 .emptyInner { padding: 12px; color: var(--text-dim); font-size: 0.82rem; }
 .empty { padding: 16px; color: var(--text-dim); font-size: 0.82rem; text-align: center; }

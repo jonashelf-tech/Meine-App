@@ -48,6 +48,16 @@ export default function TabRezepte({ onBack }) {
     setKorb(k => ({ ...k, eintraege: [...k.eintraege, { ref, portionen }] }))
   }, [])
 
+  // Für Großrezepte-Stepper: updated oder fügt ein, entfernt bei portionen=0
+  const updateKorbEintrag = useCallback((rezeptId, portionen) => {
+    setKorb(k => {
+      if (portionen === 0) return { ...k, eintraege: k.eintraege.filter(e => e.ref !== rezeptId) }
+      const exists = k.eintraege.some(e => e.ref === rezeptId)
+      if (exists) return { ...k, eintraege: k.eintraege.map(e => e.ref === rezeptId ? { ...e, portionen } : e) }
+      return { ...k, eintraege: [...k.eintraege, { ref: rezeptId, portionen }] }
+    })
+  }, [])
+
   const ladeInKonfigurator = useCallback((rezept) => {
     setKonfigLoad(rezept)
     setModul('konfig')
@@ -56,7 +66,7 @@ export default function TabRezepte({ onBack }) {
   const sharedProps = {
     zutaten, rezepte, setZutaten, setRezepte,
     zById, rById, toolColor,
-    onEdit: setEditing, addToKorb,
+    onEdit: setEditing, addToKorb, updateKorbEintrag,
   }
 
   return (
