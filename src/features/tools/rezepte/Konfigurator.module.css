@@ -1,0 +1,47 @@
+.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 80px; }
+.gesamtRow { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 4px; }
+.gesamtLabel { font-weight: 600; }
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepBtn { width: 32px; height: 32px; border-radius: var(--r-sm); border: 1px solid var(--border); background: none; color: var(--text); font-size: 1.1rem; cursor: pointer; }
+.stepVal { font-family: Orbitron, monospace; font-size: 1rem; min-width: 24px; text-align: center; }
+.slotCard { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+.slotHeader { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; cursor: pointer; user-select: none; }
+.slotTitle { font-weight: 600; font-size: 0.9rem; }
+.slotHeaderRight { display: flex; align-items: center; gap: 8px; }
+.dist { font-size: 0.75rem; color: var(--text-dim); font-family: Orbitron, monospace; }
+.distWarn { color: var(--rose); }
+.addSlotBtn { background: none; border: 1px solid var(--border-dim); color: var(--text-dim); width: 24px; height: 24px; border-radius: 6px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.chevron { font-size: 0.75rem; color: var(--text-dim); }
+.slotBody { border-top: 1px solid var(--border-dim); }
+.emptySlot { padding: 12px; color: var(--text-dim); font-size: 0.82rem; }
+.itemRow { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-bottom: 1px solid var(--border-dim); transition: background 0.1s; }
+.itemRow:last-child { border-bottom: none; }
+.itemRowOn { background: rgba(255,255,255,0.03); }
+.itemToggle { width: 28px; height: 28px; border-radius: var(--r-sm); border: 1px solid var(--border-dim); background: none; color: var(--text-dim); font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.itemToggleOn { color: var(--tool-color); border-color: var(--tool-color); }
+.itemName { flex: 1; background: none; border: none; color: var(--text); text-align: left; font-size: 0.88rem; cursor: pointer; padding: 0; }
+.itemControls { display: flex; align-items: center; gap: 6px; }
+.gppWrap { display: flex; align-items: center; gap: 2px; }
+.gppInput { width: 48px; background: var(--bg3); border: 1px solid var(--border-dim); border-radius: var(--r-sm); color: var(--text); padding: 3px 5px; font-size: 0.8rem; text-align: center; }
+.gppUnit { font-size: 0.72rem; color: var(--text-dim); }
+.anteilStepper { display: flex; align-items: center; gap: 4px; }
+.stepBtnSm { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border-dim); background: none; color: var(--text-dim); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.stepValSm { font-family: Orbitron, monospace; font-size: 0.8rem; min-width: 18px; text-align: center; }
+.sumRow { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--surface); border-radius: var(--r); border: 1px solid var(--border); }
+.sumLabel { font-size: 0.82rem; color: var(--text-dim); }
+.actions { display: flex; gap: 8px; }
+.kochBtn, .saveBtn { flex: 1; padding: 10px; border-radius: var(--r); border: 1px solid var(--border); background: none; color: var(--text); font-size: 0.88rem; cursor: pointer; transition: all 0.15s; }
+.kochBtn { background: var(--tool-color); color: #fff; border-color: var(--tool-color); font-weight: 600; }
+.saveBtn:hover { background: var(--surface); }
+.saveDialogOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.saveDialog { background: var(--bg2); border-radius: var(--r-lg); padding: 20px; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.saveDialogTitle { font-weight: 600; }
+.saveInput { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--text); padding: 8px 10px; font-size: 0.88rem; width: 100%; box-sizing: border-box; }
+.saveKats { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: flex; align-items: center; gap: 4px; background: var(--surface); border: 1px solid var(--border-dim); border-radius: 20px; padding: 3px 8px; font-size: 0.8rem; }
+.chipRemove { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
+.addKatRow { width: 100%; }
+.saveDialogActions { display: flex; gap: 8px; }
+.saveConfirmBtn { flex: 1; padding: 9px; background: var(--tool-color); color: #fff; border: none; border-radius: var(--r-sm); font-weight: 600; cursor: pointer; }
+.saveConfirmBtn:disabled { opacity: 0.4; cursor: default; }
+.cancelBtn { padding: 9px 14px; background: none; border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--r-sm); cursor: pointer; }

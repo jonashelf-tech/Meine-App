@@ -7,7 +7,7 @@ import { loadAll, saveZutaten, saveRezepte, saveKoerbe, saveSettings } from './m
 import { createKorb } from './mealprepModel'
 import Sammlung from './Sammlung'
 import Grossrezepte from './Grossrezepte'
-import Konfigurator from './Konfigurator'
+import Konfigurator from './Konfigurator.jsx'
 import Editor from './Editor'
 import Korb from './Korb'
 import s from './TabRezepte.module.css'

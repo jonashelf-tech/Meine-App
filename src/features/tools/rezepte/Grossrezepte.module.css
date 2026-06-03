@@ -1,0 +1,63 @@
+.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 16px; }
+.topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
+
+.addBtn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 12px;
+  border-radius: var(--r-sm);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.card { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+
+.cardHeader {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; cursor: pointer; user-select: none;
+}
+.cardHeaderLeft { display: flex; align-items: center; gap: 6px; }
+.cardHeaderRight { display: flex; align-items: center; gap: 8px; }
+.cardTitle { font-weight: 600; font-size: 0.9rem; }
+.langBadge { font-size: 0.75rem; opacity: 0.7; }
+.dim { font-size: 0.75rem; color: var(--text-dim); }
+.count { font-size: 0.75rem; color: var(--text-dim); }
+.editBtn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px 6px; border-radius: var(--r-sm); font-size: 0.85rem; transition: color 0.15s; }
+.editBtn:hover { color: var(--text); }
+.chevron { font-size: 0.75rem; color: var(--text-dim); }
+
+.cardBody { border-top: 1px solid var(--border-dim); }
+
+.row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-dim);
+  transition: background 0.1s;
+}
+.row:last-child { border-bottom: none; }
+.rowSelected { background: rgba(255,255,255,0.04); }
+
+.selectBtn {
+  width: 28px; min-width: 28px; height: 28px;
+  border-radius: var(--r-sm); border: 1px solid var(--border-dim);
+  background: none; color: var(--text-dim); font-size: 0.72rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.selectBtnOn { color: var(--tool-color); border-color: var(--tool-color); background: rgba(255,255,255,0.06); }
+
+.rowMain { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+.rowName { font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { font-size: 0.7rem; opacity: 0.7; flex-shrink: 0; }
+
+.addAbleitungBtn {
+  display: block; width: 100%; padding: 8px 12px; text-align: left;
+  background: none; border: none; border-top: 1px solid var(--border-dim);
+  color: var(--text-dim); font-size: 0.82rem; cursor: pointer;
+  transition: color 0.15s;
+}
+.addAbleitungBtn:hover { color: var(--text); }
+
+.emptyInner { padding: 12px; color: var(--text-dim); font-size: 0.82rem; }
+.empty { padding: 16px; color: var(--text-dim); font-size: 0.82rem; text-align: center; }
