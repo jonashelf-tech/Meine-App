@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
-  sv, lv, SK,
+  sv, lv, SK, BACKUP_CATS,
   importData, exportData,
   exportDataByCategories, importDataByCategories,
 } from './index'
@@ -79,5 +79,17 @@ describe('Kategorie-Export/-Import — schreibt nur erlaubte Keys', () => {
 
     expect(lv(SK.todos, null)).toEqual([{ id: 1 }])
     expect(localStorage.getItem(SK.weight)).toBeNull()
+  })
+})
+
+describe('Mealprep-Keys', () => {
+  it('hat die 3 neuen Rezepte-Keys', () => {
+    expect(SK.rezepteZutaten).toBe('adhs_recipes_ingredients')
+    expect(SK.rezepteKoerbe).toBe('adhs_recipes_baskets')
+    expect(SK.rezepteSettings).toBe('adhs_recipes_settings')
+  })
+  it('alle Mealprep-Nutzdaten-Keys sind in BACKUP_CATS.tools', () => {
+    ;[SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings,
+      SK.selectedDishes].forEach(k => expect(BACKUP_CATS.tools).toContain(k))
   })
 })
