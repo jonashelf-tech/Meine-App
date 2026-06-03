@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { createZutat, createRezept, SLOTS, SLOT_LABELS, BEHAELTER, EINKAUF_KATEGORIEN, genId } from './mealprepModel'
+import { createZutat, createRezept, SLOTS, SLOT_LABELS, BEHAELTER, EINKAUF_KATEGORIEN } from './mealprepModel'
 import { findUsages } from './mealprepStore'
 import { rezeptProPortion } from './naehrwerte'
 import { istBasis } from './mealprepModel'

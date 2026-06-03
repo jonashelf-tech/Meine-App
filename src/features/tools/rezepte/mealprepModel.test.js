@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  genId, SCHEMA_VERSION, SLOTS, BEHAELTER, EINKAUF_KATEGORIEN,
+  SLOTS, EINKAUF_KATEGORIEN,
   createZutat, createRezept, createKorb, istBasis,
 } from './mealprepModel'
 

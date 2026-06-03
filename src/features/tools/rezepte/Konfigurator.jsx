@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { SLOTS, SLOT_LABELS, createRezept } from './mealprepModel'
+import { SLOTS, SLOT_LABELS } from './mealprepModel'
 import { verteilePortionen, rezeptAusKonfig, konfigAusRezept } from './konfigurator'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'

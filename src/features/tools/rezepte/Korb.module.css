@@ -63,3 +63,15 @@
   margin-top: 8px;
 }
 .settingsLabel { font-size: 0.82rem; color: var(--text-dim); }
+
+.menuSection { border-top: 1px solid var(--border-dim); padding-top: 12px; margin-top: 4px; display: flex; flex-direction: column; gap: 6px; }
+.menuHead { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+.menuEmpty { font-size: 0.8rem; color: var(--text-dim); }
+.menuRow { display: flex; align-items: center; gap: 6px; }
+.menuName { flex: 1; font-size: 0.85rem; }
+.menuLoadBtn { background: none; border: 1px solid var(--border); color: var(--text-dim); padding: 4px 8px; border-radius: var(--r-sm); font-size: 0.78rem; cursor: pointer; }
+.menuDupBtn { background: none; border: none; color: var(--text-dim); font-size: 1rem; cursor: pointer; padding: 4px; }
+.menuSaveRow { display: flex; gap: 6px; }
+.menuNameInput { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--text); padding: 6px 8px; font-size: 0.82rem; }
+.menuSaveBtn { background: var(--tool-color); color: #fff; border: none; border-radius: var(--r-sm); padding: 6px 10px; font-size: 0.82rem; cursor: pointer; }
+.menuSaveBtn:disabled { opacity: 0.4; cursor: default; }

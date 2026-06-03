@@ -62,7 +62,23 @@ src/
       reminder/
         ReminderSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
         TabReminder.jsx
-      rezepte/        TabRezepte.jsx
+      rezepte/
+        TabRezepte.jsx          — Container, Modul-Tabs, Korb-Pille, Overlay-Routing
+        mealprepModel.js        — genId, Konstanten, Factories (createZutat/createRezept/createKorb), istBasis
+        mealprepStore.js        — loadAll (Schema-Guard), save*, findUsages, korbSpeichern, korbDuplizieren
+        naehrwerte.js           — zutatNaehrwert, rezeptNaehrwertGesamt (rekursiv), rezeptProPortion, formatNaehrwert
+        einkauf.js              — sammleZutaten (rekursiv), buildEinkauf
+        kochanleitung.js        — buildKochanleitung (Basen 1×, Mise-en-Place)
+        konfigurator.js         — verteilePortionen, rezeptAusKonfig, konfigAusRezept
+        seed.js                 — Seed-Katalog + Seed-Rezepte (Erststart)
+        Naehrwert.jsx           — Mini-Display "480 · 35P 22F 38KH"
+        Editor.jsx              — Universelles typ-adaptives Modal (Form A Zutat / Form B Rezept)
+        Sammlung.jsx            — Kategorie-Karten, aufklappbar, +Rezept, +Kategorie
+        Grossrezepte.jsx        — Basis-Karten mit Ableitungen, Ketten
+        Konfigurator.jsx        — Slot-Baukasten, Portionsverteilung, Als-Rezept-speichern
+        Korb.jsx                — Kochen-Korb, Einkaufsliste, Kochanleitung, Menüs
+        Einkauf.jsx             — Einkaufsliste mit 3-State-Tap
+        Kochanleitung.jsx       — Kochanleitung (Mise-en-Place, Basen, Gerichte, Verpackung)
       timer/          TabTimer.jsx
       wasjetzt/       TabWasJetzt.jsx
 

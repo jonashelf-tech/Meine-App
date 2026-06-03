@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
-import { buildEinkauf } from './einkauf'
-import { buildKochanleitung } from './kochanleitung'
+import { korbSpeichern, korbDuplizieren } from './mealprepStore'
 import Einkauf from './Einkauf.jsx'
 import Kochanleitung from './Kochanleitung.jsx'
 import s from './Korb.module.css'
@@ -8,6 +7,7 @@ import s from './Korb.module.css'
 export default function Korb({ korb, setKorb, koerbe, setKoerbe, settings, setSettings, zById, rById, rezepte, onClose }) {
   const [view, setView] = useState('korb')  // 'korb' | 'einkauf' | 'anleitung'
   const [confirmLeeren, setConfirmLeeren] = useState(false)
+  const [menuName, setMenuName] = useState('')
 
   // Resolve ref to Rezept object (or inline gericht)
   const resolveRezept = (ref) => typeof ref === 'string' ? rById(ref) : ref
@@ -116,6 +116,32 @@ export default function Korb({ korb, setKorb, koerbe, setKoerbe, settings, setSe
             <button className={s.stepBtnSm} onClick={() => setSettings(s2 => ({ ...s2, standardPortionen: Math.max(1, (s2.standardPortionen ?? 4) - 1) }))}>−</button>
             <span className={s.portionVal}>{settings?.standardPortionen ?? 4}</span>
             <button className={s.stepBtnSm} onClick={() => setSettings(s2 => ({ ...s2, standardPortionen: (s2.standardPortionen ?? 4) + 1 }))}>+</button>
+          </div>
+        </div>
+
+        {/* Gespeicherte Menüs */}
+        <div className={s.menuSection}>
+          <div className={s.menuHead}>Gespeicherte Menüs</div>
+          {koerbe.filter(k => k.gespeichert).length === 0 ? (
+            <div className={s.menuEmpty}>Noch keine Menüs gespeichert.</div>
+          ) : koerbe.filter(k => k.gespeichert).map(menu => (
+            <div key={menu.id} className={s.menuRow}>
+              <span className={s.menuName}>{menu.name}</span>
+              <button className={s.menuLoadBtn} onClick={() => { setKorb({ ...menu, gespeichert: false }); onClose() }}>Laden</button>
+              <button className={s.menuDupBtn} onClick={() => setKoerbe(korbDuplizieren(koerbe, menu.id))}>⊕</button>
+            </div>
+          ))}
+          <div className={s.menuSaveRow}>
+            <input className={s.menuNameInput} value={menuName} onChange={e => setMenuName(e.target.value)} placeholder="Menü-Name…"/>
+            <button className={s.menuSaveBtn}
+              disabled={!menuName.trim() || korb.eintraege.length === 0}
+              onClick={() => {
+                const saved = korbSpeichern(koerbe, { ...korb, name: menuName.trim() })
+                setKoerbe(saved)
+                setMenuName('')
+              }}>
+              Speichern
+            </button>
           </div>
         </div>
       </div>

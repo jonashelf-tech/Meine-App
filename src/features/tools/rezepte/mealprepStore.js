@@ -1,5 +1,5 @@
 import { sv, lv, SK } from '../../../storage'
-import { SCHEMA_VERSION } from './mealprepModel'
+import { genId, SCHEMA_VERSION } from './mealprepModel'
 import { seedZutaten, seedRezepte } from './seed'
 
 const VKEY = `${SK.recipes}__v`   // Schema-Versions-Marker
@@ -23,6 +23,19 @@ export function findUsages(id, rezepte, koerbe) {
       )))
   )
   return { rezepte: usedInRezepte, koerbe: usedInKoerbe }
+}
+
+export function korbSpeichern(koerbe, korb) {
+  const saved = { ...korb, gespeichert: true }
+  return koerbe.some(k => k.id === korb.id)
+    ? koerbe.map(k => k.id === korb.id ? saved : k)
+    : [...koerbe, saved]
+}
+
+export function korbDuplizieren(koerbe, id) {
+  const orig = koerbe.find(k => k.id === id)
+  if (!orig) return koerbe
+  return [...koerbe, { ...orig, id: genId(), name: `${orig.name} (Kopie)` }]
 }
 
 // Liest alles; seedet bei Erststart / verwirft inkompatible Altdaten.
