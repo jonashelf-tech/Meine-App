@@ -1,0 +1,37 @@
+.wrap { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.section { display: flex; flex-direction: column; gap: 6px; }
+.sectionHead {
+  font-size: 0.72rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 4px 0; border-bottom: 1px solid var(--border-dim);
+  margin-bottom: 2px;
+}
+
+.miseRow { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+.miseName { font-size: 0.88rem; }
+.miseMenge { font-size: 0.82rem; color: var(--text-dim); font-family: Orbitron, monospace; }
+
+.basisCard { background: var(--surface); border-radius: var(--r-sm); padding: 10px 12px; border-left: 3px solid var(--tool-color); }
+.basisHeader { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.langBadge { font-size: 0.72rem; color: var(--tool-color); font-weight: 600; }
+.basisName { font-weight: 600; font-size: 0.9rem; }
+.basisMenge { font-size: 0.78rem; color: var(--text-dim); font-family: Orbitron, monospace; margin-left: auto; }
+
+.gerichtCard { background: var(--surface); border-radius: var(--r-sm); padding: 10px 12px; }
+.gerichtHeader { display: flex; justify-content: space-between; align-items: center; }
+.gerichtName { font-weight: 600; font-size: 0.9rem; }
+.gerichtPort { font-size: 0.78rem; color: var(--text-dim); font-family: Orbitron, monospace; }
+
+.anleitung { font-size: 0.82rem; color: var(--text-dim); margin-top: 6px; line-height: 1.4; }
+
+.verpackungRow { display: flex; align-items: center; gap: 8px; padding: 6px 0; flex-wrap: wrap; }
+.verpackungName { font-size: 0.88rem; font-weight: 500; flex: 1; }
+.verpackungTags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tagTK, .tagB {
+  font-size: 0.72rem; padding: 2px 7px;
+  border-radius: 12px; border: 1px solid var(--border-dim);
+}
+.tagTK { border-color: var(--teal); color: var(--teal); }
+.tagB { color: var(--text-dim); }
+
+.empty { color: var(--text-dim); font-size: 0.85rem; padding: 24px 16px; text-align: center; }
