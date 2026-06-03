@@ -9,6 +9,22 @@ export const saveRezepte  = (list) => sv(SK.recipes, list)
 export const saveKoerbe   = (list) => sv(SK.rezepteKoerbe, list)
 export const saveSettings = (obj)  => sv(SK.rezepteSettings, obj)
 
+// Wo wird eine Zutat ODER ein Rezept (id) verwendet? Für Lösch-Warnung.
+export function findUsages(id, rezepte, koerbe) {
+  const usedInRezepte = rezepte.filter(r =>
+    (r.zutaten ?? []).some(z => z.zutatId === id) ||
+    (r.komponenten ?? []).some(k => k.rezeptId === id)
+  )
+  const usedInKoerbe = koerbe.filter(k =>
+    (k.eintraege ?? []).some(e => e.ref === id ||
+      (typeof e.ref === 'object' && e.ref !== null && (
+        (e.ref.zutaten ?? []).some(z => z.zutatId === id) ||
+        (e.ref.komponenten ?? []).some(c => c.rezeptId === id)
+      )))
+  )
+  return { rezepte: usedInRezepte, koerbe: usedInKoerbe }
+}
+
 // Liest alles; seedet bei Erststart / verwirft inkompatible Altdaten.
 export function loadAll() {
   const version = lv(VKEY, 0)

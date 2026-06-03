@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { sv, lv, SK } from '../../../storage'
-import { loadAll, saveZutaten, saveRezepte } from './mealprepStore'
+import { loadAll, saveZutaten, saveRezepte, findUsages } from './mealprepStore'
 import { SCHEMA_VERSION } from './mealprepModel'
 
 describe('loadAll — Erststart & Schema-Schutz', () => {
@@ -26,5 +26,31 @@ describe('loadAll — Erststart & Schema-Schutz', () => {
     const { rezepte, zutaten } = loadAll()
     expect(rezepte).toEqual([{ id: 'x', name: 'Mein Chili', kategorien: ['Onepot'] }])
     expect(zutaten).toEqual([{ id: 'z', name: 'Reis' }])
+  })
+})
+
+describe('findUsages — Referenz-Integrität', () => {
+  const rezepte = [
+    { id: 'tomate', name: 'Tomatensoße', komponenten: [], zutaten: [{ zutatId: 'z1', menge: 500 }] },
+    { id: 'bolo',   name: 'Bolognese',   komponenten: [{ rezeptId: 'tomate', menge: 600 }], zutaten: [] },
+    { id: 'chili',  name: 'Chili',       komponenten: [{ rezeptId: 'tomate', menge: 400 }], zutaten: [] },
+  ]
+  const koerbe = [{ id: 'k1', name: 'Woche', eintraege: [{ ref: 'tomate', portionen: 4 }] }]
+
+  it('findet Rezepte + Körbe, die eine Basis nutzen', () => {
+    const u = findUsages('tomate', rezepte, koerbe)
+    expect(u.rezepte.map(r => r.name).sort()).toEqual(['Bolognese', 'Chili'])
+    expect(u.koerbe.map(k => k.name)).toEqual(['Woche'])
+  })
+
+  it('findet Rezepte, die eine Zutat nutzen', () => {
+    const u = findUsages('z1', rezepte, koerbe)
+    expect(u.rezepte.map(r => r.name)).toEqual(['Tomatensoße'])
+  })
+
+  it('leere Nutzung wenn nirgends referenziert', () => {
+    const u = findUsages('unbenutzt', rezepte, koerbe)
+    expect(u.rezepte).toEqual([])
+    expect(u.koerbe).toEqual([])
   })
 })
