@@ -185,15 +185,21 @@ export default function TabHeute() {
   }, [setTodaySlots])
 
   const handleRemoveSlot = useCallback((slotKey, mode) => {
+    const slot = todaySlots[slotKey]
     setTodaySlots(prev => {
       const next = { ...prev }
       delete next[slotKey]
       return next
     })
     if (mode === 'delete') {
-      const slot = todaySlots[slotKey]
       if (slot?.todoId) {
         setTodos(prev => prev.filter(t => t.id !== slot.todoId))
+      }
+    } else if (mode === 'back') {
+      if (slot?.todoId) {
+        setTodos(prev => prev.map(t =>
+          t.id === slot.todoId ? { ...t, date: null, time: null } : t
+        ))
       }
     }
   }, [setTodaySlots, todaySlots, setTodos])
@@ -319,6 +325,8 @@ export default function TabHeute() {
         }
       : null
     startDrag(text, color, (dropKey) => {
+      const hh = String(Math.floor(parseFloat(dropKey))).padStart(2, '0')
+      const mm = parseFloat(dropKey) % 1 ? '30' : '00'
       if (curKey) {
         if (dropKey === curKey) return
         setTodaySlots(prev => {
@@ -328,6 +336,11 @@ export default function TabHeute() {
           ns[dropKey] = entry
           return ns
         })
+        if (todoId) {
+          setTodos(prev => prev.map(t =>
+            t.id === todoId ? { ...t, date: viewDate, time: `${hh}:${mm}` } : t
+          ))
+        }
       } else {
         handleSetSlot(dropKey, {
           text,
@@ -337,9 +350,14 @@ export default function TabHeute() {
           locked:   false,
           done:     false,
         })
+        if (todoId) {
+          setTodos(prev => prev.map(t =>
+            t.id === todoId ? { ...t, date: viewDate, time: `${hh}:${mm}` } : t
+          ))
+        }
       }
     }, e, canDrop)
-  }, [startDrag, todaySlots, setTodaySlots, handleSetSlot])
+  }, [startDrag, todaySlots, setTodaySlots, handleSetSlot, setTodos, viewDate])
 
   const startHaushaltDrag = useCallback((room, uncoveredTasks, haushaltColor, e) => {
     const existing = todos.find(t => t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done)

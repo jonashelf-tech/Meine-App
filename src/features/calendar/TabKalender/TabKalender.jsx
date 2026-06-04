@@ -680,7 +680,7 @@ export default function TabKalender() {
           const y = r.month === 11 ? r.year + 1 : r.year
           return { year: y, month: m }
         }),
-    disabled: restoreTodo !== null,
+    disabled: restoreTodo !== null || dragging !== null,
   })
 
   useEffect(() => {

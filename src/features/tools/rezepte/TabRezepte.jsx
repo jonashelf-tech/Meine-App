@@ -10,9 +10,8 @@ import Grossrezepte from './Grossrezepte'
 import Konfigurator from './Konfigurator.jsx'
 import Editor from './Editor'
 import Korb from './Korb'
+import { IconBasket } from './icons'
 import s from './TabRezepte.module.css'
-
-const MODULE = [['konfig', 'Konfigurator'], ['gross', 'Großrezepte'], ['sammlung', 'Sammlung']]
 
 export default function TabRezepte({ onBack }) {
   const { toolColors, setBackInterceptor } = useAppStore()
@@ -25,7 +24,7 @@ export default function TabRezepte({ onBack }) {
   const [settings, setSettingsS] = useState(init.settings)
   const [korb, setKorb] = useState(() => createKorb({ name: 'Aktueller Korb' }))
 
-  const [modul, setModul] = useState('konfig')
+  const [modul, setModul] = useState('sammlung')
   const [editing, setEditing] = useState(null)
   const [korbOpen, setKorbOpen] = useState(false)
   const [konfigLoad, setKonfigLoad] = useState(null)
@@ -48,6 +47,10 @@ export default function TabRezepte({ onBack }) {
     setKorb(k => ({ ...k, eintraege: [...k.eintraege, { ref, portionen }] }))
   }, [])
 
+  const removeFromKorb = useCallback((rezeptId) => {
+    setKorb(k => ({ ...k, eintraege: k.eintraege.filter(e => e.ref !== rezeptId) }))
+  }, [])
+
   // Für Großrezepte-Stepper: updated oder fügt ein, entfernt bei portionen=0
   const updateKorbEintrag = useCallback((rezeptId, portionen) => {
     setKorb(k => {
@@ -66,7 +69,8 @@ export default function TabRezepte({ onBack }) {
   const sharedProps = {
     zutaten, rezepte, setZutaten, setRezepte,
     zById, rById, toolColor,
-    onEdit: setEditing, addToKorb, updateKorbEintrag,
+    onEdit: setEditing, addToKorb, removeFromKorb, updateKorbEintrag,
+    korb,
   }
 
   return (
@@ -97,28 +101,19 @@ export default function TabRezepte({ onBack }) {
         title={<>Meal<em>prep</em></>}
       />
 
-      <div className={s.subtabs}>
-        {MODULE.map(([id, label]) => (
-          <button key={id}
-            className={`${s.subtab} ${modul === id ? s.subtabActive : ''}`}
-            onClick={() => setModul(id)}>
-            {label}
-          </button>
-        ))}
-      </div>
-
       {modul === 'konfig' && (
         <Konfigurator {...sharedProps} settings={settings}
-          loadRezept={konfigLoad} onLoaded={() => setKonfigLoad(null)} />
+          loadRezept={konfigLoad} onLoaded={() => setKonfigLoad(null)}
+          onBack={() => setModul('sammlung')} />
       )}
-      {modul === 'gross' && <Grossrezepte {...sharedProps} />}
+      {modul === 'gross' && <Grossrezepte {...sharedProps} onBack={() => setModul('sammlung')} />}
       {modul === 'sammlung' && (
-        <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} />
+        <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} onOpenModul={setModul} />
       )}
 
       {korb.eintraege.length > 0 && (
         <button className={s.korbPille} onClick={() => setKorbOpen(true)}>
-          🧺 Korb · {korb.eintraege.length}
+          <IconBasket size={16} /> Korb · {korb.eintraege.length}
         </button>
       )}
     </div>

@@ -24,6 +24,7 @@ export function usePageSwipe(ref, opts) {
 
     function onMove(e) {
       if (swipeMode === false) return
+      if (o.current.disabled) { swipeMode = false; return }
       const dx = e.touches[0].clientX - startX
       const dy = e.touches[0].clientY - startY
       if (swipeMode === null && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {

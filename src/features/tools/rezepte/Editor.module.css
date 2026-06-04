@@ -232,7 +232,9 @@
   border: none;
   cursor: pointer;
   color: var(--text-ghost);
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   padding: 0 2px;
   transition: color 0.12s;
@@ -292,18 +294,42 @@
   background: var(--surface-low);
   border: 1px solid var(--border-dim);
   border-radius: var(--r-sm);
-  padding: 8px 10px;
+  padding: 7px 10px;
   font-family: Outfit, sans-serif;
   font-size: 0.88rem;
   color: var(--text);
 }
 
-.ingredRow > span:first-child {
+.ingredName {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mengeInline {
+  width: 58px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: Orbitron, monospace;
+  font-size: 0.82rem;
+  padding: 4px 6px;
+  text-align: right;
+  outline: none;
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+}
+.mengeInline:focus { border-color: var(--tool-color); }
+
+.ingredUnit {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  min-width: 18px;
 }
 
 .dim {
@@ -318,7 +344,9 @@
   border: none;
   cursor: pointer;
   color: var(--text-ghost);
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   padding: 2px 4px;
   flex-shrink: 0;
@@ -378,28 +406,70 @@
   color: var(--emerald);
 }
 
-/* ─── Nährwert Row (read-only) ───────────────────────────── */
-.naehrwertRow {
+/* ─── Meta-Zeile: Portionen + Nährwerte ──────────────────── */
+.metaRow {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.naehrwertInline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   background: var(--surface-low);
   border: 1px solid var(--border-dim);
   border-radius: var(--r-sm);
   padding: 8px 12px;
 }
 
-/* ─── Checkbox Label ─────────────────────────────────────── */
-.checkLabel {
+/* ─── Erweitert-Bereich (Collapse) ───────────────────────── */
+.advToggle {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: Outfit, sans-serif;
-  font-size: 0.88rem;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border-dim);
+  padding: 14px 2px 6px;
+  margin-top: 4px;
   color: var(--text-dim);
+  font-family: Outfit, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   cursor: pointer;
-  user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+.advToggle:hover { color: var(--text); }
+
+.advChevron {
+  color: var(--text-dim);
+  display: inline-flex;
+  transition: transform 0.18s;
+}
+.chevronClosed { transform: rotate(-90deg); }
+
+.advBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 2px;
+}
+
+.advRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.advLabel {
+  font-family: Outfit, sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-dim);
 }
 
 /* ─── Textarea ───────────────────────────────────────────── */
@@ -434,7 +504,9 @@
   padding: 10px 14px;
   cursor: pointer;
   width: 100%;
-  text-align: left;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }

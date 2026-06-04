@@ -13,7 +13,7 @@
 
 .basisCard { background: var(--surface); border-radius: var(--r-sm); padding: 10px 12px; border-left: 3px solid var(--tool-color); }
 .basisHeader { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.langBadge { font-size: 0.72rem; color: var(--tool-color); font-weight: 600; }
+.langBadge { font-size: 0.72rem; color: var(--tool-color); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
 .basisName { font-weight: 600; font-size: 0.9rem; }
 .basisMenge { font-size: 0.78rem; color: var(--text-dim); font-family: Orbitron, monospace; margin-left: auto; }
 
@@ -31,6 +31,7 @@
   font-size: 0.72rem; padding: 2px 7px;
   border-radius: 12px; border: 1px solid var(--border-dim);
 }
+.tagTK { display: inline-flex; align-items: center; gap: 4px; }
 .tagTK { border-color: var(--teal); color: var(--teal); }
 .tagB { color: var(--text-dim); }
 

@@ -30,4 +30,23 @@ describe('Seed-Integritaet', () => {
   it('Naehrwert-Berechnung wirft bei keinem Seed-Rezept', () => {
     for (const r of rezepte) expect(() => rezeptNaehrwertGesamt(r, zById, rById)).not.toThrow()
   })
+
+  it('Basis-Verbrauch in Ketten passt in ganze 250er-Blöcke (kein Rest)', () => {
+    for (const r of rezepte) {
+      for (const k of r.komponenten ?? []) {
+        const basis = rById(k.rezeptId)
+        if (basis?.ergibtMenge != null) {
+          expect(k.menge % 250, `${r.name} verbraucht ${k.menge} von ${basis.name}`).toBe(0)
+        }
+      }
+    }
+  })
+
+  it('Ketten-Basen ergeben ganze 250er-Blöcke', () => {
+    for (const basis of rezepte) {
+      if (basis.ergibtMenge == null) continue
+      const hatAbleitung = rezepte.some(r => (r.komponenten ?? []).some(k => k.rezeptId === basis.id))
+      if (hatAbleitung) expect(basis.ergibtMenge % 250, `${basis.name} ergibt ${basis.ergibtMenge}`).toBe(0)
+    }
+  })
 })

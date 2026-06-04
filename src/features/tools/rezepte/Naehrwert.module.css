@@ -1,0 +1,33 @@
+.wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: Orbitron, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* kcal: führend, etwas kräftiger */
+.kcal {
+  font-size: 0.7rem;
+  color: var(--text);
+  opacity: 0.82;
+}
+
+/* Makros: dezenter */
+.macro {
+  font-size: 0.66rem;
+  color: var(--text-dim);
+}
+
+/* Einheit (kcal / P / F / KH) — klein, abgesetzt, mit kleinem Abstand zur Zahl */
+.kcal i,
+.macro i {
+  font-style: normal;
+  font-family: Outfit, sans-serif;
+  font-size: 0.82em;
+  opacity: 0.6;
+  margin-left: 2px;
+  letter-spacing: 0.02em;
+}

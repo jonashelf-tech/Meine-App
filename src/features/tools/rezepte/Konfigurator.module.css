@@ -1,4 +1,17 @@
 .wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 80px; }
+
+.hubBar { display: flex; align-items: center; gap: 10px; padding: 2px 0 6px; }
+.backToHub {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: none; color: var(--tool-color);
+  font-family: Outfit, sans-serif; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; padding: 4px 0; -webkit-tap-highlight-color: transparent;
+}
+.hubTitle {
+  font-family: Outfit, sans-serif; font-size: 0.7rem; font-weight: 700;
+  color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em;
+  margin-left: auto;
+}
 .gesamtRow { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 4px; }
 .gesamtLabel { font-weight: 600; }
 .stepper { display: flex; align-items: center; gap: 8px; }
@@ -11,7 +24,8 @@
 .dist { font-size: 0.75rem; color: var(--text-dim); font-family: Orbitron, monospace; }
 .distWarn { color: var(--rose); }
 .addSlotBtn { background: none; border: 1px solid var(--border-dim); color: var(--text-dim); width: 24px; height: 24px; border-radius: 6px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.chevron { font-size: 0.75rem; color: var(--text-dim); }
+.chevron { color: var(--text-dim); display: inline-flex; transition: transform 0.18s; }
+.chevronClosed { transform: rotate(-90deg); }
 .slotBody { border-top: 1px solid var(--border-dim); }
 .emptySlot { padding: 12px; color: var(--text-dim); font-size: 0.82rem; }
 .itemRow { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-bottom: 1px solid var(--border-dim); transition: background 0.1s; }
@@ -40,7 +54,7 @@
 .saveInput { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--text); padding: 8px 10px; font-size: 0.88rem; width: 100%; box-sizing: border-box; }
 .saveKats { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { display: flex; align-items: center; gap: 4px; background: var(--surface); border: 1px solid var(--border-dim); border-radius: 20px; padding: 3px 8px; font-size: 0.8rem; }
-.chipRemove { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
+.chipRemove { background: none; border: none; color: var(--text-dim); cursor: pointer; line-height: 1; padding: 0; display: inline-flex; align-items: center; }
 .addKatRow { width: 100%; }
 .saveDialogActions { display: flex; gap: 8px; }
 .saveConfirmBtn { flex: 1; padding: 9px; background: var(--tool-color); color: #fff; border: none; border-radius: var(--r-sm); font-weight: 600; cursor: pointer; }

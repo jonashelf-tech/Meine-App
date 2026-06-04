@@ -38,11 +38,13 @@ export function korbDuplizieren(koerbe, id) {
   return [...koerbe, { ...orig, id: genId(), name: `${orig.name} (Kopie)` }]
 }
 
-// Liest alles; seedet bei Erststart / verwirft inkompatible Altdaten.
+// Liest alles; seedet bei Erststart; bei Schema-Update werden nur neue Einträge
+// ergänzt, eigene Rezepte/Menüs des Users bleiben erhalten.
 export function loadAll() {
   const version = lv(VKEY, 0)
-  if (version !== SCHEMA_VERSION) {
-    // Erststart oder Altschema → frisch seeden
+
+  if (version === 0) {
+    // Erststart oder komplett leerer Storage – voll seeden
     const zutaten = seedZutaten()
     const rezepte = seedRezepte()
     saveZutaten(zutaten)
@@ -52,11 +54,30 @@ export function loadAll() {
     sv(VKEY, SCHEMA_VERSION)
     return { zutaten, rezepte, koerbe: [], settings: { kalenderLink: false, standardPortionen: 4 }, version: SCHEMA_VERSION }
   }
-  return {
+
+  const existing = {
     zutaten:  lv(SK.rezepteZutaten, []),
     rezepte:  lv(SK.recipes, []),
     koerbe:   lv(SK.rezepteKoerbe, []),
     settings: lv(SK.rezepteSettings, { kalenderLink: false, standardPortionen: 4 }),
-    version,
   }
+
+  if (version !== SCHEMA_VERSION) {
+    // Schema-Update: Seed-Bibliothek auf aktuellen Stand bringen (per ID ersetzen),
+    // selbst angelegte Rezepte/Zutaten (Nicht-Seed-IDs) + gespeicherte Menüs behalten.
+    const seedZ = seedZutaten()
+    const seedR = seedRezepte()
+    const seedZIds = new Set(seedZ.map(z => z.id))
+    const seedRIds = new Set(seedR.map(r => r.id))
+    const eigeneZ = existing.zutaten.filter(z => !seedZIds.has(z.id))
+    const eigeneR = existing.rezepte.filter(r => !seedRIds.has(r.id))
+    const mergedZ = [...seedZ, ...eigeneZ]
+    const mergedR = [...seedR, ...eigeneR]
+    saveZutaten(mergedZ)
+    saveRezepte(mergedR)
+    sv(VKEY, SCHEMA_VERSION)
+    return { zutaten: mergedZ, rezepte: mergedR, koerbe: existing.koerbe, settings: existing.settings, version: SCHEMA_VERSION }
+  }
+
+  return { ...existing, version }
 }

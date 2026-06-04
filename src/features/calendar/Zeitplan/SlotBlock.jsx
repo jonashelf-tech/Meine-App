@@ -37,6 +37,7 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
       duration: slot.duration || 30,
     }),
     done: !!(slot.done),
+    toolId: null, // Kein Tool-Glow im Zeitplan — Slot-Farbe zeigt die Herkunft
   }
   const slotBorder = slot.color ? `1px solid ${slot.color}44` : '1px solid rgba(255,255,255,0.09)'
   const chipStyle = { height: '100%', borderRadius: '10px', border: slotBorder, margin: 0, flexShrink: 0 }

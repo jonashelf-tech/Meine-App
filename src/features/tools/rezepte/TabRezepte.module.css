@@ -7,35 +7,6 @@
   padding-bottom: 80px;
 }
 
-.subtabs {
-  display: flex;
-  gap: 4px;
-  padding: 0 16px 12px;
-}
-
-.subtab {
-  flex: 1;
-  padding: 10px 4px;
-  min-height: 42px;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  background: none;
-  color: var(--text-dim);
-  font-family: Outfit, sans-serif;
-  font-size: 0.83rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.subtab:hover { color: var(--text); }
-
-.subtabActive {
-  background: var(--tool-color);
-  color: #fff;
-  border-color: var(--tool-color);
-}
-
 .overlay {
   position: fixed;
   inset: 0;
@@ -59,6 +30,9 @@
   border: none;
   border-radius: 24px;
   padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-family: Outfit, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;

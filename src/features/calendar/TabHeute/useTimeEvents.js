@@ -177,16 +177,18 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
     const sel        = items.filter(i => selectedIds.has(i.id))
     const textItems  = sel.filter(i => i.type === 'text')
     const faelligIds = new Set(sel.filter(i => i.type === 'faellig').map(i => i.todoId))
+    const todoIds    = new Set(sel.filter(i => i.type === 'todo').map(i => i.todoId).filter(Boolean))
     const newTodos   = textItems.map(i => createBlock({ text: i.text, color: i.color, priority: 3 }))
 
     if (newTodos.length > 0) {
       setTodos(prev => [...prev, ...newTodos])
     }
 
-    // Fälligkeiten: Datum entfernen → bleiben als normales Pool-Todo
-    if (faelligIds.size > 0) {
+    // Fälligkeiten + verplante Todos: Datum/Zeit entfernen → bleiben als normales Pool-Todo
+    const clearIds = new Set([...faelligIds, ...todoIds])
+    if (clearIds.size > 0) {
       setTodos(prev => prev.map(t =>
-        faelligIds.has(t.id) ? { ...t, date: null, time: null } : t
+        clearIds.has(t.id) ? { ...t, date: null, time: null } : t
       ))
     }
 

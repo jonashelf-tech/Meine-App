@@ -2,19 +2,25 @@ import { useState, useMemo } from 'react'
 import { createRezept } from './mealprepModel'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
+import { IconChevron, IconCheck, IconSnow, IconSliders, IconLayers, IconClose, IconPlus } from './icons'
 import s from './Sammlung.module.css'
 
-export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, addToKorb, ladeInKonfigurator }) {
+export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, addToKorb, removeFromKorb, ladeInKonfigurator, onOpenModul, korb }) {
   const [collapsed, setCollapsed] = useState({})
   const [extraKats, setExtraKats] = useState([])
   const [newKatInput, setNewKatInput] = useState('')
   const [showNewKatInput, setShowNewKatInput] = useState(false)
-  const [selected, setSelected] = useState(new Set())
+
+  // Häkchen direkt aus dem Korb ableiten – kein separater State mehr
+  const selectedIds = useMemo(() =>
+    new Set((korb?.eintraege ?? []).map(e => e.ref)),
+    [korb?.eintraege]
+  )
 
   const allKats = useMemo(() => {
     const fromRezepte = rezepte.flatMap(r => r.kategorien ?? [])
     const unique = [...new Set([...fromRezepte, ...extraKats])]
-    const ORDER = ['Bowls', 'Burritos', 'Salate', 'Onepot/Auflauf', 'Marinaden', 'Saucen']
+    const ORDER = ['Bowls', 'Burritos', 'Salate', 'Onepot/Auflauf', 'Saucen', 'Marinaden', 'Dressings']
     return [
       ...ORDER.filter(k => unique.includes(k)),
       ...unique.filter(k => !ORDER.includes(k)).sort(),
@@ -32,12 +38,9 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
     setCollapsed(c => ({ ...c, [kat]: !c[kat] }))
 
   const toggleSelect = (rezeptId, portionen) => {
-    if (selected.has(rezeptId)) {
-      const next = new Set(selected)
-      next.delete(rezeptId)
-      setSelected(next)
+    if (selectedIds.has(rezeptId)) {
+      removeFromKorb(rezeptId)
     } else {
-      setSelected(new Set([...selected, rezeptId]))
       addToKorb(rezeptId, portionen)
     }
   }
@@ -53,7 +56,7 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
 
   const renderKat = (kat) => {
     const items = rezepteForKat(kat)
-    const isOpen = !collapsed[kat]
+    const isOpen = !!collapsed[kat]
     return (
       <div key={kat} className={s.card}>
         <div className={s.cardHeader} onClick={() => toggleCollapsed(kat)}>
@@ -67,9 +70,9 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
                 onEdit({ form: 'rezept', data: createRezept({ kategorien: [kat] }) })
               }}
             >
-              +
+              <IconPlus size={15} />
             </button>
-            <span className={s.chevron}>{isOpen ? '▾' : '▸'}</span>
+            <span className={`${s.chevron} ${isOpen ? '' : s.chevronClosed}`}><IconChevron size={14} /></span>
           </div>
         </div>
         {isOpen && (
@@ -78,7 +81,7 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
               <div className={s.empty}>Noch keine Rezepte in dieser Kategorie.</div>
             ) : items.map(r => {
               const np = rezeptProPortion(r, zById, rById)
-              const isSel = selected.has(r.id)
+              const isSel = selectedIds.has(r.id)
               return (
                 <div key={r.id} className={`${s.row} ${isSel ? s.rowSelected : ''}`}>
                   <button
@@ -86,12 +89,14 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
                     onClick={() => toggleSelect(r.id, r.basisPortionen)}
                     style={isSel ? { '--tool-color': toolColor } : {}}
                   >
-                    {isSel ? '✓' : '○'}
+                    {isSel && <IconCheck size={14} />}
                   </button>
                   <div className={s.rowMain} onClick={() => onEdit({ form: 'rezept', data: r })}>
-                    <span className={s.rowName}>{r.name}</span>
+                    <div className={s.rowTop}>
+                      <span className={s.rowName}>{r.name}</span>
+                      {r.aufbewahrung?.tk && <span className={s.tag} title="TK-geeignet"><IconSnow size={12} /></span>}
+                    </div>
                     <Naehrwert n={np} />
-                    {r.aufbewahrung?.tk && <span className={s.tag}>❄</span>}
                   </div>
                   {r.konfigurierbar && (
                     <button
@@ -99,10 +104,9 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
                       title="Im Konfigurator öffnen"
                       onClick={() => ladeInKonfigurator(r)}
                     >
-                      ⚙
+                      <IconSliders size={15} />
                     </button>
                   )}
-                  <button className={s.editBtn} onClick={() => onEdit({ form: 'rezept', data: r })}>✎</button>
                 </div>
               )
             })}
@@ -116,6 +120,23 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
 
   return (
     <div className={s.wrap}>
+      <div className={s.werkzeuge}>
+        <button className={s.werkzeugBtn} onClick={() => onOpenModul('konfig')} style={{ '--tool-color': toolColor }}>
+          <IconSliders size={18} />
+          <span className={s.werkzeugLabel}>
+            <span className={s.werkzeugTitle}>Gericht bauen</span>
+            <span className={s.werkzeugSub}>Baukasten · Portionen</span>
+          </span>
+        </button>
+        <button className={s.werkzeugBtn} onClick={() => onOpenModul('gross')} style={{ '--tool-color': toolColor }}>
+          <IconLayers size={18} />
+          <span className={s.werkzeugLabel}>
+            <span className={s.werkzeugTitle}>Basen vorkochen</span>
+            <span className={s.werkzeugSub}>Großmengen · Ketten</span>
+          </span>
+        </button>
+      </div>
+
       <div className={s.topBar}>
         {showNewKatInput ? (
           <div className={s.newKatRow}>
@@ -128,7 +149,7 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
               onKeyDown={e => { if (e.key === 'Enter') addNewKat() }}
             />
             <button className={s.newKatOk} onClick={addNewKat}>OK</button>
-            <button className={s.newKatCancel} onClick={() => { setNewKatInput(''); setShowNewKatInput(false) }}>✕</button>
+            <button className={s.newKatCancel} onClick={() => { setNewKatInput(''); setShowNewKatInput(false) }}><IconClose size={15} /></button>
           </div>
         ) : (
           <button className={s.newKatBtn} onClick={() => setShowNewKatInput(true)}>+ Neue Kategorie</button>

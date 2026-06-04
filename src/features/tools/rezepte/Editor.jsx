@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
-import { createZutat, createRezept, SLOTS, BEHAELTER, EINKAUF_KATEGORIEN } from './mealprepModel'
+import { createZutat, createRezept, istBasis, BEHAELTER, EINKAUF_KATEGORIEN } from './mealprepModel'
 import { findUsages } from './mealprepStore'
 import { rezeptProPortion } from './naehrwerte'
-import { istBasis } from './mealprepModel'
 import Naehrwert from './Naehrwert'
+import { IconClose, IconChevron, IconArrowRight } from './icons'
 import s from './Editor.module.css'
 
 // Kurze Chip-Labels für lange Strings
@@ -36,12 +36,12 @@ export default function Editor({
       : (data ? { ...data } : createRezept())
   )
   const [newKat, setNewKat] = useState('')
-  const [addZutatId, setAddZutatId] = useState('')
-  const [addZutatMenge, setAddZutatMenge] = useState('')
-  const [addKompId, setAddKompId] = useState('')
-  const [addKompMenge, setAddKompMenge] = useState('')
   const [usageWarning, setUsageWarning] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  // "Erweitert" automatisch offen nur bei strukturellen Eigenschaften (Basis / konfigurierbar)
+  const [advOpen, setAdvOpen] = useState(() =>
+    !!(data?.ergibtMenge != null || data?.konfigurierbar)
+  )
 
   const set = (field, val) => setDraft(d => ({ ...d, [field]: val }))
   const setNaehrwert = (field, val) => setDraft(d => ({
@@ -73,19 +73,23 @@ export default function Editor({
   }
   const removeKategorie = (k) => set('kategorien', draft.kategorien.filter(x => x !== k))
 
-  const addZutat = () => {
-    if (!addZutatId || !addZutatMenge) return
-    set('zutaten', [...(draft.zutaten ?? []), { zutatId: addZutatId, menge: parseFloat(addZutatMenge) }])
-    setAddZutatId(''); setAddZutatMenge('')
+  const removeZutat = (zutatId) => set('zutaten', (draft.zutaten ?? []).filter(z => z.zutatId !== zutatId))
+  const setZutatMenge = (zutatId, val) =>
+    set('zutaten', (draft.zutaten ?? []).map(z => z.zutatId === zutatId ? { ...z, menge: parseFloat(val) || 0 } : z))
+  const addZutat = (id) => {
+    if (!id) return
+    const z2 = zutaten.find(z => z.id === id)
+    set('zutaten', [...(draft.zutaten ?? []), { zutatId: id, menge: z2?.gProPortion ?? 100 }])
   }
-  const removeZutat = (zutatId) => set('zutaten', draft.zutaten.filter(z => z.zutatId !== zutatId))
 
-  const addKomponente = () => {
-    if (!addKompId || !addKompMenge) return
-    set('komponenten', [...(draft.komponenten ?? []), { rezeptId: addKompId, menge: parseFloat(addKompMenge) }])
-    setAddKompId(''); setAddKompMenge('')
+  const removeKomponente = (rezeptId) => set('komponenten', (draft.komponenten ?? []).filter(k => k.rezeptId !== rezeptId))
+  const setKompMenge = (rezeptId, val) =>
+    set('komponenten', (draft.komponenten ?? []).map(k => k.rezeptId === rezeptId ? { ...k, menge: parseFloat(val) || 0 } : k))
+  const addKomponente = (id) => {
+    if (!id) return
+    const r = rById(id)
+    set('komponenten', [...(draft.komponenten ?? []), { rezeptId: id, menge: r?.ergibtMenge ?? 500 }])
   }
-  const removeKomponente = (rezeptId) => set('komponenten', draft.komponenten.filter(k => k.rezeptId !== rezeptId))
 
   const handleSave = () => {
     if (!draft.name?.trim()) return
@@ -114,7 +118,7 @@ export default function Editor({
     <div className={s.modal}>
       <div className={s.header}>
         <span className={s.title}>{title}</span>
-        <button className={s.closeBtn} onClick={onClose}>✕</button>
+        <button className={s.closeBtn} onClick={onClose}><IconClose size={16} /></button>
       </div>
       <div className={s.body}>
 
@@ -157,7 +161,7 @@ export default function Editor({
             </div>
           </div>
 
-          {/* Konfigurator-Slot + g/Portion */}
+          {/* Konfigurator-Slot */}
           <div className={s.field}>
             <label className={s.label}>Konfigurator-Slot</label>
             <div className={s.chipGroup}>
@@ -171,16 +175,19 @@ export default function Editor({
             </div>
           </div>
 
-          <div className={s.row2}>
-            <div className={s.field}>
-              <label className={s.label}>g / Portion</label>
-              <input className={s.input} type="number" value={draft.gProPortion ?? ''} onChange={e => set('gProPortion', parseFloat(e.target.value) || null)} placeholder="—"/>
+          {/* g/Portion + Garnotiz nur relevant, wenn die Zutat ein Konfigurator-Baustein ist */}
+          {draft.bausteinTyp && (
+            <div className={s.row2}>
+              <div className={s.field}>
+                <label className={s.label}>g / Portion</label>
+                <input className={s.input} type="number" value={draft.gProPortion ?? ''} onChange={e => set('gProPortion', parseFloat(e.target.value) || null)} placeholder="—"/>
+              </div>
+              <div className={s.field}>
+                <label className={s.label}>Garnotiz</label>
+                <input className={s.input} value={draft.garNotiz ?? ''} onChange={e => set('garNotiz', e.target.value || null)} placeholder="z.B. scharf anbraten"/>
+              </div>
             </div>
-            <div className={s.field}>
-              <label className={s.label}>Garnotiz</label>
-              <input className={s.input} value={draft.garNotiz ?? ''} onChange={e => set('garNotiz', e.target.value || null)} placeholder="z.B. scharf anbraten"/>
-            </div>
-          </div>
+          )}
 
           <div className={s.sectionHead}>Nährwerte / 100 g</div>
           <div className={s.nutGrid}>
@@ -200,7 +207,7 @@ export default function Editor({
           <div className={s.chips}>
             {(draft.kategorien ?? []).map(k => (
               <span key={k} className={s.chip}>
-                {k} <button className={s.chipRemove} onClick={() => removeKategorie(k)}>×</button>
+                {k} <button className={s.chipRemove} onClick={() => removeKategorie(k)}><IconClose size={12} /></button>
               </span>
             ))}
           </div>
@@ -210,78 +217,23 @@ export default function Editor({
             <button className={s.addBtn} onClick={addKategorie}>+</button>
           </div>
 
-          {/* Portionen + Langläufer */}
-          <div className={s.row2}>
+          {/* Portionen + Kochzeit */}
+          <div className={s.metaRow}>
             <div className={s.field}>
               <label className={s.label}>Portionen</label>
               <input className={s.input} type="number" value={draft.basisPortionen} onChange={e => set('basisPortionen', parseInt(e.target.value) || 1)}/>
             </div>
             <div className={s.field}>
-              <label className={s.label}>Langläufer</label>
-              <button className={`${s.toggle} ${draft.langlaeufer ? s.toggleOn : ''}`} onClick={() => set('langlaeufer', !draft.langlaeufer)}>
-                {draft.langlaeufer ? 'Ja' : 'Nein'}
-              </button>
+              <label className={s.label}>Kochzeit (min)</label>
+              <input className={s.input} type="number" value={draft.kochdauer ?? ''} placeholder="—"
+                onChange={e => set('kochdauer', parseInt(e.target.value) || null)}/>
             </div>
           </div>
-
-          {/* Nährwerte (read-only) */}
           {naehrwertProPortion && (
-            <div className={s.naehrwertRow}>
-              <span className={s.label}>Nährwerte / Portion</span>
+            <div className={s.naehrwertInline}>
+              <label className={s.label}>Nährwerte / Portion</label>
               <Naehrwert n={naehrwertProPortion} />
             </div>
-          )}
-
-          {/* Aufbewahrung */}
-          <div className={s.sectionHead}>Aufbewahrung</div>
-          <label className={s.checkLabel}>
-            <input type="checkbox" checked={draft.aufbewahrung?.tk ?? false}
-              onChange={e => setAufbewahrung('tk', e.target.checked)} />
-            {' '}TK-geeignet
-          </label>
-          <div className={s.behaelterRow}>
-            {BEHAELTER.map(b => (
-              <button key={b}
-                className={`${s.behaelterBtn} ${(draft.aufbewahrung?.behaelter ?? []).includes(b) ? s.behaelterBtnOn : ''}`}
-                onClick={() => toggleBehaelter(b)}>
-                {b}
-              </button>
-            ))}
-          </div>
-
-          {/* Basis-Felder */}
-          <div className={s.sectionHead}>Als Basis (liefert Menge)</div>
-          <div className={s.row2}>
-            <div className={s.field}>
-              <label className={s.label}>Ergibt Menge</label>
-              <input className={s.input} type="number" value={draft.ergibtMenge ?? ''} onChange={e => set('ergibtMenge', parseFloat(e.target.value) || null)} placeholder="—"/>
-            </div>
-            <div className={s.field}>
-              <label className={s.label}>Einheit</label>
-              <div className={s.chipGroup}>
-                {['ml','g','Stk','Portionen'].map(u => (
-                  <button key={u}
-                    className={`${s.optChip} ${(draft.ergibtEinheit ?? 'ml') === u ? s.optChipOn : ''}`}
-                    onClick={() => set('ergibtEinheit', u)}>
-                    {u}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Konfigurierbar */}
-          <div className={s.row2} style={{alignItems:'center'}}>
-            <span className={s.label}>Im Konfigurator ladbar</span>
-            <button className={`${s.toggle} ${draft.konfigurierbar ? s.toggleOn : ''}`}
-              onClick={() => set('konfigurierbar', !draft.konfigurierbar)}>
-              {draft.konfigurierbar ? 'Ja' : 'Nein'}
-            </button>
-          </div>
-          {draft.konfigurierbar && !isNew && (
-            <button className={s.konfBtn} onClick={() => onOpenKonfigurator(draft)}>
-              Im Konfigurator öffnen →
-            </button>
           )}
 
           {/* Zutaten */}
@@ -290,22 +242,24 @@ export default function Editor({
             const z2 = zById(z.zutatId)
             return (
               <div key={z.zutatId} className={s.ingredRow}>
-                <span>{z2?.name ?? z.zutatId}</span>
-                <span className={s.dim}>{z.menge} {z2?.einheit ?? 'g'}</span>
-                <button className={s.removeBtn} onClick={() => removeZutat(z.zutatId)}>×</button>
+                <span className={s.ingredName}>{z2?.name ?? z.zutatId}</span>
+                <input
+                  className={s.mengeInline}
+                  type="number"
+                  value={z.menge}
+                  onChange={e => setZutatMenge(z.zutatId, e.target.value)}
+                />
+                <span className={s.ingredUnit}>{z2?.einheit ?? 'g'}</span>
+                <button className={s.removeBtn} onClick={() => removeZutat(z.zutatId)}><IconClose size={14} /></button>
               </div>
             )
           })}
-          <div className={s.addRow}>
-            <select className={s.select} value={addZutatId} onChange={e => setAddZutatId(e.target.value)}>
-              <option value="">Zutat wählen…</option>
-              {zutaten.filter(z => !(draft.zutaten ?? []).some(x => x.zutatId === z.id)).map(z => (
-                <option key={z.id} value={z.id}>{z.name}</option>
-              ))}
-            </select>
-            <input className={s.mengeInput} type="number" placeholder="Menge" value={addZutatMenge} onChange={e => setAddZutatMenge(e.target.value)}/>
-            <button className={s.addBtn} onClick={addZutat}>+</button>
-          </div>
+          <select className={s.select} value="" onChange={e => { addZutat(e.target.value) }}>
+            <option value="">+ Zutat hinzufügen</option>
+            {zutaten.filter(z => !(draft.zutaten ?? []).some(x => x.zutatId === z.id)).map(z => (
+              <option key={z.id} value={z.id}>{z.name}</option>
+            ))}
+          </select>
 
           {/* Komponenten */}
           <div className={s.sectionHead}>Abgeleitet aus Basis</div>
@@ -313,26 +267,97 @@ export default function Editor({
             const r = rById(k.rezeptId)
             return (
               <div key={k.rezeptId} className={s.ingredRow}>
-                <span>{r?.name ?? k.rezeptId}</span>
-                <span className={s.dim}>{k.menge} {r?.ergibtEinheit ?? ''}</span>
-                <button className={s.removeBtn} onClick={() => removeKomponente(k.rezeptId)}>×</button>
+                <span className={s.ingredName}>{r?.name ?? k.rezeptId}</span>
+                <input
+                  className={s.mengeInline}
+                  type="number"
+                  value={k.menge}
+                  onChange={e => setKompMenge(k.rezeptId, e.target.value)}
+                />
+                <span className={s.ingredUnit}>{r?.ergibtEinheit ?? 'ml'}</span>
+                <button className={s.removeBtn} onClick={() => removeKomponente(k.rezeptId)}><IconClose size={14} /></button>
               </div>
             )
           })}
-          <div className={s.addRow}>
-            <select className={s.select} value={addKompId} onChange={e => setAddKompId(e.target.value)}>
-              <option value="">Basis wählen…</option>
-              {basenRezepte.filter(r => !(draft.komponenten ?? []).some(k => k.rezeptId === r.id)).map(r => (
-                <option key={r.id} value={r.id}>{r.name}</option>
-              ))}
-            </select>
-            <input className={s.mengeInput} type="number" placeholder="Menge" value={addKompMenge} onChange={e => setAddKompMenge(e.target.value)}/>
-            <button className={s.addBtn} onClick={addKomponente}>+</button>
-          </div>
+          <select className={s.select} value="" onChange={e => { addKomponente(e.target.value) }}>
+            <option value="">+ Basis hinzufügen</option>
+            {basenRezepte.filter(r => !(draft.komponenten ?? []).some(k => k.rezeptId === r.id)).map(r => (
+              <option key={r.id} value={r.id}>{r.name}</option>
+            ))}
+          </select>
 
           {/* Anleitung */}
           <div className={s.sectionHead}>Kochanleitung</div>
           <textarea className={s.textarea} rows={4} value={draft.anleitung ?? ''} onChange={e => set('anleitung', e.target.value)} placeholder="Kurze Stichworte…"/>
+
+          {/* ── Erweitert (selten gebrauchte Eigenschaften) ── */}
+          <button className={s.advToggle} onClick={() => setAdvOpen(o => !o)}>
+            <span>Erweitert</span>
+            <span className={`${s.advChevron} ${advOpen ? '' : s.chevronClosed}`}><IconChevron size={14} /></span>
+          </button>
+
+          {advOpen && (
+            <div className={s.advBody}>
+              {/* Langläufer */}
+              <div className={s.advRow}>
+                <span className={s.advLabel}>Langläufer (länger haltbar)</span>
+                <button className={`${s.toggle} ${draft.langlaeufer ? s.toggleOn : ''}`} onClick={() => set('langlaeufer', !draft.langlaeufer)}>
+                  {draft.langlaeufer ? 'Ja' : 'Nein'}
+                </button>
+              </div>
+
+              {/* Aufbewahrung */}
+              <div className={s.advRow}>
+                <span className={s.advLabel}>TK-geeignet</span>
+                <button className={`${s.toggle} ${draft.aufbewahrung?.tk ? s.toggleOn : ''}`} onClick={() => setAufbewahrung('tk', !draft.aufbewahrung?.tk)}>
+                  {draft.aufbewahrung?.tk ? 'Ja' : 'Nein'}
+                </button>
+              </div>
+              <div className={s.behaelterRow}>
+                {BEHAELTER.map(b => (
+                  <button key={b}
+                    className={`${s.behaelterBtn} ${(draft.aufbewahrung?.behaelter ?? []).includes(b) ? s.behaelterBtnOn : ''}`}
+                    onClick={() => toggleBehaelter(b)}>
+                    {b}
+                  </button>
+                ))}
+              </div>
+
+              {/* Als Basis */}
+              <div className={s.row2}>
+                <div className={s.field}>
+                  <label className={s.label}>Ergibt Menge (Basis)</label>
+                  <input className={s.input} type="number" value={draft.ergibtMenge ?? ''} onChange={e => set('ergibtMenge', parseFloat(e.target.value) || null)} placeholder="—"/>
+                </div>
+                <div className={s.field}>
+                  <label className={s.label}>Einheit</label>
+                  <div className={s.chipGroup}>
+                    {['ml','g','Stk','Portionen'].map(u => (
+                      <button key={u}
+                        className={`${s.optChip} ${(draft.ergibtEinheit ?? 'ml') === u ? s.optChipOn : ''}`}
+                        onClick={() => set('ergibtEinheit', u)}>
+                        {u}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Konfigurierbar */}
+              <div className={s.advRow}>
+                <span className={s.advLabel}>Im Konfigurator ladbar</span>
+                <button className={`${s.toggle} ${draft.konfigurierbar ? s.toggleOn : ''}`}
+                  onClick={() => set('konfigurierbar', !draft.konfigurierbar)}>
+                  {draft.konfigurierbar ? 'Ja' : 'Nein'}
+                </button>
+              </div>
+              {draft.konfigurierbar && !isNew && (
+                <button className={s.konfBtn} onClick={() => onOpenKonfigurator(draft)}>
+                  Im Konfigurator öffnen <IconArrowRight size={14} />
+                </button>
+              )}
+            </div>
+          )}
         </>}
 
         {/* SAVE */}

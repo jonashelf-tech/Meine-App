@@ -92,7 +92,7 @@ export function getToolColor(toolId, toolColors) {
   const DEFAULTS = {
     rad:          '#BF00FF',
     timer:        '#00CFFF',
-    rezepte:      '#FF9F43',
+    rezepte:      '#E0A458',
     pizza:        '#FF6B6B',
     elvi:         '#00E5FF',
     gewicht:      '#00FF94',

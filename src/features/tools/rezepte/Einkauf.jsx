@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { buildEinkauf } from './einkauf'
+import { IconCheck } from './icons'
 import s from './Einkauf.module.css'
 
 const fmtMenge = (m) => Number.isInteger(m) ? m : m.toFixed(1)
@@ -71,7 +72,7 @@ export default function Einkauf({ korbGerichte, zById, rById }) {
 
       {checkedItems.length > 0 && (
         <div className={s.gruppe}>
-          <div className={s.gruppeTitle}>✓ Gekauft</div>
+          <div className={`${s.gruppeTitle} ${s.gruppeTitleIcon}`}><IconCheck size={13} /> Gekauft</div>
           {checkedItems.map(item => (
             <div key={item.zutatId} onClick={() => tapItem(item.zutatId)} className={`${s.item} ${s.itemChecked}`}>
               <span className={s.itemName}>{item.name}</span>

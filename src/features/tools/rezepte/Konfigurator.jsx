@@ -3,13 +3,14 @@ import { SLOTS, SLOT_LABELS } from './mealprepModel'
 import { verteilePortionen, rezeptAusKonfig, konfigAusRezept } from './konfigurator'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
+import { IconChevron, IconCheck, IconClose, IconPlus, IconArrowLeft } from './icons'
 import s from './Konfigurator.module.css'
 
 const DEFAULT_GPP = 100
 
 export default function Konfigurator({
   zutaten, rezepte, setRezepte, zById, rById, toolColor, onEdit, addToKorb, settings,
-  loadRezept, onLoaded,
+  loadRezept, onLoaded, onBack,
 }) {
   const [gesamt, setGesamt] = useState(settings?.standardPortionen ?? 4)
   const [slots, setSlots] = useState({ protein: [], kh: [], gemuese: [], sauce: [] })
@@ -95,10 +96,16 @@ export default function Konfigurator({
 
   const buildInline = () => {
     const inline = {}
+    const nameParts = []
     for (const slot of SLOTS) {
       inline[slot] = activeItems(slot)
+      for (const item of inline[slot]) {
+        const meta = slotItems[slot]?.find(si => si.id === item.id)
+        if (meta?.name) nameParts.push(meta.name)
+      }
     }
-    return rezeptAusKonfig(inline, gesamt, 'Konfigurator-Gericht', [])
+    const name = nameParts.length > 0 ? nameParts.slice(0, 3).join(' + ') : 'Konfigurator-Gericht'
+    return rezeptAusKonfig(inline, gesamt, name, [])
   }
 
   const avgPortion = useMemo(() => {
@@ -128,6 +135,11 @@ export default function Konfigurator({
 
   return (
     <div className={s.wrap}>
+      <div className={s.hubBar}>
+        <button className={s.backToHub} onClick={onBack}><IconArrowLeft size={15} /> Sammlung</button>
+        <span className={s.hubTitle}>Gericht bauen</span>
+      </div>
+
       <div className={s.gesamtRow}>
         <span className={s.gesamtLabel}>Portionen gesamt</span>
         <div className={s.stepper}>
@@ -142,7 +154,7 @@ export default function Konfigurator({
         const slotActive = activeItems(slot)
         const totalDistributed = slotActive.reduce((acc, i) => acc + (i.anteilPortionen || 0), 0)
         const unequal = slotActive.length > 0 && totalDistributed !== gesamt
-        const isCollapsed = collapsed[slot]
+        const isCollapsed = !collapsed[slot]
 
         return (
           <div key={slot} className={s.slotCard}>
@@ -157,8 +169,8 @@ export default function Konfigurator({
                 <button className={s.addSlotBtn} onClick={e => {
                   e.stopPropagation()
                   onEdit({ form: 'zutat', data: null })
-                }}>+</button>
-                <span className={s.chevron}>{isCollapsed ? '▸' : '▾'}</span>
+                }}><IconPlus size={14} /></button>
+                <span className={`${s.chevron} ${isCollapsed ? s.chevronClosed : ''}`}><IconChevron size={14} /></span>
               </div>
             </div>
 
@@ -176,7 +188,7 @@ export default function Konfigurator({
                         style={isOn ? { '--tool-color': toolColor } : {}}
                         onClick={() => toggleItem(slot, item.id, item.istRezept)}
                       >
-                        {isOn ? '✓' : '○'}
+                        {isOn && <IconCheck size={14} />}
                       </button>
                       <button className={s.itemName} onClick={() => {
                         if (item.istRezept) {
@@ -236,7 +248,7 @@ export default function Konfigurator({
             <div className={s.saveKats}>
               {saveKats.map(k => (
                 <span key={k} className={s.chip}>{k}
-                  <button className={s.chipRemove} onClick={() => setSaveKats(prev => prev.filter(x => x !== k))}>×</button>
+                  <button className={s.chipRemove} onClick={() => setSaveKats(prev => prev.filter(x => x !== k))}><IconClose size={12} /></button>
                 </span>
               ))}
               <div className={s.addKatRow}>

@@ -32,13 +32,18 @@ export function konfigAusRezept(rezept, zutatById, rezeptById) {
   for (const { zutatId, menge } of rezept.zutaten ?? []) {
     const z = zutatById(zutatId)
     if (!z?.bausteinTyp || !(z.bausteinTyp in slots)) continue
-    slots[z.bausteinTyp].push({ id: zutatId, istRezept: false, gProPortion: menge / p, anteilPortionen: p })
+    slots[z.bausteinTyp].push({ id: zutatId, istRezept: false, gProPortion: menge / p, anteilPortionen: 0 })
   }
   for (const { rezeptId, menge } of rezept.komponenten ?? []) {
     const b = rezeptById(rezeptId)
     const slot = b?.bausteinTyp
     if (!slot || !(slot in slots)) continue
-    slots[slot].push({ id: rezeptId, istRezept: true, gProPortion: menge / p, anteilPortionen: p })
+    slots[slot].push({ id: rezeptId, istRezept: true, gProPortion: menge / p, anteilPortionen: 0 })
+  }
+  // Portionen gleichmäßig verteilen – verhindert false-positive unequal-Warnung
+  for (const items of Object.values(slots)) {
+    const dist = verteilePortionen(items.length, p)
+    items.forEach((item, i) => { item.anteilPortionen = dist[i] })
   }
   return slots
 }

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { buildKochanleitung } from './kochanleitung'
+import { IconClock, IconSnow } from './icons'
 import s from './Kochanleitung.module.css'
 
 export default function Kochanleitung({ korbGerichte, zById, rById }) {
@@ -31,7 +32,7 @@ export default function Kochanleitung({ korbGerichte, zById, rById }) {
           {plan.basen.map(basis => (
             <div key={basis.id} className={s.basisCard}>
               <div className={s.basisHeader}>
-                {basis.langlaeufer && <span className={s.langBadge}>⏱ Langläufer</span>}
+                {basis.langlaeufer && <span className={s.langBadge}><IconClock size={12} /> Langläufer</span>}
                 <span className={s.basisName}>{basis.name}</span>
                 <span className={s.basisMenge}>{basis.menge} {basis.einheit}</span>
               </div>
@@ -65,7 +66,7 @@ export default function Kochanleitung({ korbGerichte, zById, rById }) {
             <div key={idx} className={s.verpackungRow}>
               <span className={s.verpackungName}>{v.name}</span>
               <div className={s.verpackungTags}>
-                {v.tk && <span className={s.tagTK}>❄ TK</span>}
+                {v.tk && <span className={s.tagTK}><IconSnow size={12} /> TK</span>}
                 {v.behaelter.map(b => <span key={b} className={s.tagB}>{b}</span>)}
               </div>
             </div>

@@ -9,6 +9,7 @@
 
 .gruppe { margin-bottom: 12px; }
 .gruppeTitle { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 0; }
+.gruppeTitleIcon { display: inline-flex; align-items: center; gap: 5px; color: var(--emerald); }
 .item {
   display: flex; justify-content: space-between; align-items: center;
   padding: 9px 10px; border-radius: var(--r-sm); cursor: pointer;

@@ -1,7 +1,7 @@
 export const genId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 
-export const SCHEMA_VERSION = 3   // 1 = altes Rezepte-Tool, 2 = Mealprep v1, 3 = erweiterter Seed
+export const SCHEMA_VERSION = 6   // ... 5 = mehrstufige Ketten + Seed-Pflege, 6 = 250er-Block-Mengen
 
 export const SLOTS = ['protein', 'kh', 'gemuese', 'sauce']
 export const SLOT_LABELS = { protein: 'Protein', kh: 'Kohlenhydrate', gemuese: 'Gemüse', sauce: 'Sauce' }
@@ -37,6 +37,7 @@ export const createRezept = (o = {}) => ({
   ergibtMenge: o.ergibtMenge ?? null,
   ergibtEinheit: o.ergibtEinheit ?? null,
   bausteinTyp: o.bausteinTyp ?? null,
+  kochdauer: o.kochdauer ?? null,   // Minuten — für Tagesplaner-Übertrag
 })
 
 export const createKorb = (o = {}) => ({

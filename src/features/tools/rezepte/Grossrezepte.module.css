@@ -1,4 +1,18 @@
 .wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
+
+.hubBar { display: flex; align-items: center; gap: 10px; padding: 2px 0 6px; }
+.backToHub {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: none; color: var(--tool-color);
+  font-family: Outfit, sans-serif; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; padding: 4px 0; -webkit-tap-highlight-color: transparent;
+}
+.hubTitle {
+  font-family: Outfit, sans-serif; font-size: 0.7rem; font-weight: 700;
+  color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em;
+  margin-left: auto;
+}
+
 .topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
 
 .addBtn {
@@ -17,7 +31,7 @@
 .cardHeaderLeft  { display: flex; align-items: center; gap: 6px; }
 .cardHeaderRight { display: flex; align-items: center; gap: 6px; }
 .cardTitle  { font-weight: 600; font-size: 0.9rem; }
-.langBadge  { font-size: 0.75rem; opacity: 0.7; }
+.langBadge  { display: inline-flex; align-items: center; color: var(--text-dim); }
 .dim        { font-size: 0.72rem; color: var(--text-dim); }
 .ablCount   { font-size: 0.72rem; color: var(--text-dim); min-width: 14px; text-align: center; }
 
@@ -31,10 +45,30 @@
 
 .editBtn {
   background: none; border: none; color: var(--text-dim); cursor: pointer;
-  padding: 4px 5px; border-radius: var(--r-sm); font-size: 0.85rem; transition: color 0.15s;
+  padding: 4px 5px; border-radius: var(--r-sm); transition: color 0.15s;
+  display: inline-flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
 }
 .editBtn:hover { color: var(--text); }
-.chevron { font-size: 0.75rem; color: var(--text-dim); }
+.chevron { color: var(--text-dim); display: inline-flex; transition: transform 0.18s; }
+.chevronClosed { transform: rotate(-90deg); }
+
+/* ── Abzweig (verschachtelte Zwischen-Basis, z.B. Bolognese) ─────────────── */
+.branch {
+  margin: 6px 10px 8px 10px;
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid color-mix(in srgb, var(--tool-color) 55%, transparent);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+.branchHeader {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 12px; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent; min-height: 40px;
+  background: color-mix(in srgb, var(--tool-color) 7%, transparent);
+}
+.branchTitle { font-weight: 600; font-size: 0.85rem; color: var(--tool-color); }
 
 /* ── Body ──────────────────────────────────────────────────────────────── */
 .cardBody { border-top: 1px solid var(--border-dim); }
@@ -68,14 +102,15 @@
 .stepValActive { color: var(--tool-color); font-weight: 600; }
 
 /* ── Row content ───────────────────────────────────────────────────────── */
-.rowMain { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.rowName { font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+.rowTop { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.rowName { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .portionenHint {
   font-size: 0.72rem; color: var(--tool-color); font-weight: 600;
   background: rgba(255,255,255,0.05); border-radius: 10px; padding: 1px 6px;
   flex-shrink: 0;
 }
-.tag { font-size: 0.7rem; opacity: 0.6; flex-shrink: 0; }
+.tag { display: inline-flex; align-items: center; color: var(--primary); opacity: 0.85; flex-shrink: 0; }
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
 .cardFooter {

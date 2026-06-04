@@ -99,6 +99,12 @@
 }
 
 /* ─── Drag handle ────────────────────────────────────── */
+@keyframes handleDoneFlash {
+  0%   { color: var(--border); background: transparent; }
+  25%  { color: var(--rose);   background: rgba(251,113,133,0.18); }
+  100% { color: var(--border); background: transparent; }
+}
+
 .handle {
   width: 34px;
   min-width: 34px;
@@ -118,6 +124,10 @@
 
 .handle:hover  { color: var(--text-dim); }
 .handle:active { cursor: grabbing; }
+
+.handleDoneFlash {
+  animation: handleDoneFlash 0.5s ease;
+}
 
 .placedIcon {
   display: flex;

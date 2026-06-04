@@ -31,4 +31,18 @@ describe('buildKochanleitung', () => {
     expect(plan.verpackung.map(v => v.name)).toEqual(['Bolognese', 'Chili'])
     expect(plan.verpackung[0].behaelter).toEqual(['Box'])
   })
+
+  it('mehrstufige Kette: tiefere Basis erscheint und wird zuerst gekocht', () => {
+    // Lasagne → Bolognese (Zwischen-Basis) → Tomatensosse
+    const boloBasis = { id: 'bolobasis', name: 'Bolognese', basisPortionen: 5, ergibtMenge: 1000, langlaeufer: true,
+                        zutaten: [{ zutatId: 'hack', menge: 500 }], komponenten: [{ rezeptId: 'sosse', menge: 500 }], anleitung: '' }
+    const lasagne = { id: 'las', name: 'Lasagne', basisPortionen: 6, zutaten: [],
+                      komponenten: [{ rezeptId: 'bolobasis', menge: 1000 }], anleitung: '', aufbewahrung: { tk: true, behaelter: ['Box'] } }
+    const rById2 = (id) => (id === 'sosse' ? SOSSE : id === 'bolobasis' ? boloBasis : id === 'las' ? lasagne : null)
+    const plan = buildKochanleitung([{ rezept: lasagne, portionen: 6 }], zById, rById2)
+    const ids = plan.basen.map(b => b.id)
+    expect(ids).toContain('bolobasis')
+    expect(ids).toContain('sosse')                                  // tiefere Basis auch dabei
+    expect(ids.indexOf('sosse')).toBeLessThan(ids.indexOf('bolobasis'))  // zuerst kochen
+  })
 })

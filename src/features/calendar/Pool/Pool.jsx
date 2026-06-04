@@ -38,17 +38,24 @@ const ChevronIcon = ({ collapsed }) => (
 // ─── PoolChip ─────────────────────────────────────────────
 function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced, onKlaeren }) {
   const color = todo.color || '#8B5CF6'
+  const [doneFlash, setDoneFlash] = useState(false)
 
   const handlePointerDown = useCallback((e) => {
     e.preventDefault()
+    if (todo.done) {
+      setDoneFlash(true)
+      setTimeout(() => setDoneFlash(false), 500)
+      return
+    }
     startDrag?.(todo.id, todo.text, color, todo.duration, e)
   }, [todo, color, startDrag])
 
   const handle = (
     <span
-      className={s.handle}
+      className={[s.handle, doneFlash ? s.handleDoneFlash : ''].join(' ')}
       onPointerDown={handlePointerDown}
       aria-label="Ziehen"
+      style={todo.done ? { cursor: 'not-allowed' } : undefined}
     >
       {isPlaced ? PlacedIcon : DragIcon}
     </span>
