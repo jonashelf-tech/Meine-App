@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Write-Output '{\"systemMessage\": \"PFLICHT: Gibt es Unklarheiten? -> STOPP, erst fragen. Soll Code geaendert werden? -> Plan besprechen + Bestaetigung holen. AUSNAHME: User schrieb kurzer fix / kleiner bug / quick / direkt o.ae.\"}'",
+            "shell": "powershell"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Write-Output '{\"systemMessage\": \"Kontext-Queue: Wurden kontext-relevante Aenderungen gemacht? -> eine Zeile in Dateien/kontext-queue.md eintragen\"}'",
+            "shell": "powershell"
+          }
+        ]
+      }
+    ]
+  }
+}

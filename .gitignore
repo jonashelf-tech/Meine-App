@@ -25,8 +25,8 @@ dist-ssr
 
 .vercel
 
-# Claude Code — machine-spezifisch, nicht ins Repo
-.claude/settings.json
+# Claude Code — settings.local.json ist machine-spezifisch (Permissions, Plugins)
+# settings.json enthält Projekt-Hooks → im Repo
 .claude/settings.local.json
 
 # Austausch-Ordner — lokal, nicht ins Repo
