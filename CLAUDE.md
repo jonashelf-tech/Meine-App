@@ -6,6 +6,18 @@ React 19 · Vite · PWA · Zustand · CSS Modules
 ## Prinzipien
 Simpel. Ursache nicht Symptom. Dauerhafter Fix. Kein auskommentierter Code. Kein Over-Engineering.
 
+**Vor dem Coden:**
+Annahmen explizit nennen — nie stumm treffen. Bei zwei plausiblen Interpretationen beide vorlegen, nicht eine still wählen. Wenn ein einfacherer Weg existiert, ansprechen. Bei Unklarheit stoppen und fragen.
+
+**Simplicity First:**
+Minimum-Code der das Problem löst — nichts Spekulatives. Keine Features die nicht gefragt wurden. Keine Abstraktion für Einmal-Code. Wenn 200 Zeilen auch 50 sein könnten: umschreiben.
+
+**Surgical Changes:**
+Nur anfassen was nötig ist. Fremden Code nicht „verbessern". Eigene Änderungen die Imports/Variablen/Funktionen verwaisen lassen → selbst aufräumen. Vorhandene tote Stellen → melden, nicht löschen.
+
+**Goal-Driven:**
+Aufgabe in prüfbares Ziel übersetzen. „Fix bug" → Test der den Bug reproduziert, dann grün machen. „Refactor" → Tests vorher und nachher grün.
+
 ## Tooling
 Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder Bash.
 
