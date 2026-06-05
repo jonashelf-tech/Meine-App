@@ -473,8 +473,19 @@ export default function TabHeute() {
         ns[toKey] = entry
         return ns
       })
+      // Uhrzeit im Todo aktualisieren — wie in der Wochenansicht
+      if (slot.todoId) {
+        const todo = todos.find(t => t.id === slot.todoId)
+        if (todo?.time) {
+          const hh = String(Math.floor(parseFloat(toKey))).padStart(2, '0')
+          const mm = parseFloat(toKey) % 1 ? '30' : '00'
+          setTodos(prev => prev.map(t =>
+            t.id === slot.todoId ? { ...t, time: `${hh}:${mm}` } : t
+          ))
+        }
+      }
     }, e, canDrop, slot.duration || 30)
-  }, [startDrag, todaySlots, setTodaySlots, handleRemoveSlot])
+  }, [startDrag, todaySlots, setTodaySlots, handleRemoveSlot, todos, setTodos])
 
   // ─── Edit modal ───────────────────────────────────────────
   const handleEdit = useCallback((id) => {

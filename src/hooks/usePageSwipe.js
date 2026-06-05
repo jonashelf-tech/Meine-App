@@ -12,8 +12,13 @@ export function usePageSwipe(ref, opts) {
     let startX = 0, startY = 0, startTime = 0
     let swipeMode = null, deltaX = 0
 
+    function isDisabled() {
+      const d = o.current.disabled
+      return typeof d === 'function' ? d() : d
+    }
+
     function onStart(e) {
-      if (o.current.disabled) return
+      if (isDisabled()) return
       startX    = e.touches[0].clientX
       startY    = e.touches[0].clientY
       startTime = Date.now()
@@ -24,7 +29,7 @@ export function usePageSwipe(ref, opts) {
 
     function onMove(e) {
       if (swipeMode === false) return
-      if (o.current.disabled) { swipeMode = false; return }
+      if (isDisabled()) { swipeMode = false; return }
       const dx = e.touches[0].clientX - startX
       const dy = e.touches[0].clientY - startY
       if (swipeMode === null && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
