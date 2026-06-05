@@ -1,6 +1,7 @@
 import { sv, lv, SK } from '../../../storage'
+import { todayKey } from '../../../utils'
 
-const todayISO = () => new Date().toISOString().slice(0, 10)
+const todayISO = () => todayKey()
 const genId    = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 

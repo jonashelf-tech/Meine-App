@@ -7,9 +7,10 @@ import {
   isoToday, isoAddDays, isoLabel, isoNavLabel,
   loadEntries, saveEntries, upsertEntry, SK_WEIGHT,
 } from './gewichtData'
+import { sv, lv, SK } from '../../../storage'
 import s from './TabGewicht.module.css'
 
-const SK_DASH = 'adhs_wdash'
+const SK_DASH = SK.weightDash
 
 // ── Stats ─────────────────────────────────────────────────────
 function wAvg(entries, refDate, days) {
@@ -41,8 +42,8 @@ const DEFAULT_DASH = {
   showCurrentWeight:true, showAvgWeight7:true, showAvgKcal7:true,
   showWeekChangeTrend:true, showDiffFromTrend:true, showMaintenance:true,
 }
-const loadDash  = () => { try { const r=localStorage.getItem(SK_DASH); return r?JSON.parse(r):DEFAULT_DASH } catch { return DEFAULT_DASH } }
-const saveDash  = d => { try { localStorage.setItem(SK_DASH,JSON.stringify(d)) } catch {} }
+const loadDash  = () => lv(SK_DASH, DEFAULT_DASH)
+const saveDash  = d => sv(SK_DASH, d)
 
 // ── Component ─────────────────────────────────────────────────
 export default function TabGewicht({ onBack }) {

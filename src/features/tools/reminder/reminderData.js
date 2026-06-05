@@ -1,6 +1,8 @@
+import { sv, lv, SK } from '../../../storage'
+
 // ─── Storage keys ─────────────────────────────────────────
-export const REMINDER_KEY           = 'adhs_reminder_v1'
-export const REMINDER_DISMISSED_KEY = 'adhs_reminder_dismissed'
+export const REMINDER_KEY           = SK.reminder
+export const REMINDER_DISMISSED_KEY = SK.reminderDismissed
 
 // ─── Curated items ────────────────────────────────────────
 // icon = Glyph-Name aus _shared/glyphs.jsx (kein Emoji mehr).
@@ -45,22 +47,19 @@ export function mergeWithCurated(stored) {
 }
 
 export function loadReminderItems() {
-  try { return JSON.parse(localStorage.getItem(REMINDER_KEY))?.items ?? [] } catch { return [] }
+  return lv(SK.reminder, {})?.items ?? []
 }
 
 export function saveReminderItems(items) {
-  try {
-    const existing = JSON.parse(localStorage.getItem(REMINDER_KEY)) ?? {}
-    localStorage.setItem(REMINDER_KEY, JSON.stringify({ ...existing, items }))
-  } catch {}
+  sv(SK.reminder, { ...lv(SK.reminder, {}), items })
 }
 
 export function loadDismissed() {
-  try { return JSON.parse(localStorage.getItem(REMINDER_DISMISSED_KEY)) ?? {} } catch { return {} }
+  return lv(SK.reminderDismissed, {})
 }
 
 export function saveDismissed(data) {
-  try { localStorage.setItem(REMINDER_DISMISSED_KEY, JSON.stringify(data)) } catch {}
+  sv(SK.reminderDismissed, data)
 }
 
 // ─── Segment / Fälligkeits-Helpers ────────────────────────
@@ -96,11 +95,9 @@ export function reminderDueLabel(item) {
 }
 
 export function setReminderLastAdded(itemId, date) {
-  try {
-    const stored = JSON.parse(localStorage.getItem(REMINDER_KEY)) ?? { items: [] }
-    const items = (stored.items ?? []).map(i =>
-      i.id === itemId ? { ...i, lastAdded: date } : i
-    )
-    localStorage.setItem(REMINDER_KEY, JSON.stringify({ ...stored, items }))
-  } catch {}
+  const stored = lv(SK.reminder, { items: [] })
+  const items = (stored.items ?? []).map(i =>
+    i.id === itemId ? { ...i, lastAdded: date } : i
+  )
+  sv(SK.reminder, { ...stored, items })
 }

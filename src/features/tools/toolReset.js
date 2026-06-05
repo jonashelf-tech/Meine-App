@@ -9,7 +9,7 @@ import { SK } from '../../storage'
 export const TOOL_RESETS = {
   haushalt:    { keys: [SK.haushalt, SK.haushaltEnergie] },
   geburtstage: { keys: [SK.birthdays, 'adhs_bday_sort'] },
-  rezepte:     { keys: [SK.recipes, SK.shopping, SK.shoppingStates, SK.selectedDishes] },
+  rezepte:     { keys: [SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv] },
   gewicht:     { keys: [SK.weight, 'adhs_wdash'] },
   erfolge:     { keys: [SK.erfolge, SK.erfolgeTracking] },
   reminder:    { keys: ['adhs_reminder_v1', 'adhs_reminder_dismissed'] },

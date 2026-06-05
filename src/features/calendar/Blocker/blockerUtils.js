@@ -1,4 +1,5 @@
 // src/features/calendar/Blocker/blockerUtils.js
+import { dateKey } from '../../../utils'
 
 const genId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
@@ -53,7 +54,7 @@ export function getBlockersForDate(allBlockers, dateStr) {
 
   const prevD = new Date(dateStr + 'T00:00:00')
   prevD.setDate(prevD.getDate() - 1)
-  const prevDateStr = prevD.toISOString().slice(0, 10)
+  const prevDateStr = dateKey(prevD)   // lokal — toISOString() wäre in +TZ ein Tag zu früh
 
   const result = []
   for (const b of allBlockers) {

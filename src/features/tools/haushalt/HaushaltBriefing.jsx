@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { todayKey } from '../../../utils'
 import { DEFAULT_ROOMS } from './haushaltData'
 import { Glyph, ROOM_GLYPHS } from '../_shared/glyphs'
 import GlyphPicker from '../_shared/GlyphPicker'
@@ -202,7 +203,7 @@ export default function HaushaltBriefing({ config, onComplete, onBack }) {
   const handleBack = () => { if (canBack) setStep(s => s - 1) }
 
   const handleFinish = () => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = todayKey()
     const finalRooms = draftRooms.map(r => ({
       ...r,
       tasks: r.tasks.map(t => ({

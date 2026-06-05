@@ -4,6 +4,7 @@ import { dateKey as toDateKey, getDaysInMonth, getFirstDayOfMonth, getToolColor 
 import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geburtstage/birthdayUtils'
 import { loadEntries } from '../../tools/gewicht/gewichtData'
+import { loadElviDay } from '../../tools/elvi/elviData'
 import { loadSessions as loadKognitivSessions, getDelta } from '../../tools/kognitiv/sessionStore'
 import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { TOOL_TAB } from '../../tools/toolTabs'
@@ -122,13 +123,7 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
   const kognitivColor = getToolColor('kognitiv', toolColors)
   const doneCount = doneTodos.length
 
-  const elviDay = useMemo(() => {
-    try {
-      const raw = localStorage.getItem('adhs_elvi_v1')
-      if (!raw) return null
-      return JSON.parse(raw)?.savedDays?.find(d => d.date === dateKey) ?? null
-    } catch { return null }
-  }, [dateKey])
+  const elviDay = useMemo(() => loadElviDay(dateKey), [dateKey])
 
   const [y, m, d] = dateKey.split('-')
   const dateObj  = new Date(parseInt(y), parseInt(m) - 1, parseInt(d))

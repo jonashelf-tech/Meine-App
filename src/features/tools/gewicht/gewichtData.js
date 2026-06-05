@@ -1,4 +1,6 @@
-export const SK_WEIGHT = 'adhs_health_weight'
+import { sv, lv, SK } from '../../../storage'
+
+export const SK_WEIGHT = SK.weight
 
 export const isoToday = () => {
   const d = new Date()
@@ -27,18 +29,13 @@ export const isoNavLabel = (iso) => {
 }
 
 export const loadEntries = () => {
-  try {
-    const r = localStorage.getItem(SK_WEIGHT)
-    if (!r) return []
-    return JSON.parse(r)
-      .map(e => ({ date: e.date, kg: e.kg ?? e.weight ?? null, kcal: e.kcal ?? null }))
-      .filter(e => e.date && e.kg != null)
-  } catch { return [] }
+  const raw = lv(SK.weight, [])
+  return (Array.isArray(raw) ? raw : [])
+    .map(e => ({ date: e.date, kg: e.kg ?? e.weight ?? null, kcal: e.kcal ?? null }))
+    .filter(e => e.date && e.kg != null)
 }
 
-export const saveEntries = entries => {
-  try { localStorage.setItem(SK_WEIGHT, JSON.stringify(entries)) } catch {}
-}
+export const saveEntries = entries => { sv(SK.weight, entries) }
 
 export const upsertEntry = (entries, rec) => {
   const idx = entries.findIndex(e => e.date === rec.date)

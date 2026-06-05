@@ -14,7 +14,7 @@ export default function Konfigurator({
 }) {
   const [gesamt, setGesamt] = useState(settings?.standardPortionen ?? 4)
   const [slots, setSlots] = useState({ protein: [], kh: [], gemuese: [], sauce: [] })
-  const [collapsed, setCollapsed] = useState({})
+  const [collapsed, setCollapsed] = useState({ protein: true })
   const [saveDialog, setSaveDialog] = useState(false)
   const [saveName, setSaveName] = useState('')
   const [saveKats, setSaveKats] = useState([])

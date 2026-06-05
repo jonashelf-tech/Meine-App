@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useAppStore } from '../../../store'
+import { sv, lv, SK } from '../../../storage'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
@@ -22,7 +23,14 @@ export default function TabRezepte({ onBack }) {
   const [rezepte, setRezepteS] = useState(init.rezepte)
   const [koerbe,  setKoerbeS]  = useState(init.koerbe)
   const [settings, setSettingsS] = useState(init.settings)
-  const [korb, setKorb] = useState(() => createKorb({ name: 'Aktueller Korb' }))
+  const [korb, setKorbS] = useState(() => lv(SK.rezepteKorbAktiv, null) ?? createKorb({ name: 'Aktueller Korb' }))
+  const setKorb = useCallback((v) => {
+    setKorbS(prev => {
+      const next = typeof v === 'function' ? v(prev) : v
+      sv(SK.rezepteKorbAktiv, next)
+      return next
+    })
+  }, [])
 
   const [modul, setModul] = useState('sammlung')
   const [editing, setEditing] = useState(null)
@@ -36,20 +44,25 @@ export default function TabRezepte({ onBack }) {
 
   useEffect(() => {
     const hasOverlay = editing !== null || korbOpen
-    setBackInterceptor(hasOverlay ? () => { setEditing(null); setKorbOpen(false) } : null)
+    const inSubmodul = modul !== 'sammlung'
+    setBackInterceptor(
+      hasOverlay   ? () => { setEditing(null); setKorbOpen(false) }
+      : inSubmodul ? () => setModul('sammlung')
+      : null
+    )
     return () => setBackInterceptor(null)
-  }, [editing, korbOpen, setBackInterceptor])
+  }, [editing, korbOpen, modul, setBackInterceptor])
 
   const zById = useCallback(id => zutaten.find(z => z.id === id), [zutaten])
   const rById = useCallback(id => rezepte.find(r => r.id === id), [rezepte])
 
   const addToKorb = useCallback((ref, portionen) => {
     setKorb(k => ({ ...k, eintraege: [...k.eintraege, { ref, portionen }] }))
-  }, [])
+  }, [setKorb])
 
   const removeFromKorb = useCallback((rezeptId) => {
     setKorb(k => ({ ...k, eintraege: k.eintraege.filter(e => e.ref !== rezeptId) }))
-  }, [])
+  }, [setKorb])
 
   // Für Großrezepte-Stepper: updated oder fügt ein, entfernt bei portionen=0
   const updateKorbEintrag = useCallback((rezeptId, portionen) => {
@@ -59,7 +72,7 @@ export default function TabRezepte({ onBack }) {
       if (exists) return { ...k, eintraege: k.eintraege.map(e => e.ref === rezeptId ? { ...e, portionen } : e) }
       return { ...k, eintraege: [...k.eintraege, { ref: rezeptId, portionen }] }
     })
-  }, [])
+  }, [setKorb])
 
   const ladeInKonfigurator = useCallback((rezept) => {
     setKonfigLoad(rezept)

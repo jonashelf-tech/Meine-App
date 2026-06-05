@@ -116,7 +116,7 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
     )
   }
 
-  const displayKats = [...allKats, ...(hasUncategorized ? ['Sonstiges'] : [])]
+  const displayKats = [...allKats, ...(hasUncategorized && !allKats.includes('Sonstiges') ? ['Sonstiges'] : [])]
 
   return (
     <div className={s.wrap}>

@@ -19,9 +19,9 @@ describe('rezeptAusKonfig — Slots → Rezept', () => {
     expect(r.konfigurierbar).toBe(true)
     expect(r.basisPortionen).toBe(4)
     expect(r.kategorien).toEqual(['Bowls'])
-    expect(r.zutaten).toContainEqual({ zutatId: 'z_hack', menge: 600 })
-    expect(r.zutaten).toContainEqual({ zutatId: 'z_reis', menge: 320 })
-    expect(r.komponenten).toContainEqual({ rezeptId: 'r_tomatensauce', menge: 400 })
+    expect(r.zutaten).toContainEqual({ zutatId: 'z_hack', menge: 600, anteilPortionen: 4 })
+    expect(r.zutaten).toContainEqual({ zutatId: 'z_reis', menge: 320, anteilPortionen: 4 })
+    expect(r.komponenten).toContainEqual({ rezeptId: 'r_tomatensauce', menge: 400, anteilPortionen: 4 })
   })
 })
 
@@ -37,5 +37,30 @@ describe('konfigAusRezept — Rezept → Slots (Rekonstruktion)', () => {
     const slots = konfigAusRezept(rezept, zById, rById)
     expect(slots.kh[0]).toMatchObject({ id: 'z_reis', gProPortion: 80, anteilPortionen: 4, istRezept: false })
     expect(slots.sauce[0]).toMatchObject({ id: 'r_tomatensauce', gProPortion: 100, anteilPortionen: 4, istRezept: true })
+  })
+})
+
+describe('Round-Trip mit Split — >1 Baustein pro Slot bleibt exakt', () => {
+  it('zwei Proteine (je anteil 2 von 4) behalten ihre Mengen', () => {
+    const slots = {
+      protein: [
+        { id: 'z_hack', istRezept: false, gProPortion: 150, anteilPortionen: 2 },
+        { id: 'z_tofu', istRezept: false, gProPortion: 100, anteilPortionen: 2 },
+      ],
+      kh: [], gemuese: [], sauce: [],
+    }
+    const r = rezeptAusKonfig(slots, 4, 'Mix', [])
+    expect(r.zutaten).toContainEqual({ zutatId: 'z_hack', menge: 300, anteilPortionen: 2 })
+    expect(r.zutaten).toContainEqual({ zutatId: 'z_tofu', menge: 200, anteilPortionen: 2 })
+
+    const zById = (id) => ({ id, bausteinTyp: 'protein' })
+    const back  = konfigAusRezept(r, zById, () => null)
+    const hack  = back.protein.find(i => i.id === 'z_hack')
+    const tofu  = back.protein.find(i => i.id === 'z_tofu')
+    expect(hack).toMatchObject({ gProPortion: 150, anteilPortionen: 2 })
+    expect(tofu).toMatchObject({ gProPortion: 100, anteilPortionen: 2 })
+    // Gesamtmengen bleiben erhalten (vorher: halbiert)
+    expect(hack.gProPortion * hack.anteilPortionen).toBe(300)
+    expect(tofu.gProPortion * tofu.anteilPortionen).toBe(200)
   })
 })

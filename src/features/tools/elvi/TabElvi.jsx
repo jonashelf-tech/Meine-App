@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
-import { getToolColor } from '../../../utils'
+import { getToolColor, todayKey } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
+import { sv, lv, SK } from '../../../storage'
 import s from './TabElvi.module.css'
 
 // ─── PK Model ────────────────────────────────────────────────
@@ -52,14 +53,12 @@ const RATING_QS = [
   {key:"crash",    label:"Crash",              lo:"kein",      hi:"stark"},
   {key:"reiz",     label:"Reizempfindlichkeit",lo:"normal",    hi:"hoch"},
 ]
-const SK = "adhs_elvi_v1"
-
 // ─── Component ───────────────────────────────────────────────
 export default function TabElvi({ onBack }) {
   const { toolColors } = useAppStore()
   const toolColor = getToolColor('elvi', toolColors)
-  const load = () => { try { const r=localStorage.getItem(SK); return r?JSON.parse(r):null } catch { return null } }
-  const save = d => { try { localStorage.setItem(SK,JSON.stringify(d)) } catch {} }
+  const load = () => lv(SK.elvi, null)
+  const save = d => sv(SK.elvi, d)
 
   const [doses, setDosesRaw] = useState(() => {
     const saved = load()
@@ -81,7 +80,7 @@ export default function TabElvi({ onBack }) {
   const updateDose = (i, field, val) => { const nd=[...doses]; nd[i]={...nd[i],[field]:val}; setDoses(nd) }
 
   const saveDay = () => {
-    const today = new Date().toISOString().slice(0,10)
+    const today = todayKey()
     const record = {
       date: today,
       doses: doses.filter(d=>d.active).map(d=>({time:d.time,mg:d.mg})),

@@ -2,7 +2,7 @@ import { sv, lv, SK } from '../../../storage'
 import { genId, SCHEMA_VERSION } from './mealprepModel'
 import { seedZutaten, seedRezepte } from './seed'
 
-const VKEY = `${SK.recipes}__v`   // Schema-Versions-Marker
+const VKEY = SK.recipesVersion   // Schema-Versions-Marker (zentral in SK → Backup + Reset)
 
 export const saveZutaten  = (list) => sv(SK.rezepteZutaten, list)
 export const saveRezepte  = (list) => sv(SK.recipes, list)

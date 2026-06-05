@@ -197,18 +197,29 @@ SK.lastPoolReturn → 'adhs_view_last_pool_return'
 SK.poolSort       → 'adhs_view_pool_sort'        // 'standard'|'kategorie'|'alter'
 SK.calView        → 'adhs_view_cal_view'         // 'woche'|'monat'
 
-// Tools
-SK.recipes        → 'adhs_recipes_list'
-SK.shopping       → 'adhs_recipes_shopping'
-SK.shoppingStates → 'adhs_recipes_shopping_states'
-SK.selectedDishes → 'adhs_recipes_selected'
-SK.weight         → 'adhs_health_weight'
-SK.birthdays      → 'adhs_birthdays'
+// Tools — Mealprep (Rezepte)
+SK.recipes         → 'adhs_recipes_list'           // Rezepte (Array)
+SK.rezepteZutaten  → 'adhs_recipes_ingredients'    // Zutaten/Bausteine
+SK.rezepteKoerbe   → 'adhs_recipes_baskets'        // gespeicherte Menüs
+SK.rezepteSettings → 'adhs_recipes_settings'
+SK.recipesVersion  → 'adhs_recipes_list__v'        // Schema-Marker (seed/migrate) — MUSS im Backup sein!
+SK.rezepteKorbAktiv→ 'adhs_recipes_active_basket'  // persistenter Arbeits-Korb
+SK.shopping/.shoppingStates/.selectedDishes         // LEGACY (altes Rezepte-Tool, nur Backup-Kompat)
+
+// Tools — sonstige
+SK.weight            → 'adhs_health_weight'
+SK.weightDash        → 'adhs_wdash'               // Gewicht-Dashboard-Settings
+SK.birthdays         → 'adhs_birthdays'
+SK.birthdaySort      → 'adhs_bday_sort'
+SK.reminder          → 'adhs_reminder_v1'         // { items: [...] }
+SK.reminderDismissed → 'adhs_reminder_dismissed'  // { "YYYY-MM-DD": [ids] }
+SK.elvi              → 'adhs_elvi_v1'             // { doses, savedDays } — Leser: elvi/elviData.js
 SK.haushalt          → 'adhs_haushalt_v1'
 SK.haushaltEnergie   → 'adhs_haushalt_energie'    // lokaler UI-State (Normal/Low Energy)
 SK.kognitiv          → 'adhs_kognitiv_sessions'   // Session-Archiv (Array)
 SK.kognitivCheckin   → 'adhs_kognitiv_checkin'    // { "YYYY-MM-DD": CheckinEntry }
 SK.kognitivSchedule  → 'adhs_kognitiv_schedule'   // { [moduleId]: { mode, days, time } }
+SK.kognitivPractice  → 'adhs_kognitiv_practice'   // ephemer (Wochen-Gate), NICHT im Backup
 SK.klaerenSettings   → 'adhs_klaeren_settings'    // { threshold, ageColor }
 ```
 
@@ -218,6 +229,17 @@ import { sv, lv, SK } from '../../../storage'
 sv(SK.todos, nextTodos)
 lv(SK.todos, [])
 ```
+
+**Registry-Regel (wichtig):** Jeder neue Daten-Key gehört in `SK` **und** in `BACKUP_CATS`
+(storage/index.js) — sonst geht er beim Restore auf ein neues Gerät verloren. Der Test
+„Backup-Abdeckung — Anti-Drift" (storage.test.js) erzwingt das: jeder SK-Key muss gesichert
+**oder** explizit ephemer (`EPHEMERAL`) sein. Reset-Keys gehören zusätzlich in `TOOL_RESETS`
+(toolReset.js). Roh-`localStorage` in Komponenten vermeiden — immer `sv`/`lv` (Quota-Schutz +
+Korrupt-Rettung). Cross-Tool-Lesen über ein Datenmodul des Tools, nicht roh (z.B. elviData.js).
+
+**Datum:** Tages-Keys immer lokal über `dateKey`/`todayKey` (utils), nie
+`new Date().toISOString().slice(0,10)` (UTC → an der Mitternachts-Grenze falscher Tag).
+Ausnahme: echte ISO-Kalenderwoche.
 
 ---
 

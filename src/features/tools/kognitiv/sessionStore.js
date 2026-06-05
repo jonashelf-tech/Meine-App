@@ -1,8 +1,9 @@
 import { sv, lv, SK } from '../../../storage'
+import { dateKey, todayKey } from '../../../utils'
 import { getTodayCheckin } from './checkinStore'
 import { MODULE_ORDER } from './moduleConfig'
 
-const PRACTICE_KEY = 'adhs_kognitiv_practice'
+const PRACTICE_KEY = SK.kognitivPractice
 
 function currentISOWeek() {
   const d = new Date()
@@ -39,7 +40,7 @@ export function createSession({ moduleId, variant, startedAt, duration, score, m
     id:        genId(),
     moduleId,
     variant,
-    date:      startedAt.slice(0, 10),
+    date:      dateKey(new Date(startedAt)),
     startedAt,
     duration,
     score,
@@ -50,7 +51,7 @@ export function createSession({ moduleId, variant, startedAt, duration, score, m
 }
 
 export function isDoneToday(moduleId) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayKey()
   return loadSessions().some(s => s.moduleId === moduleId && s.date === today)
 }
 
@@ -89,13 +90,13 @@ export function getModuleStats(moduleId) {
 }
 
 export function getWeeklyCount() {
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  const weekAgo = dateKey(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
   return loadSessions().filter(s => s.date >= weekAgo).length
 }
 
 export function getScheduledToday() {
   const schedule     = lv(SK.kognitivSchedule, {})
-  const today        = new Date().toISOString().slice(0, 10)
+  const today        = todayKey()
   const dayOfWeek    = new Date().getDay()
   const doneTodayIds = loadSessions()
     .filter(s => s.date === today)

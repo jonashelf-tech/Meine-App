@@ -1,4 +1,5 @@
 import { sv, lv, SK } from '../../../storage'
+import { todayKey } from '../../../utils'
 import { GLYPH_NAMES } from '../_shared/glyphs'
 
 // Alte Emoji-Icons → Glyph-Namen (Migration bestehender Daten).
@@ -178,7 +179,7 @@ export function saveHaushalt(config) {
 
 // ─── Task mutations ───────────────────────────────────────
 export function markTaskDone(config, taskId) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayKey()
   return {
     ...config,
     rooms: config.rooms.map(r => ({

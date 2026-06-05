@@ -149,7 +149,7 @@ export default function TabHeute() {
         saveHaushalt(updated)
       }
       if (nowDone && todo?.reminderItemId) {
-        setReminderLastAdded(todo.reminderItemId, new Date().toISOString().slice(0, 10))
+        setReminderLastAdded(todo.reminderItemId, todayKey())
       }
       return prev.map(t =>
         t.id === id
@@ -170,7 +170,7 @@ export default function TabHeute() {
       if (!slot) return prev
       const nowDone = !slot.done
       if (nowDone && slot.reminderItemId) {
-        setReminderLastAdded(slot.reminderItemId, new Date().toISOString().slice(0, 10))
+        setReminderLastAdded(slot.reminderItemId, todayKey())
       }
       return { ...prev, [slotKey]: { ...slot, done: nowDone } }
     })
@@ -391,7 +391,7 @@ export default function TabHeute() {
   }, [todos, todaySlots, startDrag, startPoolDrag, setTodos, handleSetSlot])
 
   const startReminderDrag = useCallback((item, reminderColor, e) => {
-    const text     = `${item.icon || '🔔'} ${item.text}`
+    const text     = item.text
     const duration = 30
     startDrag(text, reminderColor, (dropKey) => {
       const newTodo = createBlock({ text, priority: 2, color: reminderColor, category: 'Selfcare', reminderItemId: item.id, toolId: 'reminder', duration })

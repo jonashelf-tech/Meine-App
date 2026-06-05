@@ -93,3 +93,27 @@ describe('Mealprep-Keys', () => {
       SK.selectedDishes].forEach(k => expect(BACKUP_CATS.tools).toContain(k))
   })
 })
+
+describe('Backup-Abdeckung — Anti-Drift', () => {
+  // Bewusst NICHT gesichert: Backup-Metadaten + wöchentlich neu setzende States.
+  const EPHEMERAL = new Set([
+    SK.lastAutoBackup,
+    SK.lastOffDeviceBackup,
+    SK.kognitivPractice,
+  ])
+  const backedUp = new Set([
+    ...BACKUP_CATS.kalender, ...BACKUP_CATS.tools, ...BACKUP_CATS.einstellungen,
+  ])
+
+  it('jeder SK-Key ist entweder gesichert oder explizit ephemer', () => {
+    const unclassified = Object.entries(SK)
+      .filter(([, val]) => !backedUp.has(val) && !EPHEMERAL.has(val))
+      .map(([name]) => name)
+    expect(unclassified).toEqual([])
+  })
+
+  it('Nutzdaten-Keys der neueren Tools sind im Backup', () => {
+    ;[SK.reminder, SK.reminderDismissed, SK.elvi, SK.recipesVersion, SK.weightDash]
+      .forEach(k => expect(BACKUP_CATS.tools).toContain(k))
+  })
+})

@@ -1,6 +1,7 @@
 // ─── Storage Layer ───────────────────────────────────────
 // Never call localStorage directly in components — always use this layer.
 // Key schema: adhs_{feature}_{key}
+import { rezeptProPortion } from '../features/tools/rezepte/naehrwerte'
 
 const PREFIX = 'adhs_'
 
@@ -56,11 +57,18 @@ export const SK = {
   rezepteZutaten: `${PREFIX}recipes_ingredients`,
   rezepteKoerbe:  `${PREFIX}recipes_baskets`,
   rezepteSettings:`${PREFIX}recipes_settings`,
+  recipesVersion: `${PREFIX}recipes_list__v`,
+  rezepteKorbAktiv:`${PREFIX}recipes_active_basket`,
   weight:         `${PREFIX}health_weight`,
+  weightDash:     `${PREFIX}wdash`,
   activeTools:    `${PREFIX}app_active_tools`,
   birthdays:      `${PREFIX}birthdays`,
+  birthdaySort:   `${PREFIX}bday_sort`,
   haushalt:       `${PREFIX}haushalt_v1`,
   haushaltEnergie:`${PREFIX}haushalt_energie`,
+  reminder:         `${PREFIX}reminder_v1`,
+  reminderDismissed:`${PREFIX}reminder_dismissed`,
+  elvi:             `${PREFIX}elvi_v1`,
   accentColor:    `${PREFIX}app_accent`,
   toolColors:     `${PREFIX}app_tool_colors`,
   visStart:       `${PREFIX}view_vis_start`,
@@ -78,6 +86,7 @@ export const SK = {
   kognitiv:        `${PREFIX}kognitiv_sessions`,
   kognitivCheckin:  `${PREFIX}kognitiv_checkin`,
   kognitivSchedule: `${PREFIX}kognitiv_schedule`,
+  kognitivPractice: `${PREFIX}kognitiv_practice`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
   lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
   projects:        `${PREFIX}projects`,
@@ -107,10 +116,11 @@ export const BACKUP_CATS = {
     SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus,
   ],
   tools: [
-    SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings,
+    SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv,
     SK.shopping, SK.shoppingStates, SK.selectedDishes,
-    SK.weight, `${PREFIX}wdash`,
-    SK.birthdays, SK.haushalt, SK.haushaltEnergie,
+    SK.weight, SK.weightDash,
+    SK.birthdays, SK.birthdaySort, SK.haushalt, SK.haushaltEnergie,
+    SK.reminder, SK.reminderDismissed, SK.elvi,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
     SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule,
   ],
@@ -195,6 +205,7 @@ export const exportDataReadable = () => {
   const birthdays = lv(SK.birthdays, [])
   const weight    = lv(SK.weight, [])
   const recipes   = lv(SK.recipes, [])
+  const rezepteZutaten = lv(SK.rezepteZutaten, [])
   const cats      = lv(SK.cats, [])
   const haushalt  = lv(SK.haushalt, null)
 
@@ -251,18 +262,30 @@ export const exportDataReadable = () => {
         .sort((a, b) => a.date.localeCompare(b.date))
         .map(e => ({ datum: e.date, kg: e.kg ?? null, kalorien: e.kcal ?? null })),
     },
-    rezepte: {
-      _info: 'Gespeicherte Rezepte',
-      anzahl: recipes.length,
-      eintraege: recipes.map(r => ({
-        name: r.name,
-        zubereitungszeit_min: r.cookingTime ?? null,
-        portionen: r.portions ?? null,
-        tk_geeignet: r.tkSuitable ?? false,
-        kalt_essbar: r.coldEdible ?? false,
-        naehrwerte_pro_portion: r.nutrition ?? null,
-      })),
-    },
+    rezepte: (() => {
+      const zById = (id) => rezepteZutaten.find(z => z.id === id)
+      const rById = (id) => recipes.find(r => r.id === id)
+      return {
+        _info: 'Gespeicherte Rezepte',
+        anzahl: recipes.length,
+        eintraege: recipes.map(r => {
+          const np = rezeptProPortion(r, zById, rById)
+          return {
+            name: r.name,
+            kategorien: r.kategorien ?? [],
+            kochzeit_min: r.kochdauer ?? null,
+            portionen: r.basisPortionen ?? null,
+            tk_geeignet: r.aufbewahrung?.tk ?? false,
+            naehrwerte_pro_portion: {
+              kcal:         Math.round(np.kcal),
+              protein:      Math.round(np.protein),
+              fett:         Math.round(np.fat),
+              kohlenhydrate: Math.round(np.carbs),
+            },
+          }
+        }),
+      }
+    })(),
     haushalt: haushalt ? {
       _info: 'Haushaltsaufgaben nach Räumen',
       eintraege: (haushalt.rooms ?? []).map(room => ({
