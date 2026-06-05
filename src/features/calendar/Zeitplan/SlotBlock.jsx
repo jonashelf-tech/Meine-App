@@ -36,7 +36,9 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
       date: null, time: null, category: null,
       duration: slot.duration || 30,
     }),
-    done: !!(slot.done),
+    done:   !!(slot.done),
+    date:   null, // Im Zeitplan unnötig — Position zeigt die Zeit
+    time:   null,
     toolId: null, // Kein Tool-Glow im Zeitplan — Slot-Farbe zeigt die Herkunft
   }
   const chipStyle = { margin: 0, height: '100%' }
