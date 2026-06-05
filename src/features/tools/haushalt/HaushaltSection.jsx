@@ -222,7 +222,6 @@ export default function HaushaltSection({ onStartDrag }) {
                 id:       room.id,
                 text:     room.name,
                 color:    toolColor,
-                toolId:   'haushalt',
                 done:     false,
                 priority: room.priority ?? 3,
                 duration: uncoveredTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),

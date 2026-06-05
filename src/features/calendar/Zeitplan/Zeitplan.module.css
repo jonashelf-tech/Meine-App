@@ -108,7 +108,7 @@
   position: relative;
   overflow: visible;
   transition: background 0.12s;
-  padding: 2px 3px 2px 2px;
+  padding: 2px 10px 2px 2px;
 }
 
 .sgHalfBot {

@@ -356,7 +356,7 @@ export default function TabHeute() {
           ))
         }
       }
-    }, e, canDrop)
+    }, e, canDrop, dur)
   }, [startDrag, todaySlots, setTodaySlots, handleSetSlot, setTodos, viewDate])
 
   const startHaushaltDrag = useCallback((room, uncoveredTasks, haushaltColor, e) => {
@@ -387,7 +387,7 @@ export default function TabHeute() {
       })
       setTodos(prev => [...prev, newTodo])
       handleSetSlot(dropKey, { text, todoId: newTodo.id, color: haushaltColor, duration, locked: false, done: false })
-    }, e, canDrop)
+    }, e, canDrop, duration)
   }, [todos, todaySlots, startDrag, startPoolDrag, setTodos, handleSetSlot])
 
   const startReminderDrag = useCallback((item, reminderColor, e) => {
@@ -399,7 +399,7 @@ export default function TabHeute() {
       if (dropKey !== 'pool') {
         handleSetSlot(dropKey, { text, todoId: newTodo.id, color: reminderColor, duration, locked: false, done: false })
       }
-    }, e, null)
+    }, e, null, duration)
   }, [startDrag, setTodos, handleSetSlot])
 
   const startBirthdayDrag = useCallback((chip, chipColor, e, bulkChips) => {
@@ -462,7 +462,7 @@ export default function TabHeute() {
       : null
     startDrag(slot.text, slot.color || '#8B5CF6', (toKey) => {
       if (toKey === 'pool') {
-        handleRemoveSlot(fromKey)
+        handleRemoveSlot(fromKey, 'back')
         return
       }
       if (toKey === fromKey) return
@@ -473,7 +473,7 @@ export default function TabHeute() {
         ns[toKey] = entry
         return ns
       })
-    }, e, canDrop)
+    }, e, canDrop, slot.duration || 30)
   }, [startDrag, todaySlots, setTodaySlots, handleRemoveSlot])
 
   // ─── Edit modal ───────────────────────────────────────────

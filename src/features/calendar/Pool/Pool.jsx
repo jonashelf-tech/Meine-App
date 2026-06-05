@@ -136,6 +136,8 @@ export default function Pool({
     if (!todo) return
     if (!todo.done) {
       setPendingDoneIds(prev => new Set([...prev, id]))
+    } else {
+      setPendingDoneIds(prev => { const next = new Set(prev); next.delete(id); return next })
     }
     onToggleDone?.(id)
   }, [todos, onToggleDone])

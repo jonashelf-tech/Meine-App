@@ -3,7 +3,6 @@ import PrioBadge from '../PrioBadge/PrioBadge'
 import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
 import { useAppStore } from '../../store'
-import { getToolColor } from '../../utils'
 import s from './TodoChip.module.css'
 
 const SubDragIcon = () => (
@@ -131,11 +130,10 @@ export default function TodoChip({
   }, [allItems, todo, updateTodo])
 
 
-  const { toolColors, klaerenSettings } = useAppStore()
+  const { klaerenSettings } = useAppStore()
   const threshold = klaerenSettings?.threshold ?? 7
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
   const color     = todo.color || '#8B5CF6'
-  const glowColor = todo.toolId ? getToolColor(todo.toolId, toolColors) : null
 
   const ageDays   = (showAge || !!onKlaeren) ? getAgeDays(todo.createdAt) : 0
   const ageLabel  = showAge ? fmtAge(ageDays) : null
@@ -143,9 +141,8 @@ export default function TodoChip({
 
   const metaParts = [
     todo.category,
-    isTermin(todo)     ? `${fmtDateShort(todo.date)} ${todo.time}` : null,
-    isFaelligkeit(todo) ? fmtDateShort(todo.date)                  : null,
-    todo.duration && todo.duration > 2 ? todo.duration + 'min'     : null,
+    isTermin(todo)      ? `${fmtDateShort(todo.date)} ${todo.time}` : null,
+    isFaelligkeit(todo) ? fmtDateShort(todo.date)                   : null,
   ].filter(Boolean)
 
   return (
@@ -163,24 +160,22 @@ export default function TodoChip({
 
       {/* ── Chip ──────────────────────────────────── */}
       <div
+        data-todochip="true"
         className={[
           s.chip,
           flashing  ? s.doneFlash : '',
           todo.done ? s.chipDone  : '',
           !todo.done && isOld ? s.chipOld : '',
+          !floatExpand && expanded ? s.chipExpanded : '',
           className || ''
         ].join(' ').trim()}
         style={{
           '--chip-color': todo.done ? 'rgba(0,255,148,0.15)' : color,
           '--age-color': ageColor,
-          ...(glowColor && !todo.done ? {
-            boxShadow: `0 0 0 1.5px ${glowColor}, 0 0 14px ${glowColor}44`,
-          } : {}),
           ...(chipStyle || {}),
         }}
       >
-        {/* Stripe — only when no tool glow active */}
-        {!glowColor && <span className={s.stripe} />}
+        <span className={s.stripe} />
 
         {/* Expand button — full section is clickable */}
         {!disableExpand && (
@@ -277,16 +272,16 @@ export default function TodoChip({
             '--chip-color': color,
             ...(floatExpand ? {
               position:     'absolute',
-              top:          '100%',
+              top:          'calc(100% + 4px)',
               left:         0,
               right:        0,
               zIndex:       50,
-              borderRadius: '0 0 10px 10px',
+              borderRadius: '10px',
               maxHeight:    '60vh',
               overflowY:    'auto',
               boxShadow:    '0 8px 24px rgba(0,0,0,0.6)',
               border:       `1px solid ${color}44`,
-              borderTop:    'none',
+              borderTop:    `2px solid ${color}`,
             } : {})
           }}
         >

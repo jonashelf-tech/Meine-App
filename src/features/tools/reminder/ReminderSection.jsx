@@ -142,7 +142,6 @@ export default function ReminderSection({ onStartDrag }) {
             category: item.time ?? null,
             date:     null,
             time:     null,
-            toolId:   'reminder',
           }
           const dragHandle = (
             <span
