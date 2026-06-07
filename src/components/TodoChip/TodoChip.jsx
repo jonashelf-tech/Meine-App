@@ -197,17 +197,16 @@ export default function TodoChip({
             <div
               className={[
                 s.expandBtn,
-                todo.done                                                ? ''
-                : allItems.length > 0 && doneItems === allItems.length  ? s.expandBtnDone
-                : allItems.length > 0                                   ? s.expandBtnPartial
+                todo.done           ? ''
+                : allItems.length > 0 ? s.expandBtnPartial
                 : ''
               ].join(' ').trim()}
             >
               {todo.done
                 ? '✓'
-                : allItems.length > 0 && doneItems === allItems.length
-                  ? '✓'
-                  : `${doneItems}/${allItems.length}`}
+                : allItems.length > 0
+                  ? `${doneItems}/${allItems.length}`
+                  : ''}
             </div>
           </button>
         )}

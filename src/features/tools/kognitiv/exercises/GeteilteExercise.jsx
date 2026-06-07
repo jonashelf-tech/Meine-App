@@ -10,6 +10,13 @@ const BEAT_NORMAL  = 1200
 const BEAT_SCHWER  = 800
 const FREQ_HIGH    = 880
 const FREQ_LOW     = 330
+const CLOSED_PROB  = 0.25
+
+// 5 Ringe gleichmäßig auf einem Kreis (Pentagon), Start oben
+const POSITIONS = Array.from({ length: NUM_CIRCLES }, (_, i) => {
+  const angle = (i * (360 / NUM_CIRCLES) - 90) * (Math.PI / 180)
+  return { left: `${50 + 36 * Math.cos(angle)}%`, top: `${50 + 36 * Math.sin(angle)}%` }
+})
 
 function playTone(ctx, freq) {
   if (!ctx) return
@@ -30,7 +37,8 @@ function playTone(ctx, freq) {
 export default function GeteilteExercise({ variant, onDone, onAbort }) {
   const beatMs = variant === 'Schwer' ? BEAT_SCHWER : BEAT_NORMAL
 
-  const [circles,   setCircles]   = useState(Array(NUM_CIRCLES).fill(false))
+  const [closedIdx, setClosedIdx] = useState(-1)
+  const [rotation,  setRotation]  = useState(0)
   const [toneLabel, setToneLabel] = useState(null)
 
   const startTimeRef  = useRef(Date.now())
@@ -75,8 +83,9 @@ export default function GeteilteExercise({ variant, onDone, onAbort }) {
     if (finishedRef.current) return
     if (Date.now() - startTimeRef.current >= DURATION_MS) { finish(); return }
 
-    const newCircles   = Array(NUM_CIRCLES).fill(false).map(() => Math.random() < 0.22)
-    const visualTarget = newCircles.filter(c => c).length === 1
+    // ~25 % der Beats: genau EIN geschlossener Ring (visuelles Ziel)
+    const visualTarget = Math.random() < CLOSED_PROB
+    const closed       = visualTarget ? Math.floor(Math.random() * NUM_CIRCLES) : -1
 
     const prev = lastToneRef.current
     let tone
@@ -90,7 +99,8 @@ export default function GeteilteExercise({ variant, onDone, onAbort }) {
 
     beatDataRef.current = { visualTarget, audioTarget }
     tappedRef.current   = false
-    setCircles(newCircles)
+    setClosedIdx(closed)
+    setRotation(r => r + 40 + Math.floor(Math.random() * 140))  // immer vorwärts weiterdrehen
     setToneLabel(tone === 'high' ? 'HOCH' : 'TIEF')
     playTone(getCtx(), tone === 'high' ? FREQ_HIGH : FREQ_LOW)
 
@@ -140,9 +150,13 @@ export default function GeteilteExercise({ variant, onDone, onAbort }) {
   return (
     <ExerciseShell moduleId="geteilt" durationMs={DURATION_MS} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
-        <div className={s.circles}>
-          {circles.map((closed, i) => (
-            <div key={i} className={[s.circle, closed ? s.circleClosed : ''].join(' ')} />
+        <div className={s.ring} style={{ transform: `rotate(${rotation}deg)` }}>
+          {POSITIONS.map((pos, i) => (
+            <div
+              key={i}
+              className={[s.circle, i === closedIdx ? s.circleClosed : ''].join(' ')}
+              style={pos}
+            />
           ))}
         </div>
         <div className={[s.toneLabel, toneLabel ? s.toneActive : ''].join(' ')}>

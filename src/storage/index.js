@@ -87,6 +87,7 @@ export const SK = {
   kognitivCheckin:  `${PREFIX}kognitiv_checkin`,
   kognitivSchedule: `${PREFIX}kognitiv_schedule`,
   kognitivPractice: `${PREFIX}kognitiv_practice`,
+  kognitivCheckinSkip: `${PREFIX}kognitiv_checkin_skip`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
   lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
   projects:        `${PREFIX}projects`,

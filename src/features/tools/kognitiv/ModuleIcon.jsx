@@ -40,15 +40,6 @@ const PATHS = {
       <path d="M4 7h11l-3-3M20 17H9l3 3" />
     </>
   ),
-  // Daueraufmerksamkeit — Auge
-  cpt: (
-    <>
-      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
-      <circle cx="12" cy="12" r="2.6" />
-    </>
-  ),
-  // Fokus — Trichter
-  selektiv: <path d="M3 4h18l-7 8v6l-4 2v-8L3 4Z" />,
   // Multitasking — geteiltes Feld
   geteilt: (
     <>

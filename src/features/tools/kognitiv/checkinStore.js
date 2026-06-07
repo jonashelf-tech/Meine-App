@@ -21,6 +21,20 @@ export function isCheckinDoneToday() {
   return getTodayCheckin() !== null
 }
 
+// Check-in für heute übersprungen (ephemer, nicht im Backup) — verhindert erneutes Nachfragen.
+export function markCheckinSkipped() {
+  sv(SK.kognitivCheckinSkip, todayISO())
+}
+
+export function isCheckinSkippedToday() {
+  return lv(SK.kognitivCheckinSkip, null) === todayISO()
+}
+
+// Heute bereits behandelt (gespeichert ODER übersprungen) → nicht mehr gaten.
+export function isCheckinHandledToday() {
+  return isCheckinDoneToday() || isCheckinSkippedToday()
+}
+
 export function getLastCheckin() {
   const all   = loadCheckins()
   const dates = Object.keys(all).sort()

@@ -83,21 +83,17 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
   }, [roundIdx])
 
   const finishSession = useCallback(() => {
-    const duration     = Math.round((Date.now() - new Date(startedAt.current).getTime()) / 1000)
-    const totalRounds  = roundIdxRef.current + 1
-    const roundResults = Array.from({ length: totalRounds }, (_, ri) => {
-      const rTaps = tapsRef.current.filter(t => t.round === ri)
-      return { round: ri, seqLen: lenForRound(ri), errors: rTaps.filter(t => !t.correct).length }
-    })
-    const correctRounds = roundResults.filter(r => r.errors === 0).length
-    const correctTaps   = tapsRef.current.filter(t => t.correct).length
+    const duration        = Math.round((Date.now() - new Date(startedAt.current).getTime()) / 1000)
+    // Bei Ende ist die aktuelle Runde die (2×) gescheiterte; alle davor wurden korrekt reproduziert.
+    const completedRounds = roundIdxRef.current
+    const maxSeqLen       = completedRounds > 0 ? lenForRound(completedRounds - 1) : 0
     const session = createSession({
       moduleId: 'gedaechtnis',
       variant,
       startedAt: startedAt.current,
       duration,
-      score: { correctRounds, totalRounds, correctTaps, mistakes: mistakesRef.current },
-      mainMetric: correctRounds,
+      score: { correctRounds: completedRounds, maxSeqLen, mistakes: mistakesRef.current },
+      mainMetric: maxSeqLen,
       taps: tapsRef.current,
     })
     onDone(session)

@@ -100,6 +100,7 @@ describe('Backup-Abdeckung — Anti-Drift', () => {
     SK.lastAutoBackup,
     SK.lastOffDeviceBackup,
     SK.kognitivPractice,
+    SK.kognitivCheckinSkip,
   ])
   const backedUp = new Set([
     ...BACKUP_CATS.kalender, ...BACKUP_CATS.tools, ...BACKUP_CATS.einstellungen,

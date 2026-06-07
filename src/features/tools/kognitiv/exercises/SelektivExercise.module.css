@@ -1,3 +1,0 @@
-.indicator { display: flex; align-items: center; gap: 8px; margin: 6px auto 0; border-radius: 20px; padding: 6px 16px; border: 1px solid; font-size: 0.8rem; font-weight: 600; transition: opacity 0.5s; }
-.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.arena { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; }

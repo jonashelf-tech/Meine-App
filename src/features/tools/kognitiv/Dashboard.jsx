@@ -1,4 +1,4 @@
-import { loadSessions, getModuleStats, getWeeklyCount } from './sessionStore'
+import { loadSessions, getModuleStats, getWeeklyCount, barFraction } from './sessionStore'
 import { MODULE_CONFIG, MODULE_ORDER } from './moduleConfig'
 import ModuleIcon from './ModuleIcon'
 import s from './Dashboard.module.css'
@@ -62,7 +62,7 @@ export default function Dashboard({ onSelectModule }) {
                   <div
                     key={i}
                     className={[s.miniBar, i === stats.last7.length - 1 ? s.miniBarLast : ''].join(' ')}
-                    style={{ height: `${stats.best > 0 && sess.mainMetric > 0 ? Math.max(20, Math.min(100, (stats.best / sess.mainMetric) * 100)) : 50}%` }}
+                    style={{ height: `${Math.max(20, Math.min(100, barFraction(sess.mainMetric, stats.best, stats.higherIsBetter) * 100))}%` }}
                   />
                 ))}
               </div>

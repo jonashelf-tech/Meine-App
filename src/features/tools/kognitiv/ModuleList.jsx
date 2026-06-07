@@ -1,6 +1,6 @@
 import ModuleIcon from './ModuleIcon'
 import { MODULE_CONFIG, MODULE_ORDER } from './moduleConfig'
-import { isDoneToday, getLastSession, getModuleStats } from './sessionStore'
+import { isDoneToday, getLastSession, getModuleStats, barFraction } from './sessionStore'
 import s from './ModuleList.module.css'
 
 export default function ModuleList({ onSelectModule }) {
@@ -40,7 +40,7 @@ export default function ModuleList({ onSelectModule }) {
                     <div
                       key={i}
                       className={[s.miniBar, i === stats.last7.length - 1 ? s.miniBarLast : ''].join(' ')}
-                      style={{ height: `${Math.max(20, Math.min(100, (stats.best / sess.mainMetric) * 100))}%` }}
+                      style={{ height: `${Math.max(20, Math.min(100, barFraction(sess.mainMetric, stats.best, stats.higherIsBetter) * 100))}%` }}
                     />
                   ))}
                 </div>

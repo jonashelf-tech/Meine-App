@@ -10,15 +10,19 @@ const GREY   = 'rgba(255,255,255,0.45)'
 const TOTAL  = 44
 const GAP_MS = 400
 
-function buildSeq() {
-  const seq = [SHAPES[Math.floor(Math.random() * SHAPES.length)]]
-  while (seq.length < TOTAL) {
-    const prev = seq[seq.length - 1]
-    if (Math.random() < 0.38) {
-      seq.push(prev)
+// n = Abstand (1 = vorheriges Symbol, 2 = vorvorheriges).
+// Treffer entstehen mit ~33 % bei genau Abstand n; Nicht-Treffer sind
+// garantiert != seq[i-n] (saubere Zielzählung).
+function buildSeq(n) {
+  const seq = []
+  for (let i = 0; i < TOTAL; i++) {
+    if (i >= n && Math.random() < 0.33) {
+      seq.push(seq[i - n])
     } else {
-      const opts = SHAPES.filter(x => x !== prev)
-      seq.push(opts[Math.floor(Math.random() * opts.length)])
+      let cand
+      do { cand = SHAPES[Math.floor(Math.random() * SHAPES.length)] }
+      while (i >= n && cand === seq[i - n])
+      seq.push(cand)
     }
   }
   return seq
@@ -37,10 +41,11 @@ function ShapeIcon({ type, color, fill }) {
 export default function NBackExercise({ variant, onDone, onAbort }) {
   const isHard  = variant === 'Schwer'
   const showMs  = isHard ? 800 : 1200
+  const n       = isHard ? 2 : 1
   const [current, setCurrent] = useState(null)
   const [done, setDone]       = useState(0)
 
-  const seqRef      = useRef(buildSeq())
+  const seqRef      = useRef(buildSeq(n))
   const idxRef      = useRef(0)
   const tapsRef     = useRef([])
   const startedAt   = useRef(new Date().toISOString())
@@ -53,7 +58,7 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
     finishedRef.current = true
     clearTimeout(timerRef.current)
     const seq    = seqRef.current
-    const total  = seq.filter((x, i) => i > 0 && x === seq[i - 1]).length
+    const total  = seq.filter((x, i) => i >= n && x === seq[i - n]).length
     const hits   = tapsRef.current.filter(t => t.type === 'hit').length
     const errors = tapsRef.current.filter(t => t.type === 'false-alarm').length
     const misses = tapsRef.current.filter(t => t.type === 'miss').length
@@ -71,8 +76,8 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
     if (idxRef.current >= TOTAL) { finish(); return }
     const idx   = idxRef.current
     const shape = seqRef.current[idx]
-    const prev  = idx > 0 ? seqRef.current[idx - 1] : null
-    const isMatch = shape === prev
+    const prev  = idx >= n ? seqRef.current[idx - n] : null
+    const isMatch = idx >= n && shape === prev
     idxRef.current++
     setDone(idxRef.current)
     tappedRef.current = false
@@ -95,8 +100,8 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
     if (finishedRef.current || current === null || tappedRef.current) return
     tappedRef.current = true
     const idx     = idxRef.current - 1
-    const prev    = idx > 0 ? seqRef.current[idx - 1] : null
-    const isMatch = seqRef.current[idx] === prev
+    const prev    = idx >= n ? seqRef.current[idx - n] : null
+    const isMatch = idx >= n && seqRef.current[idx] === prev
     tapsRef.current.push({ index: idx, type: isMatch ? 'hit' : 'false-alarm', correct: isMatch, shape: current, prev })
   }, [current])
 
@@ -106,6 +111,7 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
   return (
     <ExerciseShell moduleId="nback" progress={done} total={TOTAL} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
+        <div className={s.rule}>Gleich wie <span className={s.ruleN}>{n} zurück</span> → tippen</div>
         {current && <ShapeIcon type={current} color={color} fill={fill} />}
       </div>
     </ExerciseShell>

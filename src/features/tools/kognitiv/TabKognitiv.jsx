@@ -4,7 +4,7 @@ import { useAppStore } from '../../../store'
 import { ToolIcon } from '../toolRegistry'
 import { MODULE_CONFIG } from './moduleConfig'
 import { isDoneToday, saveSession, markPracticeUsed } from './sessionStore'
-import { isCheckinDoneToday } from './checkinStore'
+import { isCheckinHandledToday, markCheckinSkipped } from './checkinStore'
 import CheckinModal     from './CheckinModal'
 import KognitivSettings from './KognitivSettings'
 import ModuleList from './ModuleList'
@@ -20,8 +20,6 @@ import GedaechtnisExercise      from './exercises/GedaechtnisExercise'
 import GoNoGoExercise           from './exercises/GoNoGoExercise'
 import NBackExercise            from './exercises/NBackExercise'
 import TaskSwitchingExercise    from './exercises/TaskSwitchingExercise'
-import CptExercise              from './exercises/CptExercise'
-import SelektivExercise         from './exercises/SelektivExercise'
 import GeteilteExercise         from './exercises/GeteilteExercise'
 import s from './TabKognitiv.module.css'
 
@@ -75,7 +73,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
   const handleSelectModule = useCallback((moduleId) => {
     if (isDoneToday(moduleId)) {
       setNav({ screen: 'done-today', moduleId })
-    } else if (!isCheckinDoneToday()) {
+    } else if (!isCheckinHandledToday()) {
       setNav({ screen: 'checkin', moduleId })
     } else {
       setNav({ screen: 'briefing', moduleId })
@@ -86,7 +84,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
     return (
       <CheckinModal
         onSave={() => setNav({ screen: 'briefing', moduleId: nav.moduleId })}
-        onSkip={() => setNav({ screen: 'briefing', moduleId: nav.moduleId })}
+        onSkip={() => { markCheckinSkipped(); setNav({ screen: 'briefing', moduleId: nav.moduleId }) }}
       />
     )
   }
@@ -132,8 +130,6 @@ export default function TabKognitiv({ onBack, onExercising }) {
       gonogo:         GoNoGoExercise,
       nback:          NBackExercise,
       taskswitching:  TaskSwitchingExercise,
-      cpt:            CptExercise,
-      selektiv:       SelektivExercise,
       geteilt:        GeteilteExercise,
     }
     const Ex = ExMap[nav.moduleId]

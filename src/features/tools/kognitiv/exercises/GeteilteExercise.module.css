@@ -1,6 +1,51 @@
-.arena { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 48px; }
-.circles { display: flex; gap: 16px; align-items: center; }
-.circle { width: 52px; height: 52px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,0.2); transition: background 0.08s, border-color 0.08s, box-shadow 0.08s; }
-.circleClosed { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 25%, transparent); box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 50%, transparent); }
-.toneLabel { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
+.arena {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+/* Quadratischer Rahmen mit 5 Ringen, dreht sich pro Ton weiter */
+.ring {
+  position: relative;
+  width: min(74vw, 300px);
+  height: min(74vw, 300px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.circle {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2.5px solid var(--text-faint);
+  transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
+}
+
+/* Geschlossener (gefüllter) Ring = visuelles Ziel — Form, nicht nur Farbe */
+.circleClosed {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.toneLabel {
+  font-family: var(--font-num, var(--font));
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  transition: color 0.1s;
+}
 .toneActive { color: var(--teal); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ring { transition: none; }
+}

@@ -7,7 +7,7 @@ import TodoChip from '../../../components/TodoChip/TodoChip'
 import { createBlock } from '../../todos/Block'
 import {
   loadHaushalt, saveHaushalt,
-  markTaskDone, getDueRooms, calcRingScore,
+  markTaskDone, resetTaskDone, getDueRooms, calcRingScore,
 } from './haushaltData'
 import { useState, useEffect, useCallback } from 'react'
 import s from './HaushaltSection.module.css'
@@ -140,10 +140,11 @@ export default function HaushaltSection({ onStartDrag }) {
     updateConfig(prev => entry.dueTasks.reduce((cfg, t) => markTaskDone(cfg, t.id), prev))
   }
 
-  // saveItem-Handler für TodoChip: wenn ein subItem done → Haushalt-Task abhaken
+  // saveItem-Handler für TodoChip: subItem done → Task abhaken, undone → zurücksetzen
   const makeSaveItem = (uncoveredTasks) => (updatedTodo) => {
     updatedTodo.subItems.forEach(si => {
       if (si.done) handleTaskDone(si.id)
+      else updateConfig(prev => resetTaskDone(prev, si.id))
     })
   }
 

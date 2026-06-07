@@ -1,14 +1,13 @@
 import { MODULE_CONFIG } from './moduleConfig'
-import { getModuleSessions, getModuleStats } from './sessionStore'
+import { getModuleSessions, getModuleStats, barFraction, computeDelta } from './sessionStore'
 import s from './ModuleDetail.module.css'
 
 export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
   const m            = MODULE_CONFIG[moduleId]
+  const hib          = m.higherIsBetter ?? false
   const sessions     = getModuleSessions(moduleId).slice().reverse()  // newest first
   const stats        = getModuleStats(moduleId)
   const chronological = [...sessions].reverse()  // for chart
-  const maxMetric    = Math.max(...chronological.map(s => s.mainMetric), 1)
-  const minMetric    = Math.min(...chronological.map(s => s.mainMetric), 0)
 
   const fmtDate = (iso) => new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })
   const fmtTime = (iso) => new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
@@ -32,7 +31,7 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
             <div className={s.chartLabel}>{m.mainMetricLabel} ({m.mainMetricUnit}) — Verlauf</div>
             <div className={s.bars}>
               {chronological.map((sess, i) => {
-                const h      = Math.max(10, ((sess.mainMetric - minMetric) / (maxMetric - minMetric + 1)) * 100)
+                const h      = Math.max(10, Math.min(100, barFraction(sess.mainMetric, stats.best, hib) * 100))
                 const isLast = i === chronological.length - 1
                 return <div key={sess.id} className={[s.bar, isLast ? s.barLast : ''].join(' ')} style={{ height: `${h}%` }} />
               })}
@@ -49,8 +48,8 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
               <div className={s.statLbl}>Sessions</div>
             </div>
             <div className={s.stat}>
-              <div className={s.statVal} style={{ color: 'var(--emerald)' }}>
-                {stats.improvement > 0 ? `−${stats.improvement}` : `+${Math.abs(stats.improvement)}`}{m.mainMetricUnit}
+              <div className={s.statVal} style={{ color: stats.improvement >= 0 ? 'var(--emerald)' : 'var(--rose)' }}>
+                {stats.improvement >= 0 ? '▲' : '▼'}{Math.abs(stats.improvement)}{m.mainMetricUnit}
               </div>
               <div className={s.statLbl}>Gesamt</div>
             </div>
@@ -62,7 +61,7 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
       <div className={s.list}>
         {sessions.map((sess, idx) => {
           const prev  = sessions[idx + 1]
-          const delta = prev ? prev.mainMetric - sess.mainMetric : null
+          const delta = prev ? computeDelta(prev.mainMetric, sess.mainMetric, hib) : null
           return (
             <button key={sess.id} className={s.sessRow} onClick={() => onSelectSession(sess)}>
               <div className={s.sessDate}>{fmtDate(sess.startedAt)} · {fmtTime(sess.startedAt)} · {sess.variant}</div>

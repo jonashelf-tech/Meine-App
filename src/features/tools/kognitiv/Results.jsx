@@ -1,5 +1,5 @@
 import { MODULE_CONFIG } from './moduleConfig'
-import { getDelta, getModuleSessions } from './sessionStore'
+import { getDelta, getModuleSessions, bestMetric, barFraction } from './sessionStore'
 import { loadCheckin } from './checkinStore'
 import s from './Results.module.css'
 
@@ -18,14 +18,27 @@ function DotRow({ value }) {
 
 export default function Results({ session, fromArchive = false, onBack }) {
   const m        = MODULE_CONFIG[session.moduleId]
+  const hib      = m.higherIsBetter ?? false
   const delta    = getDelta(session.moduleId, session.mainMetric)
   const last7    = getModuleSessions(session.moduleId).slice(-7)
+  const last7Best = last7.length > 0 ? bestMetric(last7.map(x => x.mainMetric), hib) : 0
 
   const checkin  = session.checkinId ? loadCheckin(session.date) : null
 
   const taps       = session.taps ?? []
   const hitTimes   = taps.filter(t => t.correct && t.time != null).map(t => t.time)
   const sessionAvg = avg(hitTimes)
+
+  // Trefferbilanz für Genauigkeits-Spiele (ohne Reaktionszeit-Verlauf)
+  const accuracy = (() => {
+    const sc = session.score ?? {}
+    if (session.moduleId === 'geteilt')
+      return { hits: (sc.visualHits ?? 0) + (sc.audioHits ?? 0), misses: sc.misses ?? 0, fa: sc.errors ?? 0 }
+    if (sc.hits != null)
+      return { hits: sc.hits, misses: sc.misses ?? 0, fa: sc.errors ?? sc.falseAlarms ?? 0 }
+    return null
+  })()
+  const showAccuracy = hitTimes.length <= 1 && accuracy && (accuracy.hits + accuracy.misses + accuracy.fa) > 0
 
   // SVG chart constants
   const VW = 300, VH = 80
@@ -110,7 +123,7 @@ export default function Results({ session, fromArchive = false, onBack }) {
                 <div
                   key={i}
                   className={[s.trendBar, i === last7.length - 1 ? s.trendBarLast : ''].join(' ')}
-                  style={{ height: `${Math.max(15, (Math.min(...last7.map(x => x.mainMetric)) / sess.mainMetric) * 100)}%` }}
+                  style={{ height: `${Math.max(15, Math.min(100, barFraction(sess.mainMetric, last7Best, hib) * 100))}%` }}
                 />
               ))}
             </div>
@@ -306,6 +319,22 @@ export default function Results({ session, fromArchive = false, onBack }) {
                 <><span className={s.legendDot} style={{ background: 'var(--rose)' }} />Fehler</>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {showAccuracy && (
+        <div className={s.auswertung}>
+          <div className={s.auswLabel}>Trefferbilanz</div>
+          <div className={s.accBar}>
+            {accuracy.hits   > 0 && <div className={s.accSegHit}   style={{ flex: accuracy.hits }} />}
+            {accuracy.misses > 0 && <div className={s.accSegMiss}  style={{ flex: accuracy.misses }} />}
+            {accuracy.fa     > 0 && <div className={s.accSegFa}    style={{ flex: accuracy.fa }} />}
+          </div>
+          <div className={s.accLegend}>
+            <span className={s.accItem}><span className={s.accDot} style={{ background: 'var(--emerald)' }} />Treffer {accuracy.hits}</span>
+            <span className={s.accItem}><span className={s.accDot} style={{ background: 'var(--text-faint)' }} />Verpasst {accuracy.misses}</span>
+            <span className={s.accItem}><span className={s.accDot} style={{ background: 'var(--rose)' }} />Fehltipp {accuracy.fa}</span>
           </div>
         </div>
       )}
