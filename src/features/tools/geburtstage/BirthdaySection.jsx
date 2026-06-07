@@ -5,6 +5,7 @@ import { getToolColor } from '../../../utils'
 import { TOOL_TAB } from '../toolTabs'
 import ToolSection from '../../../components/ToolSection/ToolSection'
 import TodoChip from '../../../components/TodoChip/TodoChip'
+import { createBlock } from '../../todos/Block'
 import { getActiveChips } from './birthdayUtils'
 import s from './BirthdaySection.module.css'
 
@@ -26,13 +27,31 @@ const DragIcon = () => (
  *   onStartDrag — fn(chip, color, e, bulkChips?) — startet Drag in TabHeute
  */
 export default function BirthdaySection({ onStartDrag }) {
-  const { birthdays, setCurrentTab, toolColors, todos } = useAppStore()
+  const { birthdays, setBirthdays, setCurrentTab, toolColors, todos, setTodos } = useAppStore()
   const toolColor = getToolColor('geburtstage', toolColors)
 
   const chips = getActiveChips(birthdays, toolColor).filter(chip => {
     const chipId = `${chip.type}-${chip.birthday.id}`
-    return !todos.some(t => t.birthdayChipId === chipId && !t.done)
+    // verstecken sobald für diesen Chip ein Todo existiert (im Pool/Planer ODER bereits abgehakt)
+    return !todos.some(t => t.birthdayChipId === chipId)
   })
+
+  const handleChipDone = useCallback((chip) => {
+    const chipId = `${chip.type}-${chip.birthday.id}`
+    setTodos(prev => [...prev, createBlock({
+      text: chip.text,
+      priority: chip.type === 'birthday' ? 2 : 3,
+      color: chip.color,
+      toolId: 'geburtstage',
+      birthdayChipId: chipId,
+      done: true,
+      doneAt: new Date().toISOString(),
+    })])
+    if (chip.type === 'birthday') {
+      const currentYear = new Date().getFullYear()
+      setBirthdays(prev => prev.map(b => b.id === chip.birthday.id ? { ...b, plannedYear: currentYear } : b))
+    }
+  }, [setTodos, setBirthdays])
   const [deselected, setDeselected] = useState(() => new Set())
 
   const toggleSelect = useCallback((id) => {
@@ -97,6 +116,7 @@ export default function BirthdaySection({ onStartDrag }) {
               <div className={s.chipWrap}>
                 <TodoChip
                   todo={fakeTodo}
+                  onToggleDone={() => handleChipDone(chip)}
                   onRemove={() => toggleSelect(chipId)}
                   disableExpand
                   dragHandle={dragHandle}

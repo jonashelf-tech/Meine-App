@@ -95,7 +95,13 @@ export default function HaushaltSection({ onStartDrag }) {
     })
   }, [])
 
-  const updateConfig = (next) => { setConfig(next); saveHaushalt(next) }
+  const updateConfig = (next) => {
+    setConfig(prev => {
+      const resolved = typeof next === 'function' ? next(prev) : next
+      saveHaushalt(resolved)
+      return resolved
+    })
+  }
 
   const handleEnergieChange = (val) => {
     setEnergie(val)
@@ -120,7 +126,7 @@ export default function HaushaltSection({ onStartDrag }) {
     dueTasks.some(t => !poolTaskIds.has(t.id))
   )
 
-  const handleTaskDone = (taskId) => updateConfig(markTaskDone(config, taskId))
+  const handleTaskDone = (taskId) => updateConfig(prev => markTaskDone(prev, taskId))
 
   const handleRoomDragStart = useCallback((room, dueTasks, e) => {
     const covered   = new Set(todos.filter(t => t.toolId === 'haushalt' && !t.done).flatMap(t => t.haushaltTaskIds ?? []))
@@ -131,8 +137,7 @@ export default function HaushaltSection({ onStartDrag }) {
   const handleRoomDone = (roomId) => {
     const entry = dueRooms.find(e => e.room.id === roomId)
     if (!entry) return
-    const next = entry.dueTasks.reduce((cfg, t) => markTaskDone(cfg, t.id), config)
-    updateConfig(next)
+    updateConfig(prev => entry.dueTasks.reduce((cfg, t) => markTaskDone(cfg, t.id), prev))
   }
 
   // saveItem-Handler für TodoChip: wenn ein subItem done → Haushalt-Task abhaken
@@ -252,6 +257,7 @@ export default function HaushaltSection({ onStartDrag }) {
                     <TodoChip
                       todo={fakeTodo}
                       saveItem={makeSaveItem(uncoveredTasks)}
+                      onToggleDone={() => handleRoomDone(room.id)}
                       dragHandle={dragHandle}
                     />
                   </div>

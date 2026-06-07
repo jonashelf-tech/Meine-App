@@ -44,6 +44,24 @@ function slotToHeight(duration) {
   return Math.max(10, Math.round(((duration ?? 30) / 30) * SLOT_H))
 }
 
+// Überlappen sich zwei Zeitblöcke (Start in Dezimalstunden, Dauer in Minuten)?
+function blocksOverlap(start1, dur1, start2, dur2) {
+  const end1 = start1 + (dur1 || 30) / 60
+  const end2 = start2 + (dur2 || 30) / 60
+  return start1 < end2 && start2 < end1
+}
+
+// Kollidiert ein Block (startKey + duration) mit einem belegten Slot des Tages?
+// ignoreKey = der gerade gezogene Slot (zählt nicht als Kollision mit sich selbst).
+function rangeBlocked(dayObj, startKey, duration, ignoreKey) {
+  const s0 = parseFloat(startKey)
+  for (const [k, sl] of Object.entries(dayObj || {})) {
+    if (!sl || k === ignoreKey) continue
+    if (blocksOverlap(s0, duration, parseFloat(k), sl.duration)) return true
+  }
+  return false
+}
+
 function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions) {
   const dots = []
 
@@ -588,8 +606,11 @@ export default function TabKalender() {
         const idx    = Math.min(maxIdx, Math.max(0, Math.floor(relY / SLOT_H)))
         const h      = visibleStart + idx * 0.5
         const key    = String(h)
-        dragTargetRef.current = { dk: colDk, key }
-        setDragTarget({ dk: colDk, key })
+        const drag   = draggingRef.current
+        const ignore = drag && drag.dk === colDk ? drag.key : null
+        const blocked = rangeBlocked(days[colDk], key, drag?.slot?.duration, ignore)
+        dragTargetRef.current = { dk: colDk, key, blocked }
+        setDragTarget({ dk: colDk, key, blocked })
         return
       }
     }
@@ -599,7 +620,8 @@ export default function TabKalender() {
 
   const handleDrop = (oldDk, oldKey, slot, newDk, newKey) => {
     if (oldDk === newDk && oldKey === newKey) return
-    if ((days[newDk] ?? {})[newKey]) return // Zielslot belegt → nicht überschreiben
+    // Ziel-Bereich (volle Dauer) belegt → Drop blockieren, kein Überlappen
+    if (rangeBlocked(days[newDk], newKey, slot.duration, oldDk === newDk ? oldKey : null)) return
     setDays(prev => {
       const next = { ...prev }
       const oldDay = { ...(next[oldDk] ?? {}) }
@@ -931,6 +953,9 @@ export default function TabKalender() {
                         if (!showTodos   &&  isTodo) return null
                         const slotTodo = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
                         if (!showTools && slotTodo?.toolId) return null
+                        const isBlocking = dragging && dragTarget?.dk === dk
+                          && !(dragging.dk === dk && dragging.key === key)
+                          && blocksOverlap(parseFloat(dragTarget.key), dragging.slot.duration, parseFloat(key), slot.duration)
                         const top    = slotToTop(key, visibleStart)
                         const height = slotToHeight(slot.duration)
                         const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
@@ -944,6 +969,7 @@ export default function TabKalender() {
                               (slot.done || slotTodo?.done) ? s.weekSlotDone : '',
                               flashingSlotKey === `${dk}-${key}` ? s.weekSlotDoneFlash : '',
                               (dragging?.dk === dk && dragging?.key === key) ? s.weekSlotDragging : '',
+                              isBlocking ? s.weekSlotBlocked : '',
                             ].join(' ')}
                             style={{ top, height, '--slot-color': slot.color || '#8B5CF6' }}
                             onPointerDown={(e) => {
@@ -1170,7 +1196,7 @@ export default function TabKalender() {
         const slotPx   = slotToTop(dragTarget.key, visibleStart)
         return (
           <div
-            className={s.weekDragChip}
+            className={[s.weekDragChip, dragTarget.blocked ? s.weekDragChipBlocked : ''].join(' ')}
             style={{
               left:           colRect.left + 2,
               top:            colRect.top  + slotPx,

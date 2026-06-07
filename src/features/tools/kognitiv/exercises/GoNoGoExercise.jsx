@@ -4,7 +4,7 @@ import ExerciseShell from './ExerciseShell'
 import s from './GoNoGoExercise.module.css'
 
 const TOTAL      = 30
-const NOGO_COUNT = 6
+const NOGO_COUNT = 10
 const STIM_MS    = 800
 
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min }

@@ -54,11 +54,25 @@ export default function ReminderSection({ onStartDrag }) {
     ...Object.values(todaySlots).filter(s => s?.reminderItemId).map(s => s.reminderItemId),
   ])
 
+  // Heute bereits direkt in der Section abgehakte Reminder
+  const doneReminderIds = new Set(
+    todos.filter(t => t.reminderItemId && t.done && t.doneAt?.startsWith(today)).map(t => t.reminderItemId)
+  )
+
   const dueItems = items.filter(item =>
     isDueToday(item) &&
     !todayDismissed.includes(item.id) &&
-    !pendingReminderIds.has(item.id)
+    !pendingReminderIds.has(item.id) &&
+    !doneReminderIds.has(item.id)
   )
+
+  const handleItemDone = useCallback((item) => {
+    setTodos(prev => [...prev, createBlock({
+      text: item.text, priority: 2, color: item.color ?? toolColor,
+      category: 'Selfcare', reminderItemId: item.id, toolId: 'reminder',
+      done: true, doneAt: new Date().toISOString(),
+    })])
+  }, [toolColor, setTodos])
 
   const dismiss = useCallback((id) => {
     const next = { ...dismissed, [today]: [...todayDismissed, id] }
@@ -164,6 +178,7 @@ export default function ReminderSection({ onStartDrag }) {
               <div className={s.reminderChipWrap}>
                 <TodoChip
                   todo={fakeTodo}
+                  onToggleDone={() => handleItemDone(item)}
                   onRemove={() => dismiss(item.id)}
                   disableExpand
                   dragHandle={dragHandle}

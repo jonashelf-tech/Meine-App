@@ -1125,6 +1125,26 @@
   max-width: 100%;
 }
 
+/* Blockierender Slot: leicht rot leuchten während Drag (wie Tagesplaner) */
+@keyframes weekBlockPulse {
+  from { box-shadow: 0 0 0 1px rgba(251,113,133,0.5), 0 0 8px rgba(251,113,133,0.35); }
+  to   { box-shadow: 0 0 0 1px rgba(251,113,133,0.85), 0 0 16px rgba(251,113,133,0.7); }
+}
+.weekSlotBlocked {
+  outline: 1.5px solid var(--rose);
+  background: color-mix(in srgb, var(--rose) 22%, var(--bg2)) !important;
+  animation: weekBlockPulse 0.6s ease-in-out infinite alternate;
+  z-index: 4;
+}
+
+/* Drop-Vorschau blockiert → rot statt Slot-Farbe */
+.weekDragChipBlocked {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--rose) 80%, #fff), var(--rose)) !important;
+  box-shadow:
+    0 6px 20px rgba(251,113,133,0.5),
+    0 2px 6px rgba(0,0,0,0.5) !important;
+}
+
 /* ─── Wochenansicht: Drag-Chip (snapped, kein Finger-follow) */
 .weekDragChip {
   position: fixed;

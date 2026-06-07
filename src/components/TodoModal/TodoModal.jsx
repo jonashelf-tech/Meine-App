@@ -122,8 +122,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const [catEditMode, setCatEditMode] = useState(false)
   const [catNewInput, setCatNewInput] = useState('')
   const [detailsOpen, setDetailsOpen] = useState(() =>
-    (isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category))
-    || !!(prefill?.date || prefill?.time)
+    isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category)
   )
 
   const handleAuto = () => {
@@ -191,8 +190,11 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           let changed = false
           Object.keys(newDay).forEach(slotK => {
             const slot = newDay[slotK]
-            if (slot?.todoId === existingTodo.id && slot.duration !== updated.duration) {
-              newDay[slotK] = { ...slot, duration: updated.duration }
+            // Slot mit diesem Todo: Farbe/Text/Dauer mitziehen, damit der
+            // Indikator (Stripe) überall der Farbwahl folgt (auch Wochenansicht).
+            if (slot?.todoId === existingTodo.id &&
+                (slot.duration !== updated.duration || slot.color !== updated.color || slot.text !== updated.text)) {
+              newDay[slotK] = { ...slot, duration: updated.duration, color: updated.color, text: updated.text }
               changed = true
             }
           })

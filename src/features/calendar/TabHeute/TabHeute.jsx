@@ -205,6 +205,7 @@ export default function TabHeute() {
   }, [setTodaySlots, todaySlots, setTodos])
 
   const handleSetSlot = useCallback((slotKey, slotData) => {
+    if (slotKey === 'pool') return  // 'pool' ist Drop-Zone, kein echter Slot-Key
     if (slotData === null) {
       setTodaySlots(prev => {
         const next = { ...prev }
@@ -325,6 +326,18 @@ export default function TabHeute() {
         }
       : null
     startDrag(text, color, (dropKey) => {
+      // Drop zurück in den Pool: Slot lösen (falls verplant), Todo bleibt reines Pool-Todo
+      if (dropKey === 'pool') {
+        if (curKey) {
+          setTodaySlots(prev => { const ns = { ...prev }; delete ns[curKey]; return ns })
+          if (todoId) {
+            setTodos(prev => prev.map(t =>
+              t.id === todoId ? { ...t, date: null, time: null } : t
+            ))
+          }
+        }
+        return
+      }
       const hh = String(Math.floor(parseFloat(dropKey))).padStart(2, '0')
       const mm = parseFloat(dropKey) % 1 ? '30' : '00'
       if (curKey) {

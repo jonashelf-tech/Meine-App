@@ -176,6 +176,34 @@
   transition: all 0.12s;
 }
 
+.presetInput {
+  width: 44px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-family: var(--font);
+  font-size: 11px;
+  color: var(--text);
+  text-align: center;
+  outline: none;
+}
+
+.presetInput::placeholder { color: var(--text-ghost); }
+
+.presetInputWichtig.selected {
+  background: rgba(251,191,36,0.18);
+  border-color: rgba(251,191,36,0.5);
+  color: #FBBF24;
+  font-weight: 700;
+}
+.presetInputGeschenk.selected {
+  background: rgba(20,184,166,0.18);
+  border-color: rgba(20,184,166,0.5);
+  color: #14B8A6;
+  font-weight: 700;
+}
+
 .presetPillWichtig.selected {
   background: rgba(251,191,36,0.18);
   border-color: rgba(251,191,36,0.5);

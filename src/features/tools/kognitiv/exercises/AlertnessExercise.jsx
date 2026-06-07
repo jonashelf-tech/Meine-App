@@ -3,7 +3,7 @@ import { createSession } from '../sessionStore'
 import ExerciseShell from './ExerciseShell'
 import s from './AlertnessExercise.module.css'
 
-const SESSION_MS     = 90_000
+const TOTAL          = 20
 const ISI_NORMAL = [2400, 6000]
 const ISI_SCHWER = [800, 2500]
 const STIMULUS_VISIBLE = 800
@@ -26,7 +26,7 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
   const appearedAtRef  = useRef(null)
   const audioCtx       = useRef(null)
   const finishedRef    = useRef(false)
-  const sessionTimerRef = useRef(null)
+  const finishRef      = useRef(null)
 
   const playBeep = useCallback(() => {
     if (!mitTon) return
@@ -49,7 +49,6 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
     if (finishedRef.current) return
     finishedRef.current = true
     clearTimeout(timerRef.current)
-    clearTimeout(sessionTimerRef.current)
     const hits       = tapsRef.current.filter(t => t.type === 'hit')
     const misses     = tapsRef.current.filter(t => t.type === 'miss')
     const falseAlarms = tapsRef.current.filter(t => t.type === 'false-alarm')
@@ -79,6 +78,13 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
   // showStimulus needs scheduleNext so we use a ref to avoid circular dependency
   const scheduleNextRef = useRef(null)
   scheduleNextRef.current = scheduleNext
+  finishRef.current = finishSession
+
+  // Nächsten Trial planen oder beenden, wenn TOTAL erreicht
+  const advance = () => {
+    if (stimulusCount.current >= TOTAL) finishRef.current()
+    else scheduleNextRef.current()
+  }
 
   function showStimulus() {
     if (finishedRef.current) return
@@ -90,18 +96,14 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
       setVisible(false)
       appearedAtRef.current = null
       tapsRef.current.push({ index: stimulusCount.current - 1, correct: false, time: null, type: 'miss' })
-      scheduleNextRef.current()
+      advance()
     }, STIMULUS_VISIBLE)
   }
 
   useEffect(() => {
     scheduleNextRef.current()
-    sessionTimerRef.current = setTimeout(finishSession, SESSION_MS)
-    return () => {
-      clearTimeout(timerRef.current)
-      clearTimeout(sessionTimerRef.current)
-    }
-  }, [finishSession])
+    return () => clearTimeout(timerRef.current)
+  }, [])
 
   const handleTap = useCallback(() => {
     if (finishedRef.current) return
@@ -111,14 +113,14 @@ export default function AlertnessExercise({ variant, onDone, onAbort }) {
       tapsRef.current.push({ index: stimulusCount.current - 1, correct: true, time: rt, type: 'hit' })
       appearedAtRef.current = null
       setVisible(false)
-      scheduleNextRef.current()
+      advance()
     } else {
       tapsRef.current.push({ index: stimulusCount.current, correct: false, time: null, type: 'false-alarm' })
     }
   }, [visible, finishSession])
 
   return (
-    <ExerciseShell moduleId="alertness" durationMs={SESSION_MS} onAbort={onAbort} onTap={handleTap}>
+    <ExerciseShell moduleId="alertness" progress={shown} total={TOTAL} onAbort={onAbort} onTap={handleTap}>
       <div className={s.arena}>
         {visible && <div className={s.stimulus} />}
       </div>

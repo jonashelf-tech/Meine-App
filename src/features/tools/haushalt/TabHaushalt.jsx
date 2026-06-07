@@ -355,9 +355,15 @@ export default function TabHaushalt({ onBack }) {
   const [openRooms, setOpenRooms] = useState({})
   const [editRooms, setEditRooms] = useState({})
 
+  // next kann ein Wert ODER eine Updater-Funktion (prev => next) sein.
+  // Funktionale Form verhindert Stale-Closure-Races bei schnell aufeinander
+  // folgenden Aktionen (z.B. mehrere Tasks rasch abhaken).
   const updateConfig = useCallback((next) => {
-    setConfig(next)
-    saveHaushalt(next)
+    setConfig(prev => {
+      const resolved = typeof next === 'function' ? next(prev) : next
+      saveHaushalt(resolved)
+      return resolved
+    })
   }, [])
 
   const handleEnergieChange = (val) => {
@@ -376,7 +382,7 @@ export default function TabHaushalt({ onBack }) {
 
   const handleAddRoom = () => {
     const room = { id: crypto.randomUUID(), name: 'Neuer Raum', icon: 'home', tasks: [], priority: 3 }
-    updateConfig(addRoom(config, room))
+    updateConfig(prev => addRoom(prev, room))
     setOpenRooms(p => ({ ...p, [room.id]: true }))
     setEditRooms(p => ({ ...p, [room.id]: true }))
   }
@@ -418,14 +424,14 @@ export default function TabHaushalt({ onBack }) {
             editing={!!editRooms[room.id]}
             onToggle={() => toggleRoom(room.id)}
             onToggleEdit={() => toggleEdit(room.id)}
-            onTaskDone={taskId => updateConfig(markTaskDone(config, taskId))}
-            onTaskReset={taskId => updateConfig(resetTaskDone(config, taskId))}
-            onUpdateTask={(taskId, patch) => updateConfig(updateTask(config, room.id, taskId, patch))}
-            onAddTask={task => updateConfig(addTask(config, room.id, task))}
-            onDeleteTask={taskId => updateConfig(deleteTask(config, room.id, taskId))}
-            onUpdateRoom={patch => updateConfig(updateRoom(config, room.id, patch))}
+            onTaskDone={taskId => updateConfig(prev => markTaskDone(prev, taskId))}
+            onTaskReset={taskId => updateConfig(prev => resetTaskDone(prev, taskId))}
+            onUpdateTask={(taskId, patch) => updateConfig(prev => updateTask(prev, room.id, taskId, patch))}
+            onAddTask={task => updateConfig(prev => addTask(prev, room.id, task))}
+            onDeleteTask={taskId => updateConfig(prev => deleteTask(prev, room.id, taskId))}
+            onUpdateRoom={patch => updateConfig(prev => updateRoom(prev, room.id, patch))}
             onDeleteRoom={() => {
-              updateConfig(deleteRoom(config, room.id))
+              updateConfig(prev => deleteRoom(prev, room.id))
               setOpenRooms(p => { const n = { ...p }; delete n[room.id]; return n })
               setEditRooms(p => { const n = { ...p }; delete n[room.id]; return n })
             }}

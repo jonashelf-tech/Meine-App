@@ -5,8 +5,8 @@ import { useToast } from '../../../components/Toast/Toast'
 import { createBirthday, parseDateInput } from './birthdayUtils'
 import s from './BirthdaySheet.module.css'
 
-const WICHTIG_PRESETS  = [7, 14, 21, 30]
-const GESCHENK_PRESETS = [7, 14, 21, 30]
+const WICHTIG_PRESETS  = [7, 14]
+const GESCHENK_PRESETS = [7, 14]
 
 const CalIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -164,6 +164,17 @@ export default function BirthdaySheet({ birthday = null, onSave, onClose }) {
                   onClick={() => set('wichtigDays', d)}
                 >{d}d</button>
               ))}
+              <input
+                className={[s.presetInput, s.presetInputWichtig, !WICHTIG_PRESETS.includes(form.wichtigDays) ? s.selected : ''].join(' ')}
+                inputMode="numeric"
+                maxLength={3}
+                placeholder="…d"
+                value={WICHTIG_PRESETS.includes(form.wichtigDays) ? '' : String(form.wichtigDays)}
+                onChange={e => {
+                  const n = parseInt(e.target.value.replace(/\D/g, ''), 10)
+                  set('wichtigDays', Number.isNaN(n) ? 0 : n)
+                }}
+              />
             </div>
           </div>
         )}
@@ -180,6 +191,17 @@ export default function BirthdaySheet({ birthday = null, onSave, onClose }) {
                   onClick={() => set('geschenkDays', d)}
                 >{d}d</button>
               ))}
+              <input
+                className={[s.presetInput, s.presetInputGeschenk, !GESCHENK_PRESETS.includes(form.geschenkDays) ? s.selected : ''].join(' ')}
+                inputMode="numeric"
+                maxLength={3}
+                placeholder="…d"
+                value={GESCHENK_PRESETS.includes(form.geschenkDays) ? '' : String(form.geschenkDays)}
+                onChange={e => {
+                  const n = parseInt(e.target.value.replace(/\D/g, ''), 10)
+                  set('geschenkDays', Number.isNaN(n) ? 0 : n)
+                }}
+              />
             </div>
           </div>
         )}

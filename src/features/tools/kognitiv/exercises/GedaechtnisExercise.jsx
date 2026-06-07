@@ -3,13 +3,28 @@ import { createSession } from '../sessionStore'
 import ExerciseShell from './ExerciseShell'
 import s from './GedaechtnisExercise.module.css'
 
+const EyeIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)
+const TapIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 11V6a2 2 0 0 1 4 0v5" />
+    <path d="M13 9a2 2 0 0 1 4 0v3" />
+    <path d="M17 11a2 2 0 0 1 4 0v4a6 6 0 0 1-6 6h-2a6 6 0 0 1-5.2-3l-2.3-4a2 2 0 0 1 3.4-2L9 13" />
+  </svg>
+)
+
 const CIRCLE_POSITIONS = Array.from({ length: 12 }, (_, i) => {
   const angle = (i * 30 - 90) * (Math.PI / 180)
   const r = 38
   return { left: `${50 + r * Math.cos(angle)}%`, top: `${50 + r * Math.sin(angle)}%` }
 })
 
-const BASE_ROUNDS = [2, 2, 3, 3, 4, 4, 5, 5]
+// Unendliche Progression: 2,2,3,3,4,4,5,5,6,6,… — wächst alle 2 Runden um 1
+const lenForRound = (ri) => 2 + Math.floor(ri / 2)
 const SHOW_MS = 750
 const GAP_MS  = 400
 
@@ -36,7 +51,7 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
 
   const seqRef         = useRef(null)
   const tapsRef        = useRef([])
-  const roundsQueueRef = useRef([...BASE_ROUNDS])
+  const roundIdxRef    = useRef(0)
   const mistakesRef    = useRef(0)
   const startedAt      = useRef(new Date().toISOString())
   const timersRef      = useRef([])
@@ -60,7 +75,8 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
   }, [showMs, gapMs])
 
   useEffect(() => {
-    const seq = randSeq(roundsQueueRef.current[roundIdx])
+    roundIdxRef.current = roundIdx
+    const seq = randSeq(lenForRound(roundIdx))
     seqRef.current = seq
     playSequence(seq)
     return clearTimers
@@ -68,10 +84,10 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
 
   const finishSession = useCallback(() => {
     const duration     = Math.round((Date.now() - new Date(startedAt.current).getTime()) / 1000)
-    const queue        = roundsQueueRef.current
-    const roundResults = queue.map((len, ri) => {
+    const totalRounds  = roundIdxRef.current + 1
+    const roundResults = Array.from({ length: totalRounds }, (_, ri) => {
       const rTaps = tapsRef.current.filter(t => t.round === ri)
-      return { round: ri, seqLen: len, errors: rTaps.filter(t => !t.correct).length }
+      return { round: ri, seqLen: lenForRound(ri), errors: rTaps.filter(t => !t.correct).length }
     })
     const correctRounds = roundResults.filter(r => r.errors === 0).length
     const correctTaps   = tapsRef.current.filter(t => t.correct).length
@@ -80,7 +96,7 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
       variant,
       startedAt: startedAt.current,
       duration,
-      score: { correctRounds, totalRounds: queue.length, correctTaps, mistakes: mistakesRef.current },
+      score: { correctRounds, totalRounds, correctTaps, mistakes: mistakesRef.current },
       mainMetric: correctRounds,
       taps: tapsRef.current,
     })
@@ -114,28 +130,30 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
     setUserInput(newInput)
 
     if (newInput.length === seqRef.current.length) {
-      const nextRound = roundIdx + 1
-      if (nextRound >= roundsQueueRef.current.length) {
-        setTimeout(finishSession, 800)
-      } else {
-        setTimeout(() => setRoundIdx(nextRound), 800)
-      }
+      // Unendlich: immer zur nächsten (längeren) Runde — Ende nur bei 2. Fehler
+      setTimeout(() => setRoundIdx(roundIdx + 1), 800)
     }
   }, [phase, userInput, roundIdx, finishSession, playSequence])
 
   return (
     <ExerciseShell moduleId="gedaechtnis" hideProgress onAbort={onAbort}>
-      <div className={s.phaseLabel}>
-        {phase === 'show' ? 'Merken' : 'Eingeben'}
+      <div className={[s.phaseBanner, phase === 'show' ? s.phaseShow : s.phaseInput].join(' ')}>
+        {phase === 'show' ? <EyeIcon /> : <TapIcon />}
+        <div className={s.phaseTextWrap}>
+          <span className={s.phaseTitle}>{phase === 'show' ? 'Merken' : 'Antippen'}</span>
+          <span className={s.phaseHint}>
+            {phase === 'show' ? 'Reihenfolge einprägen' : `Jetzt du — ${userInput.length}/${seqRef.current?.length ?? 0}`}
+          </span>
+        </div>
       </div>
-      <div className={s.arena}>
+      <div className={[s.arena, phase === 'input' ? s.arenaInput : s.arenaShow].join(' ')}>
         {CIRCLE_POSITIONS.map((pos, i) => {
           const isLit   = litCircle === i
           const hlState = highlight?.idx === i ? (highlight.correct ? 'correct' : 'wrong') : null
           return (
             <button
               key={i}
-              className={[s.circle, isLit ? s.lit : '', hlState ? s[hlState] : ''].join(' ')}
+              className={[s.circle, isLit ? s.lit : '', phase === 'input' ? s.circleReady : '', hlState ? s[hlState] : ''].join(' ')}
               style={pos}
               onClick={() => handleCircleTap(i)}
             />
