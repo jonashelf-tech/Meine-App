@@ -315,15 +315,6 @@ export const STEPS = [
   },
   {
     chapter: 'Tagesplaner',
-    title: 'Den ganzen Tag verschieben',
-    text: (
-      <>Mit <strong>▲ / ▼ 30min</strong> schiebst du alle Termine auf einen Schlag nach oben oder
-      unten — praktisch, wenn sich der ganze Tag verspätet.</>
-    ),
-    Stage: () => <ControlStage find={findIncludes('30min')} withSlot />,
-  },
-  {
-    chapter: 'Tagesplaner',
     title: 'Termine festnageln',
     text: (
       <>Tipp auf den Griff am Block, um ihn zu <strong>sperren</strong> — gesperrte Termine bleiben
@@ -333,12 +324,12 @@ export const STEPS = [
   },
   {
     chapter: 'Tagesplaner',
-    title: 'Verpasstes nachholen',
+    title: 'Den ganzen Tag verschieben',
     text: (
-      <>Ist eine Zeit abgelaufen, fragt die App nach: <strong>Erledigt</strong>, <strong>Ignorieren</strong>
-      oder zurück <strong>in den Pool</strong>. So fällt nichts hinten runter.</>
+      <>Mit <strong>▲ / ▼ 30min</strong> schiebst du alle <strong>nicht gesperrten</strong> Termine auf
+      einen Schlag nach oben oder unten — praktisch, wenn sich der ganze Tag verspätet.</>
     ),
-    Stage: MissedStage,
+    Stage: () => <ControlStage find={findIncludes('30min')} withSlot />,
   },
   {
     chapter: 'Tagesplaner',
@@ -366,6 +357,15 @@ export const STEPS = [
       Zeitbereich — zeig nur die Stunden, die du brauchst.</>
     ),
     Stage: () => <ControlStage find={findSel('[class*="pillBtnPlus"]')} />,
+  },
+  {
+    chapter: 'Tagesplaner',
+    title: 'Verpasstes nachholen',
+    text: (
+      <>Ist eine Zeit abgelaufen, fragt die App nach: <strong>Erledigt</strong>, <strong>Ignorieren</strong>
+      oder zurück <strong>in den Pool</strong>. So fällt nichts hinten runter.</>
+    ),
+    Stage: MissedStage,
   },
   {
     chapter: 'Tagesplaner',

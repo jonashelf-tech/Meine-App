@@ -61,6 +61,10 @@ Info-Schritte ohne echte Komponenten: `StageTools` / `StageBackup` (= `.infoStag
 Toolbar, da `onCreateBlocker`/`onFokusMode` no-op übergeben) + TapPulse auf ein per `find(...)`
 gefundenes Element. `withSlot` legt einen Demo-Slot rein, `lockLoop` toggelt dessen Lock.
 
+`TapPulse` holt sein Ziel automatisch ins Sichtfeld (`scrollIntoView` im scrollbaren `.stageWrap`),
+falls es außerhalb liegt — z.B. die Pool-Sortierung ganz unten. Wichtig: `behavior: 'auto'`, nicht
+`'smooth'` — Smooth-Scroll greift im Briefing-Overlay nicht (bleibt bei scrollTop 0).
+
 ## Status: komplett — 18 Schritte (alle DOM-verifiziert)
 
 Zusätzlich zu den 12 oben gebaut:
