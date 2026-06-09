@@ -217,7 +217,7 @@ function ModalStage({ find, todoFactory = makeModalTodo }) {
   const getTarget = useCallback(() => find(stageRef.current), [find])
 
   return (
-    <div className={s.stageRel} ref={stageRef}>
+    <div className={`${s.stageRel} ${s.modalHost}`} ref={stageRef}>
       <div className={s.modalWrap}>
         <TodoModal existingTodo={todo} onClose={() => {}} />
       </div>
@@ -285,7 +285,7 @@ function MissedStage() {
     { id: 'm2', text: 'Rechnung zahlen', color: '#FB7185', dateKey: todayKey(), slotKey: '14' },
   ])
   return (
-    <div className={s.stageRel}>
+    <div className={`${s.stageRel} ${s.modalHost}`}>
       <div className={s.modalWrap}>
         <MissedReviewModal items={items} variant="new-day" onDone={() => {}} onIgnore={() => {}} onMoveToPool={() => {}} />
       </div>

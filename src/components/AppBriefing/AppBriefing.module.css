@@ -100,10 +100,18 @@
 .modalWrap {
   position: relative;
   transform: translateZ(0);
-  height: 72vh;
-  max-height: 540px;
+  height: 100%;
   overflow: hidden;
   border-radius: var(--r);
+}
+/* Modal-Stages füllen die volle Sichthöhe (Höhenkette stageWrap→stageRel→modalWrap) */
+.modalHost {
+  height: 100%;
+}
+/* Eingebettetes Modal an die Stage-Höhe binden statt an 100dvh — so scrollt es
+   intern, statt unten (z.B. „Speichern") abgeschnitten zu werden */
+.modalWrap [class*="overlay"] > [class*="modal"] {
+  max-height: 100%;
 }
 
 /* Kurz öffnendes Modal über dem Wochen-Grid (transform = stage-lokal) */
