@@ -1,0 +1,317 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(2, 2, 8, 0.94);
+  animation: fadeInUp 0.3s ease;
+}
+
+.frame {
+  width: 100%;
+  max-width: 400px;
+  height: 92vh;
+  max-height: 700px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* ─── Stage (echter Planer / Info) ───────────────────────── */
+.stageWrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.demoPlanner {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stageRel {
+  position: relative;
+}
+.ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  z-index: 6;
+  will-change: transform, opacity;
+  transition: transform 1.05s cubic-bezier(0.45, 0, 0.2, 1), opacity 0.4s ease;
+}
+.ghostStripe {
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── Tap-Puls ────────────────────────────────────────────── */
+.tapPulse {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--primary);
+  pointer-events: none;
+  z-index: 7;
+  animation: tapRing 1.6s ease-out infinite;
+}
+@keyframes tapRing {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 18px color-mix(in srgb, var(--primary) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 0%, transparent); }
+}
+
+/* ─── Kalender-DayPanel-Wrapper ───────────────────────────── */
+.panelWrap {
+  padding: 8px 10px;
+}
+.dayNavWrap {
+  padding: 6px 10px 2px;
+}
+
+/* ─── Eingebettetes TodoModal ─────────────────────────────── */
+/* transform macht das fixed-Overlay von TodoModal stage-lokal (eigener
+   Containing-Block) statt bildschirmfüllend */
+.modalWrap {
+  position: relative;
+  transform: translateZ(0);
+  height: 72vh;
+  max-height: 540px;
+  overflow: hidden;
+  border-radius: var(--r);
+}
+
+/* Kurz öffnendes Modal über dem Wochen-Grid (transform = stage-lokal) */
+.modalOver {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(0);
+  overflow: hidden;
+  border-radius: var(--r);
+  z-index: 9;
+}
+
+/* ─── Mini-Dialog (Restore-Bestätigung, stage-lokal) ──────── */
+.miniOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 2, 8, 0.55);
+  z-index: 8;
+}
+.miniDialog {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  width: 80%;
+  max-width: 280px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+.miniTitle {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.miniText {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.miniActions {
+  display: flex;
+  gap: 8px;
+}
+.miniYes {
+  flex: 1;
+  background: var(--emerald);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 9px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.miniNo {
+  flex: 1;
+  background: var(--surface);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px;
+  font-size: 0.82rem;
+}
+
+.infoStage {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+}
+.infoIcon {
+  color: var(--primary);
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--primary) 45%, transparent));
+}
+.infoCaption {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+.infoCaption strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Wochen-Grid Ghost (skriptete Drag-Geste) */
+.weekGhost {
+  z-index: 6;
+  pointer-events: none;
+  box-shadow: var(--shadow-md);
+  transition: transform 1.05s cubic-bezier(0.45, 0, 0.2, 1), opacity 0.4s ease;
+}
+
+/* Tools-Konzept-Step */
+.toolsRow {
+  display: flex;
+  gap: 10px;
+}
+.toolChip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--primary);
+}
+
+/* ─── Coach-Panel ─────────────────────────────────────────── */
+.coach {
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.coachHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chapter {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.counter {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--primary);
+  transition: width 0.35s ease;
+}
+
+.title {
+  margin: 2px 0 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.text {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+.text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ─── Footer / Navigation ─────────────────────────────────── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.navBtns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.skip {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 6px;
+}
+.back {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+.next {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 9px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--glow-primary);
+}

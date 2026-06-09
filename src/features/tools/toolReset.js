@@ -15,6 +15,7 @@ export const TOOL_RESETS = {
   reminder:    { keys: ['adhs_reminder_v1', 'adhs_reminder_dismissed'] },
   kognitiv:    { keys: [SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule], prefixes: ['briefing-seen-'] },
   elvi:        { keys: ['adhs_elvi_v1'] },
+  wachstum:    { keys: [SK.wachstum] },
 }
 
 // Löscht alle Daten eines Tools und lädt die App neu (Tools rebauen Defaults).

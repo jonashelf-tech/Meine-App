@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useAppStore } from './store'
 import { hexToGlow } from './utils'
 import { TOOL_TAB, TOOL_REGISTRY } from './features/tools/toolRegistry.jsx'
-import { saveAutoBackup } from './storage'
+import { saveAutoBackup, lv, sv, SK } from './storage'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
 import TabKalender     from './features/calendar/TabKalender/TabKalender'
@@ -12,6 +12,7 @@ import TodoModal       from './components/TodoModal/TodoModal'
 import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
 import BackupNudge     from './components/BackupNudge/BackupNudge'
 import UpdatePrompt     from './components/UpdatePrompt/UpdatePrompt'
+import AppBriefing      from './components/AppBriefing/AppBriefing'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
 const IconTagesplaner = () => (
@@ -63,11 +64,18 @@ const TABS = [
 const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 
 export default function App() {
-  const { currentTab, previousTab, setCurrentTab, accentColor, theme } = useAppStore()
+  const { currentTab, previousTab, setCurrentTab, accentColor, theme, briefingOpen, setBriefingOpen } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
   const [exercising, setExercising] = useState(false)
 
   useEffect(() => { saveAutoBackup() }, [])
+
+  // First-Run: Briefing einmalig beim ersten Start zeigen
+  useEffect(() => {
+    if (!lv(SK.appBriefingSeen, false)) setBriefingOpen(true)
+  }, [setBriefingOpen])
+
+  const closeBriefing = () => { sv(SK.appBriefingSeen, true); setBriefingOpen(false) }
 
   useEffect(() => {
     const onVisible = () => { if (document.visibilityState === 'visible') saveAutoBackup() }
@@ -137,6 +145,8 @@ export default function App() {
       {addOpen && <TodoModal onClose={() => setAddOpen(false)} />}
 
       <UpdatePrompt />
+
+      {briefingOpen && <AppBriefing onClose={closeBriefing} />}
 
       {!exercising && <nav className={styles.tabBar}>
         {TABS.map(({ id, label, Icon }) => {

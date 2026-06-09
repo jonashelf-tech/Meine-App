@@ -6,6 +6,7 @@ import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geb
 import { loadEntries } from '../../tools/gewicht/gewichtData'
 import { loadElviDay } from '../../tools/elvi/elviData'
 import { loadSessions as loadKognitivSessions, getDelta } from '../../tools/kognitiv/sessionStore'
+import { getDaySummary as getWachstumDay } from '../../tools/wachstum/growthData'
 import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import NavPill from '../../../components/NavPill/NavPill'
@@ -127,8 +128,8 @@ function fmtDelta(moduleId, delta) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore }) {
-  const [open, setOpen] = useState({ zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false })
+export function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore, initialOpen }) {
+  const [open, setOpen] = useState(initialOpen ?? { zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false, wachstum: false })
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
 
@@ -142,6 +143,9 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
   const doneCount = doneTodos.length
 
   const elviDay = useMemo(() => loadElviDay(dateKey), [dateKey])
+  const wachstumDay   = useMemo(() => getWachstumDay(dateKey), [dateKey])
+  const wachstumColor = getToolColor('wachstum', toolColors)
+  const hasWachstum   = Boolean(wachstumDay.journal) || wachstumDay.habits.length > 0
 
   const [y, m, d] = dateKey.split('-')
   const dateObj  = new Date(parseInt(y), parseInt(m) - 1, parseInt(d))
@@ -380,6 +384,43 @@ function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, bir
               )}
               {elviDay.notes?.trim() && (
                 <div className={s.elviNotes}>{elviDay.notes.trim()}</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Wachstum-Karte */}
+      {hasWachstum && (
+        <div className={s.toolCard} style={{ borderTop: `2px solid ${wachstumColor}` }}>
+          <div className={s.toolCardHead} onClick={() => toggle('wachstum')}>
+            <span className={s.toolCardTitle} style={{ color: wachstumColor }}>Wachstum</span>
+            <button
+              className={s.toolCardOpenBtn}
+              style={{ color: wachstumColor, background: `color-mix(in srgb, ${wachstumColor} 15%, transparent)` }}
+              onClick={e => { e.stopPropagation(); setCurrentTab(TOOL_TAB.wachstum) }}
+            >
+              → Öffnen
+            </button>
+            <span className={s.toolCardArrow}>{open.wachstum ? '▾' : '▸'}</span>
+          </div>
+          {open.wachstum && (
+            <div className={s.toolCardBody}>
+              {wachstumDay.habits.length > 0 && (
+                <div className={s.elviDoses}>
+                  {wachstumDay.habits.map(h => (
+                    <span
+                      key={h.id}
+                      className={s.elviDosePill}
+                      style={{ color: wachstumColor, background: `color-mix(in srgb, ${wachstumColor} 18%, transparent)` }}
+                    >
+                      ✓ {h.text}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {wachstumDay.journal && (
+                <div className={s.elviNotes}>{wachstumDay.journal}</div>
               )}
             </div>
           )}

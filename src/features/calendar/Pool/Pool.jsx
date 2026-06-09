@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
 import { todayKey } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
@@ -81,6 +81,7 @@ export default function Pool({
   todos = [],
   setTodos,
   todaySlots = {},
+  viewDate,
   onToggleDone,
   onEdit,
   onRemove,
@@ -120,31 +121,31 @@ export default function Pool({
 
   const doneCount = useMemo(() => {
     const today = todayKey()
-    return todos.filter(t =>
-      t.done &&
-      t.doneAt?.startsWith(today) &&
-      !pendingDoneIds.has(t.id)
-    ).length
-  }, [todos, pendingDoneIds])
+    return todos.filter(t => t.done && t.doneAt?.startsWith(today)).length
+  }, [todos])
 
   const visiblePool = showAll ? activePool : activePool.slice(0, 10)
   const hasMore     = !showAll && activePool.length > 10
+
+  // ─── Auto-Fade: erledigtes Todo bleibt als Bestätigung sichtbar,
+  //     fällt bei nächster Interaktion raus (anderes Todo haken = unten,
+  //     Tag wechseln = dieser Effekt, Tab verlassen = unmount) ───────
+  useEffect(() => {
+    setPendingDoneIds(prev => prev.size ? new Set() : prev)
+  }, [viewDate])
 
   // ─── Handlers ───────────────────────────────────────────
   const handleToggle = useCallback((id) => {
     const todo = todos.find(t => t.id === id)
     if (!todo) return
     if (!todo.done) {
-      setPendingDoneIds(prev => new Set([...prev, id]))
+      // nur das zuletzt abgehakte bleibt liegen — vorheriges fadet weg
+      setPendingDoneIds(new Set([id]))
     } else {
       setPendingDoneIds(prev => { const next = new Set(prev); next.delete(id); return next })
     }
     onToggleDone?.(id)
   }, [todos, onToggleDone])
-
-  const handleCleanup = useCallback(() => {
-    setPendingDoneIds(new Set())
-  }, [])
 
   // ─── Render chip ────────────────────────────────────────
   const renderChip = (t) => (
@@ -218,15 +219,6 @@ export default function Pool({
                 <span className={s.expandCount}>+{activePool.length - 10}</span>
                 ▾
               </button>
-            )}
-
-            {pendingDoneIds.size > 0 && (
-              <div className={s.cleanupRow}>
-                <button className={s.cleanupBtn} onClick={handleCleanup}>
-                  ✓ Aufräumen
-                  <span className={s.cleanupCount}>{pendingDoneIds.size}</span>
-                </button>
-              </div>
             )}
           </div>
 

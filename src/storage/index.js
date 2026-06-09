@@ -49,6 +49,7 @@ export const SK = {
   doneCounters:   `${PREFIX}calendar_done`,
   settings:       `${PREFIX}app_settings`,
   theme:          `${PREFIX}app_theme`,
+  appBriefingSeen:`${PREFIX}app_briefing_seen`,
   templates:      `${PREFIX}calendar_templates`,
   recipes:        `${PREFIX}recipes_list`,
   shopping:       `${PREFIX}recipes_shopping`,
@@ -91,6 +92,7 @@ export const SK = {
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
   lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
   projects:        `${PREFIX}projects`,
+  wachstum:        `${PREFIX}wachstum_v1`,
 }
 
 export const exportData = () => {
@@ -124,9 +126,10 @@ export const BACKUP_CATS = {
     SK.reminder, SK.reminderDismissed, SK.elvi,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
     SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule,
+    SK.wachstum,
   ],
   einstellungen: [
-    SK.settings, SK.theme,
+    SK.settings, SK.theme, SK.appBriefingSeen,
     SK.accentColor, SK.toolColors, SK.activeTools,
   ],
 }

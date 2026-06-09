@@ -87,7 +87,7 @@ function CatSelect({ cats, onChange }) {
 }
 
 export default function TabSettings() {
-  const { settings, setSettings, theme, setTheme, accentColor, setAccentColor } = useAppStore()
+  const { settings, setSettings, theme, setTheme, accentColor, setAccentColor, setBriefingOpen } = useAppStore()
   const { showToast } = useToast()
 
   const [showKey, setShowKey]           = useState(false)
@@ -265,6 +265,13 @@ export default function TabSettings() {
             className={s.hidden}
           />
         </div>
+      </section>
+
+      <section className={s.card}>
+        <h3 className={s.cardTitle}>Einführung</h3>
+        <button className={s.actionBtn} onClick={() => setBriefingOpen(true)}>
+          ↻ Einführung nochmal ansehen
+        </button>
       </section>
 
       <section className={s.card}>
