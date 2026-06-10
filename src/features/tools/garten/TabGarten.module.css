@@ -1,0 +1,91 @@
+/* src/features/tools/garten/TabGarten.module.css */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100%;
+  position: relative;
+}
+
+.szeneCard {
+  border-radius: var(--r);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.xpCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  text-align: center;
+}
+.xpNum {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  color: var(--tool-color);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--tool-color) 55%, transparent);
+}
+.xpUnit  { font-size: 0.9rem; color: var(--text-dim); }
+.xpStufe { color: var(--text); margin-top: 2px; font-weight: 600; }
+
+.track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-top: 12px;
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: var(--tool-color);
+  border-radius: 3px;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--tool-color) 60%, transparent);
+}
+.nextLabel { margin-top: 8px; font-size: 0.8rem; color: var(--text-dim); }
+.nextLabel b { color: var(--text); }
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+}
+.sectionLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.srcRow   { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; font-size: 0.86rem; }
+.srcLabel { flex: 1; color: var(--text); }
+.srcCount { color: var(--text-dim); font-size: 0.76rem; }
+.srcXP    { font-family: 'Orbitron', sans-serif; font-size: 0.78rem; color: var(--tool-color); min-width: 64px; text-align: right; }
+
+.msRow  { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.86rem; opacity: 0.55; }
+.msDone { opacity: 1; }
+.msDot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--emerald);
+  flex-shrink: 0;
+}
+.msDone .msDot {
+  border-color: color-mix(in srgb, var(--emerald) 50%, transparent);
+  background: color-mix(in srgb, var(--emerald) 14%, transparent);
+}
+.msName { flex: 1; }
+.msType {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.msXP { font-family: 'Orbitron', sans-serif; font-size: 0.74rem; color: var(--text-dim); min-width: 56px; text-align: right; }

@@ -1,0 +1,20 @@
+/* src/features/tools/garten/GartenSection.module.css */
+.wrap { display: flex; flex-direction: column; gap: 10px; }
+
+.szeneWrap {
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.progressRow { display: flex; align-items: center; gap: 10px; }
+.track {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.fill { height: 100%; background: var(--tool-color); border-radius: 3px; }
+.nextLabel { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
