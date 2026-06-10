@@ -221,6 +221,10 @@ SK.kognitivCheckin   → 'adhs_kognitiv_checkin'    // { "YYYY-MM-DD": CheckinEn
 SK.kognitivSchedule  → 'adhs_kognitiv_schedule'   // { [moduleId]: { mode, days, time } }
 SK.kognitivPractice  → 'adhs_kognitiv_practice'   // ephemer (Wochen-Gate), NICHT im Backup
 SK.klaerenSettings   → 'adhs_klaeren_settings'    // { threshold, ageColor }
+SK.wachstum          → 'adhs_wachstum_v1'         // { habits, checks, journal } — Leser: wachstum/growthData.js
+SK.garten            → 'adhs_garten_v1'           // { xpFloor, seenMilestones } — Garten-Begleiter (Monotonie-Ratchet)
+SK.erfolgeTracking   → 'adhs_erfolge_tracking_v1' // Tagesplaner-Tage; schreibt TabHeute, liest Garten (historischer Name)
+SK.erfolge           → LEGACY (altes Erfolge-Tool, nur Backup-Kompat)
 ```
 
 Lesen/Schreiben:
@@ -270,7 +274,7 @@ Tab 6  — Rezepte        (rezepte)
 Tab 7  — Pizza-Rechner  (pizza)
 Tab 8  — Elvi           (elvi)
 Tab 9  — Gewicht        (gewicht)
-Tab 10 — XP & Level     (gamification)
+Tab 10 — Garten         (garten)
 Tab 11 — Zufallsrad     (rad)
 Tab 12 — Reminder       (reminder)
 Tab 13 — Haushalt       (haushalt)
@@ -292,7 +296,7 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
   - Haushalt-Dot: `todos.some(t => t.toolId === 'haushalt' && t.createdAt?.startsWith(dk))`
   - Reminder-Dot: `todos.some(t => t.reminderItemId && t.createdAt?.startsWith(dk))` ODER `Object.values(days[dk] ?? {}).some(s => s.reminderItemId)`
   - Dots immer solid (kein Ring-Stil). Farbe via `getToolColor(id, toolColors)`.
-  - Keine Dots für: Elvi, Fokus-Timer, Pizza, Prokrastination, Rezepte, Was jetzt?, Zufallsrad, Erfolge
+  - Keine Dots für: Elvi, Fokus-Timer, Pizza, Prokrastination, Rezepte, Was jetzt?, Zufallsrad, Garten
 - **Geburtstags-Balken:** synthetisch aus `birthdays[]` abgeleitet (kein `days`-Store), erscheinen vor Termin/Todo-Balken in Tageskachel. Nur wenn `kalender===true` AND `plannedYear !== currentYear`.
 - **DayPanel:** erscheint unterhalb des Grids wenn Monatskachel angeklickt
   - Sektionen: Zeitplan · Erledigt · Gewicht (nur wenn Eintrag für diesen Tag)

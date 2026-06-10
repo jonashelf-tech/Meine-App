@@ -78,7 +78,8 @@ src/features/tools/garten/
                            reachedMilestones(xp), nextMilestone(xp), Ratchet (load/bump),
                            seenMilestones (Neu-Hinweis)
   gartenData.test.js     — XP-Berechnung, Ratchet-Monotonie, Meilenstein-Grenzen
-  GartenSzene.jsx        — prozedurales SVG (props: stage, dekos, night, kompakt)
+  GartenSzene.jsx        — prozedurales SVG (props: stage, dekos, night) — eine Szene
+                           überall, Dashboard skaliert sie nur kleiner
   GartenSzene.module.css — Farben via vars.css/color-mix, Keyframes (Glühwürmchen,
                            Sterne), prefers-reduced-motion respektiert
   TabGarten.jsx          — ToolHeader + große Szene + XP (Orbitron) + Fortschritt zum

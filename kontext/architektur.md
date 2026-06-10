@@ -45,7 +45,11 @@ src/
       toolRegistry.jsx                        — TOOL_REGISTRY + ToolIcon (SVG)
       toolTabs.js                             — TOOL_TAB — Single Source of Truth
       elvi/           TabElvi.jsx
-      gamification/   TabGamification.jsx
+      garten/
+        TabGarten.jsx           — Begleiter-Tab: Szene, XP, Quellen, Meilensteine
+        GartenSection.jsx       — Tagesplaner-Karte (Szene + „+X heute" + Fortschritt)
+        GartenSzene.jsx         — prozedurales SVG, Funktion von (stage, dekos, night)
+        gartenData.js           — XP abgeleitet aus App-Daten + Monotonie-Ratchet, MILESTONES
       geburtstage/
         BirthdaySheet.jsx   — Bottom Sheet (Neu + Edit)
         BirthdaySection.jsx — Tagesplaner-Widget (Chips: Geburtstag + Geschenk, fakeTodo-Pattern)
