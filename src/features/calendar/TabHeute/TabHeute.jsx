@@ -8,7 +8,7 @@ import Pool                from '../Pool/Pool'
 import TodoModal           from '../../../components/TodoModal/TodoModal'
 import ReminderSection     from '../../tools/reminder/ReminderSection'
 import HaushaltSection     from '../../tools/haushalt/HaushaltSection'
-import ErfolgeSection      from '../../tools/erfolge/ErfolgeSection'
+import GartenSection       from '../../tools/garten/GartenSection'
 import WachstumSection     from '../../tools/wachstum/WachstumSection'
 import GewichtSection     from '../../tools/gewicht/GewichtSection'
 import BirthdaySection    from '../../tools/geburtstage/BirthdaySection'
@@ -567,7 +567,7 @@ export default function TabHeute() {
           registerHalf={registerHalf}
         />
         {(() => {
-          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, erfolge: ErfolgeSection, gewicht: GewichtSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, wachstum: WachstumSection }
+          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, gewicht: GewichtSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, wachstum: WachstumSection }
           const SECTION_PROPS = {
             haushalt:    { onStartDrag: startHaushaltDrag },
             reminder:    { onStartDrag: startReminderDrag },

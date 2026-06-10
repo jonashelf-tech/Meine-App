@@ -87,7 +87,7 @@ export const useAppStore = create((set, get) => ({
   setKognitivAutoStart: (id) => set({ kognitivAutoStart: id }),
 
   // ─── Active Tools ──────────────────────────────────────
-  activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren']),
+  activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren']).map(id => id === 'erfolge' ? 'garten' : id),
   setActiveTools: (tools) => { set({ activeTools: tools }); sv(SK.activeTools, tools) },
   toggleTool: (id) => {
     const current = get().activeTools

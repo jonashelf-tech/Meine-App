@@ -11,7 +11,7 @@ export const TOOL_RESETS = {
   geburtstage: { keys: [SK.birthdays, 'adhs_bday_sort'] },
   rezepte:     { keys: [SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv] },
   gewicht:     { keys: [SK.weight, 'adhs_wdash'] },
-  erfolge:     { keys: [SK.erfolge, SK.erfolgeTracking] },
+  garten:      { keys: [SK.garten] },
   reminder:    { keys: ['adhs_reminder_v1', 'adhs_reminder_dismissed'] },
   kognitiv:    { keys: [SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule], prefixes: ['briefing-seen-'] },
   elvi:        { keys: ['adhs_elvi_v1'] },
