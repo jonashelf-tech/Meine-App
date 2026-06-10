@@ -2,10 +2,10 @@ import { useState, useMemo, useEffect } from 'react'
 import { createRezept, istBasis } from './mealprepModel'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
-import { IconChevron, IconEdit, IconSnow, IconClock, IconArrowLeft } from './icons'
+import { IconChevron, IconEdit, IconSnow, IconClock } from './icons'
 import s from './Grossrezepte.module.css'
 
-export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit, updateKorbEintrag, korb, onBack }) {
+export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit, updateKorbEintrag, korb }) {
   const [collapsed, setCollapsed] = useState({})
   const [mengen, setMengen] = useState({})   // { [rezeptId]: anzahlBatches }
 
@@ -63,13 +63,6 @@ export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit,
     return acc
   }, [mengen, rezepte])
 
-  const HubBar = () => (
-    <div className={s.hubBar}>
-      <button className={s.backToHub} onClick={onBack}><IconArrowLeft size={15} /> Sammlung</button>
-      <span className={s.hubTitle}>Basen vorkochen</span>
-    </div>
-  )
-
   // ── Endgericht-Zeile mit Stepper ──────────────────────────────────────────
   const StepperRow = (r) => {
     const anzahl = mengen[r.id] ?? 0
@@ -103,7 +96,7 @@ export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit,
     const batches = (bedarf > 0 && basis.ergibtMenge > 0) ? Math.ceil(bedarf / basis.ergibtMenge) : 0
     const isTop = tiefe === 0
 
-    // Endgerichte zuerst, dann Abzweige (Zwischen-Basen) verschachtelt
+    // Abzweige (Zwischen-Basen, z.B. Bolognese) zuerst, dann Endgerichte
     const endGerichte = ableitungen.filter(r => !istAbzweig(r))
     const abzweige = ableitungen.filter(istAbzweig)
 
@@ -114,17 +107,13 @@ export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit,
           <div className={s.cardHeaderLeft}>
             {basis.langlaeufer && <span className={s.langBadge} title="Langläufer"><IconClock size={13} /></span>}
             <span className={isTop ? s.cardTitle : s.branchTitle}>{basis.name}</span>
-            {basis.ergibtMenge != null && (
-              <span className={s.dim}>ergibt {basis.ergibtMenge} {basis.ergibtEinheit}</span>
-            )}
           </div>
           <div className={s.cardHeaderRight}>
-            {bedarf > 0 && (
+            {batches > 0 && (
               <span className={s.bedarfBadge} style={{ '--tool-color': toolColor }}>
-                {bedarf} {basis.ergibtEinheit} · {batches}×
+                {batches}× kochen
               </span>
             )}
-            <span className={s.ablCount}>{ableitungen.length}</span>
             <button className={s.editBtn} onClick={e => { e.stopPropagation(); onEdit({ form: 'rezept', data: basis }) }}><IconEdit size={15} /></button>
             <span className={`${s.chevron} ${isOpen ? '' : s.chevronClosed}`}><IconChevron size={14} /></span>
           </div>
@@ -132,8 +121,8 @@ export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit,
 
         {isOpen && (
           <div className={s.cardBody}>
-            {endGerichte.map(StepperRow)}
             {abzweige.map(ab => BasisBlock(ab, tiefe + 1))}
+            {endGerichte.map(StepperRow)}
             <div className={s.cardFooter}>
               <button className={s.addAbleitungBtn}
                 onClick={() => onEdit({ form: 'rezept', data: createRezept({ komponenten: [{ rezeptId: basis.id, menge: basis.ergibtMenge ?? 500 }] }) })}>
@@ -149,7 +138,7 @@ export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit,
   if (topBasen.length === 0) {
     return (
       <div className={s.wrap}>
-        <HubBar />
+        <div className={s.intro}>Eine Basis 1× kochen → viele Gerichte. Basis aufklappen, Ableitungen mit + ankreuzen.</div>
         <div className={s.empty}>Noch keine Basis-Rezepte. Lege ein Rezept mit „Ergibt Menge" an.</div>
         <button className={s.addBtn}
           onClick={() => onEdit({ form: 'rezept', data: createRezept({ ergibtMenge: 0, ergibtEinheit: 'ml' }) })}>
@@ -161,7 +150,7 @@ export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit,
 
   return (
     <div className={s.wrap}>
-      <HubBar />
+      <div className={s.intro}>Eine Basis 1× kochen → viele Gerichte. Basis aufklappen, Ableitungen mit + ankreuzen.</div>
       <div className={s.topBar}>
         <button className={s.addBtn}
           onClick={() => onEdit({ form: 'rezept', data: createRezept({ ergibtMenge: 0, ergibtEinheit: 'ml' }) })}>

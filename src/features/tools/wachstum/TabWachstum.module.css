@@ -114,6 +114,40 @@
   border-color: var(--tool-color);
 }
 
+/* ─── Undo nach Archivieren ─────────────────────────────── */
+.undoBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  animation: fadeInUp 0.2s ease both;
+}
+.undoText {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.undoBtn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--tool-color);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
 /* ─── Hinzufügen ────────────────────────────────────────── */
 .addBox {
   display: flex;

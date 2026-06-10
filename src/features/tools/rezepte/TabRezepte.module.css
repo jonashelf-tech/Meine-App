@@ -20,24 +20,70 @@
   padding-bottom: env(safe-area-inset-bottom, 16px);
 }
 
-.korbPille {
-  position: fixed;
-  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%);
+/* ─── Tab-Leiste ─────────────────────────────────────────── */
+.tabBar {
+  display: flex;
+  gap: 2px;
+  padding: 0 10px 4px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+}
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 2px 6px;
+  min-height: 52px;
+  border: none;
+  background: none;
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+.tabOn { color: var(--tool-color); }
+.tabIcon { position: relative; display: inline-flex; }
+.tabLabel {
+  font-family: Outfit, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.tabOn .tabLabel { font-weight: 700; }
+.tab::after {
+  content: '';
+  display: block;
+  height: 2px;
+  width: 22px;
+  border-radius: 2px;
+  margin-top: 1px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.tabOn::after { background: var(--tool-color); }
+
+.tabBadge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 8px;
   background: var(--tool-color);
   color: #fff;
-  border: none;
-  border-radius: 24px;
-  padding: 10px 20px;
-  display: inline-flex;
+  font-family: Orbitron, monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
   align-items: center;
-  gap: 7px;
-  font-family: Outfit, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-lg);
-  z-index: 50;
-  white-space: nowrap;
+  justify-content: center;
+  box-sizing: border-box;
 }
+
+.content { padding-top: 6px; }

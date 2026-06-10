@@ -1,26 +1,13 @@
 .wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
 
-/* ── Werkzeug-Einstiege (Konfigurator / Großrezepte) ── */
-.werkzeuge { display: flex; gap: 8px; padding: 2px 0 4px; }
-.werkzeugBtn {
-  flex: 1; min-width: 0;
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--tool-color);
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 0.15s, background 0.15s;
-  -webkit-tap-highlight-color: transparent;
+.search {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-sm); color: var(--text);
+  padding: 9px 12px; font-size: 0.88rem; min-height: 42px;
+  box-sizing: border-box; margin-top: 2px;
 }
-.werkzeugBtn:hover { border-color: color-mix(in srgb, var(--tool-color) 50%, transparent); }
-.werkzeugLabel { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.werkzeugTitle { font-family: Outfit, sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text); }
-.werkzeugSub { font-size: 0.68rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
+.topBar { display: flex; justify-content: flex-end; padding: 0 0 4px; }
 
 .newKatBtn {
   background: none;

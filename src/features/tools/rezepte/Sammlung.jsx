@@ -2,14 +2,16 @@ import { useState, useMemo } from 'react'
 import { createRezept } from './mealprepModel'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
-import { IconChevron, IconCheck, IconSnow, IconSliders, IconLayers, IconClose, IconPlus } from './icons'
+import { IconChevron, IconCheck, IconSnow, IconSliders, IconClose, IconPlus } from './icons'
 import s from './Sammlung.module.css'
 
-export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, addToKorb, removeFromKorb, ladeInKonfigurator, onOpenModul, korb }) {
+export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, addToKorb, removeFromKorb, ladeInKonfigurator, korb }) {
   const [collapsed, setCollapsed] = useState({})
   const [extraKats, setExtraKats] = useState([])
   const [newKatInput, setNewKatInput] = useState('')
   const [showNewKatInput, setShowNewKatInput] = useState(false)
+  const [q, setQ] = useState('')
+  const query = q.trim().toLowerCase()
 
   // Häkchen direkt aus dem Korb ableiten – kein separater State mehr
   const selectedIds = useMemo(() =>
@@ -20,7 +22,7 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
   const allKats = useMemo(() => {
     const fromRezepte = rezepte.flatMap(r => r.kategorien ?? [])
     const unique = [...new Set([...fromRezepte, ...extraKats])]
-    const ORDER = ['Bowls', 'Burritos', 'Salate', 'Onepot/Auflauf', 'Saucen', 'Marinaden', 'Dressings']
+    const ORDER = ['Fitness', 'Bowls', 'Burritos', 'Salate', 'Onepot/Auflauf', 'Saucen', 'Marinaden', 'Dressings']
     return [
       ...ORDER.filter(k => unique.includes(k)),
       ...unique.filter(k => !ORDER.includes(k)).sort(),
@@ -55,8 +57,9 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
   }
 
   const renderKat = (kat) => {
-    const items = rezepteForKat(kat)
-    const isOpen = !!collapsed[kat]
+    const items = rezepteForKat(kat).filter(r => !query || r.name.toLowerCase().includes(query))
+    if (query && items.length === 0) return null
+    const isOpen = query ? true : !!collapsed[kat]
     return (
       <div key={kat} className={s.card}>
         <div className={s.cardHeader} onClick={() => toggleCollapsed(kat)}>
@@ -118,24 +121,16 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
 
   const displayKats = [...allKats, ...(hasUncategorized && !allKats.includes('Sonstiges') ? ['Sonstiges'] : [])]
 
+  const anyMatch = !query || displayKats.some(kat => rezepteForKat(kat).some(r => r.name.toLowerCase().includes(query)))
+
   return (
     <div className={s.wrap}>
-      <div className={s.werkzeuge}>
-        <button className={s.werkzeugBtn} onClick={() => onOpenModul('konfig')} style={{ '--tool-color': toolColor }}>
-          <IconSliders size={18} />
-          <span className={s.werkzeugLabel}>
-            <span className={s.werkzeugTitle}>Gericht bauen</span>
-            <span className={s.werkzeugSub}>Baukasten · Portionen</span>
-          </span>
-        </button>
-        <button className={s.werkzeugBtn} onClick={() => onOpenModul('gross')} style={{ '--tool-color': toolColor }}>
-          <IconLayers size={18} />
-          <span className={s.werkzeugLabel}>
-            <span className={s.werkzeugTitle}>Basen vorkochen</span>
-            <span className={s.werkzeugSub}>Großmengen · Ketten</span>
-          </span>
-        </button>
-      </div>
+      <input
+        className={s.search}
+        value={q}
+        onChange={e => setQ(e.target.value)}
+        placeholder="Rezept suchen…"
+      />
 
       <div className={s.topBar}>
         {showNewKatInput ? (
@@ -156,8 +151,11 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
         )}
       </div>
 
-      {displayKats.length === 0 && (
+      {displayKats.length === 0 && !query && (
         <div className={s.empty}>Noch keine Rezepte. Tippe "+ Neue Kategorie" oder lege ein Rezept an.</div>
+      )}
+      {query && !anyMatch && (
+        <div className={s.empty}>Kein Rezept gefunden für „{q.trim()}".</div>
       )}
 
       {displayKats.map(kat => renderKat(kat))}

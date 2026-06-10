@@ -59,7 +59,6 @@ describe('Round-Trip mit Split — >1 Baustein pro Slot bleibt exakt', () => {
     const tofu  = back.protein.find(i => i.id === 'z_tofu')
     expect(hack).toMatchObject({ gProPortion: 150, anteilPortionen: 2 })
     expect(tofu).toMatchObject({ gProPortion: 100, anteilPortionen: 2 })
-    // Gesamtmengen bleiben erhalten (vorher: halbiert)
     expect(hack.gProPortion * hack.anteilPortionen).toBe(300)
     expect(tofu.gProPortion * tofu.anteilPortionen).toBe(200)
   })

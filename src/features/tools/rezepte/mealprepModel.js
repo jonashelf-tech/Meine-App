@@ -1,7 +1,7 @@
 export const genId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 
-export const SCHEMA_VERSION = 6   // ... 5 = mehrstufige Ketten + Seed-Pflege, 6 = 250er-Block-Mengen
+export const SCHEMA_VERSION = 8   // ... 7 = Tab-UI + Fitness-Rezepte, 8 = Namen ohne „(Basis)"
 
 export const SLOTS = ['protein', 'kh', 'gemuese', 'sauce']
 export const SLOT_LABELS = { protein: 'Protein', kh: 'Kohlenhydrate', gemuese: 'Gemüse', sauce: 'Sauce' }

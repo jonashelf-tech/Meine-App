@@ -4,6 +4,7 @@ import { findUsages } from './mealprepStore'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
 import { IconClose, IconChevron, IconArrowRight } from './icons'
+import AddPicker from './AddPicker'
 import s from './Editor.module.css'
 
 // Kurze Chip-Labels für lange Strings
@@ -254,12 +255,9 @@ export default function Editor({
               </div>
             )
           })}
-          <select className={s.select} value="" onChange={e => { addZutat(e.target.value) }}>
-            <option value="">+ Zutat hinzufügen</option>
-            {zutaten.filter(z => !(draft.zutaten ?? []).some(x => x.zutatId === z.id)).map(z => (
-              <option key={z.id} value={z.id}>{z.name}</option>
-            ))}
-          </select>
+          <AddPicker placeholder="+ Zutat hinzufügen"
+            options={zutaten.filter(z => !(draft.zutaten ?? []).some(x => x.zutatId === z.id)).map(z => ({ id: z.id, label: z.name }))}
+            onPick={addZutat} />
 
           {/* Komponenten */}
           <div className={s.sectionHead}>Abgeleitet aus Basis</div>
@@ -279,12 +277,9 @@ export default function Editor({
               </div>
             )
           })}
-          <select className={s.select} value="" onChange={e => { addKomponente(e.target.value) }}>
-            <option value="">+ Basis hinzufügen</option>
-            {basenRezepte.filter(r => !(draft.komponenten ?? []).some(k => k.rezeptId === r.id)).map(r => (
-              <option key={r.id} value={r.id}>{r.name}</option>
-            ))}
-          </select>
+          <AddPicker placeholder="+ Basis hinzufügen"
+            options={basenRezepte.filter(r => !(draft.komponenten ?? []).some(k => k.rezeptId === r.id)).map(r => ({ id: r.id, label: r.name }))}
+            onPick={addKomponente} />
 
           {/* Anleitung */}
           <div className={s.sectionHead}>Kochanleitung</div>

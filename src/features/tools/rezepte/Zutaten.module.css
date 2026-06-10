@@ -1,0 +1,68 @@
+.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 80px; }
+
+.topBar { display: flex; gap: 8px; align-items: center; padding: 2px 0 4px; }
+.search {
+  flex: 1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-sm); color: var(--text); padding: 9px 12px; font-size: 0.88rem;
+  min-height: 42px; box-sizing: border-box;
+}
+.addBtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--tool-color); color: #fff; border: none;
+  border-radius: var(--r-sm); padding: 0 14px; min-height: 42px;
+  font-family: Outfit, sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  white-space: nowrap; -webkit-tap-highlight-color: transparent;
+}
+
+.empty { color: var(--text-dim); font-size: 0.85rem; text-align: center; padding: 28px 0; }
+
+/* ── Karten: identisch zur Sammlung / Kettenrezepte ── */
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--bg2);
+  overflow: hidden;
+}
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 14px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+}
+.cardTitle { font-weight: 600; font-size: 0.9rem; }
+.cardHeaderRight { display: flex; align-items: center; gap: 8px; }
+.count { font-size: 0.75rem; color: var(--text-dim); }
+.chevron { color: var(--text-dim); display: inline-flex; transition: transform 0.18s; }
+.chevronClosed { transform: rotate(-90deg); }
+.cardBody { border-top: 1px solid var(--border-dim); }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-dim);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.1s;
+}
+.row:last-child { border-bottom: none; }
+.row:active { background: rgba(255,255,255,0.03); }
+
+.rowMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.rowTop { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.rowName {
+  font-size: 0.9rem; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.slotBadge {
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 2px 6px; border-radius: 6px; flex-shrink: 0;
+  background: color-mix(in srgb, var(--tool-color) 16%, transparent); color: var(--tool-color);
+}
+.rowSub { display: flex; align-items: center; gap: 8px; }
+.per { font-size: 0.72rem; color: var(--text-dim); }

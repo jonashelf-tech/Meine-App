@@ -3,16 +3,17 @@ import { SLOTS, SLOT_LABELS } from './mealprepModel'
 import { verteilePortionen, rezeptAusKonfig, konfigAusRezept } from './konfigurator'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
-import { IconChevron, IconCheck, IconClose, IconPlus, IconArrowLeft } from './icons'
+import { IconChevron, IconCheck, IconClose, IconPlus } from './icons'
 import s from './Konfigurator.module.css'
 
 const DEFAULT_GPP = 100
 
 export default function Konfigurator({
   zutaten, rezepte, setRezepte, zById, rById, toolColor, onEdit, addToKorb, settings,
-  loadRezept, onLoaded, onBack,
+  loadRezept, onLoaded,
 }) {
   const [gesamt, setGesamt] = useState(settings?.standardPortionen ?? 4)
+  // slots: { protein:[{id,istRezept,gProPortion,anteilPortionen}], ... } — Anwesenheit = aktiv
   const [slots, setSlots] = useState({ protein: [], kh: [], gemuese: [], sauce: [] })
   const [collapsed, setCollapsed] = useState({ protein: true })
   const [saveDialog, setSaveDialog] = useState(false)
@@ -22,12 +23,7 @@ export default function Konfigurator({
 
   useEffect(() => {
     if (!loadRezept) return
-    const newSlots = konfigAusRezept(loadRezept, zById, rById)
-    const marked = {}
-    for (const [slot, items] of Object.entries(newSlots)) {
-      marked[slot] = items.map(item => ({ ...item, an: true }))
-    }
-    setSlots(marked)
+    setSlots(konfigAusRezept(loadRezept, zById, rById))
     setGesamt(loadRezept.basisPortionen || gesamt)
     onLoaded()
   }, [loadRezept])
@@ -46,99 +42,77 @@ export default function Konfigurator({
     return res
   }, [zutaten, rezepte])
 
-  const activeItems = (slot) => (slots[slot] ?? []).filter(i => i.an)
+  const activeItem = (slot, id) => (slots[slot] ?? []).find(i => i.id === id)
 
+  // An/aus. Beim Umschalten den Slot gleichmäßig auf die aktiven Bausteine verteilen.
   const toggleItem = (slot, itemId, istRezept) => {
     setSlots(prev => {
-      const existing = (prev[slot] ?? []).find(i => i.id === itemId)
-      let updated
-      if (existing) {
-        updated = prev[slot].map(i => i.id === itemId ? { ...i, an: !i.an } : i)
-      } else {
-        const meta = slotItems[slot].find(i => i.id === itemId)
-        updated = [...(prev[slot] ?? []), { id: itemId, istRezept, gProPortion: meta?.defaultGPP ?? DEFAULT_GPP, anteilPortionen: 1, an: true }]
-      }
-      const active = updated.filter(i => i.an)
-      const dist = verteilePortionen(active.length, gesamt)
-      let ai = 0
-      updated = updated.map(i => i.an ? { ...i, anteilPortionen: dist[ai++] } : i)
-      return { ...prev, [slot]: updated }
+      const list = prev[slot] ?? []
+      let next = list.some(i => i.id === itemId)
+        ? list.filter(i => i.id !== itemId)
+        : [...list, { id: itemId, istRezept, gProPortion: slotItems[slot].find(i => i.id === itemId)?.defaultGPP ?? DEFAULT_GPP, anteilPortionen: 1 }]
+      const dist = verteilePortionen(next.length, gesamt)
+      next = next.map((i, idx) => ({ ...i, anteilPortionen: dist[idx] }))
+      return { ...prev, [slot]: next }
     })
   }
 
   const setAnteil = (slot, itemId, val) => {
     setSlots(prev => ({
       ...prev,
-      [slot]: (prev[slot] ?? []).map(i => i.id === itemId ? { ...i, anteilPortionen: Math.max(0, parseInt(val) || 0) } : i)
+      [slot]: (prev[slot] ?? []).map(i => i.id === itemId ? { ...i, anteilPortionen: Math.max(0, val) } : i),
     }))
   }
 
   const setGPP = (slot, itemId, val) => {
     setSlots(prev => ({
       ...prev,
-      [slot]: (prev[slot] ?? []).map(i => i.id === itemId ? { ...i, gProPortion: parseFloat(val) || DEFAULT_GPP } : i)
+      [slot]: (prev[slot] ?? []).map(i => i.id === itemId ? { ...i, gProPortion: parseFloat(val) || 0 } : i),
     }))
   }
 
+  // Gesamt ändern → jeden Slot neu gleichmäßig verteilen.
   const handleGesamtChange = (newGesamt) => {
     setGesamt(newGesamt)
     setSlots(prev => {
       const next = {}
       for (const slot of SLOTS) {
-        const active = (prev[slot] ?? []).filter(i => i.an)
-        const dist = verteilePortionen(active.length, newGesamt)
-        let ai = 0
-        next[slot] = (prev[slot] ?? []).map(i => i.an ? { ...i, anteilPortionen: dist[ai++] } : i)
+        const list = prev[slot] ?? []
+        const dist = verteilePortionen(list.length, newGesamt)
+        next[slot] = list.map((i, idx) => ({ ...i, anteilPortionen: dist[idx] }))
       }
       return next
     })
   }
 
-  const buildInline = () => {
-    const inline = {}
-    const nameParts = []
-    for (const slot of SLOTS) {
-      inline[slot] = activeItems(slot)
-      for (const item of inline[slot]) {
-        const meta = slotItems[slot]?.find(si => si.id === item.id)
-        if (meta?.name) nameParts.push(meta.name)
-      }
-    }
-    const name = nameParts.length > 0 ? nameParts.slice(0, 3).join(' + ') : 'Konfigurator-Gericht'
-    return rezeptAusKonfig(inline, gesamt, name, [])
-  }
-
   const avgPortion = useMemo(() => {
-    const inline = {}
-    for (const slot of SLOTS) {
-      inline[slot] = activeItems(slot)
-    }
-    const r = rezeptAusKonfig(inline, gesamt, 'Konfigurator-Gericht', [])
+    const r = rezeptAusKonfig(slots, gesamt, 'Konfigurator-Gericht', [])
     return rezeptProPortion(r, zById, rById)
   }, [slots, gesamt, zutaten, rezepte])
 
   const handleAddToKorb = () => {
-    const inline = buildInline()
-    addToKorb({ name: inline.name, kategorien: inline.kategorien, basisPortionen: inline.basisPortionen, zutaten: inline.zutaten, komponenten: inline.komponenten }, gesamt)
+    const nameParts = []
+    for (const slot of SLOTS) for (const b of slots[slot] ?? []) {
+      const meta = slotItems[slot]?.find(si => si.id === b.id)
+      if (meta?.name) nameParts.push(meta.name)
+    }
+    const name = nameParts.length > 0 ? nameParts.slice(0, 3).join(' + ') : 'Konfigurator-Gericht'
+    const r = rezeptAusKonfig(slots, gesamt, name, [])
+    addToKorb({ name: r.name, kategorien: r.kategorien, basisPortionen: r.basisPortionen, zutaten: r.zutaten, komponenten: r.komponenten }, gesamt)
   }
 
   const handleSave = () => {
     if (!saveName.trim()) return
-    const inlineSlots = {}
-    for (const slot of SLOTS) { inlineSlots[slot] = activeItems(slot) }
-    const r = rezeptAusKonfig(inlineSlots, gesamt, saveName.trim(), saveKats)
+    const r = rezeptAusKonfig(slots, gesamt, saveName.trim(), saveKats)
     setRezepte(prev => [...prev, r])
     setSaveDialog(false); setSaveName(''); setSaveKats([])
   }
 
-  const hasAnyActive = SLOTS.some(slot => activeItems(slot).length > 0)
+  const hasAnyActive = SLOTS.some(slot => (slots[slot] ?? []).length > 0)
 
   return (
     <div className={s.wrap}>
-      <div className={s.hubBar}>
-        <button className={s.backToHub} onClick={onBack}><IconArrowLeft size={15} /> Sammlung</button>
-        <span className={s.hubTitle}>Gericht bauen</span>
-      </div>
+      <div className={s.intro}>Bausteine anklicken. Pro Baustein: Portionen-Anteil + Gramm/Portion. Tipp auf den Namen öffnet die Zutat.</div>
 
       <div className={s.gesamtRow}>
         <span className={s.gesamtLabel}>Portionen gesamt</span>
@@ -151,7 +125,7 @@ export default function Konfigurator({
 
       {SLOTS.map(slot => {
         const available = slotItems[slot] ?? []
-        const slotActive = activeItems(slot)
+        const slotActive = slots[slot] ?? []
         const totalDistributed = slotActive.reduce((acc, i) => acc + (i.anteilPortionen || 0), 0)
         const unequal = slotActive.length > 0 && totalDistributed !== gesamt
         const isCollapsed = !collapsed[slot]
@@ -162,9 +136,7 @@ export default function Konfigurator({
               <span className={s.slotTitle}>{SLOT_LABELS[slot]}</span>
               <div className={s.slotHeaderRight}>
                 {slotActive.length > 0 && (
-                  <span className={`${s.dist} ${unequal ? s.distWarn : ''}`}>
-                    {totalDistributed}/{gesamt}
-                  </span>
+                  <span className={`${s.dist} ${unequal ? s.distWarn : ''}`}>{totalDistributed}/{gesamt}</span>
                 )}
                 <button className={s.addSlotBtn} onClick={e => {
                   e.stopPropagation()
@@ -179,16 +151,16 @@ export default function Konfigurator({
                 {available.length === 0 ? (
                   <div className={s.emptySlot}>Keine Bausteine. Tippe + um einen anzulegen.</div>
                 ) : available.map(item => {
-                  const slotItem = (slots[slot] ?? []).find(i => i.id === item.id)
-                  const isOn = slotItem?.an ?? false
+                  const act = activeItem(slot, item.id)
+                  const on = !!act
                   return (
-                    <div key={item.id} className={`${s.itemRow} ${isOn ? s.itemRowOn : ''}`}>
+                    <div key={item.id} className={`${s.itemRow} ${on ? s.itemRowOn : ''}`}>
                       <button
-                        className={`${s.itemToggle} ${isOn ? s.itemToggleOn : ''}`}
-                        style={isOn ? { '--tool-color': toolColor } : {}}
+                        className={`${s.itemToggle} ${on ? s.itemToggleOn : ''}`}
+                        style={on ? { '--tool-color': toolColor } : {}}
                         onClick={() => toggleItem(slot, item.id, item.istRezept)}
                       >
-                        {isOn && <IconCheck size={14} />}
+                        {on && <IconCheck size={14} />}
                       </button>
                       <button className={s.itemName} onClick={() => {
                         if (item.istRezept) {
@@ -201,18 +173,19 @@ export default function Konfigurator({
                       }}>
                         {item.name}
                       </button>
-                      {isOn && (
+                      {on && (
                         <div className={s.itemControls}>
-                          <div className={s.gppWrap}>
-                            <input className={s.gppInput} type="number"
-                              value={slotItem?.gProPortion ?? item.defaultGPP}
-                              onChange={e => setGPP(slot, item.id, e.target.value)} />
-                            <span className={s.gppUnit}>g/P</span>
-                          </div>
                           <div className={s.anteilStepper}>
-                            <button className={s.stepBtnSm} onClick={() => setAnteil(slot, item.id, (slotItem?.anteilPortionen ?? 1) - 1)}>−</button>
-                            <span className={s.stepValSm}>{slotItem?.anteilPortionen ?? 1}</span>
-                            <button className={s.stepBtnSm} onClick={() => setAnteil(slot, item.id, (slotItem?.anteilPortionen ?? 1) + 1)}>+</button>
+                            <button className={s.stepBtnSm} onClick={() => setAnteil(slot, item.id, (act.anteilPortionen ?? 1) - 1)}>−</button>
+                            <span className={s.stepValSm}>{act.anteilPortionen ?? 1}</span>
+                            <button className={s.stepBtnSm} onClick={() => setAnteil(slot, item.id, (act.anteilPortionen ?? 1) + 1)}>+</button>
+                            <span className={s.ctrlUnit}>P</span>
+                          </div>
+                          <div className={s.gppWrap}>
+                            <input className={s.gppInput} type="number" inputMode="numeric"
+                              value={act.gProPortion ?? ''}
+                              onChange={e => setGPP(slot, item.id, e.target.value)} />
+                            <span className={s.ctrlUnit}>g</span>
                           </div>
                         </div>
                       )}
@@ -235,7 +208,7 @@ export default function Konfigurator({
       {hasAnyActive && (
         <div className={s.actions}>
           <button className={s.kochBtn} style={{ '--tool-color': toolColor }} onClick={handleAddToKorb}>Zu Kochen</button>
-          <button className={s.saveBtn} style={{ '--tool-color': toolColor }} onClick={() => setSaveDialog(true)}>Als Preset speichern</button>
+          <button className={s.saveBtn} style={{ '--tool-color': toolColor }} onClick={() => setSaveDialog(true)}>Als Rezept speichern</button>
         </div>
       )}
 

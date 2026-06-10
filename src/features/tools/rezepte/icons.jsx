@@ -43,3 +43,9 @@ export const IconSliders = (p) => <Svg {...p}>
 export const IconLayers = (p) => <Svg {...p}>
   <path d="M12 2 2 7l10 5 10-5-10-5Z" /><path d="m2 12 10 5 10-5" /><path d="m2 17 10 5 10-5" />
 </Svg>
+export const IconBook = (p) => <Svg {...p}>
+  <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 19.5V4.5Z" /><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20" />
+</Svg>
+export const IconCarrot = (p) => <Svg {...p}>
+  <path d="M3 21c2-3 6-9 9-12l3 3c-3 3-9 7-12 9Z" /><path d="M14 8c1-2 3-3 5-3-1 2-1 4-3 5" /><path d="M16 6c1-2 1-3 1-4" />
+</Svg>

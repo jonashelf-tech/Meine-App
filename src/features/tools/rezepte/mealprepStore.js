@@ -1,16 +1,15 @@
 import { sv, lv, SK } from '../../../storage'
-import { genId, SCHEMA_VERSION } from './mealprepModel'
+import { SCHEMA_VERSION } from './mealprepModel'
 import { seedZutaten, seedRezepte } from './seed'
 
 const VKEY = SK.recipesVersion   // Schema-Versions-Marker (zentral in SK → Backup + Reset)
 
 export const saveZutaten  = (list) => sv(SK.rezepteZutaten, list)
 export const saveRezepte  = (list) => sv(SK.recipes, list)
-export const saveKoerbe   = (list) => sv(SK.rezepteKoerbe, list)
 export const saveSettings = (obj)  => sv(SK.rezepteSettings, obj)
 
 // Wo wird eine Zutat ODER ein Rezept (id) verwendet? Für Lösch-Warnung.
-export function findUsages(id, rezepte, koerbe) {
+export function findUsages(id, rezepte, koerbe = []) {
   const usedInRezepte = rezepte.filter(r =>
     (r.zutaten ?? []).some(z => z.zutatId === id) ||
     (r.komponenten ?? []).some(k => k.rezeptId === id)
@@ -25,21 +24,8 @@ export function findUsages(id, rezepte, koerbe) {
   return { rezepte: usedInRezepte, koerbe: usedInKoerbe }
 }
 
-export function korbSpeichern(koerbe, korb) {
-  const saved = { ...korb, gespeichert: true }
-  return koerbe.some(k => k.id === korb.id)
-    ? koerbe.map(k => k.id === korb.id ? saved : k)
-    : [...koerbe, saved]
-}
-
-export function korbDuplizieren(koerbe, id) {
-  const orig = koerbe.find(k => k.id === id)
-  if (!orig) return koerbe
-  return [...koerbe, { ...orig, id: genId(), name: `${orig.name} (Kopie)` }]
-}
-
 // Liest alles; seedet bei Erststart; bei Schema-Update werden nur neue Einträge
-// ergänzt, eigene Rezepte/Menüs des Users bleiben erhalten.
+// ergänzt, eigene Rezepte des Users bleiben erhalten.
 export function loadAll() {
   const version = lv(VKEY, 0)
 
@@ -47,24 +33,23 @@ export function loadAll() {
     // Erststart oder komplett leerer Storage – voll seeden
     const zutaten = seedZutaten()
     const rezepte = seedRezepte()
+    const settings = { kalenderLink: false, standardPortionen: 4 }
     saveZutaten(zutaten)
     saveRezepte(rezepte)
-    saveKoerbe([])
-    saveSettings({ kalenderLink: false, standardPortionen: 4 })
+    saveSettings(settings)
     sv(VKEY, SCHEMA_VERSION)
-    return { zutaten, rezepte, koerbe: [], settings: { kalenderLink: false, standardPortionen: 4 }, version: SCHEMA_VERSION }
+    return { zutaten, rezepte, settings, version: SCHEMA_VERSION }
   }
 
   const existing = {
     zutaten:  lv(SK.rezepteZutaten, []),
     rezepte:  lv(SK.recipes, []),
-    koerbe:   lv(SK.rezepteKoerbe, []),
     settings: lv(SK.rezepteSettings, { kalenderLink: false, standardPortionen: 4 }),
   }
 
   if (version !== SCHEMA_VERSION) {
     // Schema-Update: Seed-Bibliothek auf aktuellen Stand bringen (per ID ersetzen),
-    // selbst angelegte Rezepte/Zutaten (Nicht-Seed-IDs) + gespeicherte Menüs behalten.
+    // selbst angelegte Rezepte/Zutaten (Nicht-Seed-IDs) behalten.
     const seedZ = seedZutaten()
     const seedR = seedRezepte()
     const seedZIds = new Set(seedZ.map(z => z.id))
@@ -76,7 +61,7 @@ export function loadAll() {
     saveZutaten(mergedZ)
     saveRezepte(mergedR)
     sv(VKEY, SCHEMA_VERSION)
-    return { zutaten: mergedZ, rezepte: mergedR, koerbe: existing.koerbe, settings: existing.settings, version: SCHEMA_VERSION }
+    return { zutaten: mergedZ, rezepte: mergedR, settings: existing.settings, version: SCHEMA_VERSION }
   }
 
   return { ...existing, version }

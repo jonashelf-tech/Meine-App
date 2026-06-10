@@ -4,15 +4,24 @@ import { sv, lv, SK } from '../../../storage'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
-import { loadAll, saveZutaten, saveRezepte, saveKoerbe, saveSettings } from './mealprepStore'
+import { loadAll, saveZutaten, saveRezepte, saveSettings } from './mealprepStore'
 import { createKorb } from './mealprepModel'
 import Sammlung from './Sammlung'
 import Grossrezepte from './Grossrezepte'
 import Konfigurator from './Konfigurator.jsx'
+import Zutaten from './Zutaten'
+import Kochen from './Kochen'
 import Editor from './Editor'
-import Korb from './Korb'
-import { IconBasket } from './icons'
+import { IconBook, IconLayers, IconSliders, IconCarrot, IconBasket } from './icons'
 import s from './TabRezepte.module.css'
+
+const TABS = [
+  { id: 'rezepte', label: 'Rezepte', Icon: IconBook },
+  { id: 'ketten',  label: 'Ketten',  Icon: IconLayers },
+  { id: 'konfig',  label: 'Konfig',  Icon: IconSliders },
+  { id: 'zutaten', label: 'Zutaten', Icon: IconCarrot },
+  { id: 'kochen',  label: 'Kochen',  Icon: IconBasket },
+]
 
 export default function TabRezepte({ onBack }) {
   const { toolColors, setBackInterceptor } = useAppStore()
@@ -21,7 +30,6 @@ export default function TabRezepte({ onBack }) {
   const init = useMemo(() => loadAll(), [])
   const [zutaten, setZutatenS] = useState(init.zutaten)
   const [rezepte, setRezepteS] = useState(init.rezepte)
-  const [koerbe,  setKoerbeS]  = useState(init.koerbe)
   const [settings, setSettingsS] = useState(init.settings)
   const [korb, setKorbS] = useState(() => lv(SK.rezepteKorbAktiv, null) ?? createKorb({ name: 'Aktueller Korb' }))
   const setKorb = useCallback((v) => {
@@ -32,26 +40,23 @@ export default function TabRezepte({ onBack }) {
     })
   }, [])
 
-  const [modul, setModul] = useState('sammlung')
+  const [tab, setTab] = useState('rezepte')
   const [editing, setEditing] = useState(null)
-  const [korbOpen, setKorbOpen] = useState(false)
   const [konfigLoad, setKonfigLoad] = useState(null)
 
   const setZutaten = useCallback(v => { setZutatenS(v); saveZutaten(v) }, [])
   const setRezepte = useCallback(v => { setRezepteS(v); saveRezepte(v) }, [])
-  const setKoerbe  = useCallback(v => { setKoerbeS(v);  saveKoerbe(v) }, [])
-  const setSettings= useCallback(v => { setSettingsS(v); saveSettings(v) }, [])
+  const setSettings = useCallback(v => { setSettingsS(v); saveSettings(v) }, [])
 
+  // Hardware-/Gesten-Zurück: Editor schließen → sonst zurück auf Rezepte-Tab → sonst Tool verlassen
   useEffect(() => {
-    const hasOverlay = editing !== null || korbOpen
-    const inSubmodul = modul !== 'sammlung'
     setBackInterceptor(
-      hasOverlay   ? () => { setEditing(null); setKorbOpen(false) }
-      : inSubmodul ? () => setModul('sammlung')
+      editing !== null  ? () => setEditing(null)
+      : tab !== 'rezepte' ? () => setTab('rezepte')
       : null
     )
     return () => setBackInterceptor(null)
-  }, [editing, korbOpen, modul, setBackInterceptor])
+  }, [editing, tab, setBackInterceptor])
 
   const zById = useCallback(id => zutaten.find(z => z.id === id), [zutaten])
   const rById = useCallback(id => rezepte.find(r => r.id === id), [rezepte])
@@ -64,7 +69,7 @@ export default function TabRezepte({ onBack }) {
     setKorb(k => ({ ...k, eintraege: k.eintraege.filter(e => e.ref !== rezeptId) }))
   }, [setKorb])
 
-  // Für Großrezepte-Stepper: updated oder fügt ein, entfernt bei portionen=0
+  // Für Ketten-Stepper: updated oder fügt ein, entfernt bei portionen=0
   const updateKorbEintrag = useCallback((rezeptId, portionen) => {
     setKorb(k => {
       if (portionen === 0) return { ...k, eintraege: k.eintraege.filter(e => e.ref !== rezeptId) }
@@ -76,7 +81,7 @@ export default function TabRezepte({ onBack }) {
 
   const ladeInKonfigurator = useCallback((rezept) => {
     setKonfigLoad(rezept)
-    setModul('konfig')
+    setTab('konfig')
   }, [])
 
   const sharedProps = {
@@ -90,20 +95,12 @@ export default function TabRezepte({ onBack }) {
     <div className={s.page} style={{ '--tool-color': toolColor }}>
       {editing && (
         <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) setEditing(null) }}>
-          <Editor {...editing} zutaten={zutaten} rezepte={rezepte} koerbe={koerbe}
+          <Editor {...editing} zutaten={zutaten} rezepte={rezepte}
             onSaveZutat={z => { setZutaten(prev => prev.some(x => x.id === z.id) ? prev.map(x => x.id === z.id ? z : x) : [...prev, z]); setEditing(null) }}
             onSaveRezept={r => { setRezepte(prev => prev.some(x => x.id === r.id) ? prev.map(x => x.id === r.id ? r : x) : [...prev, r]); setEditing(null) }}
             onDelete={(id, form) => { if (form === 'zutat') setZutaten(prev => prev.filter(x => x.id !== id)); else setRezepte(prev => prev.filter(x => x.id !== id)); setEditing(null) }}
             onOpenKonfigurator={r => { ladeInKonfigurator(r); setEditing(null) }}
             onClose={() => setEditing(null)} />
-        </div>
-      )}
-      {korbOpen && (
-        <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) setKorbOpen(false) }}>
-          <Korb korb={korb} setKorb={setKorb} koerbe={koerbe} setKoerbe={setKoerbe}
-            settings={settings} setSettings={setSettings}
-            zById={zById} rById={rById} rezepte={rezepte}
-            onClose={() => setKorbOpen(false)} />
         </div>
       )}
 
@@ -114,21 +111,39 @@ export default function TabRezepte({ onBack }) {
         title={<>Meal<em>prep</em></>}
       />
 
-      {modul === 'konfig' && (
-        <Konfigurator {...sharedProps} settings={settings}
-          loadRezept={konfigLoad} onLoaded={() => setKonfigLoad(null)}
-          onBack={() => setModul('sammlung')} />
-      )}
-      {modul === 'gross' && <Grossrezepte {...sharedProps} onBack={() => setModul('sammlung')} />}
-      {modul === 'sammlung' && (
-        <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} onOpenModul={setModul} />
-      )}
+      <nav className={s.tabBar}>
+        {TABS.map(({ id, label, Icon }) => {
+          const on = tab === id
+          const badge = id === 'kochen' && korb.eintraege.length > 0 ? korb.eintraege.length : null
+          return (
+            <button key={id}
+              className={`${s.tab} ${on ? s.tabOn : ''}`}
+              style={on ? { '--tool-color': toolColor } : {}}
+              onClick={() => setTab(id)}>
+              <span className={s.tabIcon}>
+                <Icon size={19} />
+                {badge != null && <span className={s.tabBadge}>{badge}</span>}
+              </span>
+              <span className={s.tabLabel}>{label}</span>
+            </button>
+          )
+        })}
+      </nav>
 
-      {korb.eintraege.length > 0 && (
-        <button className={s.korbPille} onClick={() => setKorbOpen(true)}>
-          <IconBasket size={16} /> Korb · {korb.eintraege.length}
-        </button>
-      )}
+      <div className={s.content}>
+        {tab === 'rezepte' && (
+          <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} />
+        )}
+        {tab === 'ketten' && <Grossrezepte {...sharedProps} />}
+        {tab === 'konfig' && (
+          <Konfigurator {...sharedProps} settings={settings}
+            loadRezept={konfigLoad} onLoaded={() => setKonfigLoad(null)} />
+        )}
+        {tab === 'zutaten' && <Zutaten zutaten={zutaten} toolColor={toolColor} onEdit={setEditing} />}
+        {tab === 'kochen' && (
+          <Kochen korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte} toolColor={toolColor} />
+        )}
+      </div>
     </div>
   )
 }

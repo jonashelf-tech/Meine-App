@@ -7,28 +7,26 @@ const fmtMenge = (m) => Number.isInteger(m) ? m : m.toFixed(1)
 
 export default function Einkauf({ korbGerichte, zById, rById }) {
   const liste = useMemo(() => buildEinkauf(korbGerichte, zById, rById), [korbGerichte])
-  const [states, setStates] = useState({})  // zutatId → 'checked' | 'deleted' | undefined
+  const [checked, setChecked] = useState({})  // zutatId → true (gekauft)
   const [confirmLeeren, setConfirmLeeren] = useState(false)
 
+  // 1× tippen = gekauft (rutscht runter, durchgestrichen) · nochmal = zurück
   const tapItem = (zutatId) => {
-    setStates(prev => {
-      const cur = prev[zutatId]
+    setChecked(prev => {
       const next = { ...prev }
-      if (!cur) next[zutatId] = 'checked'
-      else if (cur === 'checked') next[zutatId] = 'deleted'
-      else delete next[zutatId]
+      if (next[zutatId]) delete next[zutatId]
+      else next[zutatId] = true
       return next
     })
   }
 
   const allItems = liste.flatMap(g => g.items)
-  const openItems = allItems.filter(i => !states[i.zutatId])
-  const checkedItems = allItems.filter(i => states[i.zutatId] === 'checked')
-  const deletedItems = allItems.filter(i => states[i.zutatId] === 'deleted')
+  const openItems = allItems.filter(i => !checked[i.zutatId])
+  const checkedItems = allItems.filter(i => checked[i.zutatId])
 
   const handleLeeren = () => {
     if (!confirmLeeren) { setConfirmLeeren(true); return }
-    setStates({})
+    setChecked({})
     setConfirmLeeren(false)
   }
 
@@ -41,7 +39,6 @@ export default function Einkauf({ korbGerichte, zById, rById }) {
       <div className={s.stats}>
         <span className={s.statOpen}>{openItems.length} offen</span>
         {checkedItems.length > 0 && <span> · {checkedItems.length} gekauft</span>}
-        {deletedItems.length > 0 && <span> · {deletedItems.length} entfernt</span>}
         {confirmLeeren ? (
           <div className={s.confirmRow}>
             <button className={s.leerenConfirm} onClick={handleLeeren}>Leeren</button>
@@ -51,10 +48,10 @@ export default function Einkauf({ korbGerichte, zById, rById }) {
           <button className={s.leerenBtn} onClick={handleLeeren}>Leeren</button>
         )}
       </div>
-      <div className={s.hint}>1× = gekauft · 2× = entfernt · 3× = zurück</div>
+      <div className={s.hint}>Tippen = gekauft · nochmal tippen = zurück</div>
 
       {liste.map(({ kategorie, items }) => {
-        const visible = items.filter(i => !states[i.zutatId])
+        const visible = items.filter(i => !checked[i.zutatId])
         if (visible.length === 0) return null
         return (
           <div key={kategorie} className={s.gruppe}>
@@ -75,18 +72,6 @@ export default function Einkauf({ korbGerichte, zById, rById }) {
           <div className={`${s.gruppeTitle} ${s.gruppeTitleIcon}`}><IconCheck size={13} /> Gekauft</div>
           {checkedItems.map(item => (
             <div key={item.zutatId} onClick={() => tapItem(item.zutatId)} className={`${s.item} ${s.itemChecked}`}>
-              <span className={s.itemName}>{item.name}</span>
-              <span className={s.itemMenge}>{fmtMenge(item.menge)} {item.einheit}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {deletedItems.length > 0 && (
-        <div className={s.gruppe}>
-          <div className={s.gruppeTitle}>Entfernt</div>
-          {deletedItems.map(item => (
-            <div key={item.zutatId} onClick={() => tapItem(item.zutatId)} className={`${s.item} ${s.itemDeleted}`}>
               <span className={s.itemName}>{item.name}</span>
               <span className={s.itemMenge}>{fmtMenge(item.menge)} {item.einheit}</span>
             </div>

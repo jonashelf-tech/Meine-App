@@ -1,7 +1,7 @@
 import { createRezept } from './mealprepModel'
 
-// Distributes total portions evenly across n active items.
-// Remainder goes to first items. [4,3,3] for (3, 10).
+// Verteilt Gesamt-Portionen gleichmäßig auf n aktive Bausteine.
+// Rest geht an die ersten. [4,3,3] für (3, 10).
 export function verteilePortionen(anzahlAktiv, gesamt) {
   if (anzahlAktiv <= 0) return []
   const base = Math.floor(gesamt / anzahlAktiv)
@@ -10,15 +10,14 @@ export function verteilePortionen(anzahlAktiv, gesamt) {
 }
 
 // slots: { protein:[{id,istRezept,gProPortion,anteilPortionen}], kh:[...], gemuese:[...], sauce:[...] }
-// Converts Konfigurator slot state to a saveable Rezept object.
+// menge = gProPortion × anteilPortionen. anteilPortionen mitspeichern → exakter Round-Trip,
+// auch bei mehreren Bausteinen pro Slot (z.B. 2× Hähnchen + 2× Hack bei 4 Portionen).
 export function rezeptAusKonfig(slots, gesamtPortionen, name, kategorien) {
   const zutaten = [], komponenten = []
   for (const slot of Object.values(slots)) {
     for (const b of slot ?? []) {
       const menge = Math.round((b.gProPortion || 0) * (b.anteilPortionen || 0))
       if (menge <= 0) continue
-      // anteilPortionen mitspeichern → exakter Round-Trip beim Reload, auch bei
-      // mehreren Bausteinen pro Slot. Andere Verbraucher lesen nur .menge.
       if (b.istRezept) komponenten.push({ rezeptId: b.id, menge, anteilPortionen: b.anteilPortionen })
       else zutaten.push({ zutatId: b.id, menge, anteilPortionen: b.anteilPortionen })
     }
@@ -26,15 +25,14 @@ export function rezeptAusKonfig(slots, gesamtPortionen, name, kategorien) {
   return createRezept({ name, kategorien, basisPortionen: gesamtPortionen, konfigurierbar: true, zutaten, komponenten })
 }
 
-// Converts a saved konfigurierbar Rezept back to Konfigurator slot state.
-// zutatById and rezeptById need to return objects with .bausteinTyp to determine which slot.
+// Rekonstruiert den Slot-State aus einem konfigurierbaren Rezept.
+// Mit gespeichertem anteilPortionen → exakte Rekonstruktion (gProPortion = menge/anteil).
+// Ohne (Alt-Daten / im Editor ergänzt) → anteilPortionen: null als Marker für die
+// gleichmäßige Nachverteilung unten.
 export function konfigAusRezept(rezept, zutatById, rezeptById) {
   const slots = { protein: [], kh: [], gemuese: [], sauce: [] }
   const p = rezept.basisPortionen || 1
 
-  // Mit gespeichertem anteilPortionen → exakte Rekonstruktion (gProPortion = menge/anteil).
-  // Ohne (Alt-Daten / im Editor ergänzt) → anteilPortionen: null als Marker für die
-  // gleichmäßige Nachverteilung unten.
   const add = (slot, id, istRezept, menge, anteil) => {
     const hasSplit = anteil != null && anteil > 0
     slots[slot].push({

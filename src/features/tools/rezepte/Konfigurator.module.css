@@ -1,17 +1,6 @@
 .wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 80px; }
 
-.hubBar { display: flex; align-items: center; gap: 10px; padding: 2px 0 6px; }
-.backToHub {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: none; border: none; color: var(--tool-color);
-  font-family: Outfit, sans-serif; font-size: 0.85rem; font-weight: 600;
-  cursor: pointer; padding: 4px 0; -webkit-tap-highlight-color: transparent;
-}
-.hubTitle {
-  font-family: Outfit, sans-serif; font-size: 0.7rem; font-weight: 700;
-  color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em;
-  margin-left: auto;
-}
+.intro { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; padding: 2px 0 2px; }
 .gesamtRow { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 4px; }
 .gesamtLabel { font-weight: 600; }
 .stepper { display: flex; align-items: center; gap: 8px; }
@@ -22,7 +11,7 @@
 .slotTitle { font-weight: 600; font-size: 0.9rem; }
 .slotHeaderRight { display: flex; align-items: center; gap: 8px; }
 .dist { font-size: 0.75rem; color: var(--text-dim); font-family: Orbitron, monospace; }
-.distWarn { color: var(--rose); }
+.distWarn { color: var(--amber, #e0a106); }
 .addSlotBtn { background: none; border: 1px solid var(--border-dim); color: var(--text-dim); width: 24px; height: 24px; border-radius: 6px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .chevron { color: var(--text-dim); display: inline-flex; transition: transform 0.18s; }
 .chevronClosed { transform: rotate(-90deg); }
@@ -33,14 +22,15 @@
 .itemRowOn { background: rgba(255,255,255,0.03); }
 .itemToggle { width: 28px; height: 28px; border-radius: var(--r-sm); border: 1px solid var(--border-dim); background: none; color: var(--text-dim); font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .itemToggleOn { color: var(--tool-color); border-color: var(--tool-color); }
-.itemName { flex: 1; background: none; border: none; color: var(--text); text-align: left; font-size: 0.88rem; cursor: pointer; padding: 0; }
-.itemControls { display: flex; align-items: center; gap: 6px; }
+.itemName { flex: 1; min-width: 0; background: none; border: none; color: var(--text); text-align: left; font-size: 0.88rem; cursor: pointer; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.itemControls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.anteilStepper { display: flex; align-items: center; gap: 3px; }
+.stepBtnSm { width: 24px; height: 24px; border-radius: 5px; border: 1px solid var(--border-dim); background: none; color: var(--text-dim); font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.stepValSm { font-family: Orbitron, monospace; font-size: 0.82rem; min-width: 16px; text-align: center; }
 .gppWrap { display: flex; align-items: center; gap: 2px; }
-.gppInput { width: 48px; background: var(--bg3); border: 1px solid var(--border-dim); border-radius: var(--r-sm); color: var(--text); padding: 3px 5px; font-size: 0.8rem; text-align: center; }
-.gppUnit { font-size: 0.72rem; color: var(--text-dim); }
-.anteilStepper { display: flex; align-items: center; gap: 4px; }
-.stepBtnSm { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border-dim); background: none; color: var(--text-dim); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.stepValSm { font-family: Orbitron, monospace; font-size: 0.8rem; min-width: 18px; text-align: center; }
+.gppInput { width: 46px; background: var(--bg3, var(--surface)); border: 1px solid var(--border-dim); border-radius: var(--r-sm); color: var(--text); padding: 4px 4px; font-size: 0.82rem; text-align: center; -moz-appearance: textfield; }
+.gppInput::-webkit-outer-spin-button, .gppInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ctrlUnit { font-size: 0.7rem; color: var(--text-dim); }
 .sumRow { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--surface); border-radius: var(--r); border: 1px solid var(--border); }
 .sumLabel { font-size: 0.82rem; color: var(--text-dim); }
 .actions { display: flex; gap: 8px; }

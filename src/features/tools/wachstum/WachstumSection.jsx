@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor, todayKey } from '../../../utils'
 import { TOOL_TAB } from '../toolTabs'
@@ -34,6 +34,17 @@ export default function WachstumSection() {
   // Frisch lesen, damit parallele Habit-Änderungen nicht überschrieben werden
   const saveJournal = () => persist(setJournal(loadGrowth(), today, draft))
 
+  // Journal-Schutz: blur feuert beim Tab-Wechsel (Unmount) und App-Hintergrund
+  // auf mobilen PWAs nicht zuverlässig — Entwurf zusätzlich beim Verlassen sichern.
+  const draftRef = useRef(draft)
+  draftRef.current = draft
+  useEffect(() => {
+    const flush = () => saveGrowth(setJournal(loadGrowth(), today, draftRef.current))
+    const onHide = () => { if (document.visibilityState === 'hidden') flush() }
+    document.addEventListener('visibilitychange', onHide)
+    return () => { document.removeEventListener('visibilitychange', onHide); flush() }
+  }, [today])
+
   return (
     <ToolSection
       toolId="wachstum"
@@ -53,6 +64,7 @@ export default function WachstumSection() {
                   key={h.id}
                   className={[s.chip, on ? s.chipOn : ''].join(' ')}
                   onClick={() => persist(toggleCheck(data, today, h.id))}
+                  aria-pressed={on}
                 >
                   {on && <span className={s.chipCheck}>✓</span>}
                   {h.text}

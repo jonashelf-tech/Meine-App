@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { sv, lv, SK } from '../../../storage'
-import { loadAll, saveZutaten, saveRezepte, findUsages, korbSpeichern, korbDuplizieren } from './mealprepStore'
+import { loadAll, saveZutaten, saveRezepte, findUsages } from './mealprepStore'
 import { SCHEMA_VERSION } from './mealprepModel'
 
 describe('loadAll — Erststart & Schema-Schutz', () => {
@@ -53,21 +53,10 @@ describe('findUsages — Referenz-Integrität', () => {
     expect(u.rezepte).toEqual([])
     expect(u.koerbe).toEqual([])
   })
-})
 
-describe('Menu-Persistenz', () => {
-  it('korbSpeichern fuegt benannten Korb mit gespeichert:true hinzu', () => {
-    const koerbe = []
-    const next = korbSpeichern(koerbe, { id: 'a', name: 'Woche', eintraege: [{ ref: 'x', portionen: 4 }] })
-    expect(next).toHaveLength(1)
-    expect(next[0]).toMatchObject({ name: 'Woche', gespeichert: true })
-  })
-  it('korbDuplizieren erzeugt Kopie mit neuer ID + " (Kopie)"', () => {
-    const orig = { id: 'a', name: 'Woche', eintraege: [{ ref: 'x', portionen: 4 }], gespeichert: true }
-    const dup = korbDuplizieren([orig], 'a')
-    expect(dup).toHaveLength(2)
-    expect(dup[1].id).not.toBe('a')
-    expect(dup[1].name).toBe('Woche (Kopie)')
-    expect(dup[1].eintraege).toEqual(orig.eintraege)
+  it('koerbe ist optional (Default [])', () => {
+    const u = findUsages('z1', rezepte)
+    expect(u.rezepte.map(r => r.name)).toEqual(['Tomatensoße'])
+    expect(u.koerbe).toEqual([])
   })
 })

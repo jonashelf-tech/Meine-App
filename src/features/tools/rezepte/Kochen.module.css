@@ -1,0 +1,69 @@
+.wrap { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 80px; }
+
+/* Sub-Umschaltung Auswahl / Kochanleitung / Einkauf */
+.tabs {
+  display: flex; gap: 4px; padding: 4px; margin-top: 2px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+}
+.tab {
+  flex: 1; padding: 8px 4px; min-height: 40px; border: none; background: none;
+  border-radius: var(--r-sm); color: var(--text-dim);
+  font-family: Outfit, sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s;
+}
+.tabOn { background: var(--bg2); color: var(--tool-color); }
+
+.panel { display: flex; flex-direction: column; gap: 8px; }
+
+.eintragRow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 0; border-bottom: 1px solid var(--border-dim);
+}
+.eintragName { flex: 1; font-size: 0.9rem; }
+.portionStepper { display: flex; align-items: center; gap: 4px; }
+.stepBtnSm {
+  width: 28px; height: 28px; border-radius: var(--r-sm);
+  border: 1px solid var(--border-dim); background: none;
+  color: var(--text); font-size: 0.95rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.portionVal { font-family: Orbitron, monospace; font-size: 0.85rem; min-width: 22px; text-align: center; }
+.removeBtn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+
+.tagesplanerBtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; min-height: 46px; margin-top: 6px;
+  padding: 12px 14px; border-radius: var(--r);
+  background: color-mix(in srgb, var(--tool-color) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 50%, transparent);
+  color: var(--tool-color);
+  font-family: Outfit, sans-serif; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.tagesplanerBtn:hover:not(:disabled) { background: color-mix(in srgb, var(--tool-color) 26%, transparent); }
+.tagesplanerOk {
+  background: color-mix(in srgb, var(--emerald) 16%, transparent);
+  border-color: color-mix(in srgb, var(--emerald) 50%, transparent);
+  color: var(--emerald);
+}
+
+.shortcuts { display: flex; gap: 8px; }
+.shortcutBtn {
+  flex: 1; padding: 10px; min-height: 42px; border-radius: var(--r);
+  border: 1px solid var(--border); background: none; color: var(--text-dim);
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+.shortcutBtn:hover { background: var(--surface); }
+
+.leerenRow { display: flex; gap: 8px; justify-content: center; padding-top: 2px; }
+.leerenBtn { background: none; border: none; color: var(--text-dim); font-size: 0.8rem; cursor: pointer; padding: 6px; }
+.leerenConfirm { background: var(--rose); color: #fff; border: none; border-radius: var(--r-sm); padding: 7px 14px; cursor: pointer; font-size: 0.82rem; }
+.cancelBtn { background: none; border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--r-sm); padding: 7px 14px; cursor: pointer; font-size: 0.82rem; }
+
+/* Leer-Zustand */
+.emptyBig { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 48px 24px; }
+.emptyIcon { color: var(--text-ghost); margin-bottom: 4px; }
+.emptyTitle { font-size: 1rem; font-weight: 600; color: var(--text); margin: 0; }
+.emptyHint { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; margin: 0; max-width: 280px; }

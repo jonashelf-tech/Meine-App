@@ -17,6 +17,8 @@ export const seedZutaten = () => [
   createZutat({ id: 'z_couscous',     name: 'Couscous (trocken)',   einkaufKategorie: 'Brot & Getreide', bausteinTyp: 'kh',      gProPortion: 80,  garNotiz: '1:1 kochendes Wasser, 5 Min', naehrwert: { kcal: 376, protein: 13, carbs: 72, fat: 2  } }),
   createZutat({ id: 'z_tortilla',     name: 'Tortilla-Chips',       einkaufKategorie: 'Brot & Getreide', bausteinTyp: 'kh',      gProPortion: 50,  garNotiz: 'als Bett, nicht aufweichen',  naehrwert: { kcal: 500, protein: 7,  carbs: 63, fat: 25 } }),
   createZutat({ id: 'z_burgerbun',    name: 'Burger-Bun',           einkaufKategorie: 'Brot & Getreide', bausteinTyp: 'kh',      gProPortion: 90,  garNotiz: 'Schnittflächen toasten',      naehrwert: { kcal: 280, protein: 9,  carbs: 49, fat: 5  } }),
+  createZutat({ id: 'z_suesskartoffel', name: 'Süßkartoffeln',      einkaufKategorie: 'Gemüse & Obst',   bausteinTyp: 'kh',      gProPortion: 250, garNotiz: 'Würfel, Ofen 200°, 25 Min',    naehrwert: { kcal: 86,  protein: 2,  carbs: 20, fat: 0  } }),
+  createZutat({ id: 'z_gnocchi',      name: 'Gnocchi',              einkaufKategorie: 'Brot & Getreide', bausteinTyp: 'kh',      gProPortion: 200, garNotiz: 'in Pfanne goldbraun braten',   naehrwert: { kcal: 160, protein: 4,  carbs: 32, fat: 2  } }),
 
   // ── GEMÜSE ───────────────────────────────────────────────────────────────
   createZutat({ id: 'z_brokkoli',     name: 'Brokkoli',             einkaufKategorie: 'Gemüse & Obst',   bausteinTyp: 'gemuese', gProPortion: 200, garNotiz: 'dämpfen, 6 Min',              naehrwert: { kcal: 34,  protein: 3,  carbs: 7,  fat: 0  } }),
@@ -39,6 +41,7 @@ export const seedZutaten = () => [
   createZutat({ id: 'z_frischkaese',  name: 'Körniger Frischkäse',  einkaufKategorie: 'Milchprodukte',            bausteinTyp: 'sauce', gProPortion: 100, garNotiz: 'unterrühren',        naehrwert: { kcal: 100, protein: 12, carbs: 3,  fat: 5  } }),
   createZutat({ id: 'z_bbqsauce',     name: 'BBQ-Sauce',            einkaufKategorie: 'Konserven & Trockenwaren', bausteinTyp: 'sauce', gProPortion: 40,  garNotiz: 'direkt verwenden',   naehrwert: { kcal: 110, protein: 1,  carbs: 26, fat: 0  } }),
   createZutat({ id: 'z_joghurt',      name: 'Griechischer Joghurt', einkaufKategorie: 'Milchprodukte',            bausteinTyp: 'sauce', gProPortion: 100, garNotiz: 'kalt',               naehrwert: { kcal: 97,  protein: 9,  carbs: 4,  fat: 5  } }),
+  createZutat({ id: 'z_magerquark',   name: 'Magerquark',           einkaufKategorie: 'Milchprodukte',            bausteinTyp: 'sauce', gProPortion: 150, garNotiz: 'kalt, mit Schuss Wasser cremig rühren', naehrwert: { kcal: 67, protein: 12, carbs: 4, fat: 0 } }),
   createZutat({ id: 'z_salsa',        name: 'Salsa (Glas)',         einkaufKategorie: 'Konserven & Trockenwaren', bausteinTyp: 'sauce', gProPortion: 60,  garNotiz: 'kalt oder warm',     naehrwert: { kcal: 36,  protein: 1,  carbs: 7,  fat: 0  } }),
   createZutat({ id: 'z_guacamole',    name: 'Guacamole',            einkaufKategorie: 'Gemüse & Obst',            bausteinTyp: 'sauce', gProPortion: 60,  garNotiz: 'frisch, mit Limette', naehrwert: { kcal: 160, protein: 2,  carbs: 8,  fat: 14 } }),
 
@@ -82,7 +85,7 @@ export const seedRezepte = () => [
   // BASEN (vorkochen, einfrieren) — Herzstück der Ketten
   // ══════════════════════════════════════════════════════════════════════════
 
-  createRezept({ id: 'r_tomatensauce', name: 'Tomatensoße (Basis)', kategorien: ['Saucen'],
+  createRezept({ id: 'r_tomatensauce', name: 'Tomatensoße', kategorien: ['Saucen'],
     basisPortionen: 8, ergibtMenge: 2000, ergibtEinheit: 'ml', kochdauer: 40,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Eiswürfel'] },
     zutaten: [
@@ -92,9 +95,9 @@ export const seedRezepte = () => [
       { zutatId: 'z_tomatenmark',  menge: 60   },
       { zutatId: 'z_salz',         menge: 10   },
     ],
-    anleitung: 'Zwiebeln + Knoblauch glasig dünsten, Tomatenmark 2 Min rösten. Dosentomaten dazu, 30 Min köcheln, pürieren. Kräuter erst beim Ableiten zufügen — Basis bleibt neutral.' }),
+    anleitung: '1. Zwiebeln + Knoblauch glasig dünsten.\n2. Tomatenmark 2 Min mitrösten.\n3. Dosentomaten + Salz dazu, 30 Min köcheln.\n4. Pürieren.\nTipp: Kräuter erst beim Ableiten — Basis bleibt neutral.' }),
 
-  createRezept({ id: 'r_pulledchicken', name: 'Pulled Chicken (Basis)', kategorien: ['Saucen'],
+  createRezept({ id: 'r_pulledchicken', name: 'Pulled Chicken', kategorien: ['Saucen'],
     basisPortionen: 6, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 180,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
@@ -102,9 +105,9 @@ export const seedRezepte = () => [
       { zutatId: 'z_zwiebel',      menge: 200  },
       { zutatId: 'z_salz',         menge: 15   },
     ],
-    anleitung: 'Schenkel mit Zwiebeln + Brühe 3 h bei 160° schmoren. Knochen raus, Fleisch mit zwei Gabeln zerzupfen. Als Block einfrieren.' }),
+    anleitung: '1. Schenkel + Zwiebeln + 1 Tasse Brühe in den Topf.\n2. 3 Std bei 160° schmoren (Deckel).\n3. Knochen raus, Fleisch mit 2 Gabeln zerzupfen.\n4. Als Block einfrieren.' }),
 
-  createRezept({ id: 'r_pulledpork', name: 'Pulled Pork BBQ (Basis)', kategorien: ['Saucen'],
+  createRezept({ id: 'r_pulledpork', name: 'Pulled Pork BBQ', kategorien: ['Saucen'],
     basisPortionen: 8, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 480,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
@@ -113,9 +116,9 @@ export const seedRezepte = () => [
       { zutatId: 'z_bbqsauce',       menge: 200  },
       { zutatId: 'z_salz',           menge: 20   },
     ],
-    anleitung: 'Nacken mit Rub einreiben, 8 h bei 120° im Ofen (Kerntemp 92°). Zerzupfen, mit BBQ-Sauce + Bratensaft mischen. Portionsweise als Block einfrieren.' }),
+    anleitung: '1. Nacken mit Rub (Paprika, Salz, Pfeffer, Kreuzkümmel) einreiben.\n2. 8 Std bei 120° im Ofen, bis Kerntemperatur 92°.\n3. Zerzupfen, mit BBQ-Sauce + Bratensaft mischen.\n4. Portionsweise als Block einfrieren.' }),
 
-  createRezept({ id: 'r_thaicurry', name: 'Thai-Curry Basis', kategorien: ['Saucen'],
+  createRezept({ id: 'r_thaicurry', name: 'Thai-Curry', kategorien: ['Saucen'],
     basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'ml', kochdauer: 30,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Blockform'] },
     zutaten: [
@@ -124,9 +127,9 @@ export const seedRezepte = () => [
       { zutatId: 'z_zwiebel',     menge: 200 },
       { zutatId: 'z_salz',        menge: 8   },
     ],
-    anleitung: 'Zwiebeln anschwitzen, Currypaste 2 Min mitrösten bis es duftet. Kokosmilch aufgießen, 20 Min sanft köcheln. Als Block einfrieren, Gemüse + Protein immer frisch.' }),
+    anleitung: '1. Zwiebeln anschwitzen.\n2. Currypaste 2 Min mitrösten, bis es duftet.\n3. Kokosmilch aufgießen, 20 Min sanft köcheln.\n4. Als Block einfrieren.\nTipp: Gemüse + Protein immer frisch dazu.' }),
 
-  createRezept({ id: 'r_tacohack', name: 'Taco-Hack (Basis)', kategorien: ['Saucen'],
+  createRezept({ id: 'r_tacohack', name: 'Taco-Hack', kategorien: ['Saucen'],
     basisPortionen: 6, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 30,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
@@ -136,9 +139,9 @@ export const seedRezepte = () => [
       { zutatId: 'z_schwarzebohnen', menge: 240 },
       { zutatId: 'z_salz',         menge: 12   },
     ],
-    anleitung: 'Hack krümelig braten, Zwiebeln dazu. Tomatenmark + Taco-Gewürz (Kreuzkümmel, Paprika, Chili, Oregano) rösten. Bohnen + etwas Wasser, 10 Min einköcheln. Als Block einfrieren.' }),
+    anleitung: '1. Hack krümelig braten, Zwiebeln dazu.\n2. Tomatenmark + Taco-Gewürz (Kreuzkümmel, Paprika, Chili, Oregano) rösten.\n3. Bohnen + 1 Tasse Wasser, 10 Min einköcheln.\n4. Als Block einfrieren.' }),
 
-  createRezept({ id: 'r_kaesesauce', name: 'Cheddar-Käsesauce (Basis)', kategorien: ['Saucen'],
+  createRezept({ id: 'r_kaesesauce', name: 'Cheddar-Käsesauce', kategorien: ['Saucen'],
     basisPortionen: 6, ergibtMenge: 1000, ergibtEinheit: 'ml', kochdauer: 20,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Eiswürfel'] },
     zutaten: [
@@ -148,9 +151,9 @@ export const seedRezepte = () => [
       { zutatId: 'z_mehl',    menge: 50  },
       { zutatId: 'z_salz',    menge: 6   },
     ],
-    anleitung: 'Mehlschwitze aus Butter + Mehl, mit Milch glattrühren. Aufkochen, Cheddar schmelzen, mit Muskat + Salz abschmecken. Auf Vorrat einfrieren — beim Auftauen mit Schuss Milch aufschlagen.' }),
+    anleitung: '1. Butter + Mehl zur Mehlschwitze verrühren.\n2. Milch nach und nach einrühren, glatt aufkochen.\n3. Cheddar schmelzen, mit Muskat + Salz abschmecken.\n4. Einfrieren — beim Auftauen mit Schuss Milch aufschlagen.' }),
 
-  createRezept({ id: 'r_dal', name: 'Rote-Linsen-Dal (Basis)', kategorien: ['Saucen'],
+  createRezept({ id: 'r_dal', name: 'Rote-Linsen-Dal', kategorien: ['Saucen'],
     basisPortionen: 5, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 35,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Glas'] },
     zutaten: [
@@ -160,7 +163,32 @@ export const seedRezepte = () => [
       { zutatId: 'z_tomatenmark', menge: 50 },
       { zutatId: 'z_salz',       menge: 10  },
     ],
-    anleitung: 'Zwiebeln + Curry/Kurkuma anschwitzen, Tomatenmark rösten. Linsen + Kokosmilch + Wasser, 25 Min köcheln bis cremig. Als Block einfrieren.' }),
+    anleitung: '1. Zwiebeln + Curry/Kurkuma anschwitzen.\n2. Tomatenmark kurz rösten.\n3. Linsen + Kokosmilch + 400 ml Wasser, 25 Min köcheln bis cremig.\n4. Als Block einfrieren.' }),
+
+  createRezept({ id: 'r_gyros', name: 'Hähnchen-Gyros', kategorien: ['Saucen'],
+    basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 30,
+    langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
+    zutaten: [
+      { zutatId: 'z_haehnchensch', menge: 1500 },
+      { zutatId: 'z_joghurt',      menge: 150  },
+      { zutatId: 'z_olivenoel',    menge: 40   },
+      { zutatId: 'z_knoblauch',    menge: 20   },
+      { zutatId: 'z_salz',         menge: 12   },
+    ],
+    anleitung: '1. Hähnchen in Streifen schneiden.\n2. Mit Joghurt, Öl, Knoblauch, Gyros-Gewürz (Paprika, Kreuzkümmel, Oregano) + Salz marinieren — 1 Std, gern über Nacht.\n3. Scharf in der Pfanne braun braten (oder Ofen 220°, 20 Min).\n4. Als Block einfrieren — wird zu Bowl, Wrap oder Auflauf.' }),
+
+  createRezept({ id: 'r_roestgemuese', name: 'Ofen-Röstgemüse', kategorien: ['Saucen'],
+    basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 35,
+    langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'frisch'] },
+    zutaten: [
+      { zutatId: 'z_zucchini',  menge: 500 },
+      { zutatId: 'z_paprika',   menge: 400 },
+      { zutatId: 'z_karotte',   menge: 300 },
+      { zutatId: 'z_zwiebel',   menge: 200 },
+      { zutatId: 'z_olivenoel', menge: 60  },
+      { zutatId: 'z_salz',      menge: 10  },
+    ],
+    anleitung: '1. Alles in mundgerechte Stücke schneiden.\n2. Mit Öl, Salz + italienischen Kräutern auf 2 Blechen mischen.\n3. Ofen 200°, 30 Min, einmal wenden.\n4. Abkühlen, als Vorrat — wird zu Bowl, Frittata, Pasta oder Wrap.' }),
 
   // ── Marinaden (Basis mit bausteinTyp:'sauce') ─────────────────────────────
 
@@ -173,7 +201,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_zwiebel',    menge: 80 },
       { zutatId: 'z_salz',       menge: 5  },
     ],
-    anleitung: 'Alle Zutaten fein mixen. Im Kühlschrank 2 Wochen haltbar. Protein mind. 2 Std marinieren — über Nacht optimal.' }),
+    anleitung: '1. Alle Zutaten + Sesamöl fein mixen.\n2. Protein mind. 2 Std marinieren — über Nacht optimal.\nHält im Kühlschrank 2 Wochen.' }),
 
   createRezept({ id: 'r_joghurt_marinade', name: 'Joghurt-Knoblauch Marinade', kategorien: ['Marinaden'],
     basisPortionen: 4, ergibtMenge: 200, ergibtEinheit: 'ml', kochdauer: 10,
@@ -183,7 +211,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_knoblauch', menge: 15  },
       { zutatId: 'z_salz',      menge: 5   },
     ],
-    anleitung: 'Joghurt + gepresster Knoblauch + Zitronensaft + Salz + Oregano verrühren. Als Marinade (2 Std) oder Dip/Dressing direkt.' }),
+    anleitung: '1. Joghurt, gepressten Knoblauch, Zitronensaft, Oregano + Salz verrühren.\n2. Als Marinade (2 Std) oder direkt als Dip/Dressing.' }),
 
   createRezept({ id: 'r_zitronen_marinade', name: 'Zitronen-Kräuter Marinade', kategorien: ['Marinaden'],
     basisPortionen: 6, ergibtMenge: 200, ergibtEinheit: 'ml', kochdauer: 10,
@@ -194,7 +222,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_knoblauch', menge: 15  },
       { zutatId: 'z_salz',      menge: 5   },
     ],
-    anleitung: 'Olivenöl, Zitrone/Limette, Knoblauch, Oregano + Thymian verrühren. Ideal für Hähnchen, Fisch, Halloumi. Mind. 1 Std marinieren.' }),
+    anleitung: '1. Öl, Zitrone/Limette, Knoblauch, Oregano + Thymian verrühren.\n2. Protein mind. 1 Std marinieren.\nIdeal für Hähnchen, Fisch, Halloumi.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // VORRATS-SAUCEN (Konfigurator-Sauce, TK-geeignet)
@@ -210,7 +238,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_sojasauce',   menge: 40  },
       { zutatId: 'z_zwiebel',     menge: 80  },
     ],
-    anleitung: 'Zwiebel fein anschwitzen, alles dazu + Paprikapulver, Senf, Rauchsalz. 20 Min köcheln bis sirupartig. Pürieren. In Gläser, hält Wochen — oder als Eiswürfel einfrieren.' }),
+    anleitung: '1. Zwiebel fein anschwitzen.\n2. Alles + Paprikapulver, Senf, Rauchsalz dazu.\n3. 20 Min köcheln bis sirupartig, pürieren.\n4. In Gläser oder als Eiswürfel einfrieren.' }),
 
   createRezept({ id: 'r_erdnusssauce', name: 'Erdnuss-Satay-Sauce', kategorien: ['Saucen'],
     basisPortionen: 8, ergibtMenge: 500, ergibtEinheit: 'ml', kochdauer: 15,
@@ -221,7 +249,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_sojasauce',     menge: 40  },
       { zutatId: 'z_limette',       menge: 40  },
     ],
-    anleitung: 'Erdnussbutter + Kokosmilch + Sojasauce + Limette + bisschen Currypaste glattrühren, kurz erwärmen. Für Bowls, Wraps, Gemüse-Dip. Einfrierbar in Würfeln.' }),
+    anleitung: '1. Erdnussbutter, Kokosmilch, Sojasauce, Limette + etwas Currypaste glattrühren.\n2. Kurz erwärmen.\nFür Bowls, Wraps, Gemüse-Dip. In Würfeln einfrierbar.' }),
 
   createRezept({ id: 'r_pilzrahm', name: 'Pilzrahm-Sauce', kategorien: ['Saucen'],
     basisPortionen: 6, ergibtMenge: 800, ergibtEinheit: 'ml', kochdauer: 25,
@@ -232,7 +260,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_zwiebel',    menge: 100 },
       { zutatId: 'z_salz',       menge: 6   },
     ],
-    anleitung: 'Champignons + Zwiebel scharf braten (Wasser muss weg!). Mit Brühe ablöschen, Schmand dazu, einköcheln. Petersilie. Zu Pasta, Schnitzel, Kartoffeln.' }),
+    anleitung: '1. Champignons + Zwiebel scharf braten — Wasser muss komplett weg.\n2. Mit Brühe ablöschen.\n3. Schmand dazu, einköcheln, Petersilie.\nZu Pasta, Schnitzel, Kartoffeln.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // DRESSINGS (frisch / Kühlschrank)
@@ -247,7 +275,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_senf',     menge: 20  },
       { zutatId: 'z_knoblauch', menge: 10 },
     ],
-    anleitung: 'Mayo, Parmesan, Senf, Knoblauch, Zitrone + Sardellenpaste verrühren. Mit Wasser auf Dressing-Konsistenz. Hält 1 Woche im Glas.' }),
+    anleitung: '1. Mayo, Parmesan, Senf, Knoblauch, Zitrone + Sardellenpaste verrühren.\n2. Mit Wasser auf Dressing-Konsistenz bringen.\nHält 1 Woche im Glas.' }),
 
   createRezept({ id: 'r_honig_senf', name: 'Honig-Senf-Dressing', kategorien: ['Dressings'],
     basisPortionen: 8, ergibtMenge: 250, ergibtEinheit: 'ml', kochdauer: 5,
@@ -258,7 +286,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_olivenoel', menge: 80 },
       { zutatId: 'z_essig',     menge: 30 },
     ],
-    anleitung: 'Senf, Honig, Öl, Essig kräftig verrühren oder shaken. Süß-scharfe Balance abschmecken. Zu Blattsalat, Bowls, gebratenem Hähnchen.' }),
+    anleitung: '1. Senf, Honig, Öl, Essig kräftig verrühren oder shaken.\n2. Süß-scharfe Balance abschmecken.\nZu Blattsalat, Bowls, gebratenem Hähnchen.' }),
 
   createRezept({ id: 'r_tahini_dressing', name: 'Tahini-Zitronen-Dressing', kategorien: ['Dressings'],
     basisPortionen: 8, ergibtMenge: 250, ergibtEinheit: 'ml', kochdauer: 5,
@@ -268,7 +296,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_limette',   menge: 50  },
       { zutatId: 'z_knoblauch', menge: 10  },
     ],
-    anleitung: 'Tahini + Zitrone/Limette + Knoblauch + Wasser löffelweise glattrühren (wird erst fest, dann cremig). Salzen. Zu Falafel, Bowls, geröstetem Gemüse.' }),
+    anleitung: '1. Tahini, Zitrone/Limette, Knoblauch + Wasser löffelweise glattrühren (wird erst fest, dann cremig).\n2. Salzen.\nZu Falafel, Bowls, geröstetem Gemüse.' }),
 
   createRezept({ id: 'r_avocado_dressing', name: 'Avocado-Limetten-Dressing', kategorien: ['Dressings'],
     basisPortionen: 6, ergibtMenge: 250, ergibtEinheit: 'ml', kochdauer: 10,
@@ -278,7 +306,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_joghurt', menge: 100 },
       { zutatId: 'z_limette', menge: 40  },
     ],
-    anleitung: 'Avocado, Joghurt, Limette, Koriander, Knoblauch cremig pürieren. Mit Wasser verdünnen. Frisch verwenden (max. 2 Tage). Zu Tacos, Bowls, Salaten.' }),
+    anleitung: '1. Avocado, Joghurt, Limette, Koriander + Knoblauch cremig pürieren.\n2. Mit Wasser verdünnen.\nFrisch verwenden (max. 2 Tage). Zu Tacos, Bowls, Salaten.' }),
 
   createRezept({ id: 'r_balsamico_vinaigrette', name: 'Balsamico-Vinaigrette', kategorien: ['Dressings'],
     basisPortionen: 10, ergibtMenge: 250, ergibtEinheit: 'ml', kochdauer: 5,
@@ -289,14 +317,14 @@ export const seedRezepte = () => [
       { zutatId: 'z_senf',      menge: 20  },
       { zutatId: 'z_honig',     menge: 20  },
     ],
-    anleitung: '3 Teile Öl, 1 Teil Balsamico, Löffel Senf + Honig als Emulgator. Kräftig shaken. Klassiker zu jedem Blattsalat. Hält 2 Wochen.' }),
+    anleitung: '1. 3 Teile Öl, 1 Teil Balsamico, je 1 Löffel Senf + Honig als Emulgator.\n2. Kräftig shaken.\nKlassiker zu jedem Blattsalat. Hält 2 Wochen.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KETTE — Tomatensoße
   // ══════════════════════════════════════════════════════════════════════════
 
   // ── Zwischen-Basis: Bolognese (aus Tomatensoße) → Basis für Lasagne & Chili ──
-  createRezept({ id: 'r_bolognese', name: 'Bolognese (Basis)', kategorien: ['Onepot/Auflauf'],
+  createRezept({ id: 'r_bolognese', name: 'Bolognese', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 5, kochdauer: 30, ergibtMenge: 1500, ergibtEinheit: 'g',
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Glas'] },
     zutaten: [
@@ -305,7 +333,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_tomatenmark', menge: 40  },
     ],
     komponenten: [{ rezeptId: 'r_tomatensauce', menge: 750 }],
-    anleitung: 'Karotte + Zwiebel anschwitzen. Hack zugeben und krümelig braten. Tomatenmark rösten, mit Rotwein ablöschen. Tomatensoße dazu, 20 Min köcheln. Als Block einfrieren — wird zu Pasta, Lasagne oder Chili.' }),
+    anleitung: '1. Karotte + Zwiebel anschwitzen.\n2. Hack zugeben, krümelig braten.\n3. Tomatenmark rösten, mit Schuss Rotwein ablöschen.\n4. Tomatensoße dazu, 20 Min köcheln.\n5. Als Block einfrieren — wird zu Pasta, Lasagne oder Chili.' }),
 
   createRezept({ id: 'r_bolo_pasta', name: 'Pasta Bolognese', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 3, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['Box'] },
@@ -314,7 +342,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_parmesan', menge: 60  },
     ],
     komponenten: [{ rezeptId: 'r_bolognese', menge: 750 }],
-    anleitung: 'Bolognese-Basis erwärmen. Pasta al dente, mit etwas Nudelwasser unter die Soße schwenken. Parmesan + Basilikum.' }),
+    anleitung: '1. Bolognese-Basis erwärmen.\n2. Pasta al dente kochen.\n3. Mit etwas Nudelwasser unter die Soße schwenken.\n4. Parmesan + Basilikum.' }),
 
   createRezept({ id: 'r_chili', name: 'Chili con Carne', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 5, kochdauer: 25, aufbewahrung: { tk: true, behaelter: ['Box', 'Glas'] },
@@ -323,7 +351,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_mais',         menge: 200 },
     ],
     komponenten: [{ rezeptId: 'r_bolognese', menge: 1000 }],
-    anleitung: 'Bolognese-Basis erhitzen, mit Kreuzkümmel, Chili + geräuchertem Paprika aufpeppen. Bohnen + Mais dazu, 15 Min köcheln. Geheimtipp: Bitterschokolade + Schuss Espresso für Tiefe.' }),
+    anleitung: '1. Bolognese-Basis erhitzen.\n2. Mit Kreuzkümmel, Chili + geräuchertem Paprika würzen.\n3. Bohnen + Mais dazu, 15 Min köcheln.\nGeheimtipp: 1 Stück Bitterschokolade + Schuss Espresso für Tiefe.' }),
 
   createRezept({ id: 'r_shakshuka', name: 'Shakshuka', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 2, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['frisch'] },
@@ -332,9 +360,9 @@ export const seedRezepte = () => [
       { zutatId: 'z_ei',      menge: 240 },
     ],
     komponenten: [{ rezeptId: 'r_tomatensauce', menge: 500 }],
-    anleitung: 'Paprika + Zwiebel anbraten, etwas Harissa. Tomatensoße drauf, aufkochen. 4 Mulden formen, Eier rein. Deckel, 3–4 Min bei schwacher Hitze. Mit Joghurt + Petersilie.' }),
+    anleitung: '1. Paprika + Zwiebel anbraten, etwas Harissa.\n2. Tomatensoße drauf, aufkochen.\n3. 4 Mulden formen, Eier hineingleiten lassen.\n4. Deckel drauf, 3–4 Min bei schwacher Hitze.\n5. Joghurt + Petersilie.' }),
 
-  createRezept({ id: 'r_fitness_lasagne', name: 'Fitness-Lasagne', kategorien: ['Onepot/Auflauf'],
+  createRezept({ id: 'r_fitness_lasagne', name: 'Fitness-Lasagne', kategorien: ['Onepot/Auflauf', 'Fitness'],
     basisPortionen: 6, kochdauer: 55, aufbewahrung: { tk: true, behaelter: ['Box'] },
     zutaten: [
       { zutatId: 'z_pasta',      menge: 280 },
@@ -342,7 +370,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_mozzarella', menge: 200 },
     ],
     komponenten: [{ rezeptId: 'r_bolognese', menge: 1250 }],
-    anleitung: 'Bolognese-Basis erwärmen. Schichten: Nudelplatten / Bolognese / Frischkäse (statt Béchamel). Oben Mozzarella. 180° 40 Min.' }),
+    anleitung: '1. Bolognese-Basis erwärmen.\n2. Schichten: Nudelplatten / Bolognese / körniger Frischkäse (statt Béchamel).\n3. Oben Mozzarella.\n4. Ofen 180°, 40 Min.\nProtein-Boost durch Frischkäse statt Sahne.' }),
 
   createRezept({ id: 'r_hackncheese', name: "Hack 'n' Cheese", kategorien: ['Onepot/Auflauf'],
     basisPortionen: 4, kochdauer: 40, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -352,7 +380,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_frischkaese', menge: 250 },
     ],
     komponenten: [{ rezeptId: 'r_tomatensauce', menge: 500 }],
-    anleitung: 'Hack krümelig braten, Reis kochen. Alles in Auflaufform, Frischkäse unterrühren, Tomatensoße drauf. 180° 25 Min. Optional überbacken.' }),
+    anleitung: '1. Hack krümelig braten, Reis kochen.\n2. Alles in Auflaufform, Frischkäse unterrühren.\n3. Tomatensoße drauf.\n4. Ofen 180°, 25 Min. Optional mit Käse überbacken.' }),
 
   createRezept({ id: 'r_arrabiata', name: 'Penne Arrabiata', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 3, kochdauer: 20, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -362,7 +390,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_parmesan',  menge: 60  },
     ],
     komponenten: [{ rezeptId: 'r_tomatensauce', menge: 500 }],
-    anleitung: 'Knoblauch + Chiliflocken in Öl, Tomatensoße dazu, einkochen. Penne al dente, mit etwas Nudelwasser schwenken. Parmesan + Petersilie.' }),
+    anleitung: '1. Knoblauch + Chiliflocken in Öl anbraten.\n2. Tomatensoße dazu, einkochen.\n3. Penne al dente, mit etwas Nudelwasser schwenken.\n4. Parmesan + Petersilie.' }),
 
   createRezept({ id: 'r_tomatensuppe', name: 'Cremige Tomatensuppe', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Glas', 'Box'] },
@@ -371,7 +399,28 @@ export const seedRezepte = () => [
       { zutatId: 'z_paprika', menge: 200 },
     ],
     komponenten: [{ rezeptId: 'r_tomatensauce', menge: 750 }],
-    anleitung: 'Paprika mitrösten, Tomatensoße + Brühe aufkochen, fein pürieren. Schmand einrühren, mit Basilikum. Dazu geröstetes Brot.' }),
+    anleitung: '1. Paprika mitrösten.\n2. Tomatensoße + Brühe aufkochen, fein pürieren.\n3. Schmand einrühren, mit Basilikum.\nDazu geröstetes Brot.' }),
+
+  createRezept({ id: 'r_tomaten_feta_pasta', name: 'Tomaten-Feta-Pasta', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 4, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_pasta',    menge: 320 },
+      { zutatId: 'z_feta',     menge: 200 },
+      { zutatId: 'z_spinat',   menge: 150 },
+    ],
+    komponenten: [{ rezeptId: 'r_tomatensauce', menge: 500 }],
+    anleitung: '1. Tomatensoße erwärmen, Feta darin zerdrücken — wird cremig.\n2. Spinat unterrühren bis er zusammenfällt.\n3. Pasta al dente, untermischen.\nSchnell, proteinreich, viral-Klassiker.' }),
+
+  createRezept({ id: 'r_gnocchi_auflauf', name: 'Gnocchi-Auflauf mit Hähnchen', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 4, kochdauer: 35, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_gnocchi',     menge: 600 },
+      { zutatId: 'z_haehnchen',   menge: 400 },
+      { zutatId: 'z_frischkaese', menge: 250 },
+      { zutatId: 'z_mozzarella',  menge: 150 },
+    ],
+    komponenten: [{ rezeptId: 'r_tomatensauce', menge: 500 }],
+    anleitung: '1. Hähnchenwürfel scharf anbraten.\n2. Mit Gnocchi, Tomatensoße + körnigem Frischkäse in der Auflaufform mischen.\n3. Mozzarella drüber.\n4. Ofen 200°, 20 Min goldbraun.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KETTE — Pulled Chicken
@@ -385,7 +434,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_salat',    menge: 240 },
     ],
     komponenten: [{ rezeptId: 'r_pulledchicken', menge: 500 }],
-    anleitung: 'Reis kochen, Pulled Chicken erwärmen + BBQ-Sauce unterziehen. Bowl: Reis, Chicken, frischer Salat. Pickled Onions als Topping.' }),
+    anleitung: '1. Reis kochen.\n2. Pulled Chicken erwärmen, BBQ-Sauce unterziehen.\n3. Bowl: Reis, Chicken, frischer Salat.\nPickled Onions als Topping.' }),
 
   createRezept({ id: 'r_pulled_wrap', name: 'Pulled Chicken Wrap', kategorien: ['Burritos'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -395,7 +444,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_salat',   menge: 160 },
     ],
     komponenten: [{ rezeptId: 'r_pulledchicken', menge: 500 }],
-    anleitung: 'Pulled Chicken erwärmen. Wrap mit Joghurt-Knoblauch bestreichen, Chicken + Salat + Gurke rein. Fest rollen, optional kurz anbraten.' }),
+    anleitung: '1. Pulled Chicken erwärmen.\n2. Wrap mit Joghurt-Knoblauch bestreichen.\n3. Chicken + Salat + Gurke einrollen.\n4. Fest rollen, optional kurz anbraten.' }),
 
   createRezept({ id: 'r_pulled_burrito', name: 'Chicken Burrito', kategorien: ['Burritos'],
     basisPortionen: 5, kochdauer: 25, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -406,7 +455,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_cheddar',  menge: 120 },
     ],
     komponenten: [{ rezeptId: 'r_pulledchicken', menge: 500 }],
-    anleitung: 'Chicken erwärmen. Wrap belegen: Reis, Chicken, Mais, Cheddar, Salsa. Fest rollen, Naht nach unten anbraten. Einzeln in Folie für TK.' }),
+    anleitung: '1. Chicken erwärmen.\n2. Wrap belegen: Reis, Chicken, Mais, Cheddar, Salsa.\n3. Fest rollen, Naht nach unten anbraten.\n4. Einzeln in Folie für TK.' }),
 
   createRezept({ id: 'r_pulled_quesadilla', name: 'Chicken Quesadilla', kategorien: ['Burritos'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -416,7 +465,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_paprika', menge: 150 },
     ],
     komponenten: [{ rezeptId: 'r_pulledchicken', menge: 250 }],
-    anleitung: 'Wrap halb mit Chicken, Cheddar, Paprika belegen, zuklappen. In trockener Pfanne beidseitig goldbraun, bis Käse schmilzt. In Spalten schneiden.' }),
+    anleitung: '1. Wrap halb mit Chicken, Cheddar + Paprika belegen, zuklappen.\n2. In trockener Pfanne beidseitig goldbraun, bis Käse schmilzt.\n3. In Spalten schneiden.' }),
 
   createRezept({ id: 'r_pulled_salat', name: 'Pulled Chicken Salat-Bowl', kategorien: ['Salate'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
@@ -427,7 +476,18 @@ export const seedRezepte = () => [
       { zutatId: 'z_avocado', menge: 140 },
     ],
     komponenten: [{ rezeptId: 'r_pulledchicken', menge: 500 }],
-    anleitung: 'Pulled Chicken kalt oder lauwarm. Großer Salat mit Mais, Gurke, Avocado, Kirschtomaten. Mit Honig-Senf- oder Avocado-Dressing.' }),
+    anleitung: '1. Pulled Chicken kalt oder lauwarm.\n2. Großer Salat mit Mais, Gurke, Avocado, Kirschtomaten.\n3. Mit Honig-Senf- oder Avocado-Dressing.' }),
+
+  createRezept({ id: 'r_pulled_auflauf', name: 'Chicken-Reis-Auflauf mit Frischkäse', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 4, kochdauer: 35, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_reis',        menge: 300 },
+      { zutatId: 'z_brokkoli',    menge: 400 },
+      { zutatId: 'z_frischkaese', menge: 300 },
+      { zutatId: 'z_cheddar',     menge: 100 },
+    ],
+    komponenten: [{ rezeptId: 'r_pulledchicken', menge: 500 }],
+    anleitung: '1. Reis kochen, Brokkoli 4 Min vordämpfen.\n2. Mit Pulled Chicken + körnigem Frischkäse in der Auflaufform mischen.\n3. Cheddar drüber.\n4. Ofen 200°, 20 Min. High-Protein-Sattmacher.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KETTE — Pulled Pork
@@ -441,7 +501,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_mais',    menge: 150 },
     ],
     komponenten: [{ rezeptId: 'r_pulledpork', menge: 500 }],
-    anleitung: 'Reis kochen, Pork erwärmen. Bowl: Reis, Pork, Krautsalat (Rotkohl + bisschen Essig/Öl), Mais, Frühlingszwiebeln.' }),
+    anleitung: '1. Reis kochen, Pork erwärmen.\n2. Krautsalat: Rotkohl mit etwas Essig + Öl mischen.\n3. Bowl: Reis, Pork, Krautsalat, Mais, Frühlingszwiebeln.' }),
 
   createRezept({ id: 'r_pork_burrito', name: 'Pulled Pork Burrito', kategorien: ['Burritos'],
     basisPortionen: 5, kochdauer: 25, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -452,7 +512,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_cheddar', menge: 120 },
     ],
     komponenten: [{ rezeptId: 'r_pulledpork', menge: 500 }],
-    anleitung: 'Pork erwärmen. Wrap belegen: Reis, Pork, schwarze Bohnen, Cheddar, Salsa. Fest rollen, anbraten. Einzeln in Folie für TK.' }),
+    anleitung: '1. Pork erwärmen.\n2. Wrap belegen: Reis, Pork, schwarze Bohnen, Cheddar, Salsa.\n3. Fest rollen, anbraten.\n4. Einzeln in Folie für TK.' }),
 
   createRezept({ id: 'r_pork_burger', name: 'Pulled Pork Burger', kategorien: ['Bowls'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['frisch'] },
@@ -461,7 +521,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_rotkohl',   menge: 200 },
     ],
     komponenten: [{ rezeptId: 'r_pulledpork', menge: 500 }],
-    anleitung: 'Buns toasten. Pork mit extra BBQ erwärmen. Belegen: Pork, Coleslaw (Rotkohl), Gurke. Deckel drauf. Pommes dazu.' }),
+    anleitung: '1. Buns toasten.\n2. Pork mit extra BBQ erwärmen.\n3. Belegen: Pork, Coleslaw (Rotkohl), Gurke.\n4. Deckel drauf, Pommes dazu.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KETTE — Taco-Hack
@@ -476,7 +536,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_cheddar', menge: 100 },
     ],
     komponenten: [{ rezeptId: 'r_tacohack', menge: 500 }],
-    anleitung: 'Reis kochen, Taco-Hack erwärmen. Bowl: Reis, Hack, Mais, Salat, Cheddar, Salsa + Guacamole. Tortilla-Chips zum Dippen.' }),
+    anleitung: '1. Reis kochen, Taco-Hack erwärmen.\n2. Bowl: Reis, Hack, Mais, Salat, Cheddar.\n3. Salsa + Guacamole drauf.\nTortilla-Chips zum Dippen.' }),
 
   createRezept({ id: 'r_taco_burrito', name: 'Beef Burrito', kategorien: ['Burritos'],
     basisPortionen: 5, kochdauer: 25, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -486,7 +546,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_cheddar', menge: 120 },
     ],
     komponenten: [{ rezeptId: 'r_tacohack', menge: 500 }],
-    anleitung: 'Taco-Hack erwärmen. Wrap belegen: Reis, Hack, Cheddar, Salsa, etwas Salat. Fest rollen, Naht anbraten. Einzeln in Folie für TK.' }),
+    anleitung: '1. Taco-Hack erwärmen.\n2. Wrap belegen: Reis, Hack, Cheddar, Salsa, etwas Salat.\n3. Fest rollen, Naht anbraten.\n4. Einzeln in Folie für TK.' }),
 
   createRezept({ id: 'r_quesadilla', name: 'Beef Quesadilla', kategorien: ['Burritos'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -495,7 +555,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_cheddar', menge: 200 },
     ],
     komponenten: [{ rezeptId: 'r_tacohack', menge: 250 }],
-    anleitung: 'Wrap halb mit Hack + Cheddar belegen, zuklappen. In trockener Pfanne beidseitig knusprig. In Spalten, mit Salsa + Guac.' }),
+    anleitung: '1. Wrap halb mit Hack + Cheddar belegen, zuklappen.\n2. In trockener Pfanne beidseitig knusprig.\n3. In Spalten, mit Salsa + Guac.' }),
 
   createRezept({ id: 'r_nachos', name: 'Überbackene Nachos', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 4, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['frisch'] },
@@ -507,7 +567,7 @@ export const seedRezepte = () => [
       { rezeptId: 'r_tacohack',   menge: 500 },
       { rezeptId: 'r_kaesesauce', menge: 250 },
     ],
-    anleitung: 'Tortilla-Chips auf Blech, Taco-Hack + Käsesauce + Cheddar drüber. 180° 10 Min überbacken. Mit Guacamole, Salsa, Jalapeños, Schmand toppen.' }),
+    anleitung: '1. Tortilla-Chips aufs Blech.\n2. Taco-Hack + Käsesauce + Cheddar drüber.\n3. Ofen 180°, 10 Min überbacken.\n4. Mit Guacamole, Salsa, Jalapeños + Schmand toppen.' }),
 
   createRezept({ id: 'r_taco_salat', name: 'Taco-Salat', kategorien: ['Salate'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
@@ -518,7 +578,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_avocado', menge: 140 },
     ],
     komponenten: [{ rezeptId: 'r_tacohack', menge: 500 }],
-    anleitung: 'Taco-Hack lauwarm auf großem Salat mit Mais, Tomate, Avocado, Cheddar. Mit Salsa + Joghurt-Dressing. Tortilla-Chips als Crunch.' }),
+    anleitung: '1. Taco-Hack lauwarm auf großem Salat mit Mais, Tomate, Avocado, Cheddar.\n2. Mit Salsa + Joghurt-Dressing.\nTortilla-Chips als Crunch.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KETTE — Cheddar-Käsesauce
@@ -531,16 +591,25 @@ export const seedRezepte = () => [
       { zutatId: 'z_cheddar', menge: 100 },
     ],
     komponenten: [{ rezeptId: 'r_kaesesauce', menge: 500 }],
-    anleitung: 'Makkaroni al dente, mit Käsesauce mischen. In Auflaufform, extra Cheddar + Semmelbrösel drüber. 200° 15 Min goldbraun überbacken.' }),
+    anleitung: '1. Makkaroni al dente kochen.\n2. Mit Käsesauce mischen.\n3. In Auflaufform, extra Cheddar + Semmelbrösel drüber.\n4. Ofen 200°, 15 Min goldbraun.' }),
 
-  createRezept({ id: 'r_blumenkohl_gratin', name: 'Blumenkohl-Käse-Gratin', kategorien: ['Onepot/Auflauf'],
+  createRezept({ id: 'r_blumenkohl_gratin', name: 'Blumenkohl-Käse-Gratin', kategorien: ['Onepot/Auflauf', 'Fitness'],
     basisPortionen: 4, kochdauer: 35, aufbewahrung: { tk: true, behaelter: ['Box'] },
     zutaten: [
       { zutatId: 'z_blumenkohl', menge: 800 },
       { zutatId: 'z_cheddar',    menge: 100 },
     ],
     komponenten: [{ rezeptId: 'r_kaesesauce', menge: 500 }],
-    anleitung: 'Blumenkohl 5 Min vorgaren, in Auflaufform. Käsesauce drüber, Cheddar oben. 200° 25 Min. Low-Carb-Sattmacher.' }),
+    anleitung: '1. Blumenkohl 5 Min vorgaren, in die Auflaufform.\n2. Käsesauce drüber, Cheddar oben.\n3. Ofen 200°, 25 Min.\nLow-Carb-Sattmacher.' }),
+
+  createRezept({ id: 'r_kartoffelgratin', name: 'Kartoffel-Käse-Gratin', kategorien: ['Onepot/Auflauf'],
+    basisPortionen: 4, kochdauer: 50, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_kartoffel', menge: 1000 },
+      { zutatId: 'z_cheddar',   menge: 100  },
+    ],
+    komponenten: [{ rezeptId: 'r_kaesesauce', menge: 500 }],
+    anleitung: '1. Kartoffeln in dünne Scheiben hobeln.\n2. In die Form schichten, Käsesauce + Muskat darüber.\n3. Cheddar oben.\n4. Ofen 190°, 40 Min, bis goldbraun + weich.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KETTE — Thai-Curry
@@ -554,7 +623,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_brokkoli',  menge: 400 },
     ],
     komponenten: [{ rezeptId: 'r_thaicurry', menge: 750 }],
-    anleitung: 'Hähnchen scharf anbraten (nicht durchgaren). Thai-Curry Basis erhitzen, Hähnchen + Brokkoli rein, 8 Min köcheln. Mit Reis servieren.' }),
+    anleitung: '1. Hähnchen scharf anbraten (nicht ganz durch).\n2. Thai-Curry Basis erhitzen, Hähnchen + Brokkoli rein.\n3. 8 Min köcheln.\n4. Mit Reis servieren.' }),
 
   createRezept({ id: 'r_thai_suppe', name: 'Thai-Kokos-Suppe', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 3, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Glas'] },
@@ -563,7 +632,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_champignon', menge: 300 },
     ],
     komponenten: [{ rezeptId: 'r_thaicurry', menge: 500 }],
-    anleitung: 'Thai-Curry Basis + extra Kokosmilch, mit Gemüsebrühe verlängern. Champignons rein, aufkochen. Koriander + Limette oben.' }),
+    anleitung: '1. Thai-Curry Basis + extra Kokosmilch, mit Gemüsebrühe verlängern.\n2. Champignons rein, aufkochen.\n3. Koriander + Limette oben.' }),
 
   createRezept({ id: 'r_curry_garnelen', name: 'Garnelen-Curry', kategorien: ['Onepot/Auflauf'],
     basisPortionen: 3, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['frisch'] },
@@ -573,7 +642,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_paprika',  menge: 200 },
     ],
     komponenten: [{ rezeptId: 'r_thaicurry', menge: 500 }],
-    anleitung: 'Curry-Basis mit Paprika erhitzen. Garnelen erst 3 Min vor Ende rein (sonst zäh!). Mit Reis + Limette. Nicht einfrieren.' }),
+    anleitung: '1. Curry-Basis mit Paprika erhitzen.\n2. Garnelen erst 3 Min vor Ende rein (sonst zäh!).\n3. Mit Reis + Limette.\nNicht einfrieren.' }),
 
   createRezept({ id: 'r_curry_tofu_bowl', name: 'Curry-Tofu Bowl', kategorien: ['Bowls'],
     basisPortionen: 4, kochdauer: 25, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
@@ -583,7 +652,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_brokkoli', menge: 400 },
     ],
     komponenten: [{ rezeptId: 'r_thaicurry', menge: 500 }],
-    anleitung: 'Tofu pressen, würfeln, knusprig braten. Curry-Basis + Brokkoli erhitzen, Tofu erst zum Schluss. Bowl mit Reis. Erdnüsse als Topping.' }),
+    anleitung: '1. Tofu pressen, würfeln, knusprig braten.\n2. Curry-Basis + Brokkoli erhitzen, Tofu erst zum Schluss.\n3. Bowl mit Reis. Erdnüsse als Topping.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KETTE — Linsen-Dal
@@ -597,7 +666,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_joghurt', menge: 120 },
     ],
     komponenten: [{ rezeptId: 'r_dal', menge: 750 }],
-    anleitung: 'Dal erwärmen, Spinat unterrühren bis er zusammenfällt. Bowl: Reis, Dal, Klecks Joghurt, Koriander. Naan optional.' }),
+    anleitung: '1. Dal erwärmen, Spinat unterrühren bis er zusammenfällt.\n2. Bowl: Reis, Dal, Klecks Joghurt, Koriander.\nNaan optional.' }),
 
   createRezept({ id: 'r_dal_wrap', name: 'Dal-Wrap', kategorien: ['Burritos'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -607,7 +676,161 @@ export const seedRezepte = () => [
       { zutatId: 'z_salat',   menge: 120 },
     ],
     komponenten: [{ rezeptId: 'r_dal', menge: 500 }],
-    anleitung: 'Dal eindicken (darf nicht zu flüssig sein). Wrap mit Joghurt bestreichen, Dal + Salat + rote Zwiebeln. Rollen, anbraten.' }),
+    anleitung: '1. Dal eindicken (darf nicht zu flüssig sein).\n2. Wrap mit Joghurt bestreichen, Dal + Salat + rote Zwiebeln.\n3. Rollen, anbraten.' }),
+
+  createRezept({ id: 'r_dal_suppe', name: 'Linsen-Kokos-Suppe', kategorien: ['Onepot/Auflauf'],
+    basisPortionen: 3, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Glas', 'Box'] },
+    zutaten: [
+      { zutatId: 'z_kokosmilch', menge: 200 },
+      { zutatId: 'z_spinat',     menge: 150 },
+    ],
+    komponenten: [{ rezeptId: 'r_dal', menge: 500 }],
+    anleitung: '1. Dal + Kokosmilch mit Gemüsebrühe zur Suppe verlängern.\n2. Spinat unterrühren, aufkochen.\n3. Limette + Koriander.' }),
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // KETTE — Hähnchen-Gyros
+  // ══════════════════════════════════════════════════════════════════════════
+
+  createRezept({ id: 'r_gyros_bowl', name: 'Gyros-Bowl', kategorien: ['Bowls', 'Fitness'],
+    basisPortionen: 4, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
+    zutaten: [
+      { zutatId: 'z_reis',    menge: 320 },
+      { zutatId: 'z_joghurt', menge: 200 },
+      { zutatId: 'z_gurke',   menge: 200 },
+      { zutatId: 'z_salat',   menge: 160 },
+    ],
+    komponenten: [{ rezeptId: 'r_gyros', menge: 500 }],
+    anleitung: '1. Reis kochen, Gyros erwärmen.\n2. Tzatziki: Joghurt + geraspelte Gurke + Knoblauch.\n3. Bowl: Reis, Gyros, Salat, Tzatziki.' }),
+
+  createRezept({ id: 'r_gyros_wrap', name: 'Gyros-Wrap', kategorien: ['Burritos'],
+    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_wrap',    menge: 256 },
+      { zutatId: 'z_joghurt', menge: 160 },
+      { zutatId: 'z_tomate',  menge: 120 },
+      { zutatId: 'z_salat',   menge: 120 },
+    ],
+    komponenten: [{ rezeptId: 'r_gyros', menge: 500 }],
+    anleitung: '1. Gyros erwärmen.\n2. Wrap mit Joghurt-Tzatziki bestreichen.\n3. Gyros, Tomate, Salat, rote Zwiebeln einrollen.\n4. Fest rollen, kurz anbraten.' }),
+
+  createRezept({ id: 'r_gyros_auflauf', name: 'Kartoffel-Gyros-Auflauf', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 5, kochdauer: 45, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_kartoffel',   menge: 800 },
+      { zutatId: 'z_frischkaese', menge: 400 },
+      { zutatId: 'z_paprika',     menge: 200 },
+      { zutatId: 'z_cheddar',     menge: 100 },
+    ],
+    komponenten: [{ rezeptId: 'r_gyros', menge: 750 }],
+    anleitung: '1. Kartoffeln in Spalten, 10 Min vorkochen.\n2. Mit Gyros, Paprika + körnigem Frischkäse in der Form mischen.\n3. Cheddar drüber.\n4. Ofen 200°, 30 Min.\nDer Fitness-Klassiker — viel Protein, sättigt lange.' }),
+
+  createRezept({ id: 'r_gyros_salat', name: 'Gyros-Salat-Bowl', kategorien: ['Salate', 'Fitness'],
+    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
+    zutaten: [
+      { zutatId: 'z_salat',  menge: 320 },
+      { zutatId: 'z_gurke',  menge: 200 },
+      { zutatId: 'z_tomate', menge: 200 },
+      { zutatId: 'z_feta',   menge: 120 },
+    ],
+    komponenten: [{ rezeptId: 'r_gyros', menge: 500 }],
+    anleitung: '1. Gyros lauwarm.\n2. Großer Salat mit Gurke, Tomate, roten Zwiebeln, Feta.\n3. Mit Tzatziki oder Zitronen-Dressing.\nLow Carb, proteinreich.' }),
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // KETTE — Ofen-Röstgemüse
+  // ══════════════════════════════════════════════════════════════════════════
+
+  createRezept({ id: 'r_roest_bowl', name: 'Röstgemüse-Couscous-Bowl', kategorien: ['Bowls'],
+    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
+    zutaten: [
+      { zutatId: 'z_couscous', menge: 320 },
+      { zutatId: 'z_feta',     menge: 150 },
+    ],
+    komponenten: [{ rezeptId: 'r_roestgemuese', menge: 750 }],
+    anleitung: '1. Couscous mit kochendem Wasser 5 Min quellen lassen.\n2. Röstgemüse erwärmen, untermischen.\n3. Feta darüber bröseln.\n4. Mit Tahini- oder Zitronen-Dressing.' }),
+
+  createRezept({ id: 'r_roest_frittata', name: 'Gemüse-Frittata', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 4, kochdauer: 25, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_ei',          menge: 480 },
+      { zutatId: 'z_frischkaese', menge: 200 },
+    ],
+    komponenten: [{ rezeptId: 'r_roestgemuese', menge: 500 }],
+    anleitung: '1. Eier mit körnigem Frischkäse + Salz verquirlen.\n2. Röstgemüse in die ofenfeste Pfanne, Eimasse drüber.\n3. Ofen 180°, 18 Min, bis gestockt.\n4. In Stücke schneiden — top zum Vorbereiten.' }),
+
+  createRezept({ id: 'r_roest_pasta', name: 'Mediterrane Gemüse-Pasta', kategorien: ['Onepot/Auflauf'],
+    basisPortionen: 4, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_pasta',    menge: 320 },
+      { zutatId: 'z_feta',     menge: 150 },
+      { zutatId: 'z_parmesan', menge: 40  },
+    ],
+    komponenten: [{ rezeptId: 'r_roestgemuese', menge: 500 }],
+    anleitung: '1. Pasta al dente kochen.\n2. Röstgemüse erwärmen, mit etwas Nudelwasser + Feta cremig schwenken.\n3. Pasta untermischen, Parmesan drüber.' }),
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // FITNESS-AUFLÄUFE & BOWLS (high-protein, einfach)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  createRezept({ id: 'r_kartoffel_hack_auflauf', name: 'Kartoffel-Gemüse-Hack-Auflauf', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 4, kochdauer: 45, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_hack',        menge: 500 },
+      { zutatId: 'z_kartoffel',   menge: 800 },
+      { zutatId: 'z_paprika',     menge: 200 },
+      { zutatId: 'z_zucchini',    menge: 200 },
+      { zutatId: 'z_zwiebel',     menge: 100 },
+      { zutatId: 'z_tomatenmark', menge: 30  },
+      { zutatId: 'z_frischkaese', menge: 400 },
+      { zutatId: 'z_cheddar',     menge: 100 },
+      { zutatId: 'z_salz',        menge: 8   },
+    ],
+    anleitung: '1. Kartoffelwürfel 10 Min vorkochen.\n2. Hack + Zwiebel krümelig braten, Tomatenmark + Paprikapulver rösten, Paprika + Zucchini kurz mitbraten, salzen.\n3. Kartoffeln + Hack-Gemüse in der Auflaufform mischen, körnigen Frischkäse unterheben.\n4. Cheddar drüber, Ofen 200°, 25 Min goldbraun.\nDer Fitness-Klassiker: viel Protein, lange satt, super zum Vorkochen.' }),
+
+  createRezept({ id: 'r_haehnchen_brokkoli_auflauf', name: 'Hähnchen-Brokkoli-Auflauf', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 4, kochdauer: 40, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_haehnchen',   menge: 600 },
+      { zutatId: 'z_brokkoli',    menge: 600 },
+      { zutatId: 'z_reis',        menge: 200 },
+      { zutatId: 'z_frischkaese', menge: 300 },
+      { zutatId: 'z_cheddar',     menge: 100 },
+      { zutatId: 'z_salz',        menge: 6   },
+    ],
+    anleitung: '1. Reis kochen, Brokkoli 4 Min dämpfen.\n2. Hähnchenwürfel scharf anbraten, salzen.\n3. Alles mit körnigem Frischkäse in der Form mischen.\n4. Cheddar drüber, Ofen 200°, 20 Min.\nLow-Carb-freundlich, sehr proteinreich.' }),
+
+  createRezept({ id: 'r_cheeseburger_auflauf', name: 'Cheeseburger-Auflauf (Low Carb)', kategorien: ['Onepot/Auflauf', 'Fitness'],
+    basisPortionen: 4, kochdauer: 35, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_hack',        menge: 600 },
+      { zutatId: 'z_blumenkohl',  menge: 500 },
+      { zutatId: 'z_ei',          menge: 120 },
+      { zutatId: 'z_frischkaese', menge: 200 },
+      { zutatId: 'z_cheddar',     menge: 150 },
+      { zutatId: 'z_gurke',       menge: 100 },
+      { zutatId: 'z_zwiebel',     menge: 80  },
+    ],
+    anleitung: '1. Blumenkohl 5 Min dämpfen.\n2. Hack + Zwiebel braten, salzen.\n3. Mit Blumenkohl, Ei + Frischkäse in der Form mischen.\n4. Cheddar drüber, Ofen 200°, 20 Min.\n5. Zum Servieren: Gewürzgurke + Burger-Soße (Joghurt + Senf + Tomatenmark).' }),
+
+  createRezept({ id: 'r_ofen_feta_pasta', name: 'Ofen-Feta-Pasta', kategorien: ['Onepot/Auflauf'],
+    basisPortionen: 4, kochdauer: 35, aufbewahrung: { tk: false, behaelter: ['Box'] },
+    zutaten: [
+      { zutatId: 'z_feta',      menge: 200 },
+      { zutatId: 'z_tomate',    menge: 500 },
+      { zutatId: 'z_pasta',     menge: 320 },
+      { zutatId: 'z_knoblauch', menge: 15  },
+      { zutatId: 'z_olivenoel', menge: 40  },
+    ],
+    anleitung: '1. Feta-Block in die Mitte der Form, Kirschtomaten + Knoblauch drumherum, mit Öl + Salz mischen.\n2. Ofen 200°, 30 Min, bis Tomaten platzen.\n3. Pasta al dente kochen.\n4. Feta + Tomaten zu Soße verrühren, Pasta untermischen.\nDer virale Klassiker — kaum Aufwand.' }),
+
+  createRezept({ id: 'r_suesskartoffel_bowl', name: 'Süßkartoffel-Hähnchen-Bowl', kategorien: ['Bowls', 'Fitness'],
+    basisPortionen: 4, kochdauer: 30, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
+    zutaten: [
+      { zutatId: 'z_suesskartoffel', menge: 600 },
+      { zutatId: 'z_haehnchen',      menge: 600 },
+      { zutatId: 'z_brokkoli',       menge: 300 },
+      { zutatId: 'z_magerquark',     menge: 200 },
+    ],
+    anleitung: '1. Süßkartoffelwürfel mit Öl + Paprika 25 Min im Ofen rösten.\n2. Hähnchen scharf anbraten, salzen.\n3. Brokkoli dämpfen.\n4. Bowl schichten, Quark-Dip (Magerquark + Kräuter + Knoblauch) dazu.\nClean, proteinreich, meal-prep-tauglich.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KONFIGURIERBAR (Baukasten-Gerichte)
@@ -621,7 +844,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_brokkoli',   menge: 600 },
       { zutatId: 'z_teriyaki',   menge: 120 },
     ],
-    anleitung: 'Reis kochen, Hack mit Teriyaki + Sesamöl scharf braten. Brokkoli dämpfen. Bowl schichten, Sesam + Frühlingszwiebeln oben.' }),
+    anleitung: '1. Reis kochen.\n2. Hack mit Teriyaki + Sesamöl scharf braten.\n3. Brokkoli dämpfen.\n4. Bowl schichten, Sesam + Frühlingszwiebeln oben.' }),
 
   createRezept({ id: 'r_bigmac_bowl', name: 'Big Mac Bowl', kategorien: ['Bowls', 'Salate'],
     basisPortionen: 4, kochdauer: 20, konfigurierbar: true, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
@@ -631,7 +854,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_gurke',     menge: 200 },
       { zutatId: 'z_teriyaki',  menge: 80  },
     ],
-    anleitung: 'Hack in kleine Patties braten. Bowl: Salat, Hack, Gurke, Tomate, Gewürzgurke. Big Mac Soße: Mayo + Senf + Gurke + Essig + Paprika. Sesam oben.' }),
+    anleitung: '1. Hack in kleine Patties braten.\n2. Big-Mac-Soße: Mayo + Senf + gehackte Gurke + Essig + Paprika.\n3. Bowl: Salat, Hack, Gurke, Tomate, Gewürzgurke.\n4. Soße + Sesam oben.' }),
 
   createRezept({ id: 'r_chicken_soja_bowl', name: 'Chicken Soja-Limetten Bowl', kategorien: ['Bowls', 'Salate'],
     basisPortionen: 4, kochdauer: 25, konfigurierbar: true, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
@@ -642,7 +865,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_paprika',   menge: 200 },
       { zutatId: 'z_sojasauce', menge: 80  },
     ],
-    anleitung: 'Hähnchen in Soja+Limette+Sesamöl Marinade (30 Min), scharf braten. Bowl: Reis, Hähnchen, Salat, Paprika, Edamame. Sesam + Frühlingszwiebeln oben.' }),
+    anleitung: '1. Hähnchen in Soja + Limette + Sesamöl 30 Min marinieren.\n2. Scharf braten.\n3. Bowl: Reis, Hähnchen, Salat, Paprika, Edamame.\n4. Sesam + Frühlingszwiebeln oben.' }),
 
   createRezept({ id: 'r_falafel_bowl', name: 'Mediterrane Bowl', kategorien: ['Bowls'],
     basisPortionen: 4, kochdauer: 25, konfigurierbar: true, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
@@ -652,7 +875,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_gurke',    menge: 200 },
       { zutatId: 'z_feta',     menge: 120 },
     ],
-    anleitung: 'Couscous quellen lassen. Bowl: Couscous, Tomate, Gurke, Feta, Oliven, rote Zwiebeln. Mit Tahini- oder Zitronen-Dressing. Falafel optional.' }),
+    anleitung: '1. Couscous quellen lassen.\n2. Bowl: Couscous, Tomate, Gurke, Feta, Oliven, rote Zwiebeln.\n3. Mit Tahini- oder Zitronen-Dressing.\nFalafel optional.' }),
 
   // ══════════════════════════════════════════════════════════════════════════
   // KONFIGURIERBARE BURRITOS / WEITERE
@@ -665,7 +888,7 @@ export const seedRezepte = () => [
       { rezeptId: 'r_chili',        menge: 900 },
       { rezeptId: 'r_pulledchicken', menge: 500 },
     ],
-    anleitung: 'Chili + Pulled Chicken + Reis + Frischkäse auf Wrap. Fest rollen, Nahtseite nach unten kurz anbraten. Einzeln in Folie für TK.' }),
+    anleitung: '1. Chili + Pulled Chicken erwärmen.\n2. Auf Wrap: Chili, Chicken, Reis, Frischkäse.\n3. Fest rollen, Nahtseite nach unten kurz anbraten.\n4. Einzeln in Folie für TK.' }),
 
   createRezept({ id: 'r_breakfast_burrito', name: 'Breakfast Burrito', kategorien: ['Burritos'],
     basisPortionen: 4, kochdauer: 20, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -675,7 +898,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_cheddar', menge: 120 },
       { zutatId: 'z_paprika', menge: 150 },
     ],
-    anleitung: 'Rührei mit Paprika + Frühlingszwiebeln. Wrap belegen: Rührei, Cheddar, Bohnen, Salsa. Rollen, anbraten. Perfekt zum Vorbereiten + Einfrieren.' }),
+    anleitung: '1. Rührei mit Paprika + Frühlingszwiebeln zubereiten.\n2. Wrap belegen: Rührei, Cheddar, Bohnen, Salsa.\n3. Rollen, anbraten.\nPerfekt zum Vorbereiten + Einfrieren.' }),
 
   createRezept({ id: 'r_veggie_burrito', name: 'Veggie-Bohnen-Burrito', kategorien: ['Burritos'],
     basisPortionen: 5, kochdauer: 25, aufbewahrung: { tk: true, behaelter: ['Box'] },
@@ -686,7 +909,7 @@ export const seedRezepte = () => [
       { zutatId: 'z_mais',          menge: 200 },
       { zutatId: 'z_cheddar',       menge: 120 },
     ],
-    anleitung: 'Bohnen mit Kreuzkümmel + Paprika anbraten, leicht zerdrücken. Wrap belegen: Reis, Bohnen, Mais, Cheddar, Salsa. Rollen, anbraten. Top für TK-Vorrat.' }),
+    anleitung: '1. Bohnen mit Kreuzkümmel + Paprika anbraten, leicht zerdrücken.\n2. Wrap belegen: Reis, Bohnen, Mais, Cheddar, Salsa.\n3. Rollen, anbraten.\nTop für TK-Vorrat.' }),
 
   createRezept({ id: 'r_griechischer_salat', name: 'Griechischer Salat', kategorien: ['Salate'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['frisch'] },
@@ -696,5 +919,5 @@ export const seedRezepte = () => [
       { zutatId: 'z_feta',      menge: 200 },
       { zutatId: 'z_olivenoel', menge: 40  },
     ],
-    anleitung: 'Tomate + Gurke grob würfeln, rote Zwiebeln, Oliven, Feta-Block oben. Olivenöl + Oregano + Essig. Keine Aufbewahrung — frisch am besten.' }),
+    anleitung: '1. Tomate + Gurke grob würfeln.\n2. Rote Zwiebeln, Oliven, Feta-Block oben.\n3. Olivenöl + Oregano + Essig.\nFrisch am besten — nicht lange lagern.' }),
 ]

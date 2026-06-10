@@ -52,14 +52,18 @@ export function toggleCheck(data, dateStr, habitId) {
   return { ...data, checks }
 }
 
-// Letzte N Tage als [{ date, done }] — heute zuletzt (für Heatmap)
-export function heatmap(data, habitId, days = 30) {
+// Aktive Tage seit Anlage als [{ date, done }] — heute zuletzt (für Heatmap).
+// Tage vor der Anlage werden ausgelassen: eine frische Gewohnheit startet klein
+// und wächst sichtbar mit, statt als Wand grauer „Fehltage" zu erscheinen.
+export function heatmap(data, habit, days = 30) {
+  const created = (habit.createdAt ?? '').slice(0, 10)
   const out  = []
   const base = new Date(); base.setHours(0, 0, 0, 0)
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(base); d.setDate(d.getDate() - i)
     const ds = dateKey(d)
-    out.push({ date: ds, done: (data.checks[ds] ?? []).includes(habitId) })
+    if (created && ds < created) continue
+    out.push({ date: ds, done: (data.checks[ds] ?? []).includes(habit.id) })
   }
   return out
 }

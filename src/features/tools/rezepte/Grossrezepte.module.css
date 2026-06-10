@@ -1,17 +1,6 @@
 .wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
 
-.hubBar { display: flex; align-items: center; gap: 10px; padding: 2px 0 6px; }
-.backToHub {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: none; border: none; color: var(--tool-color);
-  font-family: Outfit, sans-serif; font-size: 0.85rem; font-weight: 600;
-  cursor: pointer; padding: 4px 0; -webkit-tap-highlight-color: transparent;
-}
-.hubTitle {
-  font-family: Outfit, sans-serif; font-size: 0.7rem; font-weight: 700;
-  color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em;
-  margin-left: auto;
-}
+.intro { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; padding: 2px 0; }
 
 .topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
 

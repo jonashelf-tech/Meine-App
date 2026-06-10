@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { SK } from '../../../storage'
 import { getToolColor, todayKey } from '../../../utils'
@@ -27,6 +27,8 @@ export default function TabWachstum({ onBack }) {
   const [newIdentity, setNewIdentity] = useState('')
   const [draft, setDraft]             = useState(() => getJournal(loadGrowth(), today))
   const [confirmReset, setConfirmReset] = useState(false)
+  const [undoId, setUndoId]           = useState(null)
+  const undoTimer = useRef(null)
 
   const persist = (next) => { setData(next); saveGrowth(next) }
   const habits  = activeHabits(data)
@@ -37,9 +39,39 @@ export default function TabWachstum({ onBack }) {
     setNewHabit(''); setNewIdentity('')
   }
 
-  const removeHabit = (id) => persist({ ...data, habits: data.habits.filter(h => h.id !== id) })
+  // Archivieren statt löschen: Häkchen-Historie bleibt erhalten (auch in den
+  // Kalender-Tagesübersichten), und ein Fehl-Tap ist sofort rückgängig machbar.
+  const setArchived = (id, archived) =>
+    persist({ ...data, habits: data.habits.map(h => h.id === id ? { ...h, archived } : h) })
+
+  const archiveHabit = (id) => {
+    setArchived(id, true)
+    setUndoId(id)
+    clearTimeout(undoTimer.current)
+    undoTimer.current = setTimeout(() => setUndoId(null), 6000)
+  }
+
+  const restoreHabit = () => {
+    clearTimeout(undoTimer.current)
+    setArchived(undoId, false)
+    setUndoId(null)
+  }
+
+  useEffect(() => () => clearTimeout(undoTimer.current), [])
 
   const saveJournal = () => persist(setJournal(loadGrowth(), today, draft))
+
+  // Journal-Schutz: blur feuert beim Tab-Wechsel (Unmount) und App-Hintergrund
+  // auf mobilen PWAs nicht zuverlässig. Hier sichern wir den Entwurf zusätzlich
+  // beim Verlassen frisch ab — kein Reflexions-Text geht verloren.
+  const draftRef = useRef(draft)
+  draftRef.current = draft
+  useEffect(() => {
+    const flush = () => saveGrowth(setJournal(loadGrowth(), today, draftRef.current))
+    const onHide = () => { if (document.visibilityState === 'hidden') flush() }
+    document.addEventListener('visibilitychange', onHide)
+    return () => { document.removeEventListener('visibilitychange', onHide); flush() }
+  }, [today])
 
   const recent = Object.entries(data.journal)
     .filter(([d]) => d !== today)
@@ -65,14 +97,15 @@ export default function TabWachstum({ onBack }) {
         {habits.map(h => {
           const on   = isChecked(data, today, h.id)
           const rate = Math.round(consistency(data, h) * 100)
-          const map  = heatmap(data, h.id, 30)
+          const map  = heatmap(data, h, 30)
           return (
             <div key={h.id} className={s.habitCard}>
               <div className={s.habitTop}>
                 <button
                   className={[s.check, on ? s.checkOn : ''].join(' ')}
                   onClick={() => persist(toggleCheck(data, today, h.id))}
-                  aria-label="Heute abhaken"
+                  aria-pressed={on}
+                  aria-label={on ? `${h.text} — heute erledigt` : `${h.text} — heute abhaken`}
                 >
                   {on ? '✓' : ''}
                 </button>
@@ -81,7 +114,7 @@ export default function TabWachstum({ onBack }) {
                   {h.identity && <span className={s.habitIdentity}>{h.identity}</span>}
                 </div>
                 <span className={s.habitRate}>{rate}%</span>
-                <button className={s.habitDel} onClick={() => removeHabit(h.id)} aria-label="Löschen">×</button>
+                <button className={s.habitDel} onClick={() => archiveHabit(h.id)} aria-label="Archivieren">×</button>
               </div>
               <div className={s.heat}>
                 {map.map(c => (
@@ -95,6 +128,15 @@ export default function TabWachstum({ onBack }) {
             </div>
           )
         })}
+
+        {undoId && (
+          <div className={s.undoBar}>
+            <span className={s.undoText}>
+              „{data.habits.find(h => h.id === undoId)?.text}" archiviert
+            </span>
+            <button className={s.undoBtn} onClick={restoreHabit}>Rückgängig</button>
+          </div>
+        )}
 
         <div className={s.addBox}>
           <input
