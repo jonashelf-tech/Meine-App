@@ -1,0 +1,56 @@
+/* src/features/tools/garten/GartenSzene.module.css */
+.szene { display: block; width: 100%; height: auto; }
+
+.day {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--primary) 16%, var(--bg)) 0%,
+    color-mix(in srgb, var(--primary) 8%, var(--bg)) 55%,
+    var(--bg2) 100%);
+}
+.night {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--primary) 7%, var(--bg)) 0%,
+    var(--bg2) 70%,
+    var(--bg) 100%);
+}
+
+.huegel { fill: color-mix(in srgb, var(--primary) 14%, var(--bg)); }
+.boden  { fill: color-mix(in srgb, var(--emerald) 12%, var(--bg)); }
+
+.stiel { stroke: color-mix(in srgb, var(--emerald) 70%, var(--bg)); stroke-width: 2; fill: none; stroke-linecap: round; }
+.blatt { fill: color-mix(in srgb, var(--emerald) 55%, var(--bg)); }
+.gras path { stroke: color-mix(in srgb, var(--emerald) 45%, var(--bg)); stroke-width: 1.4; fill: none; stroke-linecap: round; }
+
+.samen     { fill: color-mix(in srgb, var(--primary) 70%, white); }
+.erdhuegel { fill: color-mix(in srgb, var(--emerald) 8%, var(--bg3)); }
+.knospe    { fill: color-mix(in srgb, var(--primary) 75%, var(--bg)); }
+
+.bluetePrimary  { fill: color-mix(in srgb, var(--primary) 80%, white); opacity: 0.92; }
+.blueteMitte    { fill: var(--teal); }
+.blueteTeal     { fill: color-mix(in srgb, var(--teal) 75%, white); }
+.blueteHell circle { fill: color-mix(in srgb, var(--emerald) 60%, white); }
+
+.stein      { fill: color-mix(in srgb, white 14%, var(--bg3)); }
+.teich      { fill: color-mix(in srgb, var(--teal) 30%, var(--bg2)); }
+.teichLicht { fill: color-mix(in srgb, white 22%, transparent); }
+
+.stern { fill: white; opacity: 0.7; animation: sternFunkeln 3.2s ease-in-out infinite; }
+.mond  { fill: color-mix(in srgb, white 80%, var(--primary)); opacity: 0.9; }
+
+.gluehwuermchen { fill: color-mix(in srgb, var(--emerald) 60%, white); animation: gluehen 2.6s ease-in-out infinite; }
+.lichtpunkt     { fill: color-mix(in srgb, var(--primary) 50%, white); animation: gluehen 3.4s ease-in-out infinite; }
+
+.schmetterling         { animation: flattern 4s ease-in-out infinite; }
+.schmetterling ellipse { fill: color-mix(in srgb, var(--rose) 70%, white); opacity: 0.85; }
+.schmetterling line    { stroke: color-mix(in srgb, white 60%, var(--bg)); stroke-width: 1; }
+
+.sternschnuppe line   { stroke: color-mix(in srgb, white 70%, var(--teal)); stroke-width: 1; opacity: 0.8; }
+.sternschnuppe circle { fill: white; }
+
+@keyframes sternFunkeln { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.85; } }
+@keyframes gluehen      { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.95; } }
+@keyframes flattern     { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .stern, .gluehwuermchen, .lichtpunkt, .schmetterling { animation: none; }
+}
