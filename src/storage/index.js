@@ -93,6 +93,7 @@ export const SK = {
   lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
   projects:        `${PREFIX}projects`,
   wachstum:        `${PREFIX}wachstum_v1`,
+  garten:          `${PREFIX}garten_v1`,
 }
 
 export const exportData = () => {
@@ -126,7 +127,7 @@ export const BACKUP_CATS = {
     SK.reminder, SK.reminderDismissed, SK.elvi,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
     SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule,
-    SK.wachstum,
+    SK.wachstum, SK.garten,
   ],
   einstellungen: [
     SK.settings, SK.theme, SK.appBriefingSeen,
