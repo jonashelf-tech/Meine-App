@@ -33,6 +33,8 @@ Controller macht Navigation/Fortschritt automatisch. Letzter Schritt = „Fertig
 
 1. **`GlideStage({ todoIndex, slotKey, reverse })`** — echter Planer, ein Ghost-Chip gleitet
    flüssig Pool↔Slot (Positionen zur Laufzeit gemessen, CSS-Transition). Für **Drag-Tricks**.
+   Der Planer ist höher als das Fenster → die Geste wird pro Animationszyklus mittig
+   gescrollt, damit Pool-Start und Ziel-Slot beide sichtbar sind.
 2. **`DayPanelStage`** — echtes Kalender-`DayPanel` + `TapPulse` + Mini-Restore-Dialog. Für
    **Kalender-Tricks** (DayPanel ist prop-getrieben, mit `initialOpen` Karten aufklappen).
 3. **`ModalStage`** — echtes `TodoModal` eingebettet. Der `.modalWrap` mit `transform: translateZ(0)`
