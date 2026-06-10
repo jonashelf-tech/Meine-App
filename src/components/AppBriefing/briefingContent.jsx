@@ -27,6 +27,17 @@ function slotFor(todo, key) {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
+// nächster scrollbarer Vorfahr (z.B. .stageWrap)
+function scrollParent(el) {
+  let n = el?.parentElement
+  while (n) {
+    const oy = getComputedStyle(n).overflowY
+    if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 1) return n
+    n = n.parentElement
+  }
+  return null
+}
+
 // ═════════════════════════════════════════════════════════════
 // TEMPLATE 1 — GlideStage: echter Planer + flüssig gleitender Ghost
 // (Vorlage für alle Drag-Tricks: Pool↔Zeitplan, …)
@@ -53,6 +64,17 @@ function GlideStage({ todoIndex, slotKey, reverse = false }) {
         const a = els.current[startKey]
         const b = els.current[endKey]
         if (!stage || !ghost || !a || !b) { await sleep(150); continue }
+
+        // Planer ist höher als das Fenster → die Geste mittig ins Bild scrollen,
+        // damit Pool-Start und Ziel-Slot beide sichtbar sind
+        const sc = scrollParent(stage)
+        if (sc) {
+          const scTop = sc.getBoundingClientRect().top
+          const aC = a.getBoundingClientRect().top - scTop + sc.scrollTop
+          const bC = b.getBoundingClientRect().top - scTop + sc.scrollTop
+          const target = (aC + bC) / 2 - sc.clientHeight / 2
+          sc.scrollTop = Math.max(0, Math.min(target, sc.scrollHeight - sc.clientHeight))
+        }
 
         const sb = stage.getBoundingClientRect()
         const ab = a.getBoundingClientRect()
