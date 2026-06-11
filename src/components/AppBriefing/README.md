@@ -29,54 +29,36 @@ In `briefingContent.jsx` ans `STEPS`-Array anhängen:
 
 Controller macht Navigation/Fortschritt automatisch. Letzter Schritt = „Fertig ✓".
 
-## Drei Stage-Templates (verifiziert)
+## Stage-Templates (verifiziert)
 
 1. **`GlideStage({ todoIndex, slotKey, reverse })`** — echter Planer, ein Ghost-Chip gleitet
    flüssig Pool↔Slot (Positionen zur Laufzeit gemessen, CSS-Transition). Für **Drag-Tricks**.
    Der Planer ist höher als das Fenster → die Geste wird pro Animationszyklus mittig
    gescrollt, damit Pool-Start und Ziel-Slot beide sichtbar sind.
-2. **`DayPanelStage`** — echtes Kalender-`DayPanel` + `TapPulse` + Mini-Restore-Dialog. Für
-   **Kalender-Tricks** (DayPanel ist prop-getrieben, mit `initialOpen` Karten aufklappen).
-3. **`ModalStage`** — echtes `TodoModal` eingebettet. Der `.modalWrap` mit `transform: translateZ(0)`
+2. **`ControlStage({ find })`** — DemoPlanner (volle Toolbar, no-op-Callbacks) + `TapPulse` auf
+   ein per `find(...)` gefundenes Toolbar-Element. Für **„antippen"-Tricks**.
+3. **`ModalStage({ find })`** — echtes `TodoModal` eingebettet. Der `.modalWrap` mit `transform: translateZ(0)`
    macht das `fixed`-Overlay **stage-lokal** (nicht bildschirmfüllend). Für **Todos-/Modal-Tricks**.
-
-Für reine „antippen"-Tricks: `DemoPlanner` (mit belegtem Slot) + `TapPulse` auf das Ziel-Element
-(`getTarget` per `stageRef.current.querySelector(...)`).
-
 4. **`WeekGridDemo`** — eigenes Wochen-Grid, das die **echten** `TabKalender.module.css`-Klassen
-   wiederverwendet (pixelgleich, read-only, Ghost-Block gleitet über Tag+Uhrzeit). **Wichtig:** der
-   echte `TabKalender` wurde NICHT umgebaut (Drag-Logik zu tief inline → blind zu riskant). Optik
-   identisch über geteilte CSS. Ein `MonthGridDemo` baust du analog (gleiche `wk.month*`-Klassen).
+   wiederverwendet (pixelgleich, read-only, Ghost-Block gleitet über Tag+Uhrzeit). Der
+   echte `TabKalender` wurde NICHT umgebaut. (`mode="create"`-Variante existiert weiter im
+   Component, wird aktuell nicht genutzt.)
+5. **`MissedStage`** — echtes `MissedReviewModal` eingebettet (gleicher Transform-Trick).
 
 Info-Schritte ohne echte Komponenten: `StageTools` / `StageBackup` (= `.infoStage`).
 
-## Gebaut — erste 12 Schritte (Gesamt 18, Rest siehe „Status" unten)
-
-1. Plane per Drag & Drop (GlideStage) · 2. Tag verschieben ▲▼30min (ControlStage) ·
-3. Termine festnageln / Schloss (ControlStage, lockLoop) · 4. Zeit blocken / +Fenster (ControlStage) ·
-5. Drei Ansichten Alles/Minimal/Fokus (ControlStage) · 6. Zeitbereich +/− (ControlStage) ·
-7. Erledigtes wiederherstellen (DayPanelStage) · 8. Wochenplan Drag (WeekGridDemo mode=drag) ·
-9. Tippen legt an (WeekGridDemo mode=create, Modal öffnet kurz) · 10. Auto-Knopf (ModalStage) ·
-11. Tools-Konzept (StageTools) · 12. Backup (StageBackup)
-
-`ControlStage` (in briefingContent.jsx) ist die Vorlage für „antippen"-Tricks: DemoPlanner (volle
-Toolbar, da `onCreateBlocker`/`onFokusMode` no-op übergeben) + TapPulse auf ein per `find(...)`
-gefundenes Element. `withSlot` legt einen Demo-Slot rein, `lockLoop` toggelt dessen Lock.
-
 `TapPulse` holt sein Ziel automatisch ins Sichtfeld (`scrollIntoView` im scrollbaren `.stageWrap`),
-falls es außerhalb liegt — z.B. die Pool-Sortierung ganz unten. Wichtig: `behavior: 'auto'`, nicht
-`'smooth'` — Smooth-Scroll greift im Briefing-Overlay nicht (bleibt bei scrollTop 0).
+falls es außerhalb liegt. Wichtig: `behavior: 'auto'`, nicht `'smooth'` — Smooth-Scroll greift im
+Briefing-Overlay nicht (bleibt bei scrollTop 0).
 
-## Status: komplett — 18 Schritte (alle DOM-verifiziert)
+## Status: 7 Schritte (2026-06: von 18 auf 7 gekürzt)
 
-Zusätzlich zu den 12 oben gebaut:
-- **Tagesplaner:** Jeden Tag planen (`DayNavStage`) · Verpasstes nachholen (`MissedStage`,
-  echtes `MissedReviewModal` eingebettet) · Pool sortieren (`ControlStage`)
-- **Kalender:** Monat & Tagesansicht (`MonthGridDemo` — gleiche CSS-Reuse-Methode wie WeekGridDemo)
-- **Todos:** In Schritte zerlegen + Termin oder Aufgabe? (`ModalStage`-Varianten, generalisiert
-  über `find` + `todoFactory`)
+Bewusst nur, was man nicht durch Ausprobieren findet: Drag&Drop (GlideStage) · +Fenster
+(ControlStage) · Verpasstes nachholen (MissedStage) · Woche&Monat (WeekGridDemo) · Auto-Knopf
+(ModalStage) · Tools (StageTools) · Backup (StageBackup).
 
-Alle Tricks aus Jonas' Feedback sind drin. Neue Tricks: einfach `STEPS` erweitern (Templates oben).
+Entfernt (Stages mit-gelöscht): DayNavStage, DayPanelStage, MonthGridDemo, Lock/30min/Ansichten/
+Zeitbereich/Pool-Sortierung/Schritte/Termin-Schritte. Neue Tricks: einfach `STEPS` erweitern.
 
 ## Hinweise für die Modal-/Grid-Tricks
 

@@ -1,14 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createBlock } from '../../features/todos/Block'
 import { todayKey } from '../../utils'
-import { DayPanel } from '../../features/calendar/TabKalender/TabKalender'
 import { ToolIcon } from '../../features/tools/toolRegistry'
 import TodoModal from '../../components/TodoModal/TodoModal'
-import DayNav from '../../components/DayNav/DayNav'
 import MissedReviewModal from '../../features/calendar/Zeitplan/MissedReviewModal'
 import DemoPlanner from './DemoPlanner'
 import WeekGridDemo from './WeekGridDemo'
-import MonthGridDemo from './MonthGridDemo'
 import TapPulse from './TapPulse'
 import s from './AppBriefing.module.css'
 
@@ -112,105 +109,17 @@ function GlideStage({ todoIndex, slotKey, reverse = false }) {
   )
 }
 
-// ── ControlStage: DemoPlanner + Tap-Puls auf ein Toolbar-/Slot-Element ──
+// ── ControlStage: DemoPlanner + Tap-Puls auf ein Toolbar-Element ──
 const findText = txt => st => (st ? [...st.querySelectorAll('button')].find(b => b.textContent.trim() === txt) || null : null)
-const findIncludes = txt => st => (st ? [...st.querySelectorAll('button')].find(b => b.textContent.includes(txt)) || null : null)
-const findSel = sel => st => (st ? st.querySelector(sel) : null)
 
-function ControlStage({ find, withSlot = false, lockLoop = false }) {
+function ControlStage({ find }) {
   const stageRef = useRef(null)
   const [todos] = useState(makeDemoTodos)
-  const [locked, setLocked] = useState(false)
-  useEffect(() => {
-    if (!lockLoop) return
-    const id = setInterval(() => setLocked(v => !v), 1500)
-    return () => clearInterval(id)
-  }, [lockLoop])
-  const t = todos[0]
-  const slots = withSlot
-    ? { '9': { text: t.text, color: t.color, duration: t.duration, locked, done: false, todoId: t.id } }
-    : {}
   const getTarget = useCallback(() => find(stageRef.current), [find])
   return (
     <div className={s.stageRel} ref={stageRef}>
-      <DemoPlanner slots={slots} todos={todos} visibleStart={8} visibleEnd={11} />
+      <DemoPlanner slots={{}} todos={todos} visibleStart={8} visibleEnd={11} />
       <TapPulse stageRef={stageRef} getTarget={getTarget} />
-    </div>
-  )
-}
-
-// ═════════════════════════════════════════════════════════════
-// TEMPLATE 2 — DayPanelStage: echtes Kalender-DayPanel + Tap-Puls
-// (Vorlage für Kalender-Tricks; hier: Erledigtes wiederherstellen)
-// ═════════════════════════════════════════════════════════════
-function makeRestoreDemo() {
-  const dk = todayKey()
-  const done = createBlock({ text: 'Sport gemacht', priority: 2, color: '#10B981' })
-  done.done = true
-  done.doneAt = `${dk}T10:00:00.000Z`
-  const planned = createBlock({ text: 'Termin Arzt', priority: 1, color: '#14B8A6', date: dk, time: '11:00', duration: 30 })
-  return { dk, done, planned }
-}
-
-function DayPanelStage() {
-  const stageRef = useRef(null)
-  const [{ dk, done, planned }] = useState(makeRestoreDemo)
-  const [restoreTodo, setRestoreTodo] = useState(null)
-  const todos = [done, planned]
-  const days = { [dk]: slotFor(planned, '11') }
-
-  useEffect(() => {
-    let alive = true
-    const run = async () => {
-      while (alive) {
-        await sleep(2200); if (!alive) break
-        setRestoreTodo(done)
-        await sleep(1900); if (!alive) break
-        setRestoreTodo(null)
-      }
-    }
-    run()
-    return () => { alive = false }
-  }, [done])
-
-  const getTarget = useCallback(() => stageRef.current?.querySelector('[class*="dayPanelTodoEntry"]'), [])
-
-  return (
-    <div className={s.stageRel} ref={stageRef}>
-      <div className={s.panelWrap}>
-        <DayPanel
-          dateKey={dk}
-          todayKey={dk}
-          days={days}
-          todos={todos}
-          activeTools={[]}
-          toolColors={{}}
-          birthdays={[]}
-          weightEntry={null}
-          setCurrentTab={() => {}}
-          setDayplanDate={() => {}}
-          setTodos={() => {}}
-          restoreTodo={restoreTodo}
-          setRestoreTodo={setRestoreTodo}
-          handleRestore={() => setRestoreTodo(null)}
-          initialOpen={{ zeitplan: true, done: true }}
-        />
-      </div>
-
-      {!restoreTodo && <TapPulse stageRef={stageRef} getTarget={getTarget} />}
-
-      {restoreTodo && (
-        <div className={s.miniOverlay}>
-          <div className={s.miniDialog}>
-            <p className={s.miniTitle}>Wiederherstellen?</p>
-            <p className={s.miniText}>{restoreTodo.text}</p>
-            <div className={s.miniActions}>
-              <button className={s.miniYes}>Ja, zurück</button>
-              <button className={s.miniNo}>Abbrechen</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -229,13 +138,9 @@ function makeModalTodo() {
   return t
 }
 
-function makeTerminTodo() {
-  return createBlock({ text: 'Zahnarzt', priority: 1, color: '#8B5CF6', duration: 60, date: todayKey(), time: '14:00' })
-}
-
-function ModalStage({ find, todoFactory = makeModalTodo }) {
+function ModalStage({ find }) {
   const stageRef = useRef(null)
-  const [todo] = useState(todoFactory)
+  const [todo] = useState(makeModalTodo)
   const getTarget = useCallback(() => find(stageRef.current), [find])
 
   return (
@@ -279,26 +184,6 @@ function StageBackup() {
   )
 }
 
-// ── DayNavStage: echte DayNav-Pille + Planer, Puls auf den Pfeil ──
-function DayNavStage() {
-  const stageRef = useRef(null)
-  const [todos] = useState(makeDemoTodos)
-  const getArrow = useCallback(() => {
-    const wrap = stageRef.current?.querySelector('[class*="dayNavWrap"]')
-    if (!wrap) return null
-    const btns = wrap.querySelectorAll('button')
-    return btns.length ? btns[btns.length - 1] : null
-  }, [])
-  return (
-    <div className={s.stageRel} ref={stageRef}>
-      <div className={s.dayNavWrap}>
-        <DayNav date={todayKey()} onChange={() => {}} onCalendarOpen={() => {}} />
-      </div>
-      <DemoPlanner slots={{}} todos={todos} visibleStart={8} visibleEnd={11} />
-      <TapPulse stageRef={stageRef} getTarget={getArrow} />
-    </div>
-  )
-}
 
 // ── MissedStage: echtes MissedReviewModal eingebettet ──
 function MissedStage() {
@@ -316,6 +201,9 @@ function MissedStage() {
 }
 
 // ─── Schritte ────────────────────────────────────────────────
+// Bewusst kurz (7 statt 18): nur was man nicht durch Ausprobieren findet.
+// Detail-Features (Sperren, ▲▼-Verschieben, Ansichten, Pool-Sortierung,
+// Tagesansicht, Schritte) erklären sich beim Benutzen.
 export const STEPS = [
   {
     chapter: 'Tagesplaner',
@@ -328,57 +216,12 @@ export const STEPS = [
   },
   {
     chapter: 'Tagesplaner',
-    title: 'Jeden Tag planen',
-    text: (
-      <>Oben blätterst du mit den Pfeilen durch die <strong>Tage</strong> — Pool und Zeitplan
-      funktionieren an jedem Tag gleich. Tipp aufs Datum, um in den Kalender zu springen.</>
-    ),
-    Stage: DayNavStage,
-  },
-  {
-    chapter: 'Tagesplaner',
-    title: 'Termine festnageln',
-    text: (
-      <>Tipp auf den Griff am Block, um ihn zu <strong>sperren</strong> — gesperrte Termine bleiben
-      beim Verschieben fest an ihrer Uhrzeit.</>
-    ),
-    Stage: () => <ControlStage find={findSel('[class*="slotHandle"]')} withSlot lockLoop />,
-  },
-  {
-    chapter: 'Tagesplaner',
-    title: 'Den ganzen Tag verschieben',
-    text: (
-      <>Mit <strong>▲ / ▼ 30min</strong> schiebst du alle <strong>nicht gesperrten</strong> Termine auf
-      einen Schlag nach oben oder unten — praktisch, wenn sich der ganze Tag verspätet.</>
-    ),
-    Stage: () => <ControlStage find={findIncludes('30min')} withSlot />,
-  },
-  {
-    chapter: 'Tagesplaner',
     title: 'Zeit blocken',
     text: (
       <>Mit <strong>+ Fenster</strong> blockst du feste Zeiten — Schlaf, Arbeit, Pausen.
       Auch wiederkehrend möglich.</>
     ),
     Stage: () => <ControlStage find={findText('+ Fenster')} />,
-  },
-  {
-    chapter: 'Tagesplaner',
-    title: 'Drei Ansichten',
-    text: (
-      <><strong>Alles</strong> zeigt den ganzen Tag, <strong>Minimal</strong> nur belegte Slots,
-      <strong> Fokus</strong> blendet alles bis aufs Wesentliche aus.</>
-    ),
-    Stage: () => <ControlStage find={findText('Minimal')} />,
-  },
-  {
-    chapter: 'Tagesplaner',
-    title: 'Zeitbereich anpassen',
-    text: (
-      <>Mit <strong>+ / −</strong> oben und unten erweiterst oder verkleinerst du den sichtbaren
-      Zeitbereich — zeig nur die Stunden, die du brauchst.</>
-    ),
-    Stage: () => <ControlStage find={findSel('[class*="pillBtnPlus"]')} />,
   },
   {
     chapter: 'Tagesplaner',
@@ -390,49 +233,14 @@ export const STEPS = [
     Stage: MissedStage,
   },
   {
-    chapter: 'Tagesplaner',
-    title: 'Pool sortieren',
-    text: (
-      <>Sortier deinen Pool nach <strong>Kategorie</strong> oder <strong>Alter</strong> statt Standard —
-      so siehst du schneller, was wirklich dran ist.</>
-    ),
-    Stage: () => <ControlStage find={findText('Kategorie')} />,
-  },
-  {
     chapter: 'Kalender',
-    title: 'Wochenplan: alles im Blick',
+    title: 'Woche & Monat',
     text: (
-      <>In der Wochenansicht ziehst du Blöcke frei über <strong>Tage und Uhrzeiten</strong> —
-      einfach greifen und an die neue Stelle ziehen.</>
+      <>In der Wochenansicht ziehst du Blöcke frei über <strong>Tage und Uhrzeiten</strong>; Tipp auf
+      eine freie Fläche legt direkt einen Eintrag an. Die Monatsansicht zeigt den Überblick —
+      Tipp auf einen Tag öffnet die Tagesansicht.</>
     ),
     Stage: () => <WeekGridDemo mode="drag" />,
-  },
-  {
-    chapter: 'Kalender',
-    title: 'Tippen legt an',
-    text: (
-      <>Tipp auf eine <strong>freie Fläche</strong> in der Woche — und du legst dort direkt einen
-      neuen Eintrag an. Das Fenster zum Ausfüllen öffnet sich sofort.</>
-    ),
-    Stage: () => <WeekGridDemo mode="create" />,
-  },
-  {
-    chapter: 'Kalender',
-    title: 'Monat & Tagesansicht',
-    text: (
-      <>Die Monatsansicht zeigt dir den Überblick. Tipp auf einen Tag — und darunter klappt die
-      <strong> Tagesansicht</strong> mit allem auf, was war und ist.</>
-    ),
-    Stage: MonthGridDemo,
-  },
-  {
-    chapter: 'Kalender',
-    title: 'Erledigtes wiederherstellen',
-    text: (
-      <>Tippe im Kalender auf einen Tag, klapp <strong>Erledigt</strong> auf und tippe ein Todo
-      an — du kannst es jederzeit zurückholen. Versehentlich abgehakt? Kein Problem.</>
-    ),
-    Stage: DayPanelStage,
   },
   {
     chapter: 'Todos',
@@ -442,24 +250,6 @@ export const STEPS = [
       Datum, Uhrzeit, Dauer und Priorität werden automatisch aus dem Text erkannt.</>
     ),
     Stage: () => <ModalStage find={findText('Auto')} />,
-  },
-  {
-    chapter: 'Todos',
-    title: 'In Schritte zerlegen',
-    text: (
-      <>Jedes Todo kann <strong>Schritte</strong> bekommen — eine kleine Häkchen-Liste. Hilft, wenn
-      eine Aufgabe sonst zu groß wirkt, um überhaupt anzufangen.</>
-    ),
-    Stage: () => <ModalStage find={findSel('input[placeholder*="Schritt"]')} />,
-  },
-  {
-    chapter: 'Todos',
-    title: 'Termin oder Aufgabe?',
-    text: (
-      <>Mit <strong>Datum + Uhrzeit</strong> wird's ein Kalender-Termin. Nur ein Datum = Fälligkeit.
-      Nichts davon = lose Aufgabe im Pool.</>
-    ),
-    Stage: () => <ModalStage find={findSel('input[type="date"]')} todoFactory={makeTerminTodo} />,
   },
   {
     chapter: 'Tools',
