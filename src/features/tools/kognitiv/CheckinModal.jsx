@@ -34,7 +34,6 @@ function ArrivalTimer({ entry, onDone }) {
       })
     }, 1000)
     return () => clearInterval(intervalRef.current)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

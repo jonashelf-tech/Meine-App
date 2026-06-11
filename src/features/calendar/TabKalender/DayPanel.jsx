@@ -33,7 +33,7 @@ function fmtDelta(moduleId, delta) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-export function DayPanel({ dateKey, todayKey, days, todos, activeTools, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, setTodos, restoreTodo, setRestoreTodo, handleRestore, initialOpen }) {
+export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, restoreTodo, setRestoreTodo, handleRestore, initialOpen }) {
   const [open, setOpen] = useState(initialOpen ?? { zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false, wachstum: false })
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)

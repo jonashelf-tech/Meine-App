@@ -8,7 +8,7 @@ import BlockerCard from '../Blocker/BlockerCard'
 import { getBlockersForDate, getBlockerForHour } from '../Blocker/blockerUtils'
 
 // ─── RemoveDialog ─────────────────────────────────────────
-function RemoveDialog({ slotKey, slotText, onBack, onDelete, onClose }) {
+function RemoveDialog({ slotText, onBack, onDelete, onClose }) {
   return (
     <div className={s.dialogOverlay} onClick={onClose}>
       <div className={s.dialog} onClick={e => e.stopPropagation()}>

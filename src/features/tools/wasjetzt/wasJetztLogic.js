@@ -62,7 +62,7 @@ export function buildWasJetzt(todos, zeitBudget) {
         })
       }
     }
-  } catch (_) {
+  } catch {
     // kein Haushalt-Tool konfiguriert → ignorieren
   }
 

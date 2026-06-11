@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import PrioBadge from '../PrioBadge/PrioBadge'
 import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
@@ -62,7 +62,7 @@ export default function TodoChip({
   const itemsWrapRef = useRef(null)
   const subDragRef = useRef({ from: null, over: null })
 
-  const allItems = todo.subItems || []
+  const allItems = useMemo(() => todo.subItems || [], [todo.subItems])
   const doneItems = allItems.filter(si => si.done).length
 
   // ── Done flash ──────────────────────────────────────────

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, ALL_SLOT_KEYS, getDurationKeys, dateKey, skLabel } from '../../../utils'
 import { TOOL_TAB } from '../../tools/toolTabs'
@@ -46,7 +46,7 @@ export default function TabHeute() {
 
   const { registerHalf, startDrag } = useDragDrop()
 
-  const todaySlots = days[viewDate] ?? {}
+  const todaySlots = useMemo(() => days[viewDate] ?? {}, [days, viewDate])
 
   const { isOpen: teOpen, variant: teVariant, items: teItems, handleDone: teDone, handleIgnore: teIgnore, handleMoveToPool: teToPool } =
     useTimeEvents({ days, setDays, todos, setTodos })
@@ -130,7 +130,6 @@ export default function TabHeute() {
         tagesplanerDates: [...tracking.tagesplanerDates, today].slice(-1000),
       })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // ─── Helpers ─────────────────────────────────────────────

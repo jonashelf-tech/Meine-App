@@ -4,7 +4,7 @@ import { sv, lv, SK } from '../../../storage'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
-import { loadAll, saveZutaten, saveRezepte, saveSettings } from './mealprepStore'
+import { loadAll, saveZutaten, saveRezepte } from './mealprepStore'
 import { createKorb } from './mealprepModel'
 import Sammlung from './Sammlung'
 import Grossrezepte from './Grossrezepte'
@@ -31,7 +31,7 @@ export default function TabRezepte({ onBack }) {
   const init = useMemo(() => loadAll(), [])
   const [zutaten, setZutatenS] = useState(init.zutaten)
   const [rezepte, setRezepteS] = useState(init.rezepte)
-  const [settings, setSettingsS] = useState(init.settings)
+  const [settings] = useState(init.settings)
   const [korb, setKorbS] = useState(() => lv(SK.rezepteKorbAktiv, null) ?? createKorb({ name: 'Aktueller Korb' }))
   const setKorb = useCallback((v) => {
     setKorbS(prev => {
@@ -48,7 +48,6 @@ export default function TabRezepte({ onBack }) {
 
   const setZutaten = useCallback(v => { setZutatenS(v); saveZutaten(v) }, [])
   const setRezepte = useCallback(v => { setRezepteS(v); saveRezepte(v) }, [])
-  const setSettings = useCallback(v => { setSettingsS(v); saveSettings(v) }, [])
 
   // Hardware-/Gesten-Zurück: Editor schließen → Rezeptansicht schließen → zurück auf Rezepte-Tab → Tool verlassen
   useEffect(() => {

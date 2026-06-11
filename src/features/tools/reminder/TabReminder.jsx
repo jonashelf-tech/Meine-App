@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor, todayKey } from '../../../utils'
 import {
-  CURATED, intervalLabel, mergeWithCurated,
+  intervalLabel, mergeWithCurated,
   loadReminderItems, saveReminderItems,
   reminderSegments, reminderDueLabel,
 } from './reminderData'

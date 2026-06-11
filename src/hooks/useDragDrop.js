@@ -47,7 +47,6 @@ export function useDragDrop() {
 
     if (sourceEl) {
       const rect = sourceEl.getBoundingClientRect()
-      ghostW  = rect.width
       // Cursor soll an der Stelle bleiben wo der User den Chip hält
       offsetX = cx0 - rect.left
       offsetY = cy0 - rect.top

@@ -196,7 +196,7 @@ export default function TabGewicht({ onBack }) {
     }
     ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font=`9px Geist,sans-serif`;ctx.textAlign='center'
     dates.forEach((d,i)=>{if(i%7!==0&&i!==winDays-1)return;ctx.fillText(isoLabel(d),txI(i),H-5)})
-  }, [entries, chartView, chartOpts, activeTab])
+  }, [entries, chartView, chartOpts, activeTab, today])
 
   const isEditing = !!entries.find(e=>e.date===inputDate)
 

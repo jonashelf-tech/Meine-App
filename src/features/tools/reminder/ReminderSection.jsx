@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, minutesToSk, parseHHMM, ALL_SLOT_KEYS, sk, getToolColor } from '../../../utils'
 import { TOOL_TAB } from '../toolTabs'
@@ -7,7 +7,7 @@ import TodoChip from '../../../components/TodoChip/TodoChip'
 import { createBlock } from '../../todos/Block'
 import {
   isDueToday, mergeWithCurated,
-  loadReminderItems, saveReminderItems,
+  loadReminderItems,
   loadDismissed, saveDismissed,
 } from './reminderData'
 import s from './ReminderSection.module.css'
@@ -26,7 +26,7 @@ const DragIcon = () => (
 export default function ReminderSection({ onStartDrag }) {
   const { todos, setTodos, days, setDays, setCurrentTab, toolColors } = useAppStore()
   const today      = todayKey()
-  const todaySlots = days[today] ?? {}
+  const todaySlots = useMemo(() => days[today] ?? {}, [days, today])
   const toolColor  = getToolColor('reminder', toolColors)
 
   const [items,      setItems]      = useState(() => mergeWithCurated(loadReminderItems()))
@@ -47,7 +47,7 @@ export default function ReminderSection({ onStartDrag }) {
     .join(',')
   useEffect(() => { setItems(mergeWithCurated(loadReminderItems())) }, [reminderDoneKey])
 
-  const todayDismissed = dismissed[today] ?? []
+  const todayDismissed = useMemo(() => dismissed[today] ?? [], [dismissed, today])
 
   const pendingReminderIds = new Set([
     ...todos.filter(t => t.reminderItemId && !t.done).map(t => t.reminderItemId),
@@ -100,15 +100,6 @@ export default function ReminderSection({ onStartDrag }) {
       block: createBlock({ text: item.text, priority: 2, color: item.color, category: 'Selfcare', reminderItemId: item.id, toolId: 'reminder' }),
     }
   }, [])
-
-  const handleAddSingle = useCallback((item) => {
-    const result = buildResult(item, todaySlots)
-    if (result.type === 'slot') {
-      setDays(prev => ({ ...prev, [today]: { ...(prev[today] ?? {}), [result.slotKey]: result.data } }))
-    } else {
-      setTodos(prev => [...prev, result.block])
-    }
-  }, [today, todaySlots, buildResult, setDays, setTodos])
 
   const handleAddSelected = useCallback(() => {
     const toAdd = dueItems.filter(i => !deselected.has(i.id))

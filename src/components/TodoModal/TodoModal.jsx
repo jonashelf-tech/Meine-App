@@ -34,7 +34,7 @@ function formatSummaryDate(dateStr) {
 
 export default function TodoModal({ onClose, existingTodo = null, prefill = null }) {
   const keyboardOffset = useKeyboardOffset()
-  const { todos, setTodos, days, setDays, cats, setCats, accentColor } = useAppStore()
+  const { setTodos, setDays, cats, setCats, accentColor } = useAppStore()
 
   const isEdit = existingTodo !== null
 

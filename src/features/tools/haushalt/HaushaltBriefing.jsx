@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { todayKey } from '../../../utils'
-import { DEFAULT_ROOMS } from './haushaltData'
 import { Glyph, ROOM_GLYPHS } from '../_shared/glyphs'
 import GlyphPicker from '../_shared/GlyphPicker'
 import s from './HaushaltBriefing.module.css'

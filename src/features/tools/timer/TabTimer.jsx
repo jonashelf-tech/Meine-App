@@ -16,7 +16,7 @@ const LS_RUNNING = 'adhs_timer_running'
 
 // ─── Audio helpers ─────────────────────────────────────────
 const playDone = () => {
-  try { if (navigator.vibrate) navigator.vibrate([150, 80, 150, 80, 300]) } catch (e) {}
+  try { if (navigator.vibrate) navigator.vibrate([150, 80, 150, 80, 300]) } catch {}
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)()
     ;[[0, 660], [300, 880], [600, 1100]].forEach(([delay, freq]) => {
@@ -29,11 +29,11 @@ const playDone = () => {
       osc.start(ctx.currentTime + delay / 1000)
       osc.stop(ctx.currentTime + delay / 1000 + 0.5)
     })
-  } catch (e) {}
+  } catch {}
 }
 
 const playBreakStart = () => {
-  try { if (navigator.vibrate) navigator.vibrate([80, 50, 80]) } catch (e) {}
+  try { if (navigator.vibrate) navigator.vibrate([80, 50, 80]) } catch {}
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)()
     const osc = ctx.createOscillator(), gain = ctx.createGain()
@@ -42,7 +42,7 @@ const playBreakStart = () => {
     gain.gain.setValueAtTime(0.15, ctx.currentTime)
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6)
     osc.start(); osc.stop(ctx.currentTime + 0.6)
-  } catch (e) {}
+  } catch {}
 }
 
 // ─── Component ─────────────────────────────────────────────

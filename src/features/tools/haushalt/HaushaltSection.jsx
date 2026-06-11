@@ -58,6 +58,29 @@ export default function HaushaltSection({ onStartDrag }) {
 
   const toolColor = getToolColor('haushalt', toolColors)
 
+  // Re-sync wenn Haushalt-Pool-Todos ihren done-State ändern (TabHeute schreibt direkt in localStorage)
+  const haushaltDoneKey = todos
+    .filter(t => t.toolId === 'haushalt')
+    .map(t => `${t.id}:${t.done}`)
+    .join(',')
+  useEffect(() => { setConfig(loadHaushalt()) }, [haushaltDoneKey])
+
+  const [deselected, setDeselected] = useState(() => new Set())
+
+  const toggleSelectRoom = useCallback((roomId) => {
+    setDeselected(prev => {
+      const next = new Set(prev)
+      if (next.has(roomId)) next.delete(roomId); else next.add(roomId)
+      return next
+    })
+  }, [])
+
+  const handleRoomDragStart = useCallback((room, dueTasks, e) => {
+    const covered   = new Set(todos.filter(t => t.toolId === 'haushalt' && !t.done).flatMap(t => t.haushaltTaskIds ?? []))
+    const uncovered = dueTasks.filter(t => !covered.has(t.id))
+    onStartDrag?.(room, uncovered, toolColor, e)
+  }, [todos, toolColor, onStartDrag])
+
   if (!config.briefingDone) {
     return (
       <ToolSection
@@ -77,23 +100,6 @@ export default function HaushaltSection({ onStartDrag }) {
       </ToolSection>
     )
   }
-
-  // Re-sync wenn Haushalt-Pool-Todos ihren done-State ändern (TabHeute schreibt direkt in localStorage)
-  const haushaltDoneKey = todos
-    .filter(t => t.toolId === 'haushalt')
-    .map(t => `${t.id}:${t.done}`)
-    .join(',')
-  useEffect(() => { setConfig(loadHaushalt()) }, [haushaltDoneKey])
-
-  const [deselected, setDeselected] = useState(() => new Set())
-
-  const toggleSelectRoom = useCallback((roomId) => {
-    setDeselected(prev => {
-      const next = new Set(prev)
-      if (next.has(roomId)) next.delete(roomId); else next.add(roomId)
-      return next
-    })
-  }, [])
 
   const updateConfig = (next) => {
     setConfig(prev => {
@@ -130,12 +136,6 @@ export default function HaushaltSection({ onStartDrag }) {
 
   const handleTaskDone = (taskId) => updateConfig(prev => markTaskDone(prev, taskId))
 
-  const handleRoomDragStart = useCallback((room, dueTasks, e) => {
-    const covered   = new Set(todos.filter(t => t.toolId === 'haushalt' && !t.done).flatMap(t => t.haushaltTaskIds ?? []))
-    const uncovered = dueTasks.filter(t => !covered.has(t.id))
-    onStartDrag?.(room, uncovered, toolColor, e)
-  }, [todos, toolColor, onStartDrag])
-
   const handleRoomDone = (roomId) => {
     const entry = dueRooms.find(e => e.room.id === roomId)
     if (!entry) return
@@ -143,7 +143,7 @@ export default function HaushaltSection({ onStartDrag }) {
   }
 
   // saveItem-Handler für TodoChip: subItem done → Task abhaken, undone → zurücksetzen
-  const makeSaveItem = (uncoveredTasks) => (updatedTodo) => {
+  const makeSaveItem = () => (updatedTodo) => {
     updatedTodo.subItems.forEach(si => {
       if (si.done) handleTaskDone(si.id)
       else updateConfig(prev => resetTaskDone(prev, si.id))

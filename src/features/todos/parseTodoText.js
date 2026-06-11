@@ -71,7 +71,7 @@ export function parseTodoText(raw) {
   text = text.replace(/\d{1,2}\.\d{1,2}\.?(?:\d{2,4})?/g, '')
 
   if (!time) {
-    const tm = text.match(/(\d{1,2})[:\.](\d{2})\s*(?:uhr)?/i) || text.match(/(\d{1,2})\s*uhr/i)
+    const tm = text.match(/(\d{1,2})[:.](\d{2})\s*(?:uhr)?/i) || text.match(/(\d{1,2})\s*uhr/i)
     if (tm) {
       const h = parseInt(tm[1]), m = tm[2] ? parseInt(tm[2]) : 0
       time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
