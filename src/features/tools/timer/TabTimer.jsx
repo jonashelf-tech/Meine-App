@@ -47,7 +47,7 @@ const playBreakStart = () => {
 
 // ─── Component ─────────────────────────────────────────────
 export default function TabTimer({ onBack }) {
-  const { todos, setTodos, toolColors } = useAppStore()
+  const { todos, setTodos, toolColors, setTimerAutoStart, setDays } = useAppStore()
   const toolColor = getToolColor('timer', toolColors)
 
   // Config state
@@ -69,6 +69,12 @@ export default function TabTimer({ onBack }) {
   // Todo picker
   const [focusTodoId,    setFocusTodoId]    = useState(null)
   const [showTodoPicker, setShowTodoPicker] = useState(false)
+
+  // Play am Slot (Übergabe aus dem Tagesplaner) + geplant/gebraucht
+  const [autoTask,   setAutoTask]   = useState(null)  // { todoId, text, color, duration, date, slotKey }
+  const [usedMin,    setUsedMin]    = useState(null)  // gesetzt bei „Fertig" vor Ablauf
+  const [plannedMin, setPlannedMin] = useState(null)
+  const sessionStartRef = useRef(null)
 
   // Confirm dialogs
   const [confirmStop, setConfirmStop] = useState(false)
@@ -204,6 +210,8 @@ export default function TabTimer({ onBack }) {
     const now            = Date.now()
     startTsRef.current   = now
     totalSecsRef.current = secs
+    sessionStartRef.current = now
+    setUsedMin(null)
     setRemaining(secs)
     setDone(false)
     setIsRunning(true)
@@ -218,6 +226,7 @@ export default function TabTimer({ onBack }) {
     setSelected(mins)
     phaseRef.current  = 'work'
     cyclesRef.current = 0
+    setPlannedMin(mins)
     setPomPhase('work')
     setPomCycles(0)
     startTimer(mins * 60)
@@ -232,6 +241,33 @@ export default function TabTimer({ onBack }) {
     startTimer(pomWork * 60)
   }
 
+  // Play am Slot: übergebenen Task einmalig konsumieren und sofort starten.
+  // Läuft nach dem Restore-Effect — ein frischer Play-Tap gewinnt gegen
+  // einen evtl. wiederhergestellten alten Timer.
+  useEffect(() => {
+    const at = useAppStore.getState().timerAutoStart
+    if (!at) return
+    setTimerAutoStart(null)
+    setAutoTask(at)
+    if (at.todoId) setFocusTodoId(at.todoId)
+    setTimerMode('normal')
+    handleNormalStart(at.duration)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ✓ Fertig vor Ablauf: Restzeit weg, gebrauchte Zeit festhalten
+  const finishEarly = () => {
+    if (rafRef.current) clearTimeout(rafRef.current)
+    const started = sessionStartRef.current
+    setUsedMin(started ? Math.max(1, Math.round((Date.now() - started) / 60000)) : null)
+    setIsRunning(false)
+    setDone(true)
+    playDone()
+    localStorage.removeItem(LS_RUNNING)
+    localStorage.removeItem(LS_START)
+    localStorage.removeItem(LS_TOTAL)
+  }
+
   const stop = () => {
     setConfirmStop(true)
   }
@@ -240,6 +276,10 @@ export default function TabTimer({ onBack }) {
     if (rafRef.current) clearTimeout(rafRef.current)
     startTsRef.current   = null
     totalSecsRef.current = 0
+    sessionStartRef.current = null
+    setPlannedMin(null)
+    setAutoTask(null)
+    setUsedMin(null)
     setIsRunning(false)
     setSelected(null)
     setRemaining(0)
@@ -274,6 +314,10 @@ export default function TabTimer({ onBack }) {
     if (rafRef.current) clearTimeout(rafRef.current)
     startTsRef.current   = null
     totalSecsRef.current = 0
+    sessionStartRef.current = null
+    setPlannedMin(null)
+    setAutoTask(null)
+    setUsedMin(null)
     setIsRunning(false)
     setSelected(null)
     setRemaining(0)
@@ -287,16 +331,30 @@ export default function TabTimer({ onBack }) {
     localStorage.removeItem(LS_TOTAL)
   }
 
-  // When timer finishes and a focusTodo is set, show mark-done dialog
+  // When timer finishes and a task is set, show mark-done dialog
   useEffect(() => {
-    if (done && focusTodoId && timerMode === 'normal') {
+    if (done && (focusTodoId || autoTask) && timerMode === 'normal') {
       setConfirmDone(true)
     }
-  }, [done, focusTodoId, timerMode])
+  }, [done, focusTodoId, autoTask, timerMode])
 
   const markTodoDone = () => {
-    setTodos(prev => prev.map(t => t.id === focusTodoId ? { ...t, done: true, doneAt: new Date().toISOString() } : t))
+    if (focusTodoId) {
+      setTodos(prev => prev.map(t => t.id === focusTodoId ? { ...t, done: true, doneAt: new Date().toISOString() } : t))
+    }
+    // Slot im Tagesplaner mit abhaken, wenn der Start vom Play-Button kam
+    if (autoTask?.date && autoTask.slotKey != null) {
+      setDays(prev => {
+        const day = prev[autoTask.date]
+        if (!day?.[autoTask.slotKey]) return prev
+        return {
+          ...prev,
+          [autoTask.date]: { ...day, [autoTask.slotKey]: { ...day[autoTask.slotKey], done: true } },
+        }
+      })
+    }
     setFocusTodoId(null)
+    setAutoTask(null)
     setConfirmDone(false)
   }
 
@@ -333,14 +391,19 @@ export default function TabTimer({ onBack }) {
         </div>
       )}
 
-      {/* ── Confirm: Mark todo done ─────────────────────────── */}
-      {confirmDone && focusTodo && (
+      {/* ── Confirm: Mark task done ─────────────────────────── */}
+      {confirmDone && (focusTodo || autoTask) && (
         <div className={s.overlay} onClick={dismissConfirmDone}>
           <div className={s.modal} onClick={e => e.stopPropagation()}>
             <div className={s.modalTitle}>Super gemacht!</div>
             <div className={s.modalBody}>
-              <span className={s.todoConfirmText}>{focusTodo.text}</span>
-              <br />als erledigt markieren?
+              <span className={s.todoConfirmText}>{focusTodo?.text ?? autoTask?.text}</span>
+              {plannedMin != null && (
+                <span className={s.statsLine}>
+                  geplant {plannedMin} min · {usedMin != null ? `gebraucht ${usedMin} min` : 'Zeit voll genutzt'}
+                </span>
+              )}
+              als erledigt markieren?
             </div>
             <div className={s.modalBtns}>
               <button className={s.discardBtn} onClick={dismissConfirmDone}>Nicht jetzt</button>
@@ -350,14 +413,14 @@ export default function TabTimer({ onBack }) {
         </div>
       )}
 
-      {/* ── Active Todo Banner ──────────────────────────────── */}
-      {isRunning && focusTodo && (
+      {/* ── Active Task Banner ──────────────────────────────── */}
+      {isRunning && (focusTodo || autoTask) && (
         <div
           className={s.activeTodoBanner}
-          style={{ '--ft-color': focusTodo.color || 'var(--cyan)' }}
+          style={{ '--ft-color': (focusTodo?.color ?? autoTask?.color) || 'var(--cyan)' }}
         >
           <div className={s.bannerStripe} />
-          <span className={s.bannerText}>{focusTodo.text}</span>
+          <span className={s.bannerText}>{focusTodo?.text ?? autoTask?.text}</span>
         </div>
       )}
 
@@ -404,7 +467,12 @@ export default function TabTimer({ onBack }) {
       {/* ── Controls ───────────────────────────────────────── */}
       <div className={s.controls}>
         {isRunning ? (
-          <button className={s.stopBtn} onClick={stop}>■ Stop</button>
+          <>
+            {(focusTodo || autoTask) && pomPhase === 'work' && (
+              <button className={s.finishBtn} onClick={finishEarly}>✓ Fertig</button>
+            )}
+            <button className={s.stopBtn} onClick={stop}>■ Stop</button>
+          </>
         ) : (
           <>
             {selected && !done && (

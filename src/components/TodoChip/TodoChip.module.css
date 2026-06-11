@@ -320,6 +320,28 @@
   background: rgba(251, 113, 133, 0.07);
 }
 
+/* ── Play button (Fokus-Timer) ───────────────────────────── */
+.playBtn {
+  background: none;
+  border: none;
+  border-left: 1px solid var(--border-dim);
+  color: var(--text-ghost);
+  cursor: pointer;
+  padding: 0 8px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  transition: color 0.12s, background 0.12s;
+  flex-shrink: 0;
+  min-width: 28px;
+  justify-content: center;
+}
+
+.playBtn:hover {
+  color: var(--teal);
+  background: rgba(20, 184, 166, 0.08);
+}
+
 .prioBadgeWrap {
   border-left: 1px solid var(--border-dim);
   align-self: stretch;

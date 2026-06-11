@@ -108,6 +108,8 @@ export default function Zeitplan({
   onEditBlocker,
   onToggleBlockerLocked,
   onFokusMode,
+  onPlaySlot,
+  onEmptyTap,
   birthdayPills = [],
   birthdayPillsDate = null,
 }) {
@@ -239,6 +241,7 @@ export default function Zeitplan({
                 }
                 onToggleLock={() => onToggleLock?.(topKey)}
                 onSaveSlot={onSetSlot}
+                onPlay={onPlaySlot && !topSlot.done ? () => onPlaySlot(topKey, topSlot) : undefined}
               />
             </div>
           : <div
@@ -246,6 +249,7 @@ export default function Zeitplan({
               className={[s.sgHalf, s.sgEmpty, isNowHour ? s.sgNow : ''].join(' ')}
               style={{ gridRow: String(rowBase) }}
               ref={el => registerHalf?.(topKey, el, 'empty')}
+              onClick={onEmptyTap ? () => onEmptyTap(topKey) : undefined}
             >
               <span className={s.halfTime}>:00</span>
             </div>,
@@ -277,6 +281,7 @@ export default function Zeitplan({
                 }
                 onToggleLock={() => onToggleLock?.(botKey)}
                 onSaveSlot={onSetSlot}
+                onPlay={onPlaySlot && !botSlot.done ? () => onPlaySlot(botKey, botSlot) : undefined}
               />
             </div>
           : <div
@@ -284,6 +289,7 @@ export default function Zeitplan({
               className={[s.sgHalf, s.sgHalfBot, s.sgEmpty].join(' ')}
               style={{ gridRow: String(rowBase + 1) }}
               ref={el => registerHalf?.(botKey, el, 'empty')}
+              onClick={onEmptyTap ? () => onEmptyTap(botKey) : undefined}
             >
               <span className={s.halfTime}>:30</span>
             </div>,

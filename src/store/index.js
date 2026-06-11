@@ -86,6 +86,11 @@ export const useAppStore = create((set, get) => ({
   kognitivAutoStart: null,
   setKognitivAutoStart: (id) => set({ kognitivAutoStart: id }),
 
+  // ─── Timer auto-start (Play am Slot) ───────────────────
+  // { todoId, text, color, duration, date, slotKey } — flüchtig, kein localStorage
+  timerAutoStart: null,
+  setTimerAutoStart: (data) => set({ timerAutoStart: data }),
+
   // ─── Active Tools ──────────────────────────────────────
   activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren']).map(id => id === 'erfolge' ? 'garten' : id),
   setActiveTools: (tools) => { set({ activeTools: tools }); sv(SK.activeTools, tools) },

@@ -1,9 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
-import { todayKey, ALL_SLOT_KEYS, getDurationKeys, dateKey } from '../../../utils'
+import { todayKey, ALL_SLOT_KEYS, getDurationKeys, dateKey, skLabel } from '../../../utils'
+import { TOOL_TAB } from '../../tools/toolTabs'
 import { sv, lv, SK } from '../../../storage'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan            from '../Zeitplan/Zeitplan'
+import SlotSheet           from '../Zeitplan/SlotSheet'
 import Pool                from '../Pool/Pool'
 import TodoModal           from '../../../components/TodoModal/TodoModal'
 import ReminderSection     from '../../tools/reminder/ReminderSection'
@@ -30,7 +32,7 @@ import FokusView from './FokusView'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays, heuteModus, setHeuteModus } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays, heuteModus, setHeuteModus, setTimerAutoStart } = useAppStore()
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [visStart, setVisStart] = useState(() => lv(SK.visStart, 8))
@@ -39,6 +41,8 @@ export default function TabHeute() {
   const [klaerenTodo,       setKlaerenTodo]       = useState(null)
   const [blockerModal,      setBlockerModal]       = useState(null)
   const [repeatDeleteSheet, setRepeatDeleteSheet]  = useState(null)
+  const [slotSheet,         setSlotSheet]          = useState(null)  // slotKey | null
+  const [createSlot,        setCreateSlot]         = useState(null)  // slotKey | null → TodoModal mit Datum+Zeit
 
   const { registerHalf, startDrag } = useDragDrop()
 
@@ -61,7 +65,7 @@ export default function TabHeute() {
       date.setDate(date.getDate() + 1)
       setViewDate(dateKey(date))
     },
-    disabled: editingTodo !== null || blockerModal !== null || klaerenTodo !== null || teOpen,
+    disabled: editingTodo !== null || blockerModal !== null || klaerenTodo !== null || teOpen || slotSheet !== null || createSlot !== null,
   })
 
   // ─── Consume dayplanDate on mount ─────────────────────
@@ -508,6 +512,39 @@ export default function TabHeute() {
     if (todo) setEditingTodo(todo)
   }, [todos])
 
+  // ─── Play am Slot → Fokus-Timer vorbefüllt ────────────────
+  const handlePlaySlot = useCallback((slotKey, slot) => {
+    setTimerAutoStart({
+      todoId:   slot.todoId ?? null,
+      text:     slot.text,
+      color:    slot.color,
+      duration: slot.duration || 30,
+      date:     viewDate,
+      slotKey,
+    })
+    setCurrentTab(TOOL_TAB.timer)
+  }, [setTimerAutoStart, setCurrentTab, viewDate])
+
+  // ─── Slot-Tap-Sheet: leerer Slot → erstellen oder platzieren ──
+  const handleSheetPlace = useCallback((todo) => {
+    const slotKey = slotSheet
+    if (!slotKey) return
+    const hh = String(Math.floor(parseFloat(slotKey))).padStart(2, '0')
+    const mm = parseFloat(slotKey) % 1 ? '30' : '00'
+    handleSetSlot(slotKey, {
+      text:     todo.text,
+      todoId:   todo.id,
+      color:    todo.color || '#8B5CF6',
+      duration: todo.duration || 30,
+      locked:   false,
+      done:     false,
+    })
+    setTodos(prev => prev.map(t =>
+      t.id === todo.id ? { ...t, date: viewDate, time: `${hh}:${mm}` } : t
+    ))
+    setSlotSheet(null)
+  }, [slotSheet, handleSetSlot, setTodos, viewDate])
+
   return (
     <div className={s.page}>
       <DayNav
@@ -545,6 +582,8 @@ export default function TabHeute() {
           onShiftAll={handleShiftAll}
           onToggleLock={handleToggleLock}
           onFokusMode={() => setHeuteModus('fokus')}
+          onPlaySlot={handlePlaySlot}
+          onEmptyTap={setSlotSheet}
           registerHalf={registerHalf}
           startSlotDrag={startSlotDrag}
           blockers={blockers}
@@ -585,6 +624,24 @@ export default function TabHeute() {
         <TodoModal
           existingTodo={editingTodo}
           onClose={() => setEditingTodo(null)}
+        />
+      )}
+
+      {slotSheet && (
+        <SlotSheet
+          slotKey={slotSheet}
+          todos={todos}
+          todaySlots={todaySlots}
+          onPlace={handleSheetPlace}
+          onCreateNew={() => { setCreateSlot(slotSheet); setSlotSheet(null) }}
+          onClose={() => setSlotSheet(null)}
+        />
+      )}
+
+      {createSlot && (
+        <TodoModal
+          prefill={{ date: viewDate, time: skLabel(createSlot) }}
+          onClose={() => setCreateSlot(null)}
         />
       )}
 

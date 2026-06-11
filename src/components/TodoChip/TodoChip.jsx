@@ -51,6 +51,7 @@ export default function TodoChip({
   className,
   showAge,            // true = show age in meta (Pool only)
   onKlaeren,          // fn(todo) — opens Klären dialog for this todo (Pool only)
+  onPlay,             // fn() — startet Fokus-Timer mit diesem Task (Zeitplan only)
 }) {
   const [expanded, setExpanded]   = useState(false)
   const [itemInput, setItemInput] = useState('')
@@ -240,6 +241,19 @@ export default function TodoChip({
           >
             <span className={s.klaerenCircleNum}>{ageDays}</span>
             <span className={s.klaerenCircleUnit}>Tage</span>
+          </button>
+        )}
+
+        {/* Play — Fokus-Timer starten */}
+        {onPlay && !todo.done && (
+          <button
+            className={s.playBtn}
+            onClick={e => { e.stopPropagation(); onPlay() }}
+            aria-label="Fokus-Timer starten"
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="6 3 21 12 6 21" />
+            </svg>
           </button>
         )}
 
