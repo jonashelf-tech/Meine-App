@@ -4,7 +4,7 @@ import { createBlock } from '../../todos/Block'
 import { buildEinkauf } from './einkauf'
 import Einkauf from './Einkauf.jsx'
 import Kochanleitung from './Kochanleitung.jsx'
-import { IconCart, IconClipboard, IconCalendar, IconCheck, IconClose, IconBasket } from './icons'
+import { IconCalendar, IconCheck, IconClose, IconBasket } from './icons'
 import s from './Kochen.module.css'
 
 export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor }) {
@@ -113,11 +113,6 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
               ? <><IconCheck size={16} /> In Tagesplaner geladen</>
               : <><IconCalendar size={16} /> Als Koch-Todo in Tagesplaner{kochzeit > 0 ? ` · ${kochzeit} min` : ''}</>}
           </button>
-
-          <div className={s.shortcuts}>
-            <button className={s.shortcutBtn} onClick={() => setView('anleitung')}><IconClipboard size={15} /> Kochanleitung</button>
-            <button className={s.shortcutBtn} onClick={() => setView('einkauf')}><IconCart size={15} /> Einkaufsliste</button>
-          </div>
 
           <div className={s.leerenRow}>
             {confirmLeeren ? (

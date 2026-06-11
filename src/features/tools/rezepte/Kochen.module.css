@@ -8,7 +8,7 @@
 .tab {
   flex: 1; padding: 8px 4px; min-height: 40px; border: none; background: none;
   border-radius: var(--r-sm); color: var(--text-dim);
-  font-family: Outfit, sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font); font-size: 0.82rem; font-weight: 600; cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s;
 }
 .tabOn { background: var(--bg2); color: var(--tool-color); }
@@ -37,7 +37,7 @@
   background: color-mix(in srgb, var(--tool-color) 16%, transparent);
   border: 1px solid color-mix(in srgb, var(--tool-color) 50%, transparent);
   color: var(--tool-color);
-  font-family: Outfit, sans-serif; font-size: 0.9rem; font-weight: 600;
+  font-family: var(--font); font-size: 0.9rem; font-weight: 600;
   cursor: pointer; transition: background 0.15s; -webkit-tap-highlight-color: transparent;
 }
 .tagesplanerBtn:hover:not(:disabled) { background: color-mix(in srgb, var(--tool-color) 26%, transparent); }
@@ -46,16 +46,6 @@
   border-color: color-mix(in srgb, var(--emerald) 50%, transparent);
   color: var(--emerald);
 }
-
-.shortcuts { display: flex; gap: 8px; }
-.shortcutBtn {
-  flex: 1; padding: 10px; min-height: 42px; border-radius: var(--r);
-  border: 1px solid var(--border); background: none; color: var(--text-dim);
-  font-size: 0.82rem; font-weight: 600; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  -webkit-tap-highlight-color: transparent;
-}
-.shortcutBtn:hover { background: var(--surface); }
 
 .leerenRow { display: flex; gap: 8px; justify-content: center; padding-top: 2px; }
 .leerenBtn { background: none; border: none; color: var(--text-dim); font-size: 0.8rem; cursor: pointer; padding: 6px; }

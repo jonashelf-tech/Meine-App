@@ -10,7 +10,7 @@
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--tool-color); color: #fff; border: none;
   border-radius: var(--r-sm); padding: 0 14px; min-height: 42px;
-  font-family: Outfit, sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font); font-size: 0.85rem; font-weight: 600; cursor: pointer;
   white-space: nowrap; -webkit-tap-highlight-color: transparent;
 }
 

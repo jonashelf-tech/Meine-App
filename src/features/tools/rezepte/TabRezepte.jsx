@@ -12,6 +12,7 @@ import Konfigurator from './Konfigurator.jsx'
 import Zutaten from './Zutaten'
 import Kochen from './Kochen'
 import Editor from './Editor'
+import RezeptView from './RezeptView'
 import { IconBook, IconLayers, IconSliders, IconCarrot, IconBasket } from './icons'
 import s from './TabRezepte.module.css'
 
@@ -42,21 +43,23 @@ export default function TabRezepte({ onBack }) {
 
   const [tab, setTab] = useState('rezepte')
   const [editing, setEditing] = useState(null)
+  const [viewing, setViewing] = useState(null)   // Rezept in Read-Only-Ansicht
   const [konfigLoad, setKonfigLoad] = useState(null)
 
   const setZutaten = useCallback(v => { setZutatenS(v); saveZutaten(v) }, [])
   const setRezepte = useCallback(v => { setRezepteS(v); saveRezepte(v) }, [])
   const setSettings = useCallback(v => { setSettingsS(v); saveSettings(v) }, [])
 
-  // Hardware-/Gesten-Zurück: Editor schließen → sonst zurück auf Rezepte-Tab → sonst Tool verlassen
+  // Hardware-/Gesten-Zurück: Editor schließen → Rezeptansicht schließen → zurück auf Rezepte-Tab → Tool verlassen
   useEffect(() => {
     setBackInterceptor(
       editing !== null  ? () => setEditing(null)
+      : viewing !== null ? () => setViewing(null)
       : tab !== 'rezepte' ? () => setTab('rezepte')
       : null
     )
     return () => setBackInterceptor(null)
-  }, [editing, tab, setBackInterceptor])
+  }, [editing, viewing, tab, setBackInterceptor])
 
   const zById = useCallback(id => zutaten.find(z => z.id === id), [zutaten])
   const rById = useCallback(id => rezepte.find(r => r.id === id), [rezepte])
@@ -87,12 +90,25 @@ export default function TabRezepte({ onBack }) {
   const sharedProps = {
     zutaten, rezepte, setZutaten, setRezepte,
     zById, rById, toolColor,
-    onEdit: setEditing, addToKorb, removeFromKorb, updateKorbEintrag,
+    onEdit: setEditing, onView: setViewing,
+    addToKorb, removeFromKorb, updateKorbEintrag,
     korb,
   }
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
+      {viewing && !editing && (
+        <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) setViewing(null) }}>
+          <RezeptView
+            rezept={viewing}
+            zById={zById} rById={rById}
+            onEdit={r => { setEditing({ form: 'rezept', data: r }); setViewing(null) }}
+            onOpenKonfigurator={r => { ladeInKonfigurator(r); setViewing(null) }}
+            onClose={() => setViewing(null)}
+          />
+        </div>
+      )}
+
       {editing && (
         <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) setEditing(null) }}>
           <Editor {...editing} zutaten={zutaten} rezepte={rezepte}

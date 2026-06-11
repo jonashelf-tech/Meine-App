@@ -1,10 +1,36 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { buildKochanleitung } from './kochanleitung'
 import { IconClock, IconSnow } from './icons'
 import s from './Kochanleitung.module.css'
 
+// Anleitungstext zeilenweise, jede Zeile abhakbar (Tippen = erledigt).
+function Steps({ text, cardKey, done, onToggle }) {
+  const lines = text.split('\n').filter(l => l.trim())
+  return (
+    <div className={s.steps}>
+      {lines.map((line, i) => {
+        const k = `${cardKey}:${i}`
+        return (
+          <div
+            key={k}
+            className={`${s.stepLine} ${done[k] ? s.stepDone : ''}`}
+            onClick={() => onToggle(k)}
+          >
+            {line}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function Kochanleitung({ korbGerichte, zById, rById }) {
   const plan = useMemo(() => buildKochanleitung(korbGerichte, zById, rById), [korbGerichte])
+  const [miseDone, setMiseDone]   = useState({})
+  const [stepsDone, setStepsDone] = useState({})
+
+  const toggleMise = (id) => setMiseDone(p => ({ ...p, [id]: !p[id] }))
+  const toggleStep = (k)  => setStepsDone(p => ({ ...p, [k]: !p[k] }))
 
   if (!korbGerichte.length) {
     return <div className={s.empty}>Keine Gerichte im Korb.</div>
@@ -12,12 +38,18 @@ export default function Kochanleitung({ korbGerichte, zById, rById }) {
 
   return (
     <div className={s.wrap}>
+      <div className={s.hint}>Tippen = erledigt · nochmal tippen = zurück</div>
+
       {/* 1. Mise-en-Place */}
       {plan.miseEnPlace.length > 0 && (
         <div className={s.section}>
           <div className={s.sectionHead}>Mise-en-Place</div>
           {plan.miseEnPlace.map(item => (
-            <div key={item.zutatId} className={s.miseRow}>
+            <div
+              key={item.zutatId}
+              className={`${s.miseRow} ${miseDone[item.zutatId] ? s.miseRowDone : ''}`}
+              onClick={() => toggleMise(item.zutatId)}
+            >
               <span className={s.miseName}>{item.name}</span>
               <span className={s.miseMenge}>{item.menge} {item.einheit}</span>
             </div>
@@ -36,7 +68,9 @@ export default function Kochanleitung({ korbGerichte, zById, rById }) {
                 <span className={s.basisName}>{basis.name}</span>
                 <span className={s.basisMenge}>{basis.menge} {basis.einheit}</span>
               </div>
-              {basis.anleitung && <div className={s.anleitung}>{basis.anleitung}</div>}
+              {basis.anleitung && (
+                <Steps text={basis.anleitung} cardKey={basis.id} done={stepsDone} onToggle={toggleStep} />
+              )}
             </div>
           ))}
         </div>
@@ -52,7 +86,9 @@ export default function Kochanleitung({ korbGerichte, zById, rById }) {
                 <span className={s.gerichtName}>{g.name}</span>
                 <span className={s.gerichtPort}>{g.portionen} Port.</span>
               </div>
-              {g.anleitung && <div className={s.anleitung}>{g.anleitung}</div>}
+              {g.anleitung && (
+                <Steps text={g.anleitung} cardKey={`g-${idx}-${g.name}`} done={stepsDone} onToggle={toggleStep} />
+              )}
             </div>
           ))}
         </div>

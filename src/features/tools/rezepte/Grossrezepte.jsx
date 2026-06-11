@@ -5,7 +5,7 @@ import Naehrwert from './Naehrwert'
 import { IconChevron, IconEdit, IconSnow, IconClock } from './icons'
 import s from './Grossrezepte.module.css'
 
-export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit, updateKorbEintrag, korb }) {
+export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit, onView, updateKorbEintrag, korb }) {
   const [collapsed, setCollapsed] = useState({})
   const [mengen, setMengen] = useState({})   // { [rezeptId]: anzahlBatches }
 
@@ -76,7 +76,7 @@ export default function Grossrezepte({ rezepte, zById, rById, toolColor, onEdit,
             style={isActive ? { '--tool-color': toolColor } : {}}>{anzahl}</span>
           <button className={s.stepBtn} onClick={() => setMenge(r.id, r.basisPortionen, anzahl + 1)}>+</button>
         </div>
-        <div className={s.rowMain} onClick={() => onEdit({ form: 'rezept', data: r })}>
+        <div className={s.rowMain} onClick={() => onView(r)}>
           <div className={s.rowTop}>
             <span className={s.rowName}>{r.name}</span>
             {isActive && <span className={s.portionenHint}>{anzahl * r.basisPortionen} P</span>}

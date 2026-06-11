@@ -7,7 +7,15 @@
   margin-bottom: 2px;
 }
 
-.miseRow { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+.hint { font-size: 0.7rem; color: var(--text-faint); }
+
+.miseRow {
+  display: flex; justify-content: space-between; align-items: center; padding: 5px 0;
+  cursor: pointer; transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.miseRowDone { opacity: 0.38; }
+.miseRowDone .miseName { text-decoration: line-through; }
 .miseName { font-size: 0.88rem; }
 .miseMenge { font-size: 0.82rem; color: var(--text-dim); font-family: Orbitron, monospace; }
 
@@ -22,7 +30,13 @@
 .gerichtName { font-weight: 600; font-size: 0.9rem; }
 .gerichtPort { font-size: 0.78rem; color: var(--text-dim); font-family: Orbitron, monospace; }
 
-.anleitung { font-size: 0.82rem; color: var(--text-dim); margin-top: 6px; line-height: 1.5; white-space: pre-line; }
+.steps { margin-top: 6px; display: flex; flex-direction: column; gap: 1px; }
+.stepLine {
+  font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; padding: 2px 0;
+  cursor: pointer; transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.stepDone { opacity: 0.38; text-decoration: line-through; }
 
 .verpackungRow { display: flex; align-items: center; gap: 8px; padding: 6px 0; flex-wrap: wrap; }
 .verpackungName { font-size: 0.88rem; font-weight: 500; flex: 1; }

@@ -5,7 +5,7 @@ import Naehrwert from './Naehrwert'
 import { IconChevron, IconCheck, IconSnow, IconSliders, IconClose, IconPlus } from './icons'
 import s from './Sammlung.module.css'
 
-export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, addToKorb, removeFromKorb, ladeInKonfigurator, korb }) {
+export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, onView, addToKorb, removeFromKorb, ladeInKonfigurator, korb }) {
   const [collapsed, setCollapsed] = useState({})
   const [extraKats, setExtraKats] = useState([])
   const [newKatInput, setNewKatInput] = useState('')
@@ -94,7 +94,7 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, add
                   >
                     {isSel && <IconCheck size={14} />}
                   </button>
-                  <div className={s.rowMain} onClick={() => onEdit({ form: 'rezept', data: r })}>
+                  <div className={s.rowMain} onClick={() => onView(r)}>
                     <div className={s.rowTop}>
                       <span className={s.rowName}>{r.name}</span>
                       {r.aufbewahrung?.tk && <span className={s.tag} title="TK-geeignet"><IconSnow size={12} /></span>}

@@ -1,0 +1,157 @@
+/* ─── Bottom Sheet — Read-Only-Rezeptkarte ──────────────── */
+.modal {
+  background: var(--bg2);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 -8px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: slideUp 0.22s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 12px;
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 1;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.title {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.headerBtns { display: flex; gap: 4px; }
+
+.iconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  padding: 6px 8px;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.iconBtn:hover { color: var(--text); background: var(--surface); }
+
+.body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+}
+
+.name {
+  font-family: var(--font);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.metaRow { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font);
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  padding: 4px 10px;
+  border: 1px solid var(--border-dim);
+  border-radius: 14px;
+}
+
+.naehrwertBox {
+  background: var(--surface);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.boxLabel {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.section { display: flex; flex-direction: column; gap: 4px; }
+
+.zutatRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-dim);
+}
+.zutatRow:last-child { border-bottom: none; }
+
+.zutatName {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.zutatMenge {
+  font-family: Orbitron, monospace;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.anleitung {
+  font-family: var(--font);
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.konfBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 14px;
+  border-radius: var(--r);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color, var(--primary)) 45%, transparent);
+  color: var(--tool-color, var(--primary));
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}

@@ -49,7 +49,7 @@
 .tabOn { color: var(--tool-color); }
 .tabIcon { position: relative; display: inline-flex; }
 .tabLabel {
-  font-family: Outfit, sans-serif;
+  font-family: var(--font);
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.01em;
