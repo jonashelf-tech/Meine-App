@@ -38,25 +38,29 @@ export function daysSince(isoDate) {
 }
 
 // Urgency: 0 = fresh, 1.0 = exactly due, >1 = overdue.
-// Never done (null) → 1.5 (very overdue, always shows up).
+// Never done (null) → 1.0: zählt als fällig, mahnt aber nicht als "überfällig"
+// (kein Rot-Alarm direkt nach dem Setup — das Tool verspricht "ohne Druck").
 export function taskUrgency(task) {
   const since = daysSince(task.lastDone)
-  if (since < 0) return 1.5
+  if (since < 0) return 1.0
   return since / freqToDays(task)
 }
 
-// Segment bar data for one task.
+// Segment bar data for one task. Never done → neutraler "neu"-Zustand (violett).
 export function taskSegments(task) {
   const total   = freqToDays(task)
   const since   = daysSince(task.lastDone)
-  const filled  = since < 0 ? total : Math.min(since, total)
-  const urgency = since < 0 ? 1.5 : since / total
+  if (since < 0) {
+    return { filled: total, total, color: 'var(--primary)', overdue: false, neu: true }
+  }
+  const urgency = since / total
+  const filled  = Math.min(since, total)
   const overdue = urgency >= 1.0
   let color
   if (urgency >= 1.0)       color = 'var(--rose)'
-  else if (urgency >= 0.7)  color = '#f59e0b'
+  else if (urgency >= 0.7)  color = 'var(--amber)'
   else                      color = 'var(--emerald)'
-  return { filled, total, color, overdue }
+  return { filled, total, color, overdue, neu: false }
 }
 
 // Ring score: % of tasks that are not yet overdue.
@@ -67,18 +71,22 @@ export function calcRingScore(rooms) {
   return Math.round((ok / all.length) * 100)
 }
 
-// Status badge for a room header.
+// Status badge for a room header. Nie-erledigte Tasks ergeben höchstens
+// "offen" (neutral) — "überfällig"/"bald fällig" nur für wirklich Verschlepptes.
 export function roomStatus(room) {
   if (room.tasks.length === 0) return 'ok'
-  const max = Math.max(...room.tasks.map(t => taskUrgency(t)))
+  const doneOnce = room.tasks.filter(t => t.lastDone)
+  const max = doneOnce.length ? Math.max(...doneOnce.map(t => taskUrgency(t))) : 0
   if (max >= 1.0) return 'now'
   if (max >= 0.7) return 'soon'
+  if (room.tasks.some(t => !t.lastDone)) return 'neu'
   return 'ok'
 }
 
 export const STATUS_META = {
   now:  { label: 'überfällig',  color: 'var(--rose)'    },
-  soon: { label: 'bald fällig', color: '#f59e0b'         },
+  soon: { label: 'bald fällig', color: 'var(--amber)'    },
+  neu:  { label: 'offen',       color: 'var(--primary)'  },
   ok:   { label: 'alles ok',    color: 'var(--emerald)'  },
 }
 

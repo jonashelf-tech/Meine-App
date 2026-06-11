@@ -9,6 +9,7 @@ import {
   loadHaushalt, saveHaushalt,
   markTaskDone, resetTaskDone, getDueRooms, calcRingScore,
 } from './haushaltData'
+import { Glyph } from '../_shared/glyphs'
 import { useState, useEffect, useCallback } from 'react'
 import s from './HaushaltSection.module.css'
 
@@ -37,6 +38,19 @@ const BatteryLowIcon = () => (
   </svg>
 )
 
+const CheckCircleIcon = () => (
+  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8.5 12.2l2.4 2.4 4.6-4.8" />
+  </svg>
+)
+
+const CircleIcon = () => (
+  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+    <circle cx="12" cy="12" r="9" />
+  </svg>
+)
+
 export default function HaushaltSection({ onStartDrag }) {
   const { todos, setTodos, setCurrentTab, toolColors } = useAppStore()
   const [config,  setConfig]  = useState(() => loadHaushalt())
@@ -52,25 +66,11 @@ export default function HaushaltSection({ onStartDrag }) {
         color={toolColor}
         onTitleClick={() => setCurrentTab(TOOL_TAB.haushalt)}
       >
-        <div style={{ padding: '4px 0 8px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontFamily: 'var(--font)', lineHeight: 1.4 }}>
+        <div className={s.setupBlock} style={{ '--section-color': toolColor }}>
+          <span className={s.setupText}>
             Richte Haushalt einmal kurz ein — dann siehst du hier was fällig ist.
           </span>
-          <button
-            onClick={() => setCurrentTab(TOOL_TAB.haushalt)}
-            style={{
-              alignSelf: 'flex-start',
-              background: `${toolColor}22`,
-              border: `1px solid ${toolColor}55`,
-              borderRadius: 8,
-              color: toolColor,
-              fontFamily: 'var(--font)',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              padding: '7px 14px',
-              cursor: 'pointer',
-            }}
-          >
+          <button className={s.setupBtn} onClick={() => setCurrentTab(TOOL_TAB.haushalt)}>
             Haushalt einrichten →
           </button>
         </div>
@@ -111,8 +111,10 @@ export default function HaushaltSection({ onStartDrag }) {
   const dueRooms  = getDueRooms(config, energie)
   const score     = calcRingScore(config.rooms)
   const badgeBg   = score >= 70
-    ? 'rgba(16,185,129,0.12)'
-    : score >= 40 ? 'rgba(245,158,11,0.12)' : 'rgba(251,113,133,0.12)'
+    ? 'color-mix(in srgb, var(--emerald) 12%, transparent)'
+    : score >= 40
+      ? 'color-mix(in srgb, var(--amber) 12%, transparent)'
+      : 'color-mix(in srgb, var(--rose) 12%, transparent)'
 
   // Task-IDs die schon in nicht-done Haushalt-Pool-Todos stecken (inkl. Zeitplan)
   const poolTaskIds = new Set(
@@ -217,7 +219,7 @@ export default function HaushaltSection({ onStartDrag }) {
       </div>
 
       {visibleDueRooms.length === 0 ? (
-        <div className={s.empty}>✨ Alles im Griff</div>
+        <div className={s.empty}><Glyph name="sparkle" size={14} /> Alles im Griff</div>
       ) : (
         <>
           <div className={s.rooms}>
@@ -252,7 +254,7 @@ export default function HaushaltSection({ onStartDrag }) {
                     onClick={() => toggleSelectRoom(room.id)}
                     title={isSelected ? 'Abwählen' : 'Auswählen'}
                   >
-                    {isSelected ? '✓' : '○'}
+                    {isSelected ? <CheckCircleIcon /> : <CircleIcon />}
                   </button>
                   <div className={s.roomChipWrap}>
                     <TodoChip

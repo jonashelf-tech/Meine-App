@@ -101,4 +101,36 @@
   font-size: 0.8rem;
   color: var(--text-faint);
   font-family: var(--font);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ── Setup-Hinweis (briefing noch nicht durchlaufen) ────── */
+.setupBlock {
+  padding: 4px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setupText {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-family: var(--font);
+  line-height: 1.4;
+}
+
+.setupBtn {
+  align-self: flex-start;
+  background: color-mix(in srgb, var(--section-color, var(--primary)) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--section-color, var(--primary)) 33%, transparent);
+  border-radius: 8px;
+  color: var(--section-color, var(--primary));
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  cursor: pointer;
 }

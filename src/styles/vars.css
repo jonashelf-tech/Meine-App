@@ -5,6 +5,7 @@
   --teal:     #14B8A6;   /* Teal — sekundärer Akzent / Focus */
   --emerald:  #10B981;   /* Emerald — Erfolg / CTA */
   --rose:     #FB7185;   /* Rose — nur für Löschen / Fehler */
+  --amber:    #f59e0b;   /* Amber — Warnstufe "bald fällig" */
 
   /* ─── Backwards-compat aliases (werden schrittweise entfernt) */
   --cyan:    var(--primary);
@@ -125,6 +126,7 @@ select { color-scheme: dark; }
 
 /* ─── Light theme ───────────────────────────────────────── */
 [data-theme="light"] {
+  --amber:     #D97706;
   --bg:        #F5F3F0;
   --bg2:       #ECEAE5;
   --bg3:       #E0DDD7;
@@ -151,6 +153,7 @@ select { color-scheme: dark; }
 
 @media (prefers-color-scheme: light) {
   [data-theme="system"] {
+    --amber:     #D97706;
     --bg:        #F5F3F0;
     --bg2:       #ECEAE5;
     --bg3:       #E0DDD7;

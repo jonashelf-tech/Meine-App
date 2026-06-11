@@ -5,7 +5,7 @@ import HaushaltBriefing from './HaushaltBriefing'
 import {
   loadHaushalt, saveHaushalt,
   taskSegments, calcRingScore, roomStatus, STATUS_META, FREQ_LABELS,
-  markTaskDone, resetTaskDone,
+  markTaskDone, resetTaskDone, getUrgentTasks,
   addRoom, updateRoom, deleteRoom,
   addTask, updateTask, deleteTask,
 } from './haushaltData'
@@ -43,6 +43,20 @@ const BatteryLowIcon = () => (
   </svg>
 )
 
+const ResetIcon = () => (
+  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+  </svg>
+)
+
+const XIcon = () => (
+  <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+)
+
 const ChevronIcon = ({ open }) => (
   <svg
     width={10} height={10} viewBox="0 0 10 10"
@@ -59,13 +73,13 @@ function RingScore({ score }) {
   const r     = 28
   const circ  = 2 * Math.PI * r
   const dash  = (Math.min(score, 100) / 100) * circ
-  const color = score >= 70 ? 'var(--emerald)' : score >= 40 ? '#f59e0b' : 'var(--rose)'
-  const label = score >= 70 ? 'Wohnung im Griff' : score >= 40 ? 'Einiges liegt noch' : 'Chaos-Modus'
+  const color = score >= 70 ? 'var(--emerald)' : score >= 40 ? 'var(--amber)' : 'var(--rose)'
+  const label = score >= 70 ? 'Wohnung im Griff' : score >= 40 ? 'Einiges liegt noch' : 'Viel offen'
 
   return (
     <div className={s.scoreRow}>
       <svg width={70} height={70} viewBox="0 0 70 70" className={s.ringsvg}>
-        <circle cx={35} cy={35} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={5} />
+        <circle cx={35} cy={35} r={r} fill="none" strokeWidth={5} style={{ stroke: 'var(--border)' }} />
         <circle
           cx={35} cy={35} r={r} fill="none"
           stroke={color} strokeWidth={5}
@@ -74,7 +88,7 @@ function RingScore({ score }) {
           transform="rotate(-90 35 35)"
           style={{ transition: 'stroke-dasharray 0.4s ease' }}
         />
-        <text x={35} y={40} textAnchor="middle" fill={color} fontSize={13} fontWeight={800} fontFamily="Geist, system-ui, sans-serif">
+        <text x={35} y={40} textAnchor="middle" fill={color} fontSize={13} fontWeight={800} style={{ fontFamily: 'var(--font)' }}>
           {score}%
         </text>
       </svg>
@@ -83,7 +97,7 @@ function RingScore({ score }) {
         <span className={s.scoreSub}>
           {score < 100
             ? `${Math.round((1 - score / 100) * 100)}% der Tasks fällig`
-            : 'Alles erledigt ✨'}
+            : 'Alles erledigt'}
         </span>
       </div>
     </div>
@@ -113,9 +127,10 @@ function SegmentBar({ task }) {
 const FREQ_OPTIONS = ['daily', 'biweekly', 'weekly', 'monthly', 'custom']
 
 function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdate, onDelete }) {
+  const [confirmDel, setConfirmDel] = useState(false)
   const { color, overdue } = taskSegments(task)
   const since = (() => {
-    if (!task.lastDone) return 'noch nie erledigt'
+    if (!task.lastDone) return 'neu'
     const days = Math.floor((Date.now() - new Date(task.lastDone + 'T00:00:00').getTime()) / 86_400_000)
     if (days === 0) return 'heute erledigt'
     if (days === 1) return 'gestern erledigt'
@@ -192,6 +207,18 @@ function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdat
               <span className={s.fieldLabel}>Tage</span>
             </div>
           )}
+          <div className={s.customDaysRow}>
+            <span className={s.fieldLabel}>Dauer</span>
+            <input
+              type="number"
+              className={s.customDaysInput}
+              value={task.duration ?? 15}
+              min={1}
+              onChange={e => onUpdate({ duration: Number(e.target.value) })}
+              onClick={e => e.stopPropagation()}
+            />
+            <span className={s.fieldLabel}>min</span>
+          </div>
           <span className={s.fieldLabel}>Aufwand</span>
           <div className={s.effortRow}>
             <button
@@ -208,8 +235,18 @@ function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdat
             </button>
           </div>
           <div className={s.editFoot}>
-            <button className={s.linkBtn} onClick={onReset}>↺ Zurücksetzen</button>
-            <button className={[s.linkBtn, s.linkBtnDanger].join(' ')} onClick={onDelete}>✕ Löschen</button>
+            <button className={s.linkBtn} onClick={onReset}><ResetIcon /> Zurücksetzen</button>
+            <button
+              className={[s.linkBtn, s.linkBtnDanger].join(' ')}
+              style={confirmDel ? { color: 'var(--rose)' } : undefined}
+              onClick={() => {
+                if (confirmDel) { onDelete(); return }
+                setConfirmDel(true)
+                setTimeout(() => setConfirmDel(false), 2500)
+              }}
+            >
+              <XIcon /> {confirmDel ? 'Wirklich?' : 'Löschen'}
+            </button>
             <span style={{ flex: 1 }} />
             <button className={s.doneEditBtn} onClick={onToggleEdit}>Fertig</button>
           </div>
@@ -225,6 +262,7 @@ const PRIO_LABELS = { 1: 'P1', 2: 'P2', 3: 'P3' }
 function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTaskDone, onTaskReset, onUpdateTask, onAddTask, onDeleteTask, onUpdateRoom, onDeleteRoom }) {
   const [newTaskText, setNewTaskText] = useState('')
   const [editTaskId, setEditTaskId]   = useState(null)
+  const [confirmRoomDel, setConfirmRoomDel] = useState(false)
   const status = roomStatus(room)
   const sm     = STATUS_META[status]
 
@@ -292,8 +330,15 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
               ))}
             </div>
           </div>
-          <button className={s.deleteRoomBtn} onClick={onDeleteRoom}>
-            Raum löschen
+          <button
+            className={s.deleteRoomBtn}
+            onClick={() => {
+              if (confirmRoomDel) { onDeleteRoom(); return }
+              setConfirmRoomDel(true)
+              setTimeout(() => setConfirmRoomDel(false), 2500)
+            }}
+          >
+            {confirmRoomDel ? 'Wirklich löschen? Alle Tasks gehen mit.' : 'Raum löschen'}
           </button>
         </div>
       )}
@@ -391,7 +436,10 @@ export default function TabHaushalt({ onBack }) {
     return <HaushaltBriefing config={config} onComplete={updateConfig} onBack={onBack} />
   }
 
-  const score = calcRingScore(config.rooms)
+  const score  = calcRingScore(config.rooms)
+  const urgent = getUrgentTasks(config, 99)
+    .filter(({ task }) => energie !== 'low' || task.lowEnergy)
+    .slice(0, 3)
 
   return (
     <div className={s.page}>
@@ -413,6 +461,28 @@ export default function TabHaushalt({ onBack }) {
       </div>
 
       <RingScore score={score} />
+
+      {urgent.length > 0 && (
+        <div className={s.urgentBox}>
+          <span className={s.urgentTitle}>Jetzt dran</span>
+          {urgent.map(({ task, room }) => (
+            <div key={task.id} className={s.urgentRow}>
+              <span className={s.urgentIcon}><Glyph name={room.icon} size={15} /></span>
+              <div className={s.urgentMain}>
+                <span className={s.urgentText}>{task.text}</span>
+                <span className={s.urgentRoomName}>{room.name}</span>
+              </div>
+              <button
+                className={s.doneBtn}
+                onClick={() => updateConfig(prev => markTaskDone(prev, task.id))}
+                title="Erledigt"
+              >
+                <CheckIcon />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className={s.rooms}>
         {config.rooms.map(room => (
