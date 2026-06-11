@@ -3,6 +3,8 @@
 ## Stack
 React 19 · Vite · PWA · Zustand · CSS Modules
 
+**Langfristziel:** irgendwann Cloud-Sync (geteilter Kalender) + App-Store-Build. Bis dahin gelten die Sync-Leitplanken in `kontext/architektur.md` (sv/lv-Disziplin, UUIDs, kein Single-Device-Denken).
+
 ## Prinzipien
 Simpel. Ursache nicht Symptom. Dauerhafter Fix. Kein auskommentierter Code. Kein Over-Engineering.
 
@@ -17,6 +19,9 @@ Nur anfassen was nötig ist. Fremden Code nicht „verbessern". Eigene Änderung
 
 **Goal-Driven:**
 Aufgabe in prüfbares Ziel übersetzen. „Fix bug" → Test der den Bug reproduziert, dann grün machen. „Refactor" → Tests vorher und nachher grün.
+
+**Anti-Drift:**
+Grep-bare Regeln werden als Guard-Test abgesichert statt nur dokumentiert (Vorbilder: `src/styleguide.test.js` für Fonts, `storage.test.js` für Backup-Abdeckung). Neue „Verboten"-Regel → kurz prüfen, ob ein Guard sie erzwingen kann.
 
 ## Tooling
 Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder Bash.

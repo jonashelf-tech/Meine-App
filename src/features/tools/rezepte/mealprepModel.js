@@ -45,6 +45,8 @@ export const createKorb = (o = {}) => ({
   name: o.name ?? '',
   eintraege: o.eintraege ?? [],
   gespeichert: o.gespeichert ?? false,
+  einkaufChecked: o.einkaufChecked ?? {},  // zutatId → true (überlebt Reload beim Einkaufen)
+  kochChecked: o.kochChecked ?? {},        // "mise:<zutatId>" / "<cardKey>:<zeile>" → true
 })
 
 export const istBasis = (r) => r?.ergibtMenge != null

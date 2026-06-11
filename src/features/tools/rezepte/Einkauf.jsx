@@ -5,20 +5,14 @@ import s from './Einkauf.module.css'
 
 const fmtMenge = (m) => Number.isInteger(m) ? m : m.toFixed(1)
 
-export default function Einkauf({ korbGerichte, zById, rById }) {
+// checked/onToggle/onClear kommen aus dem persistenten Korb (Kochen.jsx) —
+// Häkchen überleben Reload und App-Kill im Supermarkt.
+export default function Einkauf({ korbGerichte, zById, rById, checked, onToggle, onClear }) {
   const liste = useMemo(() => buildEinkauf(korbGerichte, zById, rById), [korbGerichte])
-  const [checked, setChecked] = useState({})  // zutatId → true (gekauft)
   const [confirmLeeren, setConfirmLeeren] = useState(false)
 
   // 1× tippen = gekauft (rutscht runter, durchgestrichen) · nochmal = zurück
-  const tapItem = (zutatId) => {
-    setChecked(prev => {
-      const next = { ...prev }
-      if (next[zutatId]) delete next[zutatId]
-      else next[zutatId] = true
-      return next
-    })
-  }
+  const tapItem = (zutatId) => onToggle(zutatId)
 
   const allItems = liste.flatMap(g => g.items)
   const openItems = allItems.filter(i => !checked[i.zutatId])
@@ -26,7 +20,7 @@ export default function Einkauf({ korbGerichte, zById, rById }) {
 
   const handleLeeren = () => {
     if (!confirmLeeren) { setConfirmLeeren(true); return }
-    setChecked({})
+    onClear()
     setConfirmLeeren(false)
   }
 

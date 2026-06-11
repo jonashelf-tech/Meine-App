@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
+import { sv, lv, SK } from '../../../storage'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import s from './Zeitplan.module.css'
@@ -110,7 +111,9 @@ export default function Zeitplan({
   birthdayPills = [],
   birthdayPillsDate = null,
 }) {
-  const [hideEmpty, setHideEmpty]       = useState(false)
+  // Alles/Minimal: Default Alles, letzter Stand bleibt gespeichert
+  const [hideEmpty, setHideEmptyS]      = useState(() => lv(SK.zeitplanMinimal, false))
+  const setHideEmpty = (v) => { setHideEmptyS(v); sv(SK.zeitplanMinimal, v) }
   const [removeDialog, setRemoveDialog] = useState(null)
 
   const openRemove  = useCallback((slotKey, slotText) => setRemoveDialog({ slotKey, slotText }), [])

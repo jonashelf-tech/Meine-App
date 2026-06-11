@@ -164,7 +164,8 @@ Globale Variablen nur in `styles/vars.css`.
 
 **Erlaubt:** Geist (UI, alle Texte — via `var(--font)`) · Orbitron (Zahlen, Timer, Display-Werte — via `var(--font-num)`)
 **Verboten:** Inter · Roboto · Arial · System-UI · Space Grotesk · Outfit (war nie geladen)
-**Regel:** In CSS nie Font-Namen direkt schreiben — immer `var(--font)` / `var(--font-num)`. (2026-06-10: 31 tote `Outfit`-Referenzen ersetzt.)
+**Regel:** In CSS nie Font-Namen direkt schreiben — immer `var(--font)` / `var(--font-num)` (auch `Orbitron`/`inherit` ok). Ausnahme: Canvas-Code (`ctx.font`) kann keine CSS-Variablen.
+**Guard:** `src/styleguide.test.js` erzwingt das automatisch (Vorbild: Backup-Anti-Drift-Test). (2026-06-10: 31 tote `Outfit`-Referenzen ersetzt.)
 
 ---
 
@@ -225,6 +226,17 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 - `localStorage` direkt — immer `sv/lv/SK` aus `storage/index.js`
 - TOOL_TAB lokal definieren — immer aus `toolTabs.js` importieren
 - `awaitingClockResponse` setzen — deprecated, ClockPopup entfernt
+
+---
+
+## Langfrist-Leitplanke: Cloud-Sync (Zukunft)
+
+Geplant ist irgendwann ein optionaler Sync (z. B. geteilter Kalender für 2 Personen) + App-Store-Build.
+Der Umbau soll **eine Schicht hinter `storage/index.js`** werden — kein App-Umbau. Damit das so bleibt:
+- Nutzdaten nie an `sv/lv` vorbei schreiben (gilt schon, bleibt kritisch)
+- IDs immer `genId()`/`createBlock()` (UUIDs sind sync-fähig, Zähler/Timestamps nicht)
+- Neue Features nicht auf "es gibt nur ein Gerät" bauen (z. B. keine Logik, die doppelte
+  Einträge nach Gerät dedupliziert oder von exklusivem Schreibzugriff ausgeht)
 
 ---
 

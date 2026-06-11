@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { buildKochanleitung } from './kochanleitung'
 import { IconClock, IconSnow } from './icons'
 import s from './Kochanleitung.module.css'
@@ -24,13 +24,15 @@ function Steps({ text, cardKey, done, onToggle }) {
   )
 }
 
-export default function Kochanleitung({ korbGerichte, zById, rById }) {
+// checked/onToggle kommen aus dem persistenten Korb (Kochen.jsx) —
+// "wo war ich?" übersteht Unterbrechungen und Reloads.
+export default function Kochanleitung({ korbGerichte, zById, rById, checked, onToggle }) {
   const plan = useMemo(() => buildKochanleitung(korbGerichte, zById, rById), [korbGerichte])
-  const [miseDone, setMiseDone]   = useState({})
-  const [stepsDone, setStepsDone] = useState({})
 
-  const toggleMise = (id) => setMiseDone(p => ({ ...p, [id]: !p[id] }))
-  const toggleStep = (k)  => setStepsDone(p => ({ ...p, [k]: !p[k] }))
+  const miseDone   = checked
+  const stepsDone  = checked
+  const toggleMise = (id) => onToggle(`mise:${id}`)
+  const toggleStep = (k)  => onToggle(k)
 
   if (!korbGerichte.length) {
     return <div className={s.empty}>Keine Gerichte im Korb.</div>
@@ -47,7 +49,7 @@ export default function Kochanleitung({ korbGerichte, zById, rById }) {
           {plan.miseEnPlace.map(item => (
             <div
               key={item.zutatId}
-              className={`${s.miseRow} ${miseDone[item.zutatId] ? s.miseRowDone : ''}`}
+              className={`${s.miseRow} ${miseDone[`mise:${item.zutatId}`] ? s.miseRowDone : ''}`}
               onClick={() => toggleMise(item.zutatId)}
             >
               <span className={s.miseName}>{item.name}</span>

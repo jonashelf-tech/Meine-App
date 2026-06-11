@@ -73,7 +73,7 @@ export const useAppStore = create((set, get) => ({
   setCurrentTab: (tab) => set((state) => ({ previousTab: state.currentTab, currentTab: tab })),
   backInterceptor: null,
   setBackInterceptor: (fn) => set({ backInterceptor: fn }),
-  heuteModus: lv(SK.heuteModus, 'fokus'),
+  heuteModus: lv(SK.heuteModus, 'voll'),   // Default volle Ansicht; letzter Stand bleibt gespeichert
   setHeuteModus: (modus) => { set({ heuteModus: modus }); sv(SK.heuteModus, modus) },
   dayplanDate: null,
   setDayplanDate: (dk) => set({ dayplanDate: dk }),

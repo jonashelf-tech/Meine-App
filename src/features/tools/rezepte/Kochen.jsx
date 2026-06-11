@@ -44,9 +44,19 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
 
   const handleLeeren = () => {
     if (!confirmLeeren) { setConfirmLeeren(true); return }
-    setKorb(k => ({ ...k, eintraege: [] }))
+    setKorb(k => ({ ...k, eintraege: [], einkaufChecked: {}, kochChecked: {} }))
     setConfirmLeeren(false)
   }
+
+  // Abhak-Zustände leben im persistenten Korb — überleben Reload/App-Kill
+  const toggleChecked = (field) => (key) => setKorb(k => {
+    const c = { ...(k[field] ?? {}) }
+    if (c[key]) delete c[key]; else c[key] = true
+    return { ...k, [field]: c }
+  })
+  const toggleEinkauf = toggleChecked('einkaufChecked')
+  const toggleKoch    = toggleChecked('kochChecked')
+  const clearEinkauf  = () => setKorb(k => ({ ...k, einkaufChecked: {} }))
 
   if (korb.eintraege.length === 0) {
     return (
@@ -113,11 +123,17 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
       )}
 
       {view === 'anleitung' && (
-        <div className={s.panel}><Kochanleitung korbGerichte={korbGerichte} zById={zById} rById={rById} /></div>
+        <div className={s.panel}>
+          <Kochanleitung korbGerichte={korbGerichte} zById={zById} rById={rById}
+            checked={korb.kochChecked ?? {}} onToggle={toggleKoch} />
+        </div>
       )}
 
       {view === 'einkauf' && (
-        <div className={s.panel}><Einkauf korbGerichte={korbGerichte} zById={zById} rById={rById} /></div>
+        <div className={s.panel}>
+          <Einkauf korbGerichte={korbGerichte} zById={zById} rById={rById}
+            checked={korb.einkaufChecked ?? {}} onToggle={toggleEinkauf} onClear={clearEinkauf} />
+        </div>
       )}
     </div>
   )

@@ -33,6 +33,9 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 
 **Routine und Vorlage wurden entfernt.** Block ist der einzige Typ.
 
+**Sprach-Parser:** `parseTodoText(raw)` in `src/features/todos/parseTodoText.js` — einzige Parser-Quelle
+(`!`-Prio, `#Kategorie`, Zeiten/Zeitspannen, Datum, Dauer). Genutzt vom „Auto"-Knopf im TodoModal.
+
 ---
 
 ## Blocker (Zeitplan-Blocker)
@@ -93,7 +96,7 @@ toolColors,   setToolColors  // { [toolId]: "#hexcolor" }
 currentTab,   previousTab,  setCurrentTab
 dayplanDate,  setDayplanDate   // Flüchtiger Intent-Wert (kein localStorage)
 calendarDate, setCalendarDate  // Flüchtiger Intent-Wert (kein localStorage)
-heuteModus,   setHeuteModus    // 'manuell'
+heuteModus,   setHeuteModus    // 'voll' | 'fokus' — persistiert (SK.heuteModus), Default 'voll'
 backInterceptor, setBackInterceptor  // fn | null — App.jsx ruft vor Tab-Navigation auf (Swipe-Back-Fix)
 
 // Kognitiv
@@ -196,6 +199,10 @@ SK.visEnd         → 'adhs_view_vis_end'          // Zeitplan sichtbares Ende (
 SK.lastPoolReturn → 'adhs_view_last_pool_return'
 SK.poolSort       → 'adhs_view_pool_sort'        // 'standard'|'kategorie'|'alter'
 SK.calView        → 'adhs_view_cal_view'         // 'woche'|'monat'
+SK.heuteModus     → 'adhs_view_heute_modus'      // 'voll'|'fokus' — Default 'voll', letzter Stand bleibt
+SK.zeitplanMinimal→ 'adhs_view_zeitplan_minimal' // Alles/Minimal-Toggle — Default Alles, letzter Stand bleibt
+SK.weekVisStart   → 'adhs_view_week_vis_start'   // Wochenansicht sichtbarer Start
+SK.weekVisEnd     → 'adhs_view_week_vis_end'     // Wochenansicht sichtbares Ende
 
 // Tools — Mealprep (Rezepte)
 SK.recipes         → 'adhs_recipes_list'           // Rezepte (Array)
@@ -203,7 +210,7 @@ SK.rezepteZutaten  → 'adhs_recipes_ingredients'    // Zutaten/Bausteine
 SK.rezepteKoerbe   → 'adhs_recipes_baskets'        // gespeicherte Menüs
 SK.rezepteSettings → 'adhs_recipes_settings'
 SK.recipesVersion  → 'adhs_recipes_list__v'        // Schema-Marker (seed/migrate) — MUSS im Backup sein!
-SK.rezepteKorbAktiv→ 'adhs_recipes_active_basket'  // persistenter Arbeits-Korb
+SK.rezepteKorbAktiv→ 'adhs_recipes_active_basket'  // persistenter Arbeits-Korb inkl. einkaufChecked/kochChecked (Abhak-Stände überleben Reload)
 SK.shopping/.shoppingStates/.selectedDishes         // LEGACY (altes Rezepte-Tool, nur Backup-Kompat)
 
 // Tools — sonstige
@@ -287,6 +294,9 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 ---
 
 ## TabKalender — Features
+
+> Code seit 2026-06-11 gesplittet: `TabKalender.jsx` (Orchestrator) · `WocheView.jsx` (Drag + Modals) ·
+> `MonatView.jsx` (Kacheln + DayPanel) · `DayPanel.jsx` · `kalenderShared.js` (Konstanten + pure Helfer).
 
 - **Ansichten:** Woche (Zeitgitter 07–22 Uhr) · Monat (Kacheln mit Farbbalken)
 - **Layout:** NavPill ganz oben (Monat/Woche Navigation), Woche/Monat-Segmented direkt darunter, dann das Grid
