@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '../../store'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
+import { parseTodoText } from '../../features/todos/parseTodoText'
 import { parseHHMM, minutesToSk, NEON } from '../../utils'
 import RepeatPicker from '../RepeatPicker/RepeatPicker'
 import s from './TodoModal.module.css'
@@ -21,75 +22,6 @@ const DUR_PRESETS = [
   { label: '90', value: 90 },
   { label: '2h', value: 120 },
 ]
-
-const _dk = (d) =>
-  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
-
-function parseTodoText(raw) {
-  let text = raw.trim()
-  let date = null, time = null, duration = null, priority = 3
-  const today = new Date()
-
-  if (/\b(dringend|wichtig|asap|sofort|urgent)\b/i.test(text)) priority = 1
-  else if (/\b(sollte|bald|soon)\b/i.test(text)) priority = 2
-  text = text.replace(/\b(dringend|wichtig|asap|sofort|urgent|sollte|bald|soon)\b/gi, '')
-
-  const tr = text.match(/\b(\d{1,2})(?::(\d{2}))?-(\d{1,2})(?::(\d{2}))?(?:uhr)?(?=\s|$)/i)
-  if (tr) {
-    const h1 = parseInt(tr[1]), m1 = tr[2] ? parseInt(tr[2]) : 0
-    const h2 = parseInt(tr[3]), m2 = tr[4] ? parseInt(tr[4]) : 0
-    if (h1 >= 0 && h1 <= 23 && m1 >= 0 && m1 <= 59 &&
-        h2 >= 0 && h2 <= 23 && m2 >= 0 && m2 <= 59 &&
-        (h2 * 60 + m2) > (h1 * 60 + m1)) {
-      time     = `${String(h1).padStart(2,'0')}:${String(m1).padStart(2,'0')}`
-      duration = (h2 * 60 + m2) - (h1 * 60 + m1)
-      text = text.replace(tr[0], '')
-    }
-  }
-
-  if (/\bmorgen\b/i.test(text)) { const d = new Date(today); d.setDate(d.getDate()+1); date = _dk(d) }
-  else if (/\bübermorgen\b/i.test(text)) { const d = new Date(today); d.setDate(d.getDate()+2); date = _dk(d) }
-  else if (/\bheute\b/i.test(text)) { date = _dk(today) }
-
-  const WD = ['sonntag','montag','dienstag','mittwoch','donnerstag','freitag','samstag']
-  WD.forEach((w, i) => {
-    if (new RegExp('\\b'+w+'\\b','i').test(text)) {
-      const d = new Date(today); const diff = (i - d.getDay() + 7) % 7 || 7
-      d.setDate(d.getDate() + diff); date = _dk(d)
-    }
-  })
-
-  const dm = text.match(/(\d{1,2})\.(\d{1,2})\.?(\d{2,4})?/)
-  if (dm) {
-    let year = dm[3] ? parseInt(dm[3]) : today.getFullYear()
-    if (year < 100) year += 2000
-    const d = new Date(year, parseInt(dm[2])-1, parseInt(dm[1]))
-    date = _dk(d)
-  }
-
-  text = text.replace(/\b(morgen|übermorgen|heute|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b/gi, '')
-  text = text.replace(/\d{1,2}\.\d{1,2}\.?(?:\d{2,4})?/g, '')
-
-  if (!time) {
-    const tm = text.match(/(\d{1,2})[:\.](\d{2})\s*(?:uhr)?/i) || text.match(/(\d{1,2})\s*uhr/i)
-    if (tm) {
-      const h = parseInt(tm[1]), m = tm[2] ? parseInt(tm[2]) : 0
-      time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
-      text = text.replace(tm[0], '')
-    }
-  }
-
-  if (!duration) {
-    const dr = text.match(/(\d+(?:[.,]\d+)?)\s*(h|std|stunden?|min|minuten?)/i)
-    if (dr) {
-      const v = parseFloat(dr[1].replace(',','.')); const u = dr[2].toLowerCase()
-      duration = u.startsWith('h') || u.startsWith('s') ? Math.round(v*60) : Math.round(v)
-      text = text.replace(dr[0], '')
-    }
-  }
-
-  return { text: text.trim().replace(/\s+/g, ' '), date, time, duration, priority }
-}
 
 function formatSummaryDate(dateStr) {
   if (!dateStr) return null
@@ -133,6 +65,11 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     if (p.duration != null) setDuration(p.duration)
     if (p.date) { setDate(p.date); setDetailsOpen(true) }
     if (p.time) { setTime(p.time); setDetailsOpen(true) }
+    if (p.category) {
+      setCategory(p.category)
+      if (!cats.includes(p.category)) setCats([...cats, p.category])
+      setDetailsOpen(true)
+    }
   }
 
   const addSubItem = () => {
@@ -273,7 +210,11 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         {/* Header */}
         <div className={s.header}>
           <span className={s.title}>{isEdit ? 'Bearbeiten' : 'Hinzufügen'}</span>
-          <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">✕</button>
+          <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">
+            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
         {/* Text + Auto */}
