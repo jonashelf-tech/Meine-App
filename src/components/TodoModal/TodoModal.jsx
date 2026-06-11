@@ -4,6 +4,7 @@ import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
 import { parseTodoText } from '../../features/todos/parseTodoText'
 import { parseHHMM, minutesToSk, NEON } from '../../utils'
+import { lv, sv, SK } from '../../storage'
 import RepeatPicker from '../RepeatPicker/RepeatPicker'
 import s from './TodoModal.module.css'
 
@@ -37,7 +38,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
 
   const isEdit = existingTodo !== null
 
-  const [text,     setText]     = useState(existingTodo?.text     ?? '')
+  const [text,     setText]     = useState(existingTodo?.text ?? prefill?.text ?? '')
   const [priority, setPriority] = useState(existingTodo?.priority ?? 3)
   const [duration, setDuration] = useState(existingTodo?.duration ?? null)
   const [color,    setColor]    = useState(existingTodo?.color    ?? accentColor ?? '#8B5CF6')
@@ -57,20 +58,31 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category)
   )
 
-  const handleAuto = () => {
-    if (!text.trim()) return
-    const p = parseTodoText(text.trim())
-    if (p.text)           setText(p.text)
-    if (p.priority !== 3) setPriority(p.priority)
-    if (p.duration != null) setDuration(p.duration)
-    if (p.date) { setDate(p.date); setDetailsOpen(true) }
-    if (p.time) { setTime(p.time); setDetailsOpen(true) }
-    if (p.category) {
-      setCategory(p.category)
-      if (!cats.includes(p.category)) setCats([...cats, p.category])
-      setDetailsOpen(true)
-    }
+  // Auto-Parser als Toggle (persistiert): an = Live-Erkennung + Übernahme
+  // beim Hinzufügen. Manuell gesetzte Felder gewinnen immer. Nur beim
+  // Erstellen aktiv — beim Bearbeiten ist der Text schon „sauber".
+  const [autoOn, setAutoOn] = useState(() => lv(SK.autoParse, false))
+  const toggleAuto = () => setAutoOn(v => { sv(SK.autoParse, !v); return !v })
+
+  const parsed = !isEdit && autoOn && text.trim() ? parseTodoText(text.trim()) : null
+
+  const eff = {
+    text:     parsed?.text || text.trim(),
+    priority: priority === 3 && parsed && parsed.priority !== 3 ? parsed.priority : priority,
+    duration: duration ?? parsed?.duration ?? null,
+    date:     date || parsed?.date || '',
+    time:     time || parsed?.time || '',
+    category: category ?? parsed?.category ?? null,
   }
+
+  const autoChips = parsed ? [
+    priority === 3 && parsed.priority === 1 && '! Wichtig',
+    priority === 3 && parsed.priority === 2 && '· Sollte',
+    duration == null && parsed.duration != null && `${parsed.duration} min`,
+    !date && parsed.date && formatSummaryDate(parsed.date),
+    !time && parsed.time && parsed.time,
+    !category && parsed.category && `#${parsed.category}`,
+  ].filter(Boolean) : []
 
   const addSubItem = () => {
     const txt = subInput.trim(); if (!txt) return
@@ -97,11 +109,12 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     if (field === 'time') { setBlinkTime(true); setTimeout(() => setBlinkTime(false), 1200) }
   }
 
-  const isTermin = !!(date && time)
+  const isTermin = !!(eff.date && eff.time)
 
   const handleSubmit = () => {
-    if (!text.trim()) return
-    if (time && !date) { setDetailsOpen(true); triggerBlink('date'); return }
+    if (!eff.text) return
+    if (eff.time && !eff.date) { setDetailsOpen(true); triggerBlink('date'); return }
+    if (eff.category && !cats.includes(eff.category)) setCats([...cats, eff.category])
 
     if (isEdit) {
       const wasTermin = !!(existingTodo.date && existingTodo.time)
@@ -109,15 +122,15 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
 
       const updated = {
         ...existingTodo,
-        text:     text.trim(),
-        priority,
+        text:     eff.text,
+        priority: eff.priority,
         color,
-        duration: duration || null,
-        category: category || null,
+        duration: eff.duration || null,
+        category: eff.category || null,
         repeat:   repeat || null,
         subItems,
-        date:     date || null,
-        time:     time || null,
+        date:     eff.date || null,
+        time:     eff.time || null,
       }
 
       setDays(prev => {
@@ -138,8 +151,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           if (changed) result[dk] = newDay
         })
         const oldSlotKey = wasTermin ? minutesToSk(parseHHMM(existingTodo.time)) : null
-        const termDateChanged = existingTodo.date !== (date || null)
-        const termTimeChanged = existingTodo.time !== (time || null)
+        const termDateChanged = existingTodo.date !== (eff.date || null)
+        const termTimeChanged = existingTodo.time !== (eff.time || null)
         if (wasTermin && (termDateChanged || termTimeChanged || !nowTermin)) {
           if (result[existingTodo.date]?.[oldSlotKey]?.todoId === existingTodo.id) {
             result[existingTodo.date] = { ...result[existingTodo.date] }
@@ -147,9 +160,9 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           }
         }
         if (nowTermin && (!wasTermin || termDateChanged || termTimeChanged)) {
-          const newSlotKey = minutesToSk(parseHHMM(time))
-          result[date] = {
-            ...(result[date] ?? {}),
+          const newSlotKey = minutesToSk(parseHHMM(eff.time))
+          result[eff.date] = {
+            ...(result[eff.date] ?? {}),
             [newSlotKey]: {
               text: updated.text, todoId: updated.id, color: updated.color,
               duration: updated.duration || 30, done: false, locked: true,
@@ -164,19 +177,19 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     } else {
       if (isTermin) {
         const block = createBlock({
-          text: text.trim(), priority, color,
-          duration: duration || 30,
-          date, time,
-          category: category || null,
+          text: eff.text, priority: eff.priority, color,
+          duration: eff.duration || 30,
+          date: eff.date, time: eff.time,
+          category: eff.category || null,
           repeat: repeat || null,
           subItems,
         })
-        const mins    = parseHHMM(time)
+        const mins    = parseHHMM(eff.time)
         const slotKey = minutesToSk(mins)
         setDays(prev => ({
           ...prev,
-          [date]: {
-            ...(prev[date] ?? {}),
+          [eff.date]: {
+            ...(prev[eff.date] ?? {}),
             [slotKey]: {
               text: block.text, todoId: block.id, color: block.color,
               duration: block.duration, done: false, locked: true,
@@ -186,10 +199,10 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         setTodos(prev => [...prev, block])
       } else {
         setTodos(prev => [...prev, createBlock({
-          text: text.trim(), priority, color,
-          duration: duration || null,
-          date: date || null,
-          category: category || null,
+          text: eff.text, priority: eff.priority, color,
+          duration: eff.duration || null,
+          date: eff.date || null,
+          category: eff.category || null,
           repeat: repeat || null,
           subItems,
         })])
@@ -228,8 +241,25 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
             placeholder="Was muss getan werden…"
             autoComplete="off" autoCorrect="off" spellCheck={false}
           />
-          <button className={s.autoBtn} onClick={handleAuto} disabled={!text.trim()}>Auto</button>
+          {!isEdit && (
+            <button
+              className={[s.autoBtn, autoOn ? s.autoBtnOn : ''].join(' ')}
+              onClick={toggleAuto}
+              title={autoOn ? 'Auto-Erkennung aus' : 'Auto-Erkennung an'}
+            >
+              Auto
+            </button>
+          )}
         </div>
+
+        {autoChips.length > 0 && (
+          <div className={s.parseRow}>
+            <span className={s.parseLabel}>erkannt:</span>
+            {autoChips.map(chip => (
+              <span key={chip} className={s.summaryChip}>{chip}</span>
+            ))}
+          </div>
+        )}
 
         {/* Prio — immer */}
         <div className={s.row}>

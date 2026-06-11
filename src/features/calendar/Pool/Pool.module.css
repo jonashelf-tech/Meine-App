@@ -83,6 +83,24 @@
   flex-shrink: 0;
 }
 
+/* ─── Endzeit-Projektion ─────────────────────────────── */
+.projection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px 0;
+  font-family: var(--font);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+.projectionDim {
+  color: var(--text-faint);
+  font-weight: 500;
+}
+
 /* ─── List area ──────────────────────────────────────── */
 .listArea {
   padding: 6px 8px 4px;

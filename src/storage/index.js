@@ -63,6 +63,7 @@ export const SK = {
   weight:         `${PREFIX}health_weight`,
   weightDash:     `${PREFIX}wdash`,
   activeTools:    `${PREFIX}app_active_tools`,
+  toolUsage:      `${PREFIX}app_tool_usage`,
   birthdays:      `${PREFIX}birthdays`,
   birthdaySort:   `${PREFIX}bday_sort`,
   haushalt:       `${PREFIX}haushalt_v1`,
@@ -76,6 +77,7 @@ export const SK = {
   visEnd:         `${PREFIX}view_vis_end`,
   lastPoolReturn: `${PREFIX}view_last_pool_return`,
   poolSort:       `${PREFIX}view_pool_sort`,
+  autoParse:      `${PREFIX}view_auto_parse`,
   calView:        `${PREFIX}view_cal_view`,
   heuteModus:     `${PREFIX}view_heute_modus`,
   zeitplanMinimal:`${PREFIX}view_zeitplan_minimal`,
@@ -117,7 +119,7 @@ export const BACKUP_CATS = {
   kalender: [
     SK.todos, SK.routines, SK.todoOrder, SK.cats, SK.projects,
     SK.days, SK.doneCounters, SK.templates, SK.blockers,
-    SK.lastPoolReturn, SK.poolSort, SK.visStart, SK.visEnd,
+    SK.lastPoolReturn, SK.poolSort, SK.autoParse, SK.visStart, SK.visEnd,
     SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus, SK.zeitplanMinimal,
   ],
   tools: [
@@ -132,7 +134,7 @@ export const BACKUP_CATS = {
   ],
   einstellungen: [
     SK.settings, SK.theme, SK.appBriefingSeen,
-    SK.accentColor, SK.toolColors, SK.activeTools,
+    SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
   ],
 }
 

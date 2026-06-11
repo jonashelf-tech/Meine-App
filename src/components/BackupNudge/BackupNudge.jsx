@@ -14,8 +14,8 @@ export default function BackupNudge() {
   if (dismissed || done || age < STALE_DAYS) return null
 
   const label = age === Infinity
-    ? 'Noch keine Sicherung gemacht'
-    : `Letzte Sicherung vor ${Math.floor(age)} Tagen`
+    ? 'Noch nie gesichert'
+    : `Sicherung vor ${Math.floor(age)} Tagen`
 
   const handleBackup = () => {
     downloadFullBackup()

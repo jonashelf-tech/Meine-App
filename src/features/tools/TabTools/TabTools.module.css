@@ -93,6 +93,43 @@
   line-height: 1.35;
 }
 
+/* ─── Dachboden-Badge (lange ungenutzt) ─────────────────── */
+.dustRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.dustBadge {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--amber);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 7px;
+  padding: 2px 7px;
+}
+
+.dustOff {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 2px 7px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dustOff:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
 .listIcon {
   display: flex;
   align-items: center;

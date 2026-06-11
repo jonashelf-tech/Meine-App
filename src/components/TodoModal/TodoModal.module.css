@@ -122,6 +122,28 @@
 }
 .autoBtn:disabled { opacity: 0.3; cursor: default; }
 
+.autoBtnOn {
+  background: rgba(139, 92, 246, 0.22);
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.25);
+}
+
+/* ─── Auto-Erkennungs-Vorschau ───────────────────────────── */
+.parseRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: -4px;
+}
+
+.parseLabel {
+  font-family: var(--font);
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
 /* ─── Generic row ────────────────────────────────────────── */
 .row {
   display: flex;

@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { useAppStore } from '../../../store'
 import { TOOL_REGISTRY, ToolIcon } from '../toolRegistry'
 import { TOOL_TAB } from '../toolTabs'
+import { unusedDays, UNUSED_DAYS } from '../toolUsage'
 import { getToolColor } from '../../../utils'
 import s from './TabTools.module.css'
 
@@ -148,6 +149,7 @@ export default function TabTools() {
     myTools.forEach((tool, idx) => {
       const toolColor  = getToolColor(tool.id, toolColors)
       const isDragging = dragId === tool.id
+      const dustDays   = unusedDays(tool.id)
 
       if (dragId && insertAfterIdx === idx - 1) {
         items.push(<div key={`line-${idx}`} className={s.insertLine} />)
@@ -170,6 +172,17 @@ export default function TabTools() {
             <div className={s.listText}>
               <span className={s.cardName}>{tool.name}</span>
               <span className={s.cardDesc}>{tool.description}</span>
+              {dustDays >= UNUSED_DAYS && (
+                <span className={s.dustRow}>
+                  <span className={s.dustBadge}>{dustDays} Tage ungenutzt</span>
+                  <button
+                    className={s.dustOff}
+                    onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
+                  >
+                    Deaktivieren
+                  </button>
+                </span>
+              )}
             </div>
             <span
               className={s.dragHandle}

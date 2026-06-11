@@ -124,6 +124,28 @@ export default function Pool({
     return todos.filter(t => t.done && t.doneAt?.startsWith(today)).length
   }, [todos])
 
+  // ─── Endzeit-Projektion: „wenn du jetzt startest, bist du um X fertig" ──
+  const [tick, setTick] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 60000)
+    return () => clearInterval(id)
+  }, [])
+
+  const projection = useMemo(() => {
+    const open    = activePool.filter(t => !t.done)
+    const withDur = open.filter(t => t.duration)
+    const total   = withDur.reduce((sum, t) => sum + t.duration, 0)
+    if (!total) return null
+    const end = new Date(Date.now() + total * 60000)
+    const hh  = String(end.getHours()).padStart(2, '0')
+    const mm  = String(end.getMinutes()).padStart(2, '0')
+    const dur = total >= 60
+      ? `${Math.floor(total / 60)} h${total % 60 ? ` ${total % 60} min` : ''}`
+      : `${total} min`
+    return { dur, end: `${hh}:${mm}`, noDur: open.length - withDur.length }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePool, tick])
+
   const visiblePool = showAll ? activePool : activePool.slice(0, 10)
   const hasMore     = !showAll && activePool.length > 10
 
@@ -205,6 +227,18 @@ export default function Pool({
 
       {!collapsed && (
         <>
+          {projection && (
+            <div className={s.projection}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span>
+                {projection.dur} offen · fertig ~{projection.end}
+                {projection.noDur > 0 && <span className={s.projectionDim}> · +{projection.noDur} ohne Dauer</span>}
+              </span>
+            </div>
+          )}
+
           {/* ── Aktive Liste ──────────────────────────── */}
           <div className={s.listArea}>
             {activePool.length === 0 && (

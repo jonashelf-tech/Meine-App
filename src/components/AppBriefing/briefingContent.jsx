@@ -246,8 +246,8 @@ export const STEPS = [
     chapter: 'Todos',
     title: 'Der Auto-Knopf',
     text: (
-      <>Schreib einfach drauflos — „Zahnarzt morgen 14-15 Uhr wichtig" — und tippe <strong>Auto</strong>.
-      Datum, Uhrzeit, Dauer und Priorität werden automatisch aus dem Text erkannt.</>
+      <>Schalte <strong>Auto</strong> ein und schreib einfach drauflos — „Zahnarzt morgen 14-15 Uhr wichtig".
+      Datum, Uhrzeit, Dauer und Priorität werden live erkannt und beim Hinzufügen übernommen.</>
     ),
     Stage: () => <ModalStage find={findText('Auto')} />,
   },
