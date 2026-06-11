@@ -13,9 +13,13 @@
 }
 
 .shiftBtn {
-  padding: 8px 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 8px;
+  min-height: 32px;
   font-family: var(--font);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
   background: var(--surface-low);
   border: 1px solid var(--border-dim);
@@ -81,6 +85,18 @@
   overflow: visible;
 }
 
+/* Während eines Drags (body.dnd-active, gesetzt in useDragDrop): leere
+   Halbstunden schrumpfen, belegte behalten ihre Höhe — mehr Stunden im
+   Sichtfeld, kürzere Ziehwege. Trefferzonen bleiben korrekt, weil
+   useDragDrop die Rects bei jeder Pointer-Bewegung live liest. */
+:global(body.dnd-active) .sgGrid {
+  grid-auto-rows: minmax(22px, auto);
+}
+
+:global(body.dnd-active) .sgGrid .sgHalf:not(.sgEmpty) {
+  min-height: 44px;
+}
+
 .sgLabel {
   grid-column: 1;
   display: flex;
@@ -130,6 +146,37 @@
 
 .sgNow {
   background: rgba(139,92,246,0.048);
+}
+
+/* Minutengenaue Jetzt-Linie — eigenes Grid-Item über der aktuellen Halbstunde */
+.nowLine {
+  grid-column: 2;
+  position: relative;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.nowLine::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--now-top, 0%);
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.7);
+}
+
+.nowLine::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: calc(var(--now-top, 0%) - 2px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
 }
 
 .sgConsumed {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import s from './Zeitplan.module.css'
@@ -116,8 +116,16 @@ export default function Zeitplan({
   const openRemove  = useCallback((slotKey, slotText) => setRemoveDialog({ slotKey, slotText }), [])
   const closeRemove = useCallback(() => setRemoveDialog(null), [])
 
-  const now = new Date()
   const isNow = dateLabel === todayKey()
+
+  // Minutengenaue "Jetzt"-Linie: tickt jede Minute, nur am heutigen Tag
+  const [nowTick, setNowTick] = useState(() => Date.now())
+  useEffect(() => {
+    if (!isNow) return
+    const id = setInterval(() => setNowTick(Date.now()), 60_000)
+    return () => clearInterval(id)
+  }, [isNow])
+  const now = new Date(nowTick)
 
   const fullHours  = Array.from({ length: 24 }, (_, i) => i)
   const rangeHours = Array.from({ length: visibleEnd - visibleStart + 1 }, (_, i) => i + visibleStart)
@@ -284,8 +292,26 @@ export default function Zeitplan({
 
       {/* Shift controls */}
       <div className={s.controls}>
-        <button className={s.shiftBtn} style={hideEmpty ? { visibility: 'hidden' } : undefined} onClick={() => onShiftAll?.(-1)}>▲ 30min</button>
-        <button className={s.shiftBtn} style={hideEmpty ? { visibility: 'hidden' } : undefined} onClick={() => onShiftAll?.(1)}>▼ 30min</button>
+        <button
+          className={s.shiftBtn}
+          style={hideEmpty ? { visibility: 'hidden' } : undefined}
+          onClick={() => onShiftAll?.(-1)}
+          aria-label="Alle Slots 30 Minuten früher"
+          title="Alle Slots 30 Minuten früher"
+        >
+          <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 15 12 9 18 15" /></svg>
+          30m
+        </button>
+        <button
+          className={s.shiftBtn}
+          style={hideEmpty ? { visibility: 'hidden' } : undefined}
+          onClick={() => onShiftAll?.(1)}
+          aria-label="Alle Slots 30 Minuten später"
+          title="Alle Slots 30 Minuten später"
+        >
+          <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+          30m
+        </button>
         <div style={{ flex: 1 }} />
         {onCreateBlocker && (
           <button className={s.blockerBtn} onClick={onCreateBlocker}>+ Fenster</button>
@@ -319,6 +345,21 @@ export default function Zeitplan({
           sec.type === 'normal'
             ? (
               <div key={`sec-${si}`} className={s.sgGrid}>
+                {/* Minutengenaue Jetzt-Linie — erstes Grid-Kind (Position via gridRow),
+                    damit die :last-child-Border-Regeln unberührt bleiben */}
+                {isNow && sec.hours.includes(now.getHours()) && (() => {
+                  const idx     = sec.hours.indexOf(now.getHours())
+                  const nowMin  = now.getMinutes()
+                  return (
+                    <div
+                      className={s.nowLine}
+                      style={{
+                        gridRow: String(idx * 2 + 1 + (nowMin < 30 ? 0 : 1)),
+                        '--now-top': `${((nowMin % 30) / 30) * 100}%`,
+                      }}
+                    />
+                  )
+                })()}
                 {renderHourRows(sec.hours)}
               </div>
             )

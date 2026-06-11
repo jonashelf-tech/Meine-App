@@ -83,6 +83,9 @@ export function useDragDrop() {
     }
 
     document.body.appendChild(ghost)
+    // Kompakt-Modus während des Drags: leere Zeitplan-Slots schrumpfen
+    // (Zeitplan.module.css reagiert auf body.dnd-active)
+    document.body.classList.add('dnd-active')
 
     const mv = ev => {
       const cx = ev.touches ? ev.touches[0].clientX : ev.clientX
@@ -149,6 +152,9 @@ export function useDragDrop() {
           dropped = true
         }
       }
+      // Erst NACH der Treffer-Ermittlung zurück zur normalen Höhe —
+      // sonst expandiert das Layout vor dem Rect-Check und der Drop verrutscht.
+      document.body.classList.remove('dnd-active')
     }
 
     document.addEventListener('pointermove', mv, { passive: false })
