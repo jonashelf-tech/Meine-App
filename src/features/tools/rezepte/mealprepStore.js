@@ -24,6 +24,18 @@ export function findUsages(id, rezepte, koerbe = []) {
   return { rezepte: usedInRezepte, koerbe: usedInKoerbe }
 }
 
+// Schema 9: Eier wurden von Gramm auf Stück umgestellt (1 Ei ≈ 60 g).
+// Seed-Rezepte kommen fertig konvertiert aus dem Seed; eigene Rezepte des
+// Users, die z_ei in Gramm referenzieren, werden hier einmalig umgerechnet.
+export function migrateEierZuStueck(rezepte) {
+  return rezepte.map(r => ({
+    ...r,
+    zutaten: (r.zutaten ?? []).map(z =>
+      z.zutatId === 'z_ei' ? { ...z, menge: Math.max(1, Math.round(z.menge / 60)) } : z
+    ),
+  }))
+}
+
 // Liest alles; seedet bei Erststart; bei Schema-Update werden nur neue Einträge
 // ergänzt, eigene Rezepte des Users bleiben erhalten.
 export function loadAll() {
@@ -55,7 +67,8 @@ export function loadAll() {
     const seedZIds = new Set(seedZ.map(z => z.id))
     const seedRIds = new Set(seedR.map(r => r.id))
     const eigeneZ = existing.zutaten.filter(z => !seedZIds.has(z.id))
-    const eigeneR = existing.rezepte.filter(r => !seedRIds.has(r.id))
+    let   eigeneR = existing.rezepte.filter(r => !seedRIds.has(r.id))
+    if (version < 9) eigeneR = migrateEierZuStueck(eigeneR)
     const mergedZ = [...seedZ, ...eigeneZ]
     const mergedR = [...seedR, ...eigeneR]
     saveZutaten(mergedZ)

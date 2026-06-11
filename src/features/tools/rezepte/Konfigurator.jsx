@@ -33,10 +33,10 @@ export default function Konfigurator({
     for (const slot of SLOTS) {
       const fromZutaten = zutaten
         .filter(z => z.bausteinTyp === slot)
-        .map(z => ({ id: z.id, name: z.name, istRezept: false, defaultGPP: z.gProPortion ?? DEFAULT_GPP }))
+        .map(z => ({ id: z.id, name: z.name, istRezept: false, defaultGPP: z.gProPortion ?? DEFAULT_GPP, einheit: z.einheit ?? 'g' }))
       const fromRezepte = rezepte
         .filter(r => r.bausteinTyp === slot)
-        .map(r => ({ id: r.id, name: r.name, istRezept: true, defaultGPP: r.gProPortion ?? DEFAULT_GPP }))
+        .map(r => ({ id: r.id, name: r.name, istRezept: true, defaultGPP: r.gProPortion ?? DEFAULT_GPP, einheit: r.ergibtEinheit ?? 'g' }))
       res[slot] = [...fromZutaten, ...fromRezepte]
     }
     return res
@@ -185,7 +185,7 @@ export default function Konfigurator({
                             <input className={s.gppInput} type="number" inputMode="numeric"
                               value={act.gProPortion ?? ''}
                               onChange={e => setGPP(slot, item.id, e.target.value)} />
-                            <span className={s.ctrlUnit}>g</span>
+                            <span className={s.ctrlUnit}>{item.einheit}</span>
                           </div>
                         </div>
                       )}

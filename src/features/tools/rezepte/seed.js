@@ -6,7 +6,8 @@ export const seedZutaten = () => [
   createZutat({ id: 'z_hack',         name: 'Rinderhack',           einkaufKategorie: 'Fleisch & Fisch', bausteinTyp: 'protein', gProPortion: 150, garNotiz: 'krümelig braten',             naehrwert: { kcal: 200, protein: 18, carbs: 0,  fat: 14 } }),
   createZutat({ id: 'z_tofu',         name: 'Tofu',                 einkaufKategorie: 'Milchprodukte',   bausteinTyp: 'protein', gProPortion: 150, garNotiz: 'pressen, scharf anbraten',    naehrwert: { kcal: 120, protein: 13, carbs: 2,  fat: 7  } }),
   createZutat({ id: 'z_lachs',        name: 'Lachsfilet',           einkaufKategorie: 'Fleisch & Fisch', bausteinTyp: 'protein', gProPortion: 180, garNotiz: 'Haut knusprig braten',        naehrwert: { kcal: 200, protein: 20, carbs: 0,  fat: 13 } }),
-  createZutat({ id: 'z_ei',           name: 'Eier',                 einkaufKategorie: 'Milchprodukte',   bausteinTyp: 'protein', gProPortion: 120, garNotiz: 'über-easy braten',            naehrwert: { kcal: 155, protein: 13, carbs: 1,  fat: 11 } }),
+  // Eier in Stück (per: 1, Nährwerte pro Ei ≈ 60 g) — Einkauf/Anleitung zeigen "4 Stk" statt "240 g"
+  createZutat({ id: 'z_ei',           name: 'Eier',                 einheit: 'Stk', per: 1, einkaufKategorie: 'Milchprodukte',   bausteinTyp: 'protein', gProPortion: 2, garNotiz: 'über-easy braten',            naehrwert: { kcal: 93, protein: 7.8, carbs: 0.6, fat: 6.6 } }),
   createZutat({ id: 'z_garnelen',     name: 'Garnelen',             einkaufKategorie: 'Fleisch & Fisch', bausteinTyp: 'protein', gProPortion: 150, garNotiz: '2 Min je Seite, nicht zäh',   naehrwert: { kcal: 99,  protein: 24, carbs: 0,  fat: 1  } }),
 
   // ── KOHLENHYDRATE ────────────────────────────────────────────────────────
@@ -357,7 +358,7 @@ export const seedRezepte = () => [
     basisPortionen: 2, kochdauer: 20, aufbewahrung: { tk: false, behaelter: ['frisch'] },
     zutaten: [
       { zutatId: 'z_paprika', menge: 200 },
-      { zutatId: 'z_ei',      menge: 240 },
+      { zutatId: 'z_ei',      menge: 4 },
     ],
     komponenten: [{ rezeptId: 'r_tomatensauce', menge: 500 }],
     anleitung: '1. Paprika + Zwiebel anbraten, etwas Harissa.\n2. Tomatensoße drauf, aufkochen.\n3. 4 Mulden formen, Eier hineingleiten lassen.\n4. Deckel drauf, 3–4 Min bei schwacher Hitze.\n5. Joghurt + Petersilie.' }),
@@ -751,7 +752,7 @@ export const seedRezepte = () => [
   createRezept({ id: 'r_roest_frittata', name: 'Gemüse-Frittata', kategorien: ['Onepot/Auflauf', 'Fitness'],
     basisPortionen: 4, kochdauer: 25, aufbewahrung: { tk: true, behaelter: ['Box'] },
     zutaten: [
-      { zutatId: 'z_ei',          menge: 480 },
+      { zutatId: 'z_ei',          menge: 8 },
       { zutatId: 'z_frischkaese', menge: 200 },
     ],
     komponenten: [{ rezeptId: 'r_roestgemuese', menge: 500 }],
@@ -803,7 +804,7 @@ export const seedRezepte = () => [
     zutaten: [
       { zutatId: 'z_hack',        menge: 600 },
       { zutatId: 'z_blumenkohl',  menge: 500 },
-      { zutatId: 'z_ei',          menge: 120 },
+      { zutatId: 'z_ei',          menge: 2 },
       { zutatId: 'z_frischkaese', menge: 200 },
       { zutatId: 'z_cheddar',     menge: 150 },
       { zutatId: 'z_gurke',       menge: 100 },
@@ -894,7 +895,7 @@ export const seedRezepte = () => [
     basisPortionen: 4, kochdauer: 20, aufbewahrung: { tk: true, behaelter: ['Box'] },
     zutaten: [
       { zutatId: 'z_wrap',    menge: 256 },
-      { zutatId: 'z_ei',      menge: 360 },
+      { zutatId: 'z_ei',      menge: 6 },
       { zutatId: 'z_cheddar', menge: 120 },
       { zutatId: 'z_paprika', menge: 150 },
     ],

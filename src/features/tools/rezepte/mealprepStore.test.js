@@ -1,7 +1,24 @@
 import { describe, it, expect } from 'vitest'
 import { sv, lv, SK } from '../../../storage'
-import { loadAll, saveZutaten, saveRezepte, findUsages } from './mealprepStore'
+import { loadAll, saveZutaten, saveRezepte, findUsages, migrateEierZuStueck } from './mealprepStore'
 import { SCHEMA_VERSION } from './mealprepModel'
+
+describe('migrateEierZuStueck — Schema 9 (Eier g → Stk)', () => {
+  it('rechnet z_ei-Mengen von Gramm auf Stück um (1 Ei ≈ 60 g)', () => {
+    const eigene = [{
+      id: 'mein-r', name: 'Mein Omelett',
+      zutaten: [{ zutatId: 'z_ei', menge: 240 }, { zutatId: 'z_reis', menge: 80 }],
+    }]
+    const [r] = migrateEierZuStueck(eigene)
+    expect(r.zutaten[0].menge).toBe(4)      // 240 g → 4 Stk
+    expect(r.zutaten[1].menge).toBe(80)     // andere Zutaten unverändert
+  })
+
+  it('mindestens 1 Stück, auch bei Kleinstmengen', () => {
+    const [r] = migrateEierZuStueck([{ id: 'x', zutaten: [{ zutatId: 'z_ei', menge: 20 }] }])
+    expect(r.zutaten[0].menge).toBe(1)
+  })
+})
 
 describe('loadAll — Erststart & Schema-Schutz', () => {
   it('liefert Seed bei komplett leerem Storage und setzt Schema-Marker', () => {
