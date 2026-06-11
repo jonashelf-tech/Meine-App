@@ -6,7 +6,8 @@ import s from './SlotSheet.module.css'
 
 // Bottom-Sheet beim Tap auf einen leeren Slot: neues Todo direkt im Slot
 // erstellen oder ein Pool-Todo per Tap platzieren (Alternative zum Drag).
-export default function SlotSheet({ slotKey, todos, todaySlots, onPlace, onCreateNew, onClose }) {
+// dateLabel (optional): Wochenansicht zeigt zusätzlich den Zieltag.
+export default function SlotSheet({ slotKey, dateLabel = null, todos, todaySlots, onPlace, onCreateNew, onClose }) {
   const poolTodos = useMemo(
     () => sortTodos(getActiveTodos(todos, todaySlots), 'standard'),
     [todos, todaySlots]
@@ -25,7 +26,7 @@ export default function SlotSheet({ slotKey, todos, todaySlots, onPlace, onCreat
       <div className={s.sheet} onClick={e => e.stopPropagation()}>
 
         <div className={s.header}>
-          <span className={s.time}>{skLabel(slotKey)}</span>
+          <span className={s.time}>{dateLabel ? `${dateLabel} · ` : ''}{skLabel(slotKey)}</span>
           <span className={s.title}>Was planst du?</span>
           <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

@@ -3,6 +3,7 @@ import { dateKey as toDateKey, getToolColor } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import TodoModal from '../../../components/TodoModal/TodoModal'
+import SlotSheet from '../Zeitplan/SlotSheet'
 import {
   DAY_SHORT, SLOT_H, addDays, slotToTop, slotToHeight,
   blocksOverlap, rangeBlocked, getToolDots,
@@ -134,6 +135,7 @@ export default function WocheView({
   const [editingTodo,   setEditingTodo]   = useState(null)
   const [editingTermin, setEditingTermin] = useState(null)
   const [quickCreate,   setQuickCreate]   = useState(null)
+  const [slotSheet,     setSlotSheet]     = useState(null)  // { date, time, slotKey } | null
   const [flashingSlotKey, setFlashingSlotKey] = useState(null)
   const [clickRipple,     setClickRipple]     = useState(null)
   const [dragging,        setDragging]        = useState(null)
@@ -418,7 +420,7 @@ export default function WocheView({
                     const rid = Date.now()
                     setClickRipple({ dk, x: rx, y: ry, id: rid })
                     setTimeout(() => setClickRipple(r => r?.id === rid ? null : r), 420)
-                    setQuickCreate({ date: dk, time: `${hh}:${mm}` })
+                    setSlotSheet({ date: dk, time: `${hh}:${mm}`, slotKey: String(h) })
                   }}
                 >
                   {isColToday && nowTop !== null && (
@@ -558,6 +560,45 @@ export default function WocheView({
           onClose={() => setQuickCreate(null)}
         />
       )}
+
+      {slotSheet && (() => {
+        const d = new Date(slotSheet.date + 'T00:00:00')
+        const dateLabel = `${DAY_SHORT[(d.getDay() + 6) % 7]} ${d.getDate()}.${d.getMonth() + 1}.`
+        return (
+          <SlotSheet
+            slotKey={slotSheet.slotKey}
+            dateLabel={dateLabel}
+            todos={todos}
+            todaySlots={days[slotSheet.date] ?? {}}
+            onPlace={(todo) => {
+              const { date: dk, time, slotKey } = slotSheet
+              setDays(prev => ({
+                ...prev,
+                [dk]: {
+                  ...(prev[dk] ?? {}),
+                  [slotKey]: {
+                    text:     todo.text,
+                    todoId:   todo.id,
+                    color:    todo.color || '#8B5CF6',
+                    duration: todo.duration || 30,
+                    locked:   false,
+                    done:     false,
+                  },
+                },
+              }))
+              setTodos(prev => prev.map(t =>
+                t.id === todo.id ? { ...t, date: dk, time } : t
+              ))
+              setSlotSheet(null)
+            }}
+            onCreateNew={() => {
+              setQuickCreate({ date: slotSheet.date, time: slotSheet.time })
+              setSlotSheet(null)
+            }}
+            onClose={() => setSlotSheet(null)}
+          />
+        )
+      })()}
 
       {dragging && dragTarget && (function() {
         const colEl = colRefs.current[dragTarget.dk]

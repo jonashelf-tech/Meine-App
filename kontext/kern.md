@@ -325,6 +325,7 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
   - Klick auf Datum-Header → setzt `store.dayplanDate(dk)` + Tab 0 → Tagesplaner öffnet auf dem Tag
 - **Wochenansicht Allday-Streifen:** zeigt Geburtstags-Balken + Todos ohne Uhrzeit. Erscheint wenn `showTodos || showTermine`.
 - **Wochenansicht Drag & Drop:** Blöcke per Pointer verschiebbar über Zeit **und** Tag (colRefs für Spalten-Trefferflächen). Unified Pointer-Handler unterscheidet tap / dblTap / drag-start. Block-Redesign: SLOT_H 28px, top-aligned, Verlauf in Item-Farbe, Done-Badge mit Farberhalt, Zeit-Label nur auf hohen Blöcken.
+- **Wochenansicht Slot-Tap-Sheet:** Tap auf freie Fläche öffnet `SlotSheet` (mit `dateLabel` „Do 11.6.") statt direkt das TodoModal — „+ Neues Todo/Termin" führt zum bisherigen QuickCreate (TodoModal mit date+time vorbefüllt), Pool-Todos lassen sich per Tap auf den Zieltag platzieren (schreibt `days[dk][slotKey]` + todo.date/time).
 
 ---
 
