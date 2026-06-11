@@ -67,7 +67,7 @@ src/
         ReminderSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
         TabReminder.jsx
       rezepte/
-        TabRezepte.jsx          — Container, Modul-Tabs, Korb-Pille, Overlay-Routing
+        TabRezepte.jsx          — Container, 5 Tabs (Rezepte·Ketten·Konfig·Zutaten·Kochen), Overlay-Routing (View/Editor)
         mealprepModel.js        — genId, Konstanten, Factories (createZutat/createRezept/createKorb), istBasis
         mealprepStore.js        — loadAll (Schema-Guard), save*, findUsages, korbSpeichern, korbDuplizieren
         naehrwerte.js           — zutatNaehrwert, rezeptNaehrwertGesamt (rekursiv), rezeptProPortion, formatNaehrwert
@@ -77,12 +77,15 @@ src/
         seed.js                 — Seed-Katalog + Seed-Rezepte (Erststart)
         Naehrwert.jsx           — Mini-Display "480 · 35P 22F 38KH"
         Editor.jsx              — Universelles typ-adaptives Modal (Form A Zutat / Form B Rezept)
-        Sammlung.jsx            — Kategorie-Karten, aufklappbar, +Rezept, +Kategorie
+        RezeptView.jsx          — Read-Only-Rezeptkarte (Tap auf Namen); Stift → Editor
+        Sammlung.jsx            — Kategorie-Karten, aufklappbar, +Rezept, +Kategorie, Suche
         Grossrezepte.jsx        — Basis-Karten mit Ableitungen, Ketten
         Konfigurator.jsx        — Slot-Baukasten, Portionsverteilung, Als-Rezept-speichern
-        Korb.jsx                — Kochen-Korb, Einkaufsliste, Kochanleitung, Menüs
-        Einkauf.jsx             — Einkaufsliste mit 3-State-Tap
-        Kochanleitung.jsx       — Kochanleitung (Mise-en-Place, Basen, Gerichte, Verpackung)
+        Zutaten.jsx             — Zutaten-Katalog (klappbare Kategorien, Suche)
+        AddPicker.jsx           — Eigenes Dropdown (ersetzt native <select> im Editor)
+        Kochen.jsx              — Kochen-Tab: Auswahl + Unteransichten Kochanleitung/Einkauf
+        Einkauf.jsx             — Einkaufsliste mit 2-State-Tap (gekauft/zurück)
+        Kochanleitung.jsx       — Mise-en-Place, Basen, Gerichte, Verpackung — Zeilen abhakbar (Tap)
       timer/          TabTimer.jsx
       wasjetzt/       TabWasJetzt.jsx
 
@@ -122,6 +125,7 @@ Globale Variablen nur in `styles/vars.css`.
 - `--teal`     #14B8A6  (Teal — sekundärer Akzent / Focus)
 - `--emerald`  #10B981  (Grün — Erfolg, Done-States)
 - `--rose`     #FB7185  (Rose — nur Löschen/Fehler)
+- `--amber`    #f59e0b  (Amber — Warnstufe "bald fällig"; Light Mode: #D97706)
 
 **Backwards-Compat-Aliases (nicht mehr direkt verwenden):**
 - `--cyan`   → var(--primary)
@@ -150,8 +154,9 @@ Globale Variablen nur in `styles/vars.css`.
 
 ## Fonts
 
-**Erlaubt:** Outfit (UI, alle Texte) · Orbitron (Zahlen, Timer, Display-Werte)
-**Verboten:** Inter · Roboto · Arial · System-UI · Space Grotesk
+**Erlaubt:** Geist (UI, alle Texte — via `var(--font)`) · Orbitron (Zahlen, Timer, Display-Werte — via `var(--font-num)`)
+**Verboten:** Inter · Roboto · Arial · System-UI · Space Grotesk · Outfit (war nie geladen)
+**Regel:** In CSS nie Font-Namen direkt schreiben — immer `var(--font)` / `var(--font-num)`. (2026-06-10: 31 tote `Outfit`-Referenzen ersetzt.)
 
 ---
 

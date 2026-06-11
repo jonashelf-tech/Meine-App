@@ -14,7 +14,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-dim);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font);
   font-size: 13px;
   cursor: pointer;
 }
