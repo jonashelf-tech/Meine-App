@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useAppStore } from '../../../store'
-import { createBlock } from '../../todos/Block'
-import { buildEinkauf } from './einkauf'
+import { buildKochTodoBlock } from './kochTodo'
 import Einkauf from './Einkauf.jsx'
 import Kochanleitung from './Kochanleitung.jsx'
 import { IconCalendar, IconCheck, IconClose, IconBasket } from './icons'
@@ -28,21 +27,7 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
   )
 
   const handleInTagesplaner = () => {
-    const liste = buildEinkauf(korbGerichte, zById, rById)
-    const subItems = liste.flatMap(g => g.items).map(item => ({
-      id: crypto.randomUUID?.() ?? `${item.zutatId}-${Math.random()}`,
-      text: `${item.name} · ${item.menge} ${item.einheit}`,
-      done: false,
-    }))
-    const gerichteNamen = korbGerichte.map(g => g.rezept.name)
-    const block = createBlock({
-      text: `Meal Prep: ${gerichteNamen.join(', ')}`,
-      duration: kochzeit || null,
-      subItems,
-      toolId: 'rezepte',
-      color: toolColor,
-      notes: gerichteNamen.map(n => `• ${n}`).join('\n'),
-    })
+    const block = buildKochTodoBlock(korbGerichte, zById, rById, toolColor)
     setTodos(t => [...t, block])
     setGeladen(true)
     setTimeout(() => setGeladen(false), 1600)

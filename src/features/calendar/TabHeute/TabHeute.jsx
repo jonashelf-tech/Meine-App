@@ -12,6 +12,7 @@ import GartenSection       from '../../tools/garten/GartenSection'
 import WachstumSection     from '../../tools/wachstum/WachstumSection'
 import GewichtSection     from '../../tools/gewicht/GewichtSection'
 import BirthdaySection    from '../../tools/geburtstage/BirthdaySection'
+import MealprepSection    from '../../tools/rezepte/MealprepSection'
 import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
 import DayNav              from '../../../components/DayNav/DayNav'
 import BlockerModal        from '../Blocker/BlockerModal'
@@ -567,7 +568,7 @@ export default function TabHeute() {
           registerHalf={registerHalf}
         />
         {(() => {
-          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, gewicht: GewichtSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, wachstum: WachstumSection }
+          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, gewicht: GewichtSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, wachstum: WachstumSection, rezepte: MealprepSection }
           const SECTION_PROPS = {
             haushalt:    { onStartDrag: startHaushaltDrag },
             reminder:    { onStartDrag: startReminderDrag },
