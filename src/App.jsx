@@ -2,6 +2,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useAppStore } from './store'
 import { hexToGlow } from './utils'
 import { TOOL_TAB, TOOL_REGISTRY } from './features/tools/toolRegistry.jsx'
+import { markToolUsed, seedToolUsage } from './features/tools/toolUsage'
 import { saveAutoBackup, lv, sv, SK } from './storage'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
@@ -58,7 +59,7 @@ const TABS = [
   { id: 0, label: 'Tagesplaner', Icon: IconTagesplaner },
   { id: 1, label: 'Kalender',    Icon: IconKalender    },
   { id: 2, label: 'Tools',       Icon: IconTools       },
-  { id: 3, label: 'Einst.',      Icon: IconSettings    },
+  { id: 3, label: 'Einstellungen', Icon: IconSettings  },
 ]
 
 const TOOL_IDS = new Set(Object.values(TOOL_TAB))
@@ -66,9 +67,29 @@ const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 export default function App() {
   const { currentTab, previousTab, setCurrentTab, accentColor, theme, briefingOpen, setBriefingOpen } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
+  const [sharePrefill, setSharePrefill] = useState(null)
   const [exercising, setExercising] = useState(false)
 
+  // Share-Target + Shortcut „Neues Todo": URL-Parameter einmalig konsumieren
+  // (?neu=1 vom Shortcut, ?title/?text/?url vom Teilen aus anderen Apps)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has('neu') && !params.has('text') && !params.has('title')) return
+    const shared = [params.get('title'), params.get('text'), params.get('url')]
+      .filter(Boolean).join(' ').trim()
+    setSharePrefill(shared || null)
+    setAddOpen(true)
+    history.replaceState(null, '', window.location.pathname)
+  }, [])
+
   useEffect(() => { saveAutoBackup() }, [])
+
+  // Dachboden-Regel: letztes Öffnen pro Tool tracken
+  useEffect(() => { seedToolUsage(useAppStore.getState().activeTools) }, [])
+  useEffect(() => {
+    const entry = TOOL_REGISTRY.find(t => t.tabId === currentTab)
+    if (entry) markToolUsed(entry.id)
+  }, [currentTab])
 
   // First-Run: Briefing einmalig beim ersten Start zeigen
   useEffect(() => {
@@ -142,7 +163,12 @@ export default function App() {
         </button>
       )}
 
-      {addOpen && <TodoModal onClose={() => setAddOpen(false)} />}
+      {addOpen && (
+        <TodoModal
+          prefill={sharePrefill ? { text: sharePrefill } : null}
+          onClose={() => { setAddOpen(false); setSharePrefill(null) }}
+        />
+      )}
 
       <UpdatePrompt />
 

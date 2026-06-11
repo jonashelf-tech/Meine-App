@@ -34,7 +34,9 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 **Routine und Vorlage wurden entfernt.** Block ist der einzige Typ.
 
 **Sprach-Parser:** `parseTodoText(raw)` in `src/features/todos/parseTodoText.js` — einzige Parser-Quelle
-(`!`-Prio, `#Kategorie`, Zeiten/Zeitspannen, Datum, Dauer). Genutzt vom „Auto"-Knopf im TodoModal.
+(`!`-Prio, `#Kategorie`, Zeiten/Zeitspannen, Datum, Dauer). Genutzt vom „Auto"-Toggle im TodoModal:
+persistiert (`SK.autoParse`), an = Live-Chips („erkannt: …") + Übernahme beim Hinzufügen,
+**manuell gesetzte Felder gewinnen immer**. Nur beim Erstellen aktiv, nicht beim Bearbeiten.
 
 ---
 
@@ -101,6 +103,9 @@ backInterceptor, setBackInterceptor  // fn | null — App.jsx ruft vor Tab-Navig
 
 // Kognitiv
 kognitivAutoStart, setKognitivAutoStart  // string | null — moduleId für Auto-Start aus Tagesplaner
+
+// Timer
+timerAutoStart, setTimerAutoStart  // { todoId, text, color, duration, date, slotKey } | null — flüchtig; Play am Slot → TabTimer konsumiert beim Mount und startet sofort
 
 // Geburtstage
 birthdays,    setBirthdays
@@ -190,6 +195,7 @@ SK.settings       → 'adhs_app_settings'
 SK.theme          → 'adhs_app_theme'
 SK.modules        → 'adhs_app_modules'
 SK.activeTools    → 'adhs_app_active_tools'
+SK.toolUsage      → 'adhs_app_tool_usage'    // { [toolId]: "YYYY-MM-DD" } letztes Öffnen — Dachboden-Regel
 SK.accentColor    → 'adhs_app_accent'
 SK.toolColors     → 'adhs_app_tool_colors'
 
@@ -198,6 +204,7 @@ SK.visStart       → 'adhs_view_vis_start'       // Zeitplan sichtbarer Start (
 SK.visEnd         → 'adhs_view_vis_end'          // Zeitplan sichtbares Ende (Stunde)
 SK.lastPoolReturn → 'adhs_view_last_pool_return'
 SK.poolSort       → 'adhs_view_pool_sort'        // 'standard'|'kategorie'|'alter'
+SK.autoParse      → 'adhs_view_auto_parse'       // Auto-Parser-Toggle im TodoModal (bool)
 SK.calView        → 'adhs_view_cal_view'         // 'woche'|'monat'
 SK.heuteModus     → 'adhs_view_heute_modus'      // 'voll'|'fokus' — Default 'voll', letzter Stand bleibt
 SK.zeitplanMinimal→ 'adhs_view_zeitplan_minimal' // Alles/Minimal-Toggle — Default Alles, letzter Stand bleibt
@@ -273,6 +280,8 @@ ALL_SLOT_KEYS        // alle gültigen Slot-Keys 0–23.5
 Tab 0  — Tagesplaner    (TabHeute: DayNav + Zeitplan + Pool)
 Tab 1  — Kalender       (TabKalender: Woche/Monat + DayPanel)
 Tab 2  — Tools          (TabTools: Meine Tools default; "+ Alle Tools" Toggle-Button oben öffnet Alle-Tools-Liste)
+                        Dachboden-Regel: App.jsx trackt letztes Öffnen pro Tool (toolUsage.js);
+                        ≥60 Tage ungenutzt → Amber-Badge + „Deaktivieren"-Button in Meine Tools (nichts automatisch)
 Tab 3  — Einstellungen
 --- Tools (via TOOL_TAB) ---
 Tab 4  — Geburtstage    (geburtstage)
@@ -345,8 +354,11 @@ Damit geht Swipe-Back innerhalb eines Tools eine Ebene zurück (statt das Tool z
 - **viewDate:** Lokaler State (`useState(() => store.dayplanDate ?? todayKey())`). Mount-Effect liest `store.dayplanDate`, setzt viewDate, löscht es. Tab verlassen → unmount → automatisch Reset auf heute beim nächsten Mount.
 - **store.dayplanDate:** Flüchtiger Intent-Wert (kein localStorage). DayPanel setzt ihn vor `setCurrentTab(0)`, TabHeute konsumiert ihn einmalig beim Mount.
 - **Pool + Drag & Drop:** Immer sichtbar, funktioniert auf allen Tagen — Slots schreiben auf `viewDate`. Pool-Container ist als Drop-Zone registriert (`registerHalf('pool', el, 'empty')`): Zeitplan-Slot in den Pool ziehen löscht den Slot, das Todo bleibt im Pool.
+- **Endzeit-Projektion (Pool):** dezente Zeile unter dem Pool-Header — Summe der Dauern offener Todos + „fertig ~HH:MM" (wenn jetzt gestartet) + „+N ohne Dauer". Tickt minütlich, erscheint nur wenn mind. ein offenes Todo eine Dauer hat.
 - **Eingebettete Sektionen:** `<ReminderSection />` und `<HaushaltSection />` erscheinen unter dem Pool wenn aktiv. Beide nutzen das **fakeTodo-Pattern**: Items werden als `fakeTodo`-Objekte in `<TodoChip>` gerendert (disableExpand, 6-Punkte-Drag-Handle, Auswahl-Checkbox, Masse-Add-Button). Todo-Erstellung passiert erst **beim Drop** (atomar mit dem Slot) — kein Flackern im Pool. TabHeute liefert `startHaushaltDrag` / `startReminderDrag` via `onStartDrag`-Prop. Siehe `kontext/tool-pattern.md` für das vollständige Muster.
 - **Blocker:** `BlockerModal` + `RepeatDeleteSheet` — Blocker im Zeitplan erstellen/bearbeiten/löschen. Löschen wiederkehrender Blocker: "Nur diese" (exception) oder "Diese und alle zukünftigen" (endDate).
+- **Play am Slot:** ▶-Button an nicht-erledigten Slots (TodoChip `onPlay`-Prop) → `setTimerAutoStart({todoId,text,color,duration,date,slotKey})` + Tab-Wechsel zum Fokus-Timer. Timer startet sofort, „✓ Fertig"-Button beendet vorzeitig; Abschluss-Dialog zeigt **geplant X min · gebraucht Y min** und hakt Todo **und** Slot ab.
+- **Slot-Tap-Sheet (`SlotSheet.jsx`):** Tap auf leeren Slot (leere Halften hatten keine Tap-Funktion) → Bottom-Sheet: „+ Neues Todo/Termin" (öffnet TodoModal mit `prefill={date,time}` des Slots) + Pool-Todos zum Tap-Platzieren (gleicher Schreibpfad wie Drag: Slot + todo.date/time). Überlange Todos, deren Folge-Slots belegt sind, sind ausgegraut („passt nicht") — gleiche Regel wie `canDrop`. Drag&Drop bleibt unverändert.
 
 ---
 

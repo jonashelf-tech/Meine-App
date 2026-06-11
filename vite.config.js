@@ -22,6 +22,21 @@ export default defineConfig({
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
         ],
+        // Homescreen-Langdruck → direkt ins Quick-Add (Android, installierte PWA)
+        shortcuts: [
+          {
+            name: 'Neues Todo',
+            short_name: 'Neues Todo',
+            url: '/?neu=1',
+            icons: [{ src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' }],
+          },
+        ],
+        // Text aus anderen Apps teilen → landet vorbefüllt im Quick-Add
+        share_target: {
+          action: '/',
+          method: 'GET',
+          params: { title: 'title', text: 'text', url: 'url' },
+        },
       },
     }),
   ],

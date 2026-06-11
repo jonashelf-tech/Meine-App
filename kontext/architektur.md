@@ -37,7 +37,8 @@ src/
         kalenderShared.js       — DAY_SHORT/MONTH_NAMES/SLOT_H + pure Helfer (getMonday, blocksOverlap, getToolDots, …)
       Zeitplan/
         MissedReviewModal.jsx   — Modal für TimeEvents (abgelaufene/verpasste Slots)
-        SlotBlock.jsx           — Einzelner Slot im Zeitplan
+        SlotBlock.jsx           — Einzelner Slot im Zeitplan (inkl. Play→Fokus-Timer via onPlay)
+        SlotSheet.jsx           — Bottom-Sheet beim Tap auf leeren Slot: + Neu / Pool-Todo platzieren
         Zeitplan.jsx + .module.css
 
     settings/         TabSettings/TabSettings.jsx
@@ -47,9 +48,10 @@ src/
       parseTodoText.js  — EINZIGER Todo-Parser (!prio, #Kat, Zeiten, Datum, Dauer); Nutzer: TodoModal „Auto"
 
     tools/
-      TabTools/       TabTools.jsx            — Default: Meine Tools-Liste; "+ Alle Tools" Button oben (toggle) zeigt Alle-Tools-Ansicht zum Aktivieren/Deaktivieren
+      TabTools/       TabTools.jsx            — Default: Meine Tools-Liste; "+ Alle Tools" Button oben (toggle) zeigt Alle-Tools-Ansicht zum Aktivieren/Deaktivieren; Dachboden-Badge (≥60 Tage ungenutzt) mit 1-Tap-Deaktivieren
       toolRegistry.jsx                        — TOOL_REGISTRY + ToolIcon (SVG)
       toolTabs.js                             — TOOL_TAB — Single Source of Truth
+      toolUsage.js                            — Dachboden-Regel: markToolUsed/seedToolUsage/unusedDays (SK.toolUsage, App.jsx trackt Tab-Wechsel)
       elvi/           TabElvi.jsx
       garten/
         TabGarten.jsx           — Begleiter-Tab: Szene, XP, Quellen, Meilensteine
@@ -198,6 +200,11 @@ Keine Emojis als strukturelle Icons. Immer SVG (inline oder als Komponente).
 ## App.jsx — Navigation
 
 - Hardware Back-Button (Android): `popstate`-Listener fängt das Event und ruft `setCurrentTab(previousTab)` auf statt grauem Browser-Screen.
+
+## PWA Share-Target + Shortcut (installierte PWA, Android)
+
+- Manifest (`vite.config.js`): `share_target` (GET, params title/text/url) + `shortcuts` („Neues Todo" → `/?neu=1`).
+- `App.jsx` konsumiert die URL-Parameter einmalig beim Mount: öffnet das TodoModal, geteilter Text landet via `prefill={{ text }}` im Eingabefeld, danach `history.replaceState` (URL wieder sauber). Muss vor dem popstate-Effect laufen.
 
 ---
 
