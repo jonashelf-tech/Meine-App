@@ -26,11 +26,15 @@ src/
         blockerUtils.js         — Factory + Query + Mutation Helpers
       KiPlanSection/  KiPlanSection.jsx
       Pool/           Pool.jsx + Pool.module.css  — `.listArea` hat horizontales Padding 8px (Glow-Effekt nicht abschneiden)
-      QuickAdd/       QuickAdd.jsx
       TabHeute/
         TabHeute.jsx            — Tagesplaner (DayNav + Zeitplan + Pool + Sections)
         useTimeEvents.js        — Hook: abgelaufene/verpasste Slots behandeln
-      TabKalender/    TabKalender.jsx
+      TabKalender/
+        TabKalender.jsx         — Orchestrator: View-State, NavPill, Woche/Monat-Segmented, Toggle-Strip
+        WocheView.jsx           — Zeitgitter-Woche inkl. Drag über Tag+Zeit, PillStrips, Termin-/Todo-Modals
+        MonatView.jsx           — Monats-Kacheln + DayPanel-Einbettung
+        DayPanel.jsx            — read-only Tagesübersicht (Zeitplan/Erledigt/Tool-Karten)
+        kalenderShared.js       — DAY_SHORT/MONTH_NAMES/SLOT_H + pure Helfer (getMonday, blocksOverlap, getToolDots, …)
       Zeitplan/
         MissedReviewModal.jsx   — Modal für TimeEvents (abgelaufene/verpasste Slots)
         SlotBlock.jsx           — Einzelner Slot im Zeitplan
@@ -38,7 +42,9 @@ src/
 
     settings/         TabSettings/TabSettings.jsx
 
-    todos/            Block.js  — createBlock(), isTermin(), isFaelligkeit(), isTodo()
+    todos/
+      Block.js          — createBlock(), isTermin(), isFaelligkeit(), isTodo()
+      parseTodoText.js  — EINZIGER Todo-Parser (!prio, #Kat, Zeiten, Datum, Dauer); Nutzer: TodoModal „Auto"
 
     tools/
       TabTools/       TabTools.jsx            — Default: Meine Tools-Liste; "+ Alle Tools" Button oben (toggle) zeigt Alle-Tools-Ansicht zum Aktivieren/Deaktivieren
@@ -86,6 +92,8 @@ src/
         Kochen.jsx              — Kochen-Tab: Auswahl + Unteransichten Kochanleitung/Einkauf
         Einkauf.jsx             — Einkaufsliste mit 2-State-Tap (gekauft/zurück)
         Kochanleitung.jsx       — Mise-en-Place, Basen, Gerichte, Verpackung — Zeilen abhakbar (Tap)
+        kochTodo.js             — buildKochTodoBlock (Korb → Tagesplaner-Todo); Nutzer: Kochen + MealprepSection
+        MealprepSection.jsx     — Tagesplaner-Karte: Korb-Inhalt + „Koch-Todo"-Action
       timer/          TabTimer.jsx
       wasjetzt/       TabWasJetzt.jsx
 

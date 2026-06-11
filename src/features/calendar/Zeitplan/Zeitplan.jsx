@@ -299,8 +299,7 @@ export default function Zeitplan({
           aria-label="Alle Slots 30 Minuten früher"
           title="Alle Slots 30 Minuten früher"
         >
-          <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 15 12 9 18 15" /></svg>
-          30m
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 15 12 9 18 15" /></svg>
         </button>
         <button
           className={s.shiftBtn}
@@ -309,8 +308,7 @@ export default function Zeitplan({
           aria-label="Alle Slots 30 Minuten später"
           title="Alle Slots 30 Minuten später"
         >
-          <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
-          30m
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
         </button>
         <div style={{ flex: 1 }} />
         {onCreateBlocker && (
