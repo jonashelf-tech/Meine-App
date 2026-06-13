@@ -1,0 +1,528 @@
+﻿.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.back:hover { color: var(--text); }
+
+.titleBlock { text-align: right; }
+
+.eyebrow {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.title {
+  font-family: var(--font-num);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.title em { font-style: normal; color: var(--tool-color, var(--cyan)); }
+
+/* ─── Tab nav ────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 3px;
+  gap: 2px;
+}
+
+.tab {
+  flex: 1;
+  padding: 7px 10px;
+  background: none;
+  border: none;
+  border-radius: calc(var(--r) - 3px);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tabActive {
+  background: var(--bg3);
+  color: var(--tool-color, var(--cyan));
+}
+
+/* ─── Input card ─────────────────────────────────────────── */
+.inputCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputDateRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateNav {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 0;
+  flex: 1;
+}
+
+.dateArrow {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 1.4rem;
+  font-weight: 700;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.dateArrow:hover { color: var(--text); }
+
+.dateNavLabel {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+
+.dateNavLabelToday {
+  color: var(--tool-color, var(--primary));
+}
+
+.dateInputHidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.editBadge {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  color: var(--tool-color, var(--cyan));
+  background: rgba(0,207,255,0.08);
+  border: 1px solid rgba(0,207,255,0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.inputField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.inputUnit {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.numInput {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-num);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 8px 10px;
+  outline: none;
+  width: 100%;
+  text-align: center;
+}
+.numInput:focus { border-color: var(--tool-color, var(--cyan)); }
+
+.saveBtn {
+  background: rgba(0,207,255,0.12);
+  border: 1.5px solid rgba(0,207,255,0.3);
+  border-radius: var(--r-sm);
+  color: var(--tool-color, var(--cyan));
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.saveBtn:hover { background: rgba(0,207,255,0.2); }
+.saveBtn:disabled { opacity: 0.4; cursor: default; }
+
+/* ─── Dashboard ──────────────────────────────────────────── */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.kpiVal {
+  font-family: var(--font-num);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--tool-color, var(--cyan));
+}
+
+.kpiLbl {
+  font-family: var(--font);
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ─── Maintenance card ───────────────────────────────────── */
+.maintCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px;
+}
+
+.maintTitle {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.maintRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+.maintRow:last-child { border-bottom: none; }
+
+.maintLbl {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.maintVal {
+  font-family: var(--font-num);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--tool-color, var(--cyan));
+}
+
+/* ─── Chart section ──────────────────────────────────────── */
+.chartSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chartTabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.chartTab {
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chartTabActive {
+  border-color: var(--tool-color, var(--cyan));
+  color: var(--tool-color, var(--cyan));
+  background: rgba(0,207,255,0.06);
+}
+
+.chartLegend {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.legendBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.legendDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.canvasWrap { min-height: 165px; }
+.canvas { display: block; }
+
+.chartEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 165px;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* ─── Insight ────────────────────────────────────────────── */
+.insight {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ─── Verlauf ────────────────────────────────────────────── */
+.verlauf {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.histRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.histRow:first-child { border-radius: var(--r) var(--r) 0 0; }
+.histRow:last-child  { border-radius: 0 0 var(--r) var(--r); border-bottom: none; }
+.histRow:only-child  { border-radius: var(--r); border-bottom: none; }
+
+.histDate {
+  font-family: var(--font-num);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  min-width: 36px;
+}
+
+.histKg {
+  font-family: var(--font-num);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--tool-color, var(--cyan));
+  min-width: 64px;
+}
+
+.histKcal {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.histDel {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: color 0.15s;
+}
+.histDel:hover { color: var(--pink); }
+
+/* ─── Settings ───────────────────────────────────────────── */
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settingsTitle {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.toggleRow:hover { background: var(--border-dim); }
+
+.toggleTrack {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.toggleOn {
+  background: rgba(0,207,255,0.25);
+  border-color: var(--tool-color, var(--cyan));
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.toggleOn .toggleThumb {
+  transform: translateX(16px);
+  background: var(--tool-color, var(--cyan));
+}
+
+.toggleLabel {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  padding: 32px 0;
+  line-height: 1.6;
+}
+
+/* ─── Tool Reset ─────────────────────────────────────────── */
+.toolReset {
+  width: 100%;
+  margin-top: 24px;
+  padding: 9px 16px;
+  background: none;
+  border: 1px solid rgba(251,113,133,0.25);
+  border-radius: var(--r-sm);
+  color: var(--rose);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.toolResetConfirm {
+  border-color: var(--rose);
+  background: rgba(251,113,133,0.08);
+}
