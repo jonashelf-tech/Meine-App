@@ -13,6 +13,7 @@ import { useAutosave } from './useAutosave'
 import DailyStateRow from './DailyStateRow'
 import TageskarteCard from './TageskarteCard'
 import GrowthOpener from './GrowthOpener'
+import GrowthArchiv from './GrowthArchiv'
 import s from './TabGrowth.module.css'
 
 export default function TabGrowth({ onBack }) {
@@ -127,6 +128,10 @@ export default function TabGrowth({ onBack }) {
         </button>
       )}
 
+      {viewDate !== today && !editable && (
+        <div className={s.readOnlyHint}>Nur lesen — älter als 3 Tage</div>
+      )}
+
       {/* Daily State — geteilt mit Kognitiv, optional */}
       <DailyStateRow
         date={viewDate}
@@ -179,6 +184,10 @@ export default function TabGrowth({ onBack }) {
           <div className={s.freitextRead}>{day?.freitext || '—'}</div>
         )}
       </div>
+
+      {viewDate === today && (
+        <GrowthArchiv data={data} today={today} onOpen={(d) => setViewDate(d)} />
+      )}
     </div>
   )
 }

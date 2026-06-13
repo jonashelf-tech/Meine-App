@@ -11,7 +11,7 @@ export default function MonatView({
   days, todos, setTodos,
   birthdays, activeTools, toolColors, weightEntries, kognitivSessions,
   showTermine, showTodos, showTools,
-  setCurrentTab, setDayplanDate,
+  setCurrentTab, setDayplanDate, setGrowthOpenDate,
   restoreTodo, setRestoreTodo, handleRestore,
 }) {
   const monthCells = useMemo(() => {
@@ -105,6 +105,7 @@ export default function MonatView({
           weightEntry={weightEntries.find(e => e.date === selectedDay) ?? null}
           setCurrentTab={setCurrentTab}
           setDayplanDate={setDayplanDate}
+          setGrowthOpenDate={setGrowthOpenDate}
           setTodos={setTodos}
           restoreTodo={restoreTodo}
           setRestoreTodo={setRestoreTodo}

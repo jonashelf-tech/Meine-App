@@ -14,7 +14,7 @@ import s from './TabKalender.module.css'
 // Orchestrator: Ansicht-Umschaltung, Navigation, Toggles.
 // Die eigentlichen Ansichten leben in WocheView / MonatView / DayPanel.
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos, setDays, calendarDate, setCalendarDate } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setGrowthOpenDate, setTodos, setDays, calendarDate, setCalendarDate } = useAppStore()
   const [view, setView] = useState(() => lv(SK.calView, 'woche'))
   const handleSetView = (v) => { sv(SK.calView, v); setView(v) }
   const today = useMemo(() => {
@@ -173,6 +173,7 @@ export default function TabKalender() {
             showTools={showTools}
             setCurrentTab={setCurrentTab}
             setDayplanDate={setDayplanDate}
+            setGrowthOpenDate={setGrowthOpenDate}
             restoreTodo={restoreTodo}
             setRestoreTodo={setRestoreTodo}
             handleRestore={handleRestore}
