@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { getLastCheckin, saveCheckin } from './checkinStore'
+import { getDayState } from '../../daily/dailyState'
+import { todayKey } from '../../../utils'
 import s from './CheckinModal.module.css'
 
 const TIMER_SECS = 120
@@ -73,10 +75,12 @@ function ArrivalTimer({ entry, onDone }) {
 }
 
 export default function CheckinModal({ onSave, onSkip }) {
-  const last = getLastCheckin()
+  const last  = getLastCheckin()
+  // Heute schon erfasst (z.B. in Growth) → Werte vorbelegen, keine Doppelerfassung
+  const heute = getDayState(todayKey())
 
-  const [sleep,    setSleep]    = useState(last?.sleep           ?? 3)
-  const [energy,   setEnergy]   = useState(last?.energy          ?? 3)
+  const [sleep,    setSleep]    = useState(heute?.sleep  ?? last?.sleep           ?? 3)
+  const [energy,   setEnergy]   = useState(heute?.energy ?? last?.energy          ?? 3)
   const [mediName, setMediName] = useState(last?.medi?.name      ?? '')
   const [mediDos,  setMediDos]  = useState(last?.medi?.dosierung ?? '')
   const [mediTime, setMediTime] = useState('')

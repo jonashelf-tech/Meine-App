@@ -1,5 +1,6 @@
 import { sv, lv, SK } from '../../../storage'
 import { todayKey } from '../../../utils'
+import { setDayState } from '../../daily/dailyState'
 
 const todayISO = () => todayKey()
 const genId    = () =>
@@ -54,5 +55,7 @@ export function saveCheckin({ sleep, energy, medi, note }) {
     note:    note   ?? '',
   }
   sv(SK.kognitivCheckin, { ...loadCheckins(), [date]: entry })
+  // Schlaf/Energie zusätzlich in den zentralen Tages-Store spiegeln (geteilt mit Growth)
+  setDayState(date, { sleep: entry.sleep, energy: entry.energy })
   return entry
 }
