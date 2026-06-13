@@ -105,7 +105,8 @@ backInterceptor, setBackInterceptor  // fn | null — App.jsx ruft vor Tab-Navig
 kognitivAutoStart, setKognitivAutoStart  // string | null — moduleId für Auto-Start aus Tagesplaner
 
 // Timer
-timerAutoStart, setTimerAutoStart  // { todoId, text, color, duration, date, slotKey } | null — flüchtig; Play am Slot → TabTimer konsumiert beim Mount und startet sofort
+timerAutoStart, setTimerAutoStart  // { todoId, text, color, duration, date, slotKey, returnTab? } | null — flüchtig; Play am Slot → TabTimer konsumiert beim Mount; returnTab (z.B. Growth-Timer-Karte) → nach Ablauf zurück zum Tool statt Erledigt-Dialog
+growthOpenDate, setGrowthOpenDate  // string | null — flüchtig; Kalender-DayPanel „→ Öffnen" setzt Zieltag, TabGrowth konsumiert beim Mount
 
 // Geburtstage
 birthdays,    setBirthdays
@@ -235,7 +236,9 @@ SK.kognitivCheckin   → 'adhs_kognitiv_checkin'    // { "YYYY-MM-DD": CheckinEn
 SK.kognitivSchedule  → 'adhs_kognitiv_schedule'   // { [moduleId]: { mode, days, time } }
 SK.kognitivPractice  → 'adhs_kognitiv_practice'   // ephemer (Wochen-Gate), NICHT im Backup
 SK.klaerenSettings   → 'adhs_klaeren_settings'    // { threshold, ageColor }
-SK.wachstum          → 'adhs_wachstum_v1'         // { habits, checks, journal } — Leser: wachstum/growthData.js
+SK.wachstum          → 'adhs_wachstum_v1'         // LEGACY (altes Wachstum-Tool; Habit-Checks zählt Garten weiter, Journal → growth migriert)
+SK.growth            → 'adhs_growth_v1'           // { days{ tageskarteId, skipVerwendet, karten[], freitext, stateTouched, timerKarteId }, queuedCard, openerShownFor, settings } — Leser: growth/growthStore.js
+SK.dailyState        → 'adhs_daily_state_v1'      // { "YYYY-MM-DD": { sleep, energy, mood } } — geteilt Kognitiv↔Growth — Leser: daily/dailyState.js
 SK.garten            → 'adhs_garten_v1'           // { xpFloor, seenMilestones } — Garten-Begleiter (Monotonie-Ratchet)
 SK.erfolgeTracking   → 'adhs_erfolge_tracking_v1' // Tagesplaner-Tage; schreibt TabHeute, liest Garten (historischer Name)
 SK.erfolge           → LEGACY (altes Erfolge-Tool, nur Backup-Kompat)
@@ -315,6 +318,7 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
   - Haushalt-Dot: `todos.some(t => t.toolId === 'haushalt' && t.createdAt?.startsWith(dk))`
   - Reminder-Dot: `todos.some(t => t.reminderItemId && t.createdAt?.startsWith(dk))` ODER `Object.values(days[dk] ?? {}).some(s => s.reminderItemId)`
   - Dots immer solid (kein Ring-Stil). Farbe via `getToolColor(id, toolColors)`.
+  - Growth-Dot: `growthDoneDates.includes(dk)` (aus `growthStore.getDoneDates()` — Tag mit State-Check/Freitext/beantworteter Karte)
   - Keine Dots für: Elvi, Fokus-Timer, Pizza, Prokrastination, Rezepte, Was jetzt?, Zufallsrad, Garten
 - **Geburtstags-Balken:** synthetisch aus `birthdays[]` abgeleitet (kein `days`-Store), erscheinen vor Termin/Todo-Balken in Tageskachel. Nur wenn `kalender===true` AND `plannedYear !== currentYear`.
 - **DayPanel:** erscheint unterhalb des Grids wenn Monatskachel angeklickt
