@@ -7,8 +7,9 @@ import { TOOL_TAB } from '../toolTabs'
 import {
   loadGrowth, saveGrowth, ensureDayCard, setFreitext, isEditable,
   skipKarte, drawBonusKarte, setAntwort, markStateTouched, setTimerKarte, isTageskarteOffen,
-  openerForDate, markOpenerShown, setSettings, toggleKategorie,
+  openerForDate, markOpenerShown, setSettings, toggleKategorie, buildKiPrompt,
 } from './growthStore'
+import { loadDailyStates } from '../../daily/dailyState'
 import { useAutosave } from './useAutosave'
 import DailyStateRow from './DailyStateRow'
 import TageskarteCard from './TageskarteCard'
@@ -104,6 +105,19 @@ export default function TabGrowth({ onBack }) {
       persist(markOpenerShown(dataRef.current, today))
     }
   }, [showOpener, today])
+
+  // KI-Export: fertigen Prompt in die Zwischenablage (keine API, keine Netzwerk-Calls)
+  const [kiKopiert, setKiKopiert] = useState(false)
+  const handleKiExport = async (nTage) => {
+    const prompt = buildKiPrompt(dataRef.current, loadDailyStates(), nTage, today)
+    try {
+      await navigator.clipboard.writeText(prompt)
+      setKiKopiert(true)
+      setTimeout(() => setKiKopiert(false), 2500)
+    } catch {
+      // Clipboard verweigert (z.B. fehlender Focus) → kein Crash, kein Toast
+    }
+  }
 
   // Freitext mit Autosave (ab dem ersten Zeichen)
   const [freitext, onFreitext] = useAutosave(
@@ -225,7 +239,16 @@ export default function TabGrowth({ onBack }) {
       </div>
 
       {viewDate === today && (
-        <GrowthArchiv data={data} today={today} onOpen={(d) => setViewDate(d)} />
+        <GrowthArchiv data={data} today={today} onOpen={(d) => setViewDate(d)}>
+          {data.settings.kiExportAn && (
+            <div className={s.kiRow}>
+              <span className={s.kiLabel}>{kiKopiert ? '✓ In Zwischenablage kopiert' : 'Für KI exportieren:'}</span>
+              {!kiKopiert && [7, 30, 90].map(n => (
+                <button key={n} className={s.kiBtn} onClick={() => handleKiExport(n)}>{n} Tage</button>
+              ))}
+            </div>
+          )}
+        </GrowthArchiv>
       )}
     </div>
   )
