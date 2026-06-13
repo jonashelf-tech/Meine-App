@@ -3,8 +3,13 @@ import { useAppStore } from '../../../store'
 import { getToolColor, todayKey } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
-import { loadGrowth, saveGrowth, ensureDayCard, setFreitext, isEditable } from './growthStore'
+import {
+  loadGrowth, saveGrowth, ensureDayCard, setFreitext, isEditable,
+  skipKarte, drawBonusKarte, setAntwort, markStateTouched, isTageskarteOffen,
+} from './growthStore'
 import { useAutosave } from './useAutosave'
+import DailyStateRow from './DailyStateRow'
+import TageskarteCard from './TageskarteCard'
 import s from './TabGrowth.module.css'
 
 export default function TabGrowth({ onBack }) {
@@ -55,6 +60,10 @@ export default function TabGrowth({ onBack }) {
 
   const day = data.days[viewDate]
 
+  // Timer-Karten: Platzhalter, wird in Task 7 mit Leben gefüllt
+  const [timerRueckkehr] = useState(null)
+  const handleStartTimer = () => {}
+
   // Freitext mit Autosave (ab dem ersten Zeichen)
   const [freitext, onFreitext] = useAutosave(
     day?.freitext ?? '',
@@ -86,6 +95,40 @@ export default function TabGrowth({ onBack }) {
       {viewDate !== today && (
         <button className={s.backToToday} onClick={() => setViewDate(today)}>
           ← Zurück zu heute
+        </button>
+      )}
+
+      {/* Daily State — geteilt mit Kognitiv, optional */}
+      <DailyStateRow
+        date={viewDate}
+        editable={editable}
+        onTouched={() => persist(markStateTouched(dataRef.current, viewDate))}
+      />
+
+      {/* Karten: Tageskarte zuerst, dann Bonus */}
+      {(day?.karten ?? []).map(eintrag => (
+        <TageskarteCard
+          key={eintrag.kartenId}
+          eintrag={eintrag}
+          date={viewDate}
+          editable={editable}
+          istTageskarte={eintrag.kartenId === day.tageskarteId}
+          skipMoeglich={
+            viewDate === today && editable && !day.skipVerwendet &&
+            eintrag.kartenId === day.tageskarteId &&
+            !(eintrag.antwort ?? '').trim() && !eintrag.erledigt
+          }
+          autoOpen={timerRueckkehr === eintrag.kartenId}
+          onPatch={(patch) => persist(setAntwort(dataRef.current, viewDate, eintrag.kartenId, patch))}
+          onSkip={() => persist(skipKarte(dataRef.current, viewDate))}
+          onStartTimer={(karte) => handleStartTimer(karte)}
+        />
+      ))}
+
+      {/* Bonus: erst nach beantworteter Tageskarte, max 3 gesamt, nur heute */}
+      {viewDate === today && day && !isTageskarteOffen(data, viewDate) && day.karten.length < 3 && (
+        <button className={s.bonusBtn} onClick={() => persist(drawBonusKarte(dataRef.current, viewDate))}>
+          Noch eine ziehen?
         </button>
       )}
 
