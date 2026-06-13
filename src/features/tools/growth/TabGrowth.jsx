@@ -29,7 +29,16 @@ export default function TabGrowth({ onBack }) {
 
   const dataRef = useRef(data)
   dataRef.current = data
-  const persist = (next) => { if (next !== dataRef.current) { setData(next); saveGrowth(next) } }
+  // Sync-Update von dataRef: mehrere Effekte/Autosave persistieren im selben
+  // Commit nacheinander (ensureDayCard, Opener, Freitext). Ohne das synchrone
+  // Mitziehen läsen sie alle denselben stale State und überschreiben sich —
+  // die gezogene Tageskarte ginge verloren.
+  const persist = (next) => {
+    if (next === dataRef.current) return
+    dataRef.current = next
+    setData(next)
+    saveGrowth(next)
+  }
 
   // Intent aus dem Kalender-DayPanel einmalig konsumieren
   useEffect(() => { if (growthOpenDate) setGrowthOpenDate(null) }, [growthOpenDate, setGrowthOpenDate])
