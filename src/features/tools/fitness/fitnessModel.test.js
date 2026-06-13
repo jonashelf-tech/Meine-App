@@ -44,4 +44,13 @@ describe('Factories', () => {
     expect(s.exercises).toEqual([])
     expect(s.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
+  it('createPlan/createPlanDay haben Defaults', () => {
+    const plan = createPlan({ name: 'PPL' })
+    expect(plan.name).toBe('PPL')
+    expect(plan.modus).toBe('free')
+    expect(plan.days).toEqual([])
+    const day = createPlanDay({ name: 'Push' })
+    expect(day.name).toBe('Push')
+    expect(day.exercises).toEqual([])
+  })
 })

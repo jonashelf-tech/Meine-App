@@ -28,4 +28,9 @@ describe('fitnessStore', () => {
     expect(f.settings.feedbackMode).toBe('rir')
     expect(f.settings.restTimerEnabled).toBe(true) // Default ergänzt
   })
+  it('saveSessions überschreibt die Liste', () => {
+    addSession({ id: 's1', date: '2026-06-13' })
+    saveSessions([{ id: 'x', date: '2026-06-15' }])
+    expect(loadSessions().map(s => s.id)).toEqual(['x'])
+  })
 })
