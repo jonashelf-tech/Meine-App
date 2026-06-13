@@ -16,7 +16,7 @@ const ICONS = {
   klaeren:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> },
   kognitiv:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12"/><circle cx="12" cy="12" r="3"/><path d="M12 9V5M15 12h4"/></svg> },
   projekte:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="12" y1="11" x2="12" y2="17"/></svg> },
-  wachstum:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V12"/><path d="M12 12C12 8 9 6 4 6c0 4 3 6 8 6z"/><path d="M12 11c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z"/></svg> },
+  growth:       { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V12"/><path d="M12 12C12 8 9 6 4 6c0 4 3 6 8 6z"/><path d="M12 11c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z"/></svg> },
 }
 
 export function ToolIcon({ id, size = 20 }) {
@@ -181,15 +181,15 @@ export const TOOL_REGISTRY = [
     component: lazy(() => import('./projekte/TabProjekte')),
   },
   {
-    id: 'wachstum',
+    id: 'growth',
     tabId: 18,
-    name: 'Wachstum',
+    name: 'Growth',
     icon: '🌱',
     color: '#4ADE80',
-    description: 'Gewohnheiten & Journal — kleine Schritte, sichtbarer Fortschritt',
+    description: 'Tägliche Reflexionskarte & Journal — ein Satz reicht',
     standalone: true,
     integrated: true,
-    component: lazy(() => import('./wachstum/TabWachstum')),
+    component: lazy(() => import('./growth/TabGrowth')),
   },
 ]
 

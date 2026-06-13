@@ -82,6 +82,10 @@ export const useAppStore = create((set, get) => ({
   calendarDate: null,
   setCalendarDate: (dk) => set({ calendarDate: dk }),
 
+  // Growth: Kalender-DayPanel → bestimmten Tag im Tool öffnen (flüchtig)
+  growthOpenDate: null,
+  setGrowthOpenDate: (dk) => set({ growthOpenDate: dk }),
+
   // ─── Kognitiv auto-start ──────────────────────────────
   kognitivAutoStart: null,
   setKognitivAutoStart: (id) => set({ kognitivAutoStart: id }),
@@ -92,7 +96,8 @@ export const useAppStore = create((set, get) => ({
   setTimerAutoStart: (data) => set({ timerAutoStart: data }),
 
   // ─── Active Tools ──────────────────────────────────────
-  activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren']).map(id => id === 'erfolge' ? 'garten' : id),
+  activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren'])
+    .map(id => id === 'erfolge' ? 'garten' : id === 'wachstum' ? 'growth' : id),
   setActiveTools: (tools) => { set({ activeTools: tools }); sv(SK.activeTools, tools) },
   toggleTool: (id) => {
     const current = get().activeTools

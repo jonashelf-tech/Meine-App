@@ -1,0 +1,18 @@
+.page { display: flex; flex-direction: column; gap: 14px; padding-bottom: 24px; }
+.section { display: flex; flex-direction: column; gap: 8px; }
+.settingsBtn { width: 36px; height: 36px; border: none; background: none; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: var(--r-sm); }
+.settingsBtn:hover { color: var(--text); }
+.backToToday { align-self: flex-start; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); border-radius: var(--r); padding: 6px 12px; font-size: 0.78rem; cursor: pointer; font-family: var(--font); }
+.freitext { width: 100%; min-height: 72px; resize: vertical; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); padding: 12px; font-size: 0.9rem; font-family: var(--font); }
+.freitext:focus { outline: none; border-color: var(--tool-color); }
+.freitextRead { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); padding: 12px; font-size: 0.9rem; white-space: pre-wrap; }
+
+/* Tagesansicht (Task 6) */
+.bonusBtn { align-self: center; border: none; background: none; color: var(--text-dim); font-size: 0.78rem; cursor: pointer; padding: 4px 12px; font-family: var(--font); }
+.bonusBtn:hover { color: var(--text); }
+.readOnlyHint { font-size: 0.72rem; color: var(--text-dim); }
+
+/* KI-Export (Task 11) */
+.kiRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.kiLabel { font-size: 0.75rem; color: var(--text-dim); }
+.kiBtn { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: var(--r-sm); padding: 6px 12px; font-size: 0.75rem; cursor: pointer; font-family: var(--font); }

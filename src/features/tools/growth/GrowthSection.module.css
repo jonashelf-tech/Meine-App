@@ -1,0 +1,3 @@
+.row { display: flex; align-items: center; gap: 8px; }
+.text { flex: 1; font-size: 0.82rem; color: var(--text-dim); }
+.openBtn { width: 30px; height: 30px; border-radius: var(--r-sm); border: 1px solid var(--border); background: none; color: var(--tc); cursor: pointer; font-size: 0.7rem; }

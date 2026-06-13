@@ -15,7 +15,9 @@ export const TOOL_RESETS = {
   reminder:    { keys: ['adhs_reminder_v1', 'adhs_reminder_dismissed'] },
   kognitiv:    { keys: [SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule], prefixes: ['briefing-seen-'] },
   elvi:        { keys: ['adhs_elvi_v1'] },
-  wachstum:    { keys: [SK.wachstum] },
+  // SK.dailyState gehört bewusst NICHT hierher (geteilt mit Kognitiv).
+  // SK.wachstum (Legacy) bleibt erhalten — Garten zählt eingefrorene Habit-Checks daraus.
+  growth:      { keys: [SK.growth] },
 }
 
 // Löscht alle Daten eines Tools und lädt die App neu (Tools rebauen Defaults).

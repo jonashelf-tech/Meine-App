@@ -7,7 +7,7 @@ import {
 import { sv, SK } from '../../../storage'
 
 const T = (done, doneAt) => ({ done, doneAt })
-const EMPTY_GROWTH = { habits: [], checks: {}, journal: {} }
+const Q = (habitChecks, journalDates) => ({ habitChecks, journalDates })
 
 beforeEach(() => localStorage.clear())
 
@@ -15,12 +15,11 @@ describe('computeRawXP — Gewichte', () => {
   it('gewichtet alle vier Quellen korrekt', () => {
     const todos    = [T(true, '2026-06-10T08:00'), T(true, '2026-06-09T08:00'), T(false, null)]
     const tracking = { tagesplanerDates: ['2026-06-08', '2026-06-09', '2026-06-10'] }
-    const growth   = { habits: [], checks: { '2026-06-10': ['a', 'b'], '2026-06-09': ['a'] }, journal: { '2026-06-10': 'x' } }
     // 2·10 + 3·25 + 3·5 + 1·15 = 125
-    expect(computeRawXP(todos, tracking, growth)).toBe(125)
+    expect(computeRawXP(todos, tracking, Q(3, ['2026-06-10']))).toBe(125)
   })
-  it('funktioniert ohne Wachstum-Daten (leere Defaults)', () => {
-    expect(computeRawXP([T(true, 'x')], { tagesplanerDates: [] }, EMPTY_GROWTH)).toBe(XP_WEIGHTS.todo)
+  it('funktioniert ohne Growth-Daten (leere Defaults)', () => {
+    expect(computeRawXP([T(true, 'x')], { tagesplanerDates: [] }, Q(0, []))).toBe(XP_WEIGHTS.todo)
   })
 })
 
@@ -28,12 +27,11 @@ describe('todayRawXP — zählt nur heutige Beiträge', () => {
   const today = '2026-06-10'
   it('Todos nur mit doneAt von heute', () => {
     const todos = [T(true, '2026-06-10T09:00:00'), T(true, '2026-06-09T09:00:00')]
-    expect(todayRawXP(todos, { tagesplanerDates: [] }, EMPTY_GROWTH, today)).toBe(XP_WEIGHTS.todo)
+    expect(todayRawXP(todos, { tagesplanerDates: [] }, Q(0, []), today)).toBe(XP_WEIGHTS.todo)
   })
-  it('Planer-Tag + Checks + Journal von heute', () => {
-    const growth = { habits: [], checks: { [today]: ['a', 'b'] }, journal: { [today]: 'gut' } }
-    expect(todayRawXP([], { tagesplanerDates: [today] }, growth, today))
-      .toBe(XP_WEIGHTS.planerTag + 2 * XP_WEIGHTS.habitCheck + XP_WEIGHTS.journalTag)
+  it('Planer-Tag + Journal von heute', () => {
+    expect(todayRawXP([], { tagesplanerDates: [today] }, Q(0, [today]), today))
+      .toBe(XP_WEIGHTS.planerTag + XP_WEIGHTS.journalTag)
   })
 })
 

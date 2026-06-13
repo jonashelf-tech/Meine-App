@@ -3,7 +3,7 @@
 // (kein Event-Tracking) und durch einen Ratchet (xpFloor) monoton — nie Rückschritt.
 import { sv, lv, SK } from '../../../storage'
 import { todayKey } from '../../../utils'
-import { loadGrowth } from '../wachstum/growthData'
+import { loadGrowth, getDoneDates } from '../growth/growthStore'
 
 export const XP_WEIGHTS = { todo: 10, planerTag: 25, habitCheck: 5, journalTag: 15 }
 
@@ -28,25 +28,32 @@ const EMPTY = { xpFloor: 0, seenMilestones: 0 }
 const loadState   = () => ({ ...EMPTY, ...lv(SK.garten, EMPTY) })
 const trackingNow = () => lv(SK.erfolgeTracking, { tagesplanerDates: [] })
 
-// ─── XP (pur, testbar) ────────────────────────────────────
-export function computeRawXP(todos, tracking, growth) {
-  const habitChecks = Object.values(growth.checks ?? {}).reduce((n, a) => n + a.length, 0)
-  return XP_WEIGHTS.todo       * todos.filter(t => t.done).length
-       + XP_WEIGHTS.planerTag  * (tracking.tagesplanerDates ?? []).length
-       + XP_WEIGHTS.habitCheck * habitChecks
-       + XP_WEIGHTS.journalTag * Object.keys(growth.journal ?? {}).length
+// ─── XP-Quellen ───────────────────────────────────────────
+// habitChecks = eingefrorene Checks des alten Wachstum-Tools (Legacy, SK.wachstum);
+// journalDates = Growth-Eintragstage (inkl. migrierter Alt-Journale).
+export function gartenQuellen() {
+  const legacy = lv(SK.wachstum, null)
+  const habitChecks = Object.values(legacy?.checks ?? {}).reduce((n, a) => n + a.length, 0)
+  return { habitChecks, journalDates: getDoneDates(loadGrowth()) }
 }
 
-export function todayRawXP(todos, tracking, growth, today) {
+// ─── XP (pur, testbar) ────────────────────────────────────
+export function computeRawXP(todos, tracking, quellen) {
+  return XP_WEIGHTS.todo       * todos.filter(t => t.done).length
+       + XP_WEIGHTS.planerTag  * (tracking.tagesplanerDates ?? []).length
+       + XP_WEIGHTS.habitCheck * quellen.habitChecks
+       + XP_WEIGHTS.journalTag * quellen.journalDates.length
+}
+
+export function todayRawXP(todos, tracking, quellen, today) {
   return XP_WEIGHTS.todo       * todos.filter(t => t.done && (t.doneAt ?? '').startsWith(today)).length
        + XP_WEIGHTS.planerTag  * ((tracking.tagesplanerDates ?? []).includes(today) ? 1 : 0)
-       + XP_WEIGHTS.habitCheck * (growth.checks?.[today] ?? []).length
-       + XP_WEIGHTS.journalTag * (growth.journal?.[today] ? 1 : 0)
+       + XP_WEIGHTS.journalTag * (quellen.journalDates.includes(today) ? 1 : 0)
 }
 
 // ─── XP (storage-gebunden) ────────────────────────────────
 export function displayXP(todos) {
-  const raw   = computeRawXP(todos, trackingNow(), loadGrowth())
+  const raw   = computeRawXP(todos, trackingNow(), gartenQuellen())
   const state = loadState()
   if (raw > state.xpFloor) {
     sv(SK.garten, { ...state, xpFloor: raw })
@@ -56,21 +63,19 @@ export function displayXP(todos) {
 }
 
 export function todayXP(todos) {
-  return todayRawXP(todos, trackingNow(), loadGrowth(), todayKey())
+  return todayRawXP(todos, trackingNow(), gartenQuellen(), todayKey())
 }
 
 export function xpBreakdown(todos) {
-  const tracking    = trackingNow()
-  const growth      = loadGrowth()
-  const todosDone   = todos.filter(t => t.done).length
-  const planerTage  = (tracking.tagesplanerDates ?? []).length
-  const habitChecks = Object.values(growth.checks ?? {}).reduce((n, a) => n + a.length, 0)
-  const journalTage = Object.keys(growth.journal ?? {}).length
+  const tracking   = trackingNow()
+  const quellen    = gartenQuellen()
+  const todosDone  = todos.filter(t => t.done).length
+  const planerTage = (tracking.tagesplanerDates ?? []).length
   return [
-    { id: 'todos',   label: 'Erledigte Todos',    count: todosDone,   each: XP_WEIGHTS.todo,       xp: todosDone   * XP_WEIGHTS.todo },
-    { id: 'planer',  label: 'Tagesplaner-Tage',   count: planerTage,  each: XP_WEIGHTS.planerTag,  xp: planerTage  * XP_WEIGHTS.planerTag },
-    { id: 'checks',  label: 'Gewohnheits-Checks', count: habitChecks, each: XP_WEIGHTS.habitCheck, xp: habitChecks * XP_WEIGHTS.habitCheck },
-    { id: 'journal', label: 'Journal-Tage',       count: journalTage, each: XP_WEIGHTS.journalTag, xp: journalTage * XP_WEIGHTS.journalTag },
+    { id: 'todos',   label: 'Erledigte Todos',    count: todosDone,                   each: XP_WEIGHTS.todo,       xp: todosDone * XP_WEIGHTS.todo },
+    { id: 'planer',  label: 'Tagesplaner-Tage',   count: planerTage,                  each: XP_WEIGHTS.planerTag,  xp: planerTage * XP_WEIGHTS.planerTag },
+    { id: 'checks',  label: 'Gewohnheits-Checks', count: quellen.habitChecks,         each: XP_WEIGHTS.habitCheck, xp: quellen.habitChecks * XP_WEIGHTS.habitCheck },
+    { id: 'journal', label: 'Journal-Tage',       count: quellen.journalDates.length, each: XP_WEIGHTS.journalTag, xp: quellen.journalDates.length * XP_WEIGHTS.journalTag },
   ]
 }
 
