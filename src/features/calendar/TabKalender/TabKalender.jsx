@@ -4,6 +4,7 @@ import { dateKey as toDateKey } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
 import { loadEntries } from '../../tools/gewicht/gewichtData'
 import { loadSessions as loadKognitivSessions } from '../../tools/kognitiv/sessionStore'
+import { getDoneDates as loadGrowthDoneDates } from '../../tools/growth/growthStore'
 import NavPill from '../../../components/NavPill/NavPill'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
 import { MONTH_NAMES, getMonday, addDays } from './kalenderShared'
@@ -34,6 +35,7 @@ export default function TabKalender() {
 
   const weightEntries    = useMemo(() => loadEntries(), [])
   const kognitivSessions = useMemo(() => loadKognitivSessions(), [])
+  const growthDoneDates  = useMemo(() => loadGrowthDoneDates(), [])
 
   // Vom WocheView gesetzt — deaktiviert Page-Swipe während eines Block-Drags
   const weekDraggingRef = useRef(null)
@@ -148,6 +150,7 @@ export default function TabKalender() {
             toolColors={toolColors}
             weightEntries={weightEntries}
             kognitivSessions={kognitivSessions}
+            growthDoneDates={growthDoneDates}
             showTermine={showTermine}
             showTodos={showTodos}
             showTools={showTools}
@@ -168,6 +171,7 @@ export default function TabKalender() {
             toolColors={toolColors}
             weightEntries={weightEntries}
             kognitivSessions={kognitivSessions}
+            growthDoneDates={growthDoneDates}
             showTermine={showTermine}
             showTodos={showTodos}
             showTools={showTools}
