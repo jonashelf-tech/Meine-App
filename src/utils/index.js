@@ -95,7 +95,7 @@ export function getToolColor(toolId, toolColors) {
     rezepte:      '#E0A458',
     pizza:        '#FF6B6B',
     elvi:         '#00E5FF',
-    gewicht:      '#00FF94',
+    fitness:      '#00FF94',
     geburtstage:  '#FF2D78',
     gamification: '#FFD700',
     reminder:     '#00FF94',

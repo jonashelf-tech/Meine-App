@@ -7,7 +7,7 @@ const ICONS = {
   rezepte:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg> },
   pizza:        { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M15 11h.01"/><path d="M11 15h.01"/><path d="M16 16h.01"/><path d="m2 16 20 6-6-20A20 20 0 0 0 2 16"/><path d="M5.71 17.11a17.04 17.04 0 0 1 11.4-11.4"/></svg> },
   elvi:         { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10.5 3.5a5 5 0 0 1 7.07 7.07l-7.07 7.07a5 5 0 0 1-7.07-7.07l7.07-7.07z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg> },
-  gewicht:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> },
+  fitness:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> },
   geburtstage:  { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="10" width="20" height="12" rx="2"/><path d="M12 10V6"/><path d="M8 10V8"/><path d="M16 10V8"/><path d="M2 15h20"/></svg> },
   garten:       { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m5 0a3 3 0 1 1-3 3m3-3h-1m-2 3v-1"/><circle cx="12" cy="8" r="2"/><path d="M12 10v12"/><path d="M12 22c4.2 0 7-1.667 7-5-4.2 0-7 1.667-7 5Z"/><path d="M12 22c-4.2 0-7-1.667-7-5 4.2 0 7 1.667 7 5Z"/></svg> },
   reminder:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> },
@@ -16,7 +16,7 @@ const ICONS = {
   klaeren:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> },
   kognitiv:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12"/><circle cx="12" cy="12" r="3"/><path d="M12 9V5M15 12h4"/></svg> },
   projekte:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="12" y1="11" x2="12" y2="17"/></svg> },
-  wachstum:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V12"/><path d="M12 12C12 8 9 6 4 6c0 4 3 6 8 6z"/><path d="M12 11c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z"/></svg> },
+  growth:       { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V12"/><path d="M12 12C12 8 9 6 4 6c0 4 3 6 8 6z"/><path d="M12 11c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z"/></svg> },
 }
 
 export function ToolIcon({ id, size = 20 }) {
@@ -82,15 +82,15 @@ export const TOOL_REGISTRY = [
     component: lazy(() => import('./elvi/TabElvi')),
   },
   {
-    id: 'gewicht',
+    id: 'fitness',
     tabId: 9,
-    name: 'Gewicht',
-    icon: '⚖',
+    name: 'Fitness',
+    icon: '🏋',
     color: '#22C55E',
-    description: 'Gewichtstracking & Verlauf',
+    description: 'Krafttraining, Pläne & Körpergewicht',
     standalone: true,
     integrated: true,
-    component: lazy(() => import('./gewicht/TabGewicht')),
+    component: lazy(() => import('./fitness/TabFitness')),
   },
   {
     id: 'garten',
@@ -181,15 +181,15 @@ export const TOOL_REGISTRY = [
     component: lazy(() => import('./projekte/TabProjekte')),
   },
   {
-    id: 'wachstum',
+    id: 'growth',
     tabId: 18,
-    name: 'Wachstum',
+    name: 'Growth',
     icon: '🌱',
     color: '#4ADE80',
-    description: 'Gewohnheiten & Journal — kleine Schritte, sichtbarer Fortschritt',
+    description: 'Tägliche Reflexionskarte & Journal — ein Satz reicht',
     standalone: true,
     integrated: true,
-    component: lazy(() => import('./wachstum/TabWachstum')),
+    component: lazy(() => import('./growth/TabGrowth')),
   },
 ]
 
