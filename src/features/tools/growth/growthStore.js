@@ -16,6 +16,17 @@ export const KATEGORIEN = content.kategorien
 export const OPENER = content.opener
 export const karteById = (id) => content.karten.find(k => k.id === id) ?? null
 
+// Opener: rotiert deterministisch pro Tag; gilt als gezeigt, sobald gerendert.
+export function openerForDate(date) {
+  const dayNum = Math.floor(new Date(date + 'T12:00:00').getTime() / 86400000)
+  return content.opener[dayNum % content.opener.length]
+}
+
+export function markOpenerShown(data, date) {
+  if (data.openerShownFor === date) return data
+  return { ...data, openerShownFor: date }
+}
+
 export function emptyDay() {
   return { tageskarteId: null, skipVerwendet: false, karten: [], freitext: '', stateTouched: false, timerKarteId: null }
 }

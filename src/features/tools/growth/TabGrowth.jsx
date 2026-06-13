@@ -7,10 +7,12 @@ import { TOOL_TAB } from '../toolTabs'
 import {
   loadGrowth, saveGrowth, ensureDayCard, setFreitext, isEditable,
   skipKarte, drawBonusKarte, setAntwort, markStateTouched, setTimerKarte, isTageskarteOffen,
+  openerForDate, markOpenerShown,
 } from './growthStore'
 import { useAutosave } from './useAutosave'
 import DailyStateRow from './DailyStateRow'
 import TageskarteCard from './TageskarteCard'
+import GrowthOpener from './GrowthOpener'
 import s from './TabGrowth.module.css'
 
 export default function TabGrowth({ onBack }) {
@@ -79,6 +81,18 @@ export default function TabGrowth({ onBack }) {
     persist(setTimerKarte(dataRef.current, todayKey(), null))
   }, [])
 
+  // Opener: nur beim ersten Öffnen des Tages, nur heute, abschaltbar.
+  // „Gezeigt" wird sofort beim Rendern persistiert (strikt 1× pro Tag).
+  const showOpener = data.settings.briefingGesehen && data.settings.openerAn
+    && viewDate === today && data.openerShownFor !== today
+  const [openerAktiv, setOpenerAktiv] = useState(false)
+  useEffect(() => {
+    if (showOpener) {
+      setOpenerAktiv(true)
+      persist(markOpenerShown(dataRef.current, today))
+    }
+  }, [showOpener, today])
+
   // Freitext mit Autosave (ab dem ersten Zeichen)
   const [freitext, onFreitext] = useAutosave(
     day?.freitext ?? '',
@@ -119,6 +133,10 @@ export default function TabGrowth({ onBack }) {
         editable={editable}
         onTouched={() => persist(markStateTouched(dataRef.current, viewDate))}
       />
+
+      {openerAktiv && viewDate === today && (
+        <GrowthOpener opener={openerForDate(today)} onDone={() => setOpenerAktiv(false)} />
+      )}
 
       {/* Karten: Tageskarte zuerst, dann Bonus */}
       {(day?.karten ?? []).map(eintrag => (
