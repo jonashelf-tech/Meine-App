@@ -155,7 +155,7 @@ function ModalStage({ find }) {
 
 // ─── Stage: Tools-Konzept (Meine / Alle Tools) ──────────────
 function StageTools() {
-  const mine = ['timer', 'rezepte', 'haushalt', 'gewicht', 'reminder']
+  const mine = ['timer', 'rezepte', 'haushalt', 'fitness', 'reminder']
   return (
     <div className={s.infoStage}>
       <div className={s.toolsRow}>
