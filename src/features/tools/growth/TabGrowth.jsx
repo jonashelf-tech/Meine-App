@@ -3,9 +3,10 @@ import { useAppStore } from '../../../store'
 import { getToolColor, todayKey } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
+import { TOOL_TAB } from '../toolTabs'
 import {
   loadGrowth, saveGrowth, ensureDayCard, setFreitext, isEditable,
-  skipKarte, drawBonusKarte, setAntwort, markStateTouched, isTageskarteOffen,
+  skipKarte, drawBonusKarte, setAntwort, markStateTouched, setTimerKarte, isTageskarteOffen,
 } from './growthStore'
 import { useAutosave } from './useAutosave'
 import DailyStateRow from './DailyStateRow'
@@ -13,7 +14,7 @@ import TageskarteCard from './TageskarteCard'
 import s from './TabGrowth.module.css'
 
 export default function TabGrowth({ onBack }) {
-  const { toolColors, setBackInterceptor, growthOpenDate, setGrowthOpenDate } = useAppStore()
+  const { toolColors, setBackInterceptor, growthOpenDate, setGrowthOpenDate, setTimerAutoStart, setCurrentTab } = useAppStore()
   const toolColor = getToolColor('growth', toolColors)
 
   const [data, setData] = useState(() => loadGrowth())
@@ -60,9 +61,23 @@ export default function TabGrowth({ onBack }) {
 
   const day = data.days[viewDate]
 
-  // Timer-Karten: Platzhalter, wird in Task 7 mit Leben gefüllt
-  const [timerRueckkehr] = useState(null)
-  const handleStartTimer = () => {}
+  // Timer-Karte: bestehenden Fokustimer mit Kartendauer starten; Karte am Tag
+  // vormerken, damit beim Rückweg das Antwortfeld aufgeht (auch wenn der Timer
+  // im Hintergrund ablief und das Tool später manuell geöffnet wird).
+  const [timerRueckkehr, setTimerRueckkehr] = useState(null)
+  const handleStartTimer = (karte) => {
+    persist(setTimerKarte(dataRef.current, viewDate, karte.id))
+    setTimerAutoStart({ text: karte.text, color: toolColor, duration: karte.timer, returnTab: TOOL_TAB.growth })
+    setCurrentTab(TOOL_TAB.timer)
+  }
+
+  // Rückkehr vom Timer: vorgemerkte Karte einmalig konsumieren
+  useEffect(() => {
+    const id = dataRef.current.days[todayKey()]?.timerKarteId
+    if (!id) return
+    setTimerRueckkehr(id)
+    persist(setTimerKarte(dataRef.current, todayKey(), null))
+  }, [])
 
   // Freitext mit Autosave (ab dem ersten Zeichen)
   const [freitext, onFreitext] = useAutosave(

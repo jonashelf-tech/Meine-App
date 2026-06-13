@@ -47,7 +47,7 @@ const playBreakStart = () => {
 
 // ─── Component ─────────────────────────────────────────────
 export default function TabTimer({ onBack }) {
-  const { todos, setTodos, toolColors, setTimerAutoStart, setDays } = useAppStore()
+  const { todos, setTodos, toolColors, setTimerAutoStart, setDays, setCurrentTab } = useAppStore()
   const toolColor = getToolColor('timer', toolColors)
 
   // Config state
@@ -331,11 +331,18 @@ export default function TabTimer({ onBack }) {
     localStorage.removeItem(LS_TOTAL)
   }
 
-  // When timer finishes and a task is set, show mark-done dialog
+  // When timer finishes and a task is set, show mark-done dialog.
+  // Kam der Start aus einem Tool (returnTab gesetzt) → dorthin zurück statt Dialog.
   useEffect(() => {
-    if (done && (focusTodoId || autoTask) && timerMode === 'normal') {
-      setConfirmDone(true)
+    if (!done || timerMode !== 'normal') return
+    if (autoTask?.returnTab != null) {
+      const rt = autoTask.returnTab
+      reset()
+      setCurrentTab(rt)
+      return
     }
+    if (focusTodoId || autoTask) setConfirmDone(true)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done, focusTodoId, autoTask, timerMode])
 
   const markTodoDone = () => {

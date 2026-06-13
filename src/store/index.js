@@ -91,7 +91,7 @@ export const useAppStore = create((set, get) => ({
   setKognitivAutoStart: (id) => set({ kognitivAutoStart: id }),
 
   // ─── Timer auto-start (Play am Slot) ───────────────────
-  // { todoId, text, color, duration, date, slotKey } — flüchtig, kein localStorage
+  // { todoId, text, color, duration, date, slotKey, returnTab? } — flüchtig, kein localStorage
   timerAutoStart: null,
   setTimerAutoStart: (data) => set({ timerAutoStart: data }),
 
