@@ -95,7 +95,9 @@ export const SK = {
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
   lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
   projects:        `${PREFIX}projects`,
-  wachstum:        `${PREFIX}wachstum_v1`,
+  wachstum:        `${PREFIX}wachstum_v1`,     // LEGACY (altes Wachstum-Tool; Habits eingefroren, Journal → growth migriert)
+  growth:          `${PREFIX}growth_v1`,
+  dailyState:      `${PREFIX}daily_state_v1`,
   garten:          `${PREFIX}garten_v1`,
 }
 
@@ -130,7 +132,7 @@ export const BACKUP_CATS = {
     SK.reminder, SK.reminderDismissed, SK.elvi,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
     SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule,
-    SK.wachstum, SK.garten,
+    SK.wachstum, SK.garten, SK.growth, SK.dailyState,
   ],
   einstellungen: [
     SK.settings, SK.theme, SK.appBriefingSeen,
