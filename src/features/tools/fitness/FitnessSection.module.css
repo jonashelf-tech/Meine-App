@@ -1,4 +1,4 @@
-﻿.body {
+.body {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -127,3 +127,13 @@
 }
 .saveBtn:hover { background: rgba(139,92,246,0.22); }
 .saveBtn:disabled { opacity: 0.4; cursor: default; }
+
+.trainBlock { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.trainTitle { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 6px; }
+.trainRow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.trainName { font-size: 0.88rem; color: var(--text); }
+.trainMeta { font-size: 0.72rem; color: var(--text-dim); }
+.startBtn { padding: 7px 14px; border-radius: var(--r-sm); border: 1px solid var(--tc, var(--primary));
+  background: color-mix(in srgb, var(--tc, var(--primary)) 16%, transparent); color: var(--tc, var(--primary));
+  font-size: 0.8rem; font-family: var(--font); cursor: pointer; white-space: nowrap; }
+.trainEmpty { font-size: 0.8rem; color: var(--text-dim); }

@@ -11,8 +11,8 @@ import TodoModal           from '../../../components/TodoModal/TodoModal'
 import ReminderSection     from '../../tools/reminder/ReminderSection'
 import HaushaltSection     from '../../tools/haushalt/HaushaltSection'
 import GartenSection       from '../../tools/garten/GartenSection'
-import WachstumSection     from '../../tools/wachstum/WachstumSection'
-import GewichtSection     from '../../tools/gewicht/GewichtSection'
+import GrowthSection       from '../../tools/growth/GrowthSection'
+import FitnessSection     from '../../tools/fitness/FitnessSection'
 import BirthdaySection    from '../../tools/geburtstage/BirthdaySection'
 import MealprepSection    from '../../tools/rezepte/MealprepSection'
 import MissedReviewModal   from '../Zeitplan/MissedReviewModal'
@@ -606,7 +606,7 @@ export default function TabHeute() {
           registerHalf={registerHalf}
         />
         {(() => {
-          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, gewicht: GewichtSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, wachstum: WachstumSection, rezepte: MealprepSection }
+          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, fitness: FitnessSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, growth: GrowthSection, rezepte: MealprepSection }
           const SECTION_PROPS = {
             haushalt:    { onStartDrag: startHaushaltDrag },
             reminder:    { onStartDrag: startReminderDrag },

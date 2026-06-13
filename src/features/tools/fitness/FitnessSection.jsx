@@ -6,12 +6,13 @@ import ToolSection from '../../../components/ToolSection/ToolSection'
 import {
   isoToday, isoAddDays, isoNavLabel,
   loadEntries, upsertEntry,
-} from './gewichtData'
-import s from './GewichtSection.module.css'
+} from './koerpergewichtData'
+import { loadFitness, getActivePlan } from './fitnessStore'
+import s from './FitnessSection.module.css'
 
-export default function GewichtSection() {
+export default function FitnessSection() {
   const { setCurrentTab, toolColors } = useAppStore()
-  const toolColor = getToolColor('gewicht', toolColors)
+  const toolColor = getToolColor('fitness', toolColors)
   const today = isoToday()
 
   const [entries,   setEntries]   = useState(loadEntries)
@@ -48,12 +49,12 @@ export default function GewichtSection() {
 
   return (
     <ToolSection
-      toolId="gewicht"
-      title="Gewicht"
+      toolId="fitness"
+      title="Fitness"
       badge={<span style={{ color: badgeColor }}>{badgeText}</span>}
       badgeBg={badgeBg}
       color={toolColor}
-      onTitleClick={() => setCurrentTab(TOOL_TAB.gewicht)}
+      onTitleClick={() => setCurrentTab(TOOL_TAB.fitness)}
     >
       <div className={s.body}>
         {/* Datum-Nav */}
@@ -110,6 +111,29 @@ export default function GewichtSection() {
           </div>
           <button className={s.saveBtn} onClick={handleSave} disabled={!inputKg.trim()}>✓</button>
         </div>
+
+        {(() => {
+          const fitness = loadFitness()
+          const plan = getActivePlan(fitness)
+          const cursor = plan ? (fitness.meta.planCursor[plan.id] ?? 0) : 0
+          const day = plan?.days?.length ? plan.days[cursor % plan.days.length] : null
+          return (
+            <div className={s.trainBlock}>
+              <div className={s.trainTitle}>Heutiges Training</div>
+              {day ? (
+                <div className={s.trainRow}>
+                  <div>
+                    <div className={s.trainName}>{day.name}</div>
+                    <div className={s.trainMeta}>{day.exercises.length} Übungen</div>
+                  </div>
+                  <button className={s.startBtn} onClick={() => setCurrentTab(TOOL_TAB.fitness)}>Training starten</button>
+                </div>
+              ) : (
+                <div className={s.trainEmpty}>Kein aktiver Plan — im Fitness-Tool anlegen.</div>
+              )}
+            </div>
+          )
+        })()}
       </div>
     </ToolSection>
   )
