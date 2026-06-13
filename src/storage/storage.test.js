@@ -117,4 +117,9 @@ describe('Backup-Abdeckung — Anti-Drift', () => {
     ;[SK.reminder, SK.reminderDismissed, SK.elvi, SK.recipesVersion, SK.weightDash]
       .forEach(k => expect(BACKUP_CATS.tools).toContain(k))
   })
+
+  it('Fitness-Keys sind in BACKUP_CATS.tools', () => {
+    ;[SK.fitness, SK.fitnessSessions].forEach(k =>
+      expect(BACKUP_CATS.tools).toContain(k))
+  })
 })

@@ -99,6 +99,8 @@ export const SK = {
   growth:          `${PREFIX}growth_v1`,
   dailyState:      `${PREFIX}daily_state_v1`,
   garten:          `${PREFIX}garten_v1`,
+  fitness:         `${PREFIX}fitness_v1`,
+  fitnessSessions: `${PREFIX}fitness_sessions`,
 }
 
 export const exportData = () => {
@@ -128,6 +130,7 @@ export const BACKUP_CATS = {
     SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv,
     SK.shopping, SK.shoppingStates, SK.selectedDishes,
     SK.weight, SK.weightDash,
+    SK.fitness, SK.fitnessSessions,
     SK.birthdays, SK.birthdaySort, SK.haushalt, SK.haushaltEnergie,
     SK.reminder, SK.reminderDismissed, SK.elvi,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
