@@ -1,0 +1,8 @@
+.page { padding: 0 0 24px; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; padding: 4px 12px 8px; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; padding: 7px 12px; border-radius: var(--r-sm); border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-dim); font-size: 0.8rem; font-family: var(--font);
+  cursor: pointer; white-space: nowrap; transition: all .15s; }
+.tabActive { color: var(--tool-color, var(--primary)); border-color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent); }
