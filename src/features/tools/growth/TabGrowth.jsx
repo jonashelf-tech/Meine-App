@@ -7,13 +7,15 @@ import { TOOL_TAB } from '../toolTabs'
 import {
   loadGrowth, saveGrowth, ensureDayCard, setFreitext, isEditable,
   skipKarte, drawBonusKarte, setAntwort, markStateTouched, setTimerKarte, isTageskarteOffen,
-  openerForDate, markOpenerShown,
+  openerForDate, markOpenerShown, setSettings, toggleKategorie,
 } from './growthStore'
 import { useAutosave } from './useAutosave'
 import DailyStateRow from './DailyStateRow'
 import TageskarteCard from './TageskarteCard'
 import GrowthOpener from './GrowthOpener'
 import GrowthArchiv from './GrowthArchiv'
+import GrowthBriefing from './GrowthBriefing'
+import GrowthSettings from './GrowthSettings'
 import s from './TabGrowth.module.css'
 
 export default function TabGrowth({ onBack }) {
@@ -107,6 +109,34 @@ export default function TabGrowth({ onBack }) {
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
   )
+
+  // First-Open: Briefing mit Pflicht-Kategorienauswahl (alle Hooks liefen bereits oben)
+  if (!data.settings.briefingGesehen) {
+    return (
+      <div className={s.page} style={{ '--tool-color': toolColor }}>
+        <ToolHeader onBack={onBack} icon={<ToolIcon id="growth" size={20} />} eyebrow="Tool" title="Growth" />
+        <GrowthBriefing
+          defaults={data.settings.aktiveKategorien}
+          onComplete={(kategorien) =>
+            persist(setSettings(dataRef.current, { aktiveKategorien: kategorien, briefingGesehen: true }))}
+        />
+      </div>
+    )
+  }
+
+  if (nav === 'settings') {
+    return (
+      <div className={s.page} style={{ '--tool-color': toolColor }}>
+        <ToolHeader onBack={onBack} icon={<ToolIcon id="growth" size={20} />} eyebrow="Tool" title="Growth" />
+        <GrowthSettings
+          settings={data.settings}
+          onToggleKategorie={(id) => persist(toggleKategorie(dataRef.current, id))}
+          onPatch={(patch) => { persist(setSettings(dataRef.current, patch)); if (patch.briefingGesehen === false) setNav(null) }}
+          onBack={() => setNav(null)}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
