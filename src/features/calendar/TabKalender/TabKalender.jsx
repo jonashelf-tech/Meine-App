@@ -3,6 +3,7 @@ import { useAppStore } from '../../../store'
 import { dateKey as toDateKey } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
 import { loadEntries } from '../../tools/fitness/koerpergewichtData'
+import { loadSessions as loadFitnessSessions } from '../../tools/fitness/fitnessStore'
 import { loadSessions as loadKognitivSessions } from '../../tools/kognitiv/sessionStore'
 import NavPill from '../../../components/NavPill/NavPill'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
@@ -34,6 +35,7 @@ export default function TabKalender() {
 
   const weightEntries    = useMemo(() => loadEntries(), [])
   const kognitivSessions = useMemo(() => loadKognitivSessions(), [])
+  const fitnessSessions  = useMemo(() => loadFitnessSessions(), [])
 
   // Vom WocheView gesetzt — deaktiviert Page-Swipe während eines Block-Drags
   const weekDraggingRef = useRef(null)
@@ -148,6 +150,7 @@ export default function TabKalender() {
             toolColors={toolColors}
             weightEntries={weightEntries}
             kognitivSessions={kognitivSessions}
+            fitnessSessions={fitnessSessions}
             showTermine={showTermine}
             showTodos={showTodos}
             showTools={showTools}
@@ -168,6 +171,7 @@ export default function TabKalender() {
             toolColors={toolColors}
             weightEntries={weightEntries}
             kognitivSessions={kognitivSessions}
+            fitnessSessions={fitnessSessions}
             showTermine={showTermine}
             showTodos={showTodos}
             showTools={showTools}

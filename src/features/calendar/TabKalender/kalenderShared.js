@@ -50,12 +50,14 @@ export function rangeBlocked(dayObj, startKey, duration, ignoreKey) {
   return false
 }
 
-export function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions) {
+export function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions, fitnessSessions = []) {
   const dots = []
 
-  if (activeTools.includes('gewicht')) {
-    if (weightEntries.some(e => e.date === dk))
-      dots.push({ id: 'gewicht', color: getToolColor('gewicht', toolColors) })
+  if (activeTools.includes('fitness')) {
+    const hasWeight  = weightEntries.some(e => e.date === dk)
+    const hasSession = fitnessSessions.some(s => s.date === dk)
+    if (hasWeight || hasSession)
+      dots.push({ id: 'fitness', color: getToolColor('fitness', toolColors) })
   }
 
   if (activeTools.includes('haushalt')) {

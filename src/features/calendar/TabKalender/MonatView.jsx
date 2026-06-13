@@ -9,7 +9,7 @@ import s from './TabKalender.module.css'
 export default function MonatView({
   monthRef, todayKey, selectedDay, onDayClick,
   days, todos, setTodos,
-  birthdays, activeTools, toolColors, weightEntries, kognitivSessions,
+  birthdays, activeTools, toolColors, weightEntries, kognitivSessions, fitnessSessions,
   showTermine, showTodos, showTools,
   setCurrentTab, setDayplanDate,
   restoreTodo, setRestoreTodo, handleRestore,
@@ -43,7 +43,7 @@ export default function MonatView({
           ]
           const visible  = filtered.slice(0, 3)
           const overflow = filtered.length - visible.length
-          const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions)
+          const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions, fitnessSessions)
           const bdays    = getBirthdaysForCalendarDate(birthdays, dk)
 
           return (

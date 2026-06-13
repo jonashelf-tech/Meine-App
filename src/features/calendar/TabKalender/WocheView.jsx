@@ -125,7 +125,7 @@ function WeekTerminEditModal({ dk, slotKey, slot, onSave, onClose }) {
 export default function WocheView({
   weekStart, todayKey,
   days, setDays, todos, setTodos,
-  birthdays, activeTools, toolColors, weightEntries, kognitivSessions,
+  birthdays, activeTools, toolColors, weightEntries, kognitivSessions, fitnessSessions,
   showTermine, showTodos, showTools,
   draggingRef,
 }) {
@@ -309,7 +309,7 @@ export default function WocheView({
           {weekDays.map(date => {
             const dk       = toDateKey(date)
             const isToday  = dk === todayKey
-            const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions)
+            const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions, fitnessSessions)
             return (
               <div key={dk} className={[s.weekDayHead, isToday ? s.weekDayHeadToday : ''].join(' ')}>
                 <span className={s.weekDayHeadName}>
