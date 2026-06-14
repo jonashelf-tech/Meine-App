@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
-  allocationOverlap, similarExercises,
+  allocationOverlap, similarExercises, realSetsPerMuscle, volumeZone, weekStartIso,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -93,6 +93,52 @@ describe('allocationOverlap', () => {
   })
   it('keine Überlappung → 0', () => {
     expect(allocationOverlap({ brust: 100 }, { waden: 100 })).toBe(0)
+  })
+})
+
+describe('weekStartIso', () => {
+  it('liefert den Montag der Woche', () => {
+    expect(weekStartIso('2026-06-14')).toBe('2026-06-08') // So 14.6. → Mo 8.6.
+    expect(weekStartIso('2026-06-08')).toBe('2026-06-08') // Mo bleibt Mo
+  })
+})
+
+describe('volumeZone', () => {
+  it('Zonen für brust (mev8, mav[12,20], mrv22)', () => {
+    expect(volumeZone('brust', 5)).toBe('low')
+    expect(volumeZone('brust', 10)).toBe('optimal')
+    expect(volumeZone('brust', 21)).toBe('high')
+    expect(volumeZone('brust', 23)).toBe('over')
+  })
+  it('Muskel ohne Referenz → untracked', () => {
+    expect(volumeZone('unterarme', 10)).toBe('untracked')
+  })
+})
+
+describe('realSetsPerMuscle', () => {
+  const exercises = [
+    { id: 'bp', allocation: { brust: 70, trizeps: 30 } },
+    { id: 'sh', allocation: { schulterSeitlich: 100 } },
+  ]
+  const sessions = [
+    { date: '2026-06-09', exercises: [ // in der Woche von Mo 8.6.
+      { exerciseId: 'bp', saetze: [
+        { gewicht: 50, wdh: 10, satzTyp: 'normal' },
+        { gewicht: 50, wdh: 10, satzTyp: 'normal' },
+        { gewicht: 50, wdh: 10, satzTyp: 'normal' },
+        { gewicht: 20, wdh: 10, satzTyp: 'warmup' }, // zählt nicht
+      ] },
+      { exerciseId: 'sh', saetze: [ { gewicht: 10, wdh: 15, satzTyp: 'normal' } ] },
+    ] },
+    { date: '2026-06-01', exercises: [ // andere Woche → ignoriert
+      { exerciseId: 'bp', saetze: [ { gewicht: 50, wdh: 10, satzTyp: 'normal' } ] },
+    ] },
+  ]
+  it('gewichtet Arbeitssätze mit Allokation, nur in der Zielwoche', () => {
+    const res = realSetsPerMuscle(sessions, exercises, '2026-06-08')
+    expect(res.brust).toBeCloseTo(2.1, 5)   // 3 * 0.7
+    expect(res.trizeps).toBeCloseTo(0.9, 5) // 3 * 0.3
+    expect(res.schulterSeitlich).toBeCloseTo(1, 5)
   })
 })
 

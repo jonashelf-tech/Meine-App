@@ -1,4 +1,4 @@
-import { REST_DEFAULTS, WARMUP_SCHEME } from './fitnessModel'
+import { REST_DEFAULTS, WARMUP_SCHEME, VOLUME_REF } from './fitnessModel'
 
 const WORKING = ['normal', 'dropset', 'failure']
 const round1 = (n) => Math.round(n * 10) / 10
@@ -87,4 +87,44 @@ export function similarExercises(target, all, n = 5) {
     .sort((a, b) => b.score - a.score || a.exercise.name.localeCompare(b.exercise.name, 'de'))
     .slice(0, n)
     .map(x => x.exercise)
+}
+
+export function weekStartIso(iso) {
+  const d = new Date(iso + 'T12:00:00')
+  const day = d.getDay()                 // 0=So
+  const diff = day === 0 ? -6 : 1 - day  // auf Montag
+  d.setDate(d.getDate() + diff)
+  return d.toISOString().slice(0, 10)
+}
+
+export function volumeZone(muscle, sets) {
+  const ref = VOLUME_REF[muscle]
+  if (!ref) return 'untracked'
+  if (sets < ref.mev) return 'low'
+  if (sets < ref.mav[1]) return 'optimal'
+  if (sets < ref.mrv) return 'high'
+  return 'over'
+}
+
+// Reale Sätze pro Muskel in der Woche ab weekStart (7 Tage). Warmup zählt 0.
+export function realSetsPerMuscle(sessions, exercises, weekStart) {
+  const byId = new Map(exercises.map(e => [e.id, e]))
+  const end = new Date(weekStart + 'T12:00:00'); end.setDate(end.getDate() + 7)
+  const endIso = end.toISOString().slice(0, 10)
+  const acc = {}
+  sessions.forEach(sess => {
+    if (sess.date < weekStart || sess.date >= endIso) return
+    sess.exercises?.forEach(ex => {
+      const alloc = byId.get(ex.exerciseId)?.allocation
+      if (!alloc) return
+      const working = (ex.saetze ?? []).filter(s => WORKING.includes(s.satzTyp))
+      working.forEach(() => {
+        Object.entries(alloc).forEach(([m, pct]) => {
+          acc[m] = (acc[m] ?? 0) + pct / 100
+        })
+      })
+    })
+  })
+  Object.keys(acc).forEach(m => { acc[m] = round1(acc[m]) })
+  return acc
 }
