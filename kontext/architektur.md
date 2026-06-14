@@ -66,11 +66,15 @@ src/
       fitness/
         TabFitness.jsx          — Shell: ToolHeader + 7 Sub-Tabs (Heute·Pläne·Übungen·Auswertung·Archiv·Körpergewicht·⚙)
         fitnessModel.js         — Konstanten (MUSCLES, VOLUME_REF, EQUIPMENT, Inkremente, Rest/Warmup) + Factories
-        fitnessStore.js         — load/save SK.fitness (config) + SK.fitnessSessions (Log) + Selektoren
+        fitnessStore.js         — load/save SK.fitness (config) + SK.fitnessSessions (Log) + Selektoren + ensureSeeded
+        fitnessLogic.js         — rein+getestet: e1rm, bestWorkingE1rm, restSecForExercise, warmupSets, detectPRs, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries, similarExercises
+        exerciseSeed.js         — 32 Standard-Übungen (stabile IDs, custom:false)
         koerpergewichtData.js   — Körpergewicht-Daten (SK.weight) — aus altem Gewicht-Tool übernommen
         FitnessSection.jsx      — Tagesplaner-Widget (Körpergewicht-Eingabe + heutiges Training)
+        session/SessionRunner.jsx — Live-Session (Satz-Logging, Vorwerte, Rest-Timer, Warmup, Gerät-besetzt)
+        session/SessionSummary.jsx — Abschluss-Screen (Dauer/Volumen/PRs)
         tabs/KoerpergewichtTab.jsx — Gewichts-/Kalorien-Tracking (aus altem TabGewicht)
-        tabs/*                  — Heute/Pläne/Übungen/Dashboards/Archiv/Einstellungen (Phase 1: Stubs)
+        tabs/HeuteTab · PlaeneTab · UebungenTab · DashboardsTab (Volumen+Kraft) · ArchivTab — Free Mode (Phase 2+3); EinstellungenTab noch Stub
       growth/         — Journaling-Tool (ersetzt Wachstum, Tab 18)
         growthContent.json      — 250 Karten / 6 Kategorien / 4 Opener (Guard: growthContent.test.js)
         growthStore.js          — Datenlayer: Ziehlogik (60-Tage-Sperre, Skip-Queue, Bonus), Schwelle, Migration, KI-Prompt
