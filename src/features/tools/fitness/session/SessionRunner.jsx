@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createSession, createSet } from '../fitnessModel'
 import { loadFitness, loadSessions, lastSetsFor, addSession, advancePlanCursor, getActivePlan, getExerciseById } from '../fitnessStore'
-import { detectPRs } from '../fitnessLogic'
+import { detectPRs, restSecForExercise } from '../fitnessLogic'
 import SessionSummary from './SessionSummary'
 import s from './SessionRunner.module.css'
 
@@ -19,6 +19,11 @@ const CheckIcon = () => (
 const PlusIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+)
+const SmallCloseIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
   </svg>
 )
 
@@ -39,6 +44,7 @@ const lastSetsLabel = sets => {
 export default function SessionRunner({ planId, dayId, dayExercises, onClose }) {
   const fitness = loadFitness()
   const exerciseMap = useRef(new Map(fitness.exercises.map(e => [e.id, e]))).current
+  const restEnabled = useRef(loadFitness().settings.restTimerEnabled !== false).current
 
   const [draft, setDraft] = useState(() => createSession({
     planId,
@@ -59,6 +65,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
   const [summary, setSummary] = useState(null)
+  const [rest, setRest] = useState(null)
 
   useEffect(() => {
     const startedAt = new Date(draft.startedAt).getTime()
@@ -67,6 +74,19 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
   }, [draft.startedAt])
+
+  const restActive = rest !== null
+  useEffect(() => {
+    if (!restActive) return
+    const id = setInterval(() => {
+      setRest(r => {
+        if (r === null) return r
+        if (r.secondsLeft <= 1) return null
+        return { secondsLeft: r.secondsLeft - 1 }
+      })
+    }, 1000)
+    return () => clearInterval(id)
+  }, [restActive])
 
   const updateSet = (exIdx, setIdx, patch) => {
     setDraft(d => ({
@@ -104,13 +124,22 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   }
 
   const toggleDone = (exIdx, setIdx) => {
+    let turnedOn = false
     setDraft(d => ({
       ...d,
       exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
         ...ex,
-        saetze: ex.saetze.map((set, j) => j !== setIdx ? set : { ...set, done: !set.done }),
+        saetze: ex.saetze.map((set, j) => {
+          if (j !== setIdx) return set
+          turnedOn = !set.done
+          return { ...set, done: !set.done }
+        }),
       }),
     }))
+    if (turnedOn && restEnabled) {
+      const exercise = exerciseMap.get(draft.exercises[exIdx].exerciseId)
+      setRest({ secondsLeft: restSecForExercise(exercise) })
+    }
   }
 
   const handleCancel = () => {
@@ -237,6 +266,17 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
           )
         })}
       </div>
+
+      {rest && (
+        <div className={s.restBar}>
+          <button className={s.restAdjustBtn} onClick={() => setRest(r => ({ secondsLeft: Math.max(0, r.secondsLeft - 15) }))}>−15s</button>
+          <span className={s.restTime}>{fmtDuration(rest.secondsLeft)}</span>
+          <button className={s.restAdjustBtn} onClick={() => setRest(r => ({ secondsLeft: r.secondsLeft + 15 }))}>+15s</button>
+          <button className={s.restSkipBtn} onClick={() => setRest(null)} aria-label="Pause überspringen">
+            <SmallCloseIcon />
+          </button>
+        </div>
+      )}
 
       <div className={s.footer}>
         <button className={s.finishBtn} onClick={handleFinish}>Training beenden</button>

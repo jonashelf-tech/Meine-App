@@ -198,6 +198,54 @@
 }
 .addSetBtn:hover { color: var(--tool-color, var(--primary)); border-color: var(--tool-color, var(--primary)); }
 
+/* ─── Rest-Timer ─────────────────────────────────────────── */
+.restBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 10%, var(--bg));
+  flex-shrink: 0;
+}
+
+.restTime {
+  font-family: var(--font-num);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--tool-color, var(--primary));
+  min-width: 64px;
+  text-align: center;
+}
+
+.restAdjustBtn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.restAdjustBtn:hover { border-color: var(--tool-color, var(--primary)); }
+
+.restSkipBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  margin-left: auto;
+}
+.restSkipBtn:hover { color: var(--text); }
+
 /* ─── Footer ─────────────────────────────────────────────── */
 .footer {
   padding: 12px 16px;
