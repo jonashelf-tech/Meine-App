@@ -188,16 +188,14 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   }
 
   const toggleDone = (exIdx, setIdx) => {
-    let turnedOn = false
+    // turnedOn aus dem aktuellen draft ableiten — NICHT im Updater setzen
+    // (der läuft erst beim Re-Render, das if() unten liefe sonst auf dem alten Wert).
+    const turnedOn = !draft.exercises[exIdx].saetze[setIdx].done
     setDraft(d => ({
       ...d,
       exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
         ...ex,
-        saetze: ex.saetze.map((set, j) => {
-          if (j !== setIdx) return set
-          turnedOn = !set.done
-          return { ...set, done: !set.done }
-        }),
+        saetze: ex.saetze.map((set, j) => j !== setIdx ? set : { ...set, done: !set.done }),
       }),
     }))
     if (turnedOn && restEnabled) {
