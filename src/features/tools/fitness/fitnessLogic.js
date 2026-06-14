@@ -69,3 +69,22 @@ export function detectPRs(currentExercise, priorExercises = []) {
   })
   return prs
 }
+
+// Überlappung zweier Allokationen: Summe der Minima je Muskel (0..100).
+export function allocationOverlap(a, b) {
+  const muscles = new Set([...Object.keys(a || {}), ...Object.keys(b || {})])
+  let sum = 0
+  muscles.forEach(m => { sum += Math.min(a?.[m] || 0, b?.[m] || 0) })
+  return sum
+}
+
+// Ähnlichste Übungen nach Allokations-Überlappung (ohne die Übung selbst, nur > 0).
+export function similarExercises(target, all, n = 5) {
+  return all
+    .filter(e => e.id !== target.id)
+    .map(e => ({ exercise: e, score: allocationOverlap(target.allocation, e.allocation) }))
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score || a.exercise.name.localeCompare(b.exercise.name, 'de'))
+    .slice(0, n)
+    .map(x => x.exercise)
+}

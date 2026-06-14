@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
+  allocationOverlap, similarExercises,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -83,5 +84,30 @@ describe('detectPRs', () => {
     const curWarmup = { exerciseId: 'x', saetze: [{ gewicht: 200, wdh: 1, satzTyp: 'warmup' }] }
     const prior = [{ exerciseId: 'x', saetze: [{ gewicht: 100, wdh: 5, satzTyp: 'normal' }] }]
     expect(detectPRs(curWarmup, prior)).toEqual([])
+  })
+})
+
+describe('allocationOverlap', () => {
+  it('Summe der Minima', () => {
+    expect(allocationOverlap({ brust: 70, trizeps: 30 }, { brust: 65, trizeps: 20, schulterVorne: 15 })).toBe(85)
+  })
+  it('keine Überlappung → 0', () => {
+    expect(allocationOverlap({ brust: 100 }, { waden: 100 })).toBe(0)
+  })
+})
+
+describe('similarExercises', () => {
+  const target = { id: 't', name: 'Bankdrücken', allocation: { brust: 65, schulterVorne: 15, trizeps: 20 } }
+  const all = [
+    target,
+    { id: 'a', name: 'Brustpresse', allocation: { brust: 70, schulterVorne: 15, trizeps: 15 } },
+    { id: 'b', name: 'Seitheben', allocation: { schulterSeitlich: 100 } },
+    { id: 'c', name: 'Kabel-Fly', allocation: { brust: 100 } },
+  ]
+  it('rankt nach Überlappung, ohne sich selbst, ohne 0-Überlappung', () => {
+    const res = similarExercises(target, all, 5)
+    expect(res.map(e => e.id)).not.toContain('t')
+    expect(res.map(e => e.id)).not.toContain('b') // Seitheben: 0 Überlappung
+    expect(res[0].id).toBe('a') // Brustpresse am ähnlichsten
   })
 })

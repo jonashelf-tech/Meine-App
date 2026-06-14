@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { createSession, createSet, WARMUP_SCHEME } from '../fitnessModel'
+import { createSession, createSet, WARMUP_SCHEME, MUSCLE_LABELS, EQUIPMENT_LABELS } from '../fitnessModel'
 import { loadFitness, loadSessions, lastSetsFor, addSession, advancePlanCursor, getActivePlan, getExerciseById } from '../fitnessStore'
-import { detectPRs, restSecForExercise, warmupSets } from '../fitnessLogic'
+import { detectPRs, restSecForExercise, warmupSets, similarExercises } from '../fitnessLogic'
 import SessionSummary from './SessionSummary'
 import s from './SessionRunner.module.css'
 
@@ -32,6 +32,12 @@ const ChevronIcon = ({ open }) => (
     <polyline points="6 9 12 15 18 9"/>
   </svg>
 )
+const SwapIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+    <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+  </svg>
+)
 
 const SET_TYPES = ['normal', 'warmup', 'dropset', 'failure']
 const SET_TYPE_LABELS = { normal: 'Normal', warmup: 'Warmup', dropset: 'Dropset', failure: 'Failure' }
@@ -45,6 +51,12 @@ const fmtDuration = sec => {
 const lastSetsLabel = sets => {
   if (!sets.length) return '—'
   return sets.map(s => `${s.gewicht ?? '–'} kg × ${s.wdh ?? '–'}`).join(', ')
+}
+
+const primaryMuscle = allocation => {
+  const entries = Object.entries(allocation ?? {})
+  if (!entries.length) return null
+  return entries.reduce((best, cur) => cur[1] > best[1] ? cur : best)[0]
 }
 
 export default function SessionRunner({ planId, dayId, dayExercises, onClose }) {
@@ -69,6 +81,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
 
   const [openNotiz, setOpenNotiz] = useState(null)
   const [openWarmup, setOpenWarmup] = useState(() => new Set())
+  const [swapPicker, setSwapPicker] = useState(null)
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
   const [summary, setSummary] = useState(null)
@@ -140,6 +153,24 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
       next.delete(exIdx)
       return next
     })
+  }
+
+  const swapExercise = (exIdx, alt) => {
+    setDraft(d => ({
+      ...d,
+      exercises: d.exercises.map((ex, i) => {
+        if (i !== exIdx) return ex
+        const prev = lastSetsFor(alt.id)
+        const n = Math.max(ex.saetze.length, prev.length, 3)
+        const saetze = Array.from({ length: n }, (_, j) => createSet({
+          gewicht: prev[j]?.gewicht ?? prev[prev.length - 1]?.gewicht ?? null,
+          wdh: prev[j]?.wdh ?? alt.defaultRepRange?.[0] ?? null,
+          satzTyp: 'normal',
+        }))
+        return { exerciseId: alt.id, saetze }
+      }),
+    }))
+    setSwapPicker(null)
   }
 
   const cycleSetType = (exIdx, setIdx) => {
@@ -247,12 +278,39 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
           const prevSets = lastSetsFor(ex.exerciseId)
           return (
             <div key={ex.exerciseId + exIdx} className={s.card}>
-              <button className={s.exName} onClick={() => setOpenNotiz(o => o === exIdx ? null : exIdx)}>
-                {exercise?.name ?? '—'}
-              </button>
+              <div className={s.cardHead}>
+                <button className={s.exName} onClick={() => setOpenNotiz(o => o === exIdx ? null : exIdx)}>
+                  {exercise?.name ?? '—'}
+                </button>
+                <button
+                  className={s.swapBtn}
+                  onClick={() => setSwapPicker(p => p === exIdx ? null : exIdx)}
+                  aria-label="Gerät besetzt — Alternative finden"
+                >
+                  <SwapIcon /> Gerät besetzt
+                </button>
+              </div>
               {openNotiz === exIdx && exercise?.notiz && (
                 <div className={s.notiz}>{exercise.notiz}</div>
               )}
+              {swapPicker === exIdx && (() => {
+                const alternatives = exercise ? similarExercises(exercise, fitness.exercises, 5) : []
+                return (
+                  <div className={s.swapPanel}>
+                    {alternatives.length === 0 ? (
+                      <div className={s.swapHint}>Keine Alternative gefunden.</div>
+                    ) : alternatives.map(alt => (
+                      <button key={alt.id} className={s.swapOption} onClick={() => swapExercise(exIdx, alt)}>
+                        <span className={s.swapName}>{alt.name}</span>
+                        <span className={s.swapMeta}>
+                          {MUSCLE_LABELS[primaryMuscle(alt.allocation)] ?? '—'} · {EQUIPMENT_LABELS[alt.equipment]}
+                        </span>
+                      </button>
+                    ))}
+                    <button className={s.swapCancel} onClick={() => setSwapPicker(null)}>Abbrechen</button>
+                  </div>
+                )
+              })()}
               <div className={s.lastLine}>Zuletzt: {lastSetsLabel(prevSets)}</div>
 
               <div className={s.setsList}>
