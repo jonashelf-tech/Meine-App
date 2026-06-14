@@ -1,5 +1,6 @@
 import { sv, lv, SK } from '../../../storage'
 import { DEFAULT_INCREMENTS, WARMUP_SCHEME, ZIEL_RIR } from './fitnessModel'
+import { EXERCISE_SEED } from './exerciseSeed'
 
 const DEFAULT_SETTINGS = {
   restTimerEnabled: true,
@@ -8,7 +9,7 @@ const DEFAULT_SETTINGS = {
   feedbackMode: 'chips',
   zielRir: [...ZIEL_RIR],
 }
-const DEFAULT_META = { activePlanId: null, planCursor: {} }
+const DEFAULT_META = { activePlanId: null, planCursor: {}, seeded: false }
 
 const DEFAULT_FITNESS = { exercises: [], plans: [], settings: DEFAULT_SETTINGS, meta: DEFAULT_META }
 
@@ -24,6 +25,16 @@ export function loadFitness() {
 }
 
 export function saveFitness(next) { sv(SK.fitness, next) }
+
+export function ensureSeeded() {
+  const f = loadFitness()
+  if (f.meta.seeded) return f
+  const existingIds = new Set(f.exercises.map(e => e.id))
+  const toAdd = EXERCISE_SEED.filter(e => !existingIds.has(e.id))
+  const next = { ...f, exercises: [...f.exercises, ...toAdd], meta: { ...f.meta, seeded: true } }
+  saveFitness(next)
+  return next
+}
 
 export function loadSessions() {
   const raw = lv(SK.fitnessSessions, [])
