@@ -42,6 +42,18 @@ export function bestWorkingE1rm(ex) {
   return Math.max(...ws.map(s => e1rm(s.gewicht, s.wdh)))
 }
 
+// Zeitreihe des besten Arbeits-e1RM je Session für eine Übung (chronologisch).
+export function e1rmSeries(sessions, exerciseId) {
+  return sessions
+    .map(sess => {
+      const ex = sess.exercises?.find(e => e.exerciseId === exerciseId)
+      const best = ex ? bestWorkingE1rm(ex) : null
+      return best != null ? { date: sess.date, e1rm: best } : null
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.date.localeCompare(b.date))
+}
+
 // PRs vs. Vorgeschichte. Ohne Vorgeschichte (keine früheren Arbeitssätze) → [].
 export function detectPRs(currentExercise, priorExercises = []) {
   const cur = workingSets(currentExercise)

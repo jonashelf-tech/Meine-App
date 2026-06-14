@@ -6,6 +6,36 @@
   min-height: 100%;
 }
 
+/* ─── Toggle ─────────────────────────────────────────────── */
+.toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 4px;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 7px 12px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toggleBtnActive {
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent);
+}
+
 /* ─── Week nav ───────────────────────────────────────────── */
 .weekNav {
   display: flex;
@@ -172,4 +202,81 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text);
+}
+
+/* ─── Strength view ──────────────────────────────────────── */
+.strengthList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.strengthCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.strengthRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.strengthName {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.strengthRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.strengthValue {
+  font-family: var(--font-num);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ─── Sparkline ──────────────────────────────────────────── */
+.sparkWrap {
+  padding: 0 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sparkSvg {
+  width: 100%;
+  height: 80px;
+  display: block;
+}
+
+.sparkLabels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-num);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.sparkRange {
+  text-align: center;
+  font-family: var(--font);
+  font-size: 0.7rem;
+  color: var(--text-faint);
 }

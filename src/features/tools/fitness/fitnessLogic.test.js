@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
-  allocationOverlap, similarExercises, realSetsPerMuscle, volumeZone, weekStartIso,
+  allocationOverlap, similarExercises, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -140,6 +140,21 @@ describe('realSetsPerMuscle', () => {
     expect(res.trizeps).toBeCloseTo(0.9, 5) // 3 * 0.3
     expect(res.schulterSeitlich).toBeCloseTo(1, 5)
   })
+})
+
+describe('e1rmSeries', () => {
+  const sessions = [
+    { date: '2026-06-01', exercises: [{ exerciseId: 'a', saetze: [{ gewicht: 100, wdh: 5, satzTyp: 'normal' }] }] },
+    { date: '2026-06-08', exercises: [{ exerciseId: 'b', saetze: [{ gewicht: 50, wdh: 5, satzTyp: 'normal' }] }] },
+    { date: '2026-06-15', exercises: [{ exerciseId: 'a', saetze: [{ gewicht: 105, wdh: 5, satzTyp: 'normal' }, { gewicht: 60, wdh: 10, satzTyp: 'warmup' }] }] },
+  ]
+  it('liefert chronologische e1RM-Punkte nur für die Übung, ohne Warmup', () => {
+    const series = e1rmSeries(sessions, 'a')
+    expect(series.map(p => p.date)).toEqual(['2026-06-01', '2026-06-15'])
+    expect(series[0].e1rm).toBeGreaterThan(0)
+    expect(series[1].e1rm).toBeGreaterThan(series[0].e1rm) // 105×5 > 100×5
+  })
+  it('leer wenn keine Historie', () => expect(e1rmSeries(sessions, 'x')).toEqual([]))
 })
 
 describe('similarExercises', () => {

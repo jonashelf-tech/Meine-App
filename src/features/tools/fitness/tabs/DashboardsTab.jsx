@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import s from './DashboardsTab.module.css'
 import { ensureSeeded, loadSessions } from '../fitnessStore'
-import { realSetsPerMuscle, volumeZone, weekStartIso } from '../fitnessLogic'
+import { realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries } from '../fitnessLogic'
 import { MUSCLES, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
 import { todayKey } from '../../../../utils'
 
@@ -33,11 +33,63 @@ const Chevron = ({ direction }) => (
   </svg>
 )
 
-export default function DashboardsTab() {
-  const fitness = ensureSeeded()
-  const sessions = loadSessions()
-  const exercises = fitness.exercises
+const TREND_VARS = {
+  up: 'var(--emerald)',
+  down: 'var(--rose)',
+  flat: 'var(--text-dim)',
+}
 
+const TrendArrow = ({ trend }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={TREND_VARS[trend]} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    {trend === 'up' && <><line x1="12" y1="19" x2="12" y2="5" /><polyline points="6 11 12 5 18 11" /></>}
+    {trend === 'down' && <><line x1="12" y1="5" x2="12" y2="19" /><polyline points="6 13 12 19 18 13" /></>}
+    {trend === 'flat' && <line x1="5" y1="12" x2="19" y2="12" />}
+  </svg>
+)
+
+const fmtKg = (n) => `${n.toLocaleString('de-DE')} kg`
+
+const fmtDate = (iso) => {
+  const [, m, d] = iso.split('-')
+  return `${d}.${m}.`
+}
+
+function Sparkline({ series }) {
+  const values = series.map(p => p.e1rm)
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const range = max - min
+  const pad = range > 0 ? range * 0.15 : Math.max(max * 0.1, 1)
+  const yMin = min - pad
+  const yMax = max + pad
+  const W = 300
+  const H = 80
+  const x = (i) => series.length > 1 ? (i / (series.length - 1)) * W : W / 2
+  const y = (v) => H - ((v - yMin) / (yMax - yMin)) * H
+  const points = series.map((p, i) => `${x(i)},${y(p.e1rm)}`).join(' ')
+
+  return (
+    <div className={s.sparkWrap}>
+      <svg className={s.sparkSvg} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+        {series.length > 1 && (
+          <polyline points={points} fill="none" stroke="var(--tool-color, var(--primary))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        )}
+        {series.map((p, i) => (
+          <circle key={p.date} cx={x(i)} cy={y(p.e1rm)} r="3" fill="var(--tool-color, var(--primary))" />
+        ))}
+      </svg>
+      <div className={s.sparkLabels}>
+        <span>{fmtKg(min)}</span>
+        <span>{fmtKg(max)}</span>
+      </div>
+      <div className={s.sparkRange}>
+        {fmtDate(series[0].date)} – {fmtDate(series[series.length - 1].date)}
+      </div>
+    </div>
+  )
+}
+
+function VolumeView({ sessions, exercises }) {
   const currentWeekStart = weekStartIso(todayKey())
   const [weekStart, setWeekStart] = useState(currentWeekStart)
   const isCurrentWeek = weekStart === currentWeekStart
@@ -57,7 +109,7 @@ export default function DashboardsTab() {
   const hasAnySessions = sessions.length > 0
 
   return (
-    <div className={s.page}>
+    <>
       <div className={s.weekNav}>
         <button className={s.navBtn} onClick={() => setWeekStart(w => isoAddDays(w, -7))} aria-label="Vorherige Woche">
           <Chevron direction="left" />
@@ -128,6 +180,87 @@ export default function DashboardsTab() {
           </div>
         </>
       )}
+    </>
+  )
+}
+
+function StrengthView({ sessions, exercises }) {
+  const [expandedId, setExpandedId] = useState(null)
+
+  const rows = useMemo(() => {
+    return exercises
+      .map(ex => {
+        const series = e1rmSeries(sessions, ex.id)
+        if (!series.length) return null
+        const last = series[series.length - 1]
+        const prev = series.length > 1 ? series[series.length - 2] : null
+        let trend = 'flat'
+        if (prev) {
+          if (last.e1rm > prev.e1rm) trend = 'up'
+          else if (last.e1rm < prev.e1rm) trend = 'down'
+        }
+        return { exercise: ex, series, current: last.e1rm, trend }
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.current - a.current)
+  }, [sessions, exercises])
+
+  if (!rows.length) {
+    return <div className={s.empty}>Noch keine Kraftdaten — nach dem ersten Training erscheinen hier deine e1RM-Verläufe.</div>
+  }
+
+  return (
+    <div className={s.strengthList}>
+      {rows.map(({ exercise, series, current, trend }) => {
+        const isOpen = expandedId === exercise.id
+        return (
+          <div key={exercise.id} className={s.strengthCard}>
+            <button
+              className={s.strengthRow}
+              onClick={() => setExpandedId(isOpen ? null : exercise.id)}
+              aria-expanded={isOpen}
+            >
+              <span className={s.strengthName}>{exercise.name}</span>
+              <span className={s.strengthRight}>
+                <span className={s.strengthValue}>{fmtKg(current)}</span>
+                <TrendArrow trend={trend} />
+              </span>
+            </button>
+            {isOpen && <Sparkline series={series} />}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+export default function DashboardsTab() {
+  const fitness = ensureSeeded()
+  const sessions = loadSessions()
+  const exercises = fitness.exercises
+
+  const [view, setView] = useState('volumen')
+
+  return (
+    <div className={s.page}>
+      <div className={s.toggle}>
+        <button
+          className={[s.toggleBtn, view === 'volumen' ? s.toggleBtnActive : ''].join(' ')}
+          onClick={() => setView('volumen')}
+        >
+          Volumen
+        </button>
+        <button
+          className={[s.toggleBtn, view === 'kraft' ? s.toggleBtnActive : ''].join(' ')}
+          onClick={() => setView('kraft')}
+        >
+          Kraft
+        </button>
+      </div>
+
+      {view === 'volumen'
+        ? <VolumeView sessions={sessions} exercises={exercises} />
+        : <StrengthView sessions={sessions} exercises={exercises} />}
     </div>
   )
 }
