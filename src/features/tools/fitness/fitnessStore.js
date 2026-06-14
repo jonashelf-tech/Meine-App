@@ -85,6 +85,22 @@ export function setActivePlan(id) {
   return meta
 }
 
+export function setSessionPain(sessionId, exerciseIds) {
+  const list = loadSessions().map(s => s.id === sessionId
+    ? { ...s, pain: Object.fromEntries(exerciseIds.map(id => [id, true])) } : s)
+  saveSessions(list)
+}
+
+// Jüngste Session mit dieser Übung entscheidet, ob zuletzt Schmerz gemeldet wurde.
+export function lastSessionPain(exerciseId) {
+  const list = loadSessions()
+  for (let i = list.length - 1; i >= 0; i--) {
+    const had = list[i].pain && list[i].pain[exerciseId]
+    if (list[i].exercises?.some(e => e.exerciseId === exerciseId)) return !!had
+  }
+  return false
+}
+
 // Selektoren
 export const getExerciseById = (fitness, id) => fitness.exercises.find(e => e.id === id) ?? null
 export const getActivePlan   = (fitness) => fitness.plans.find(p => p.id === fitness.meta.activePlanId) ?? null

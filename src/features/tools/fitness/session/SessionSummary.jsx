@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import s from './SessionSummary.module.css'
 
 // ─── SVG Icons ────────────────────────────────────────────
@@ -32,7 +33,25 @@ const prLabel = pr => {
   }
 }
 
-export default function SessionSummary({ durationSec, totalVolume, prs, onClose }) {
+export default function SessionSummary({ durationSec, totalVolume, prs, exercises = [], onPain, onClose }) {
+  const [painAsked, setPainAsked] = useState(false)
+  const [hadPain, setHadPain] = useState(false)
+  const [selected, setSelected] = useState(() => new Set())
+
+  const toggleExercise = id => {
+    setSelected(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const handleFinish = () => {
+    if (hadPain && selected.size > 0 && onPain) onPain([...selected])
+    onClose()
+  }
+
   return (
     <div className={s.overlay}>
       <div className={s.content}>
@@ -67,7 +86,38 @@ export default function SessionSummary({ durationSec, totalVolume, prs, onClose 
           </div>
         )}
 
-        <button className={s.finishBtn} onClick={onClose}>Fertig</button>
+        <div className={s.painSection}>
+          <div className={s.painQuestion}>Schmerzen gehabt?</div>
+          <div className={s.painButtons}>
+            <button
+              className={[s.painBtn, !hadPain ? s.painBtnActive : ''].join(' ')}
+              onClick={() => { setHadPain(false); setPainAsked(true) }}
+            >
+              Nein
+            </button>
+            <button
+              className={[s.painBtn, hadPain ? s.painBtnActive : ''].join(' ')}
+              onClick={() => { setHadPain(true); setPainAsked(true) }}
+            >
+              Ja
+            </button>
+          </div>
+          {painAsked && hadPain && exercises.length > 0 && (
+            <div className={s.painChips}>
+              {exercises.map(ex => (
+                <button
+                  key={ex.exerciseId}
+                  className={[s.painChip, selected.has(ex.exerciseId) ? s.painChipActive : ''].join(' ')}
+                  onClick={() => toggleExercise(ex.exerciseId)}
+                >
+                  {ex.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button className={s.finishBtn} onClick={handleFinish}>Fertig</button>
       </div>
     </div>
   )

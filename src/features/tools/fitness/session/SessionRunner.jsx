@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createSession, createSet, WARMUP_SCHEME, MUSCLE_LABELS, EQUIPMENT_LABELS, ZIEL_RIR, DEFAULT_INCREMENTS } from '../fitnessModel'
-import { loadFitness, loadSessions, lastSetsFor, addSession, advancePlanCursor, getActivePlan, getExerciseById } from '../fitnessStore'
-import { detectPRs, restSecForExercise, warmupSets, similarExercises, nextRecommendation, adjustRemaining } from '../fitnessLogic'
+import { loadFitness, loadSessions, lastSetsFor, addSession, advancePlanCursor, getActivePlan, getExerciseById, setSessionPain, lastSessionPain } from '../fitnessStore'
+import { detectPRs, restSecForExercise, warmupSets, similarExercises, nextRecommendation, adjustRemaining, roundToIncrement } from '../fitnessLogic'
 import SessionSummary from './SessionSummary'
 import s from './SessionRunner.module.css'
 
@@ -79,7 +79,11 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     const recs = {}
     dayExercises.forEach(de => {
       const exObj = exerciseMap.get(de.exerciseId)
-      recs[de.exerciseId] = nextRecommendation(lastSetsFor(de.exerciseId), de.zielWdh || [8, 12], de.zielRir || ZIEL_RIR, incOf(exObj))
+      let rec = nextRecommendation(lastSetsFor(de.exerciseId), de.zielWdh || [8, 12], de.zielRir || ZIEL_RIR, incOf(exObj))
+      if (rec && lastSessionPain(de.exerciseId)) {
+        rec = { ...rec, gewicht: roundToIncrement(rec.gewicht * 0.85, incOf(exObj)) }
+      }
+      recs[de.exerciseId] = rec
     })
     return recs
   })
@@ -91,7 +95,10 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
       const prev = lastSetsFor(de.exerciseId)
       const n = de.zielSaetze || prev.length || 3
       const exObj = exerciseMap.get(de.exerciseId)
-      const rec = coachMode ? nextRecommendation(prev, de.zielWdh || [8, 12], de.zielRir || ZIEL_RIR, incOf(exObj)) : null
+      let rec = coachMode ? nextRecommendation(prev, de.zielWdh || [8, 12], de.zielRir || ZIEL_RIR, incOf(exObj)) : null
+      if (rec && lastSessionPain(de.exerciseId)) {
+        rec = { ...rec, gewicht: roundToIncrement(rec.gewicht * 0.85, incOf(exObj)) }
+      }
       const saetze = Array.from({ length: n }, (_, i) => {
         if (rec) return createSet({ gewicht: rec.gewicht, wdh: rec.wdh, satzTyp: 'normal' })
         if (de.zielGewicht != null) return createSet({ gewicht: de.zielGewicht, wdh: de.zielWdh?.[0] ?? null, satzTyp: 'normal' })
@@ -309,11 +316,21 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     addSession(finalSession)
     const daysLength = getActivePlan(fit)?.days.length
     advancePlanCursor(planId, daysLength)
-    setSummary({ durationSec: finalSession.durationSec, totalVolume, prs })
+    const summaryExercises = finalSession.exercises.map(ex => ({
+      exerciseId: ex.exerciseId,
+      name: getExerciseById(fit, ex.exerciseId)?.name ?? '—',
+    }))
+    setSummary({ sessionId: finalSession.id, durationSec: finalSession.durationSec, totalVolume, prs, exercises: summaryExercises })
   }
 
   if (summary) {
-    return <SessionSummary {...summary} onClose={onClose} />
+    return (
+      <SessionSummary
+        {...summary}
+        onPain={(ids) => setSessionPain(summary.sessionId, ids)}
+        onClose={onClose}
+      />
+    )
   }
 
   return (

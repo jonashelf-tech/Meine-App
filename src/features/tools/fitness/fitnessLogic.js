@@ -139,6 +139,46 @@ export function adjustRemaining(aktuelleEmpfehlung, satzErgebnis, zielWdh, incre
   return aktuelleEmpfehlung
 }
 
+// Wochen-Volumen-Anpassung pro Muskel. Gibt die neue Zielsatzzahl zurück.
+// e1rmTrend: 'up' | 'flat' | 'down'. feedbackDist: {leicht,passt,hart,nichtGeschafft} (Zähler).
+export function weeklyVolumeAdjust(muscle, currentSets, e1rmTrend, feedbackDist = {}) {
+  const ref = VOLUME_REF[muscle]
+  const mrv = ref ? ref.mrv : Infinity
+  const hard = (feedbackDist.hart || 0) + (feedbackDist.nichtGeschafft || 0)
+  const good = feedbackDist.passt || 0
+  // schlecht: Trend runter ODER überwiegend hart/nicht geschafft → -2
+  if (e1rmTrend === 'down' || hard > good) return Math.max(0, currentSets - 2)
+  // gut: Trend hoch und überwiegend "passt" → +1..2 (Deckel MRV)
+  if (e1rmTrend === 'up' && good >= hard) return Math.min(mrv, currentSets + 2)
+  // sonst halten
+  return currentSets
+}
+
+// Recovery nötig? bestes e1RM eines Muskels sinkt über >=2 aufeinanderfolgende Sessions.
+// Betrachtet Sessions (chronologisch), die diesen Muskel als Primärmuskel einer Übung trainieren.
+export function recoveryNeeded(muscle, sessions, exercises) {
+  const byId = new Map(exercises.map(e => [e.id, e]))
+  const primary = (alloc) => Object.entries(alloc || {}).sort((a, b) => b[1] - a[1])[0]?.[0]
+  // pro Session bestes e1RM über Übungen, deren Primärmuskel == muscle
+  const points = sessions
+    .map(sess => {
+      let best = null
+      sess.exercises?.forEach(ex => {
+        const exo = byId.get(ex.exerciseId)
+        if (!exo || primary(exo.allocation) !== muscle) return
+        const e = bestWorkingE1rm(ex)
+        if (e != null) best = best == null ? e : Math.max(best, e)
+      })
+      return best != null ? { date: sess.date, e: best } : null
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.date.localeCompare(b.date))
+  if (points.length < 3) return false
+  const n = points.length
+  // letzte 3 Punkte: zweimal in Folge gesunken?
+  return points[n - 1].e < points[n - 2].e && points[n - 2].e < points[n - 3].e
+}
+
 // Reale Sätze pro Muskel in der Woche ab weekStart (7 Tage). Warmup zählt 0.
 export function realSetsPerMuscle(sessions, exercises, weekStart) {
   const byId = new Map(exercises.map(e => [e.id, e]))

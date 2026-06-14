@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
   allocationOverlap, similarExercises, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
-  nextRecommendation, adjustRemaining,
+  nextRecommendation, adjustRemaining, weeklyVolumeAdjust, recoveryNeeded,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -199,5 +199,33 @@ describe('similarExercises', () => {
     expect(res.map(e => e.id)).not.toContain('t')
     expect(res.map(e => e.id)).not.toContain('b') // Seitheben: 0 Überlappung
     expect(res[0].id).toBe('a') // Brustpresse am ähnlichsten
+  })
+})
+
+describe('weeklyVolumeAdjust', () => {
+  it('gut (Trend hoch, passt) → +2, Deckel MRV', () => {
+    expect(weeklyVolumeAdjust('brust', 12, 'up', { passt: 3, hart: 0 })).toBe(14)
+    expect(weeklyVolumeAdjust('brust', 21, 'up', { passt: 3 })).toBe(22) // mrv brust=22
+  })
+  it('schlecht (Trend runter ODER überwiegend hart) → -2', () => {
+    expect(weeklyVolumeAdjust('brust', 12, 'down', {})).toBe(10)
+    expect(weeklyVolumeAdjust('brust', 12, 'flat', { hart: 3, passt: 1 })).toBe(10)
+  })
+  it('normal → halten', () => {
+    expect(weeklyVolumeAdjust('brust', 12, 'flat', { passt: 2, hart: 1 })).toBe(12)
+  })
+})
+
+describe('recoveryNeeded', () => {
+  const ex = [{ id: 'a', allocation: { brust: 100 } }]
+  const mk = (date, w) => ({ date, exercises: [{ exerciseId: 'a', saetze: [{ gewicht: w, wdh: 5, satzTyp: 'normal' }] }] })
+  it('zwei Rückgänge in Folge → true', () => {
+    expect(recoveryNeeded('brust', [mk('2026-06-01', 100), mk('2026-06-08', 95), mk('2026-06-15', 90)], ex)).toBe(true)
+  })
+  it('steigend → false', () => {
+    expect(recoveryNeeded('brust', [mk('2026-06-01', 90), mk('2026-06-08', 95), mk('2026-06-15', 100)], ex)).toBe(false)
+  })
+  it('zu wenig Daten → false', () => {
+    expect(recoveryNeeded('brust', [mk('2026-06-01', 100)], ex)).toBe(false)
   })
 })

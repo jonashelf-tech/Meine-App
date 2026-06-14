@@ -6,6 +6,35 @@
   min-height: 100%;
 }
 
+.recoveryCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.recoveryText {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.recoveryDismiss {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
