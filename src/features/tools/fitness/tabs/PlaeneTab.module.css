@@ -1,0 +1,434 @@
+.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+  position: relative;
+}
+
+/* ─── New button ─────────────────────────────────────────── */
+.newBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tool-color, var(--primary)) 30%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color, var(--primary));
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.newBtn:hover { background: color-mix(in srgb, var(--tool-color, var(--primary)) 20%, transparent); }
+
+/* ─── List ───────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--surface);
+  border: none;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.row:hover { background: var(--border-dim); }
+.row:first-child { border-radius: var(--r) var(--r) 0 0; }
+.row:last-child { border-radius: 0 0 var(--r) var(--r); border-bottom: none; }
+.row:only-child { border-radius: var(--r); border-bottom: none; }
+
+.rowMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.rowName {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rowSub {
+  font-family: var(--font);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.activeBadge {
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--emerald) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--emerald) 35%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--emerald);
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+
+.activateBtn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.activateBtn:hover { color: var(--tool-color, var(--primary)); border-color: var(--tool-color, var(--primary)); }
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  padding: 32px 0;
+  line-height: 1.6;
+}
+
+/* ─── Detail header ──────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.back:hover { color: var(--text); }
+
+.saveBtn {
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tool-color, var(--primary)) 30%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color, var(--primary));
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.saveBtn:hover { background: color-mix(in srgb, var(--tool-color, var(--primary)) 20%, transparent); }
+.saveBtn:disabled { opacity: 0.4; cursor: default; }
+
+/* ─── Fields ─────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.textInput {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  padding: 9px 10px;
+  outline: none;
+  width: 100%;
+}
+.textInput:focus { border-color: var(--tool-color, var(--primary)); }
+
+/* ─── Mode chip ──────────────────────────────────────────── */
+.modeChip {
+  align-self: flex-start;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 5px 10px;
+}
+
+/* ─── Days ───────────────────────────────────────────────── */
+.daysList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dayCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dayNameInput {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 8px 10px;
+  outline: none;
+}
+.dayNameInput:focus { border-color: var(--tool-color, var(--primary)); }
+
+.dayEmpty {
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  padding: 4px 2px;
+}
+
+/* ─── Exercises ──────────────────────────────────────────── */
+.exList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg3);
+  border-radius: var(--r-sm);
+  padding: 8px;
+}
+
+.exName {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.exInputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.exField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exFieldLabel {
+  font-family: var(--font);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.rangeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rangeSep {
+  color: var(--text-dim);
+  font-family: var(--font);
+}
+
+.numInput {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-num);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 7px 6px;
+  outline: none;
+  width: 46px;
+  text-align: center;
+}
+.numInput:focus { border-color: var(--tool-color, var(--primary)); }
+
+/* ─── Icon buttons ───────────────────────────────────────── */
+.iconBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+  margin-left: auto;
+}
+.iconBtn:hover { color: var(--rose); }
+.iconBtnConfirm { color: var(--rose); }
+
+/* ─── Add exercise button ────────────────────────────────── */
+.addExBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.addExBtn:hover { color: var(--tool-color, var(--primary)); border-color: var(--tool-color, var(--primary)); }
+
+/* ─── Delete ─────────────────────────────────────────────── */
+.deleteBtn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 16px;
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--rose) 25%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--rose);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.deleteBtnConfirm {
+  border-color: var(--rose);
+  background: color-mix(in srgb, var(--rose) 8%, transparent);
+}
+
+/* ─── Exercise picker overlay ────────────────────────────── */
+.pickerOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.pickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pickerTitle {
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pickerList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pickerRow {
+  background: var(--surface);
+  border: none;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.pickerRow:hover { background: var(--border-dim); }
+.pickerRow:first-child { border-radius: var(--r) var(--r) 0 0; }
+.pickerRow:last-child { border-radius: 0 0 var(--r) var(--r); border-bottom: none; }
+.pickerRow:only-child { border-radius: var(--r); border-bottom: none; }
+
+/* ─── Search (picker) ────────────────────────────────────── */
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 8px 12px;
+}
+
+.searchIcon {
+  color: var(--text-dim);
+  display: flex;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.88rem;
+}
+.searchInput::placeholder { color: var(--text-faint); }

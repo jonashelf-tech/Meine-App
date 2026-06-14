@@ -62,6 +62,29 @@ export function deleteExercise(id) {
   return exercises
 }
 
+export function savePlan(plan) {
+  const f = loadFitness()
+  const idx = f.plans.findIndex(p => p.id === plan.id)
+  const plans = idx >= 0 ? f.plans.map((p, i) => i === idx ? plan : p) : [...f.plans, plan]
+  saveFitness({ ...f, plans })
+  return plans
+}
+
+export function deletePlan(id) {
+  const f = loadFitness()
+  const plans = f.plans.filter(p => p.id !== id)
+  const meta = f.meta.activePlanId === id ? { ...f.meta, activePlanId: null } : f.meta
+  saveFitness({ ...f, plans, meta })
+  return { plans, meta }
+}
+
+export function setActivePlan(id) {
+  const f = loadFitness()
+  const meta = { ...f.meta, activePlanId: id }
+  saveFitness({ ...f, meta })
+  return meta
+}
+
 // Selektoren
 export const getExerciseById = (fitness, id) => fitness.exercises.find(e => e.id === id) ?? null
 export const getActivePlan   = (fitness) => fitness.plans.find(p => p.id === fitness.meta.activePlanId) ?? null
