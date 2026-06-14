@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { createSession, createSet } from '../fitnessModel'
-import { loadFitness, lastSetsFor, addSession, advancePlanCursor, getActivePlan } from '../fitnessStore'
+import { loadFitness, loadSessions, lastSetsFor, addSession, advancePlanCursor, getActivePlan, getExerciseById } from '../fitnessStore'
+import { detectPRs } from '../fitnessLogic'
+import SessionSummary from './SessionSummary'
 import s from './SessionRunner.module.css'
 
 // ─── SVG Icons ────────────────────────────────────────────
@@ -56,6 +58,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   const [openNotiz, setOpenNotiz] = useState(null)
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
+  const [summary, setSummary] = useState(null)
 
   useEffect(() => {
     const startedAt = new Date(draft.startedAt).getTime()
@@ -142,10 +145,29 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
       durationSec: Math.round((Date.now() - new Date(draft.startedAt).getTime()) / 1000),
     }
 
+    const prior = loadSessions()
+    const fit = loadFitness()
+    const prs = []
+    finalSession.exercises.forEach(ex => {
+      const priorEx = prior.flatMap(sess => (sess.exercises || []).filter(e => e.exerciseId === ex.exerciseId))
+      const name = getExerciseById(fit, ex.exerciseId)?.name ?? '—'
+      detectPRs(ex, priorEx).forEach(p => prs.push({ exerciseName: name, ...p }))
+    })
+
+    const WORKING = ['normal', 'dropset', 'failure']
+    const totalVolume = finalSession.exercises.reduce((sum, ex) =>
+      sum + ex.saetze.filter(set => WORKING.includes(set.satzTyp)).reduce((a, set) => a + (set.gewicht || 0) * (set.wdh || 0), 0), 0)
+
+    finalSession.prs = prs
+
     addSession(finalSession)
-    const daysLength = getActivePlan(loadFitness())?.days.length
+    const daysLength = getActivePlan(fit)?.days.length
     advancePlanCursor(planId, daysLength)
-    onClose()
+    setSummary({ durationSec: finalSession.durationSec, totalVolume, prs })
+  }
+
+  if (summary) {
+    return <SessionSummary {...summary} onClose={onClose} />
   }
 
   return (

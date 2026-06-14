@@ -1,0 +1,114 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.content {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: center;
+}
+
+.headline {
+  font-family: var(--font);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--tool-color, var(--primary));
+  margin: 0;
+}
+
+/* ─── Stats ──────────────────────────────────────────────── */
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.statBlock {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statValue {
+  font-family: var(--font-num);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.statLabel {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* ─── PR-Liste ───────────────────────────────────────────── */
+.prList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 10%, var(--surface));
+  border-left: 3px solid var(--tool-color, var(--primary));
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+}
+
+.prIcon {
+  color: var(--tool-color, var(--primary));
+  flex-shrink: 0;
+  display: flex;
+}
+
+.prText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.prExercise {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.prLabel {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* ─── Button ─────────────────────────────────────────────── */
+.finishBtn {
+  width: 100%;
+  background: var(--tool-color, var(--primary));
+  border: none;
+  border-radius: var(--r);
+  color: var(--bg);
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 14px;
+  cursor: pointer;
+}
