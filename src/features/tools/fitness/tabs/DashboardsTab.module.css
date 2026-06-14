@@ -1,0 +1,175 @@
+.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+
+/* ─── Week nav ───────────────────────────────────────────── */
+.weekNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 4px;
+}
+
+.navBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.navBtn:hover { color: var(--text); background: var(--border-dim); }
+.navBtn:disabled { color: var(--text-faint); cursor: default; }
+.navBtn:disabled:hover { background: none; }
+
+.weekLabel {
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ─── Consistency line ───────────────────────────────────── */
+.consistency {
+  text-align: center;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  padding: 2px 0;
+}
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  padding: 32px 0;
+  line-height: 1.6;
+}
+
+/* ─── Bars ───────────────────────────────────────────────── */
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.barLabel {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.barValue {
+  font-family: var(--font-num);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: var(--bg3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.2s;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--text) 30%, transparent);
+}
+
+.ref {
+  font-family: var(--font);
+  font-size: 0.66rem;
+  color: var(--text-dim);
+}
+
+/* ─── Untracked ──────────────────────────────────────────── */
+.untracked {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.untrackedTitle {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.untrackedList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.untrackedRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.untrackedLabel {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.untrackedValue {
+  font-family: var(--font-num);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
