@@ -154,6 +154,26 @@ export function weeklyVolumeAdjust(muscle, currentSets, e1rmTrend, feedbackDist 
   return currentSets
 }
 
+// Review einer Übung: e1RM-Trend (letzte 2 Punkte) + Feedback-Verteilung der jüngsten Session.
+export function reviewExercise(sessions, exerciseId) {
+  const series = e1rmSeries(sessions, exerciseId)
+  let trend = 'flat'
+  if (series.length >= 2) {
+    const a = series[series.length - 2].e1rm
+    const b = series[series.length - 1].e1rm
+    trend = b > a ? 'up' : b < a ? 'down' : 'flat'
+  }
+  const feedbackDist = { leicht: 0, passt: 0, hart: 0, nichtGeschafft: 0 }
+  for (let i = sessions.length - 1; i >= 0; i--) {
+    const ex = sessions[i].exercises?.find(e => e.exerciseId === exerciseId)
+    if (ex) {
+      ex.saetze.forEach(st => { if (st.feedback && feedbackDist[st.feedback] != null) feedbackDist[st.feedback]++ })
+      break
+    }
+  }
+  return { trend, feedbackDist }
+}
+
 // Recovery nötig? bestes e1RM eines Muskels sinkt über >=2 aufeinanderfolgende Sessions.
 // Betrachtet Sessions (chronologisch), die diesen Muskel als Primärmuskel einer Übung trainieren.
 export function recoveryNeeded(muscle, sessions, exercises) {

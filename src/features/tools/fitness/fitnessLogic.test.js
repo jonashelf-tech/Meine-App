@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
   allocationOverlap, similarExercises, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
-  nextRecommendation, adjustRemaining, weeklyVolumeAdjust, recoveryNeeded,
+  nextRecommendation, adjustRemaining, weeklyVolumeAdjust, recoveryNeeded, reviewExercise,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -213,6 +213,24 @@ describe('weeklyVolumeAdjust', () => {
   })
   it('normal → halten', () => {
     expect(weeklyVolumeAdjust('brust', 12, 'flat', { passt: 2, hart: 1 })).toBe(12)
+  })
+})
+
+describe('reviewExercise', () => {
+  const sessions = [
+    { date: '2026-06-01', exercises: [{ exerciseId: 'a', saetze: [{ gewicht: 100, wdh: 5, satzTyp: 'normal' }] }] },
+    { date: '2026-06-08', exercises: [{ exerciseId: 'a', saetze: [{ gewicht: 105, wdh: 5, satzTyp: 'normal', feedback: 'passt' }, { gewicht: 105, wdh: 5, satzTyp: 'normal', feedback: 'hart' }] }] },
+  ]
+  it('Trend hoch + Feedback der jüngsten Session', () => {
+    const r = reviewExercise(sessions, 'a')
+    expect(r.trend).toBe('up')
+    expect(r.feedbackDist.passt).toBe(1)
+    expect(r.feedbackDist.hart).toBe(1)
+  })
+  it('keine Historie → flat, leere Verteilung', () => {
+    const r = reviewExercise(sessions, 'x')
+    expect(r.trend).toBe('flat')
+    expect(r.feedbackDist).toEqual({ leicht: 0, passt: 0, hart: 0, nichtGeschafft: 0 })
   })
 })
 

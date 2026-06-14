@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import s from './DashboardsTab.module.css'
-import { ensureSeeded, loadSessions } from '../fitnessStore'
-import { realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries } from '../fitnessLogic'
+import { ensureSeeded, loadSessions, savePlan } from '../fitnessStore'
+import { realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries, reviewExercise, weeklyVolumeAdjust } from '../fitnessLogic'
 import { MUSCLES, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
 import { todayKey } from '../../../../utils'
 
@@ -89,6 +89,85 @@ function Sparkline({ series }) {
   )
 }
 
+// Primärmuskel: Key mit dem höchsten Allokations-Anteil.
+const primaryMuscle = (allocation) =>
+  Object.entries(allocation || {}).sort((a, b) => b[1] - a[1])[0]?.[0]
+
+function WeekCheckCard() {
+  const [dismissed, setDismissed] = useState(false)
+
+  const { coachPlan, proposals } = useMemo(() => {
+    const fitness = ensureSeeded()
+    const sessions = loadSessions()
+    const plan = fitness.plans.find(p => p.id === fitness.meta.activePlanId)
+    const coachPlan = plan?.modus === 'coach' ? plan : null
+    if (!coachPlan) return { coachPlan: null, proposals: [] }
+
+    const seen = new Set()
+    const proposals = []
+    coachPlan.days.forEach(day => {
+      day.exercises.forEach(entry => {
+        const exId = entry.exerciseId
+        if (seen.has(exId)) return
+        seen.add(exId)
+        const exObj = fitness.exercises.find(e => e.id === exId)
+        if (!exObj) return
+        const { trend, feedbackDist } = reviewExercise(sessions, exId)
+        const hasSignal = trend !== 'flat' || Object.values(feedbackDist).some(n => n > 0)
+        if (!hasSignal) return
+        const muscle = primaryMuscle(exObj.allocation)
+        const currentZielSaetze = entry.zielSaetze
+        const newSets = weeklyVolumeAdjust(muscle, currentZielSaetze, trend, feedbackDist)
+        const min = exObj.kategorie === 'grund' ? 3 : 2
+        const max = exObj.kategorie === 'grund' ? 5 : 4
+        const bounded = Math.max(min, Math.min(newSets, max))
+        if (bounded !== currentZielSaetze) {
+          proposals.push({ exId, name: exObj.name, from: currentZielSaetze, to: bounded })
+        }
+      })
+    })
+    return { coachPlan, proposals }
+  }, [])
+
+  if (!coachPlan || !proposals.length || dismissed) return null
+
+  const apply = () => {
+    const updatedPlan = {
+      ...coachPlan,
+      days: coachPlan.days.map(day => ({
+        ...day,
+        exercises: day.exercises.map(entry => {
+          const proposal = proposals.find(p => p.exId === entry.exerciseId)
+          return proposal ? { ...entry, zielSaetze: proposal.to } : entry
+        }),
+      })),
+    }
+    savePlan(updatedPlan)
+    setDismissed(true)
+  }
+
+  return (
+    <div className={s.weekCheck}>
+      <div className={s.weekCheckTitle}>Wochen-Check</div>
+      <div className={s.weekCheckHint}>Vorschläge auf Basis von Verlauf & Feedback:</div>
+      <div className={s.weekCheckList}>
+        {proposals.map(p => (
+          <div key={p.exId} className={s.weekCheckRow}>
+            <span className={s.weekCheckName}>{p.name}</span>
+            <span className={[s.weekCheckChange, p.to > p.from ? s.weekCheckUp : s.weekCheckDown].join(' ')}>
+              {p.from} → {p.to} Sätze
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className={s.weekCheckBtns}>
+        <button className={s.weekCheckBtnPrimary} onClick={apply}>Anwenden</button>
+        <button className={s.weekCheckBtnGhost} onClick={() => setDismissed(true)}>Später</button>
+      </div>
+    </div>
+  )
+}
+
 function VolumeView({ sessions, exercises }) {
   const currentWeekStart = weekStartIso(todayKey())
   const [weekStart, setWeekStart] = useState(currentWeekStart)
@@ -110,6 +189,8 @@ function VolumeView({ sessions, exercises }) {
 
   return (
     <>
+      <WeekCheckCard />
+
       <div className={s.weekNav}>
         <button className={s.navBtn} onClick={() => setWeekStart(w => isoAddDays(w, -7))} aria-label="Vorherige Woche">
           <Chevron direction="left" />
