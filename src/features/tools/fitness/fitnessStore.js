@@ -26,6 +26,13 @@ export function loadFitness() {
 
 export function saveFitness(next) { sv(SK.fitness, next) }
 
+export function saveSettings(patch) {
+  const f = loadFitness()
+  const settings = { ...f.settings, ...patch }
+  saveFitness({ ...f, settings })
+  return settings
+}
+
 export function ensureSeeded() {
   const f = loadFitness()
   if (f.meta.seeded) return f
