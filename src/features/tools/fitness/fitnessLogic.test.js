@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
   allocationOverlap, similarExercises, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
+  nextRecommendation, adjustRemaining,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -155,6 +156,34 @@ describe('e1rmSeries', () => {
     expect(series[1].e1rm).toBeGreaterThan(series[0].e1rm) // 105×5 > 100×5
   })
   it('leer wenn keine Historie', () => expect(e1rmSeries(sessions, 'x')).toEqual([]))
+})
+
+describe('nextRecommendation', () => {
+  it('alle Sätze am oberen Ende → Gewicht hoch, Wdh ans untere Ende', () => {
+    const last = [{ gewicht: 100, wdh: 10, rir: 1 }, { gewicht: 100, wdh: 10, rir: 2 }]
+    expect(nextRecommendation(last, [8, 10], [1, 2], 2.5)).toEqual({ gewicht: 102.5, wdh: 8 })
+  })
+  it('nicht alle am oberen Ende → Gewicht halten, +1 Wdh', () => {
+    const last = [{ gewicht: 100, wdh: 8 }, { gewicht: 100, wdh: 8 }]
+    expect(nextRecommendation(last, [8, 10], [1, 2], 2.5)).toEqual({ gewicht: 100, wdh: 9 })
+  })
+  it('keine Historie → null', () => expect(nextRecommendation([], [8, 10], [1, 2], 2.5)).toBeNull())
+})
+
+describe('adjustRemaining', () => {
+  const rec = { gewicht: 100, wdh: 8 }
+  it('Underperformance (zu wenig Wdh) → ~-7,5% auf Inkrement', () => {
+    expect(adjustRemaining(rec, { wdh: 5 }, [8, 10], 2.5).gewicht).toBe(92.5) // 100*0.925=92.5
+  })
+  it('nicht geschafft → runter', () => {
+    expect(adjustRemaining(rec, { wdh: 8, feedback: 'nichtGeschafft' }, [8, 10], 2.5).gewicht).toBeLessThan(100)
+  })
+  it('leicht → +1 Inkrement', () => {
+    expect(adjustRemaining(rec, { wdh: 8, feedback: 'leicht' }, [8, 10], 2.5).gewicht).toBe(102.5)
+  })
+  it('passt → unverändert', () => {
+    expect(adjustRemaining(rec, { wdh: 8, feedback: 'passt' }, [8, 10], 2.5)).toEqual(rec)
+  })
 })
 
 describe('similarExercises', () => {

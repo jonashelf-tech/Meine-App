@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { createSession, createSet, WARMUP_SCHEME, MUSCLE_LABELS, EQUIPMENT_LABELS } from '../fitnessModel'
+import { createSession, createSet, WARMUP_SCHEME, MUSCLE_LABELS, EQUIPMENT_LABELS, ZIEL_RIR, DEFAULT_INCREMENTS } from '../fitnessModel'
 import { loadFitness, loadSessions, lastSetsFor, addSession, advancePlanCursor, getActivePlan, getExerciseById } from '../fitnessStore'
-import { detectPRs, restSecForExercise, warmupSets, similarExercises } from '../fitnessLogic'
+import { detectPRs, restSecForExercise, warmupSets, similarExercises, nextRecommendation, adjustRemaining } from '../fitnessLogic'
 import SessionSummary from './SessionSummary'
 import s from './SessionRunner.module.css'
 
@@ -41,6 +41,12 @@ const SwapIcon = () => (
 
 const SET_TYPES = ['normal', 'warmup', 'dropset', 'failure']
 const SET_TYPE_LABELS = { normal: 'Normal', warmup: 'Warmup', dropset: 'Dropset', failure: 'Failure' }
+const FEEDBACK_OPTIONS = [
+  { value: 'leicht', label: 'leicht' },
+  { value: 'passt', label: 'passt' },
+  { value: 'hart', label: 'hart' },
+  { value: 'nichtGeschafft', label: 'nicht geschafft' },
+]
 
 const fmtDuration = sec => {
   const m = Math.floor(sec / 60)
@@ -64,17 +70,37 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   const exerciseMap = useRef(new Map(fitness.exercises.map(e => [e.id, e]))).current
   const restEnabled = useRef(loadFitness().settings.restTimerEnabled !== false).current
 
+  const plan = fitness.plans.find(p => p.id === planId)
+  const coachMode = plan?.modus === 'coach'
+  const incOf = (ex) => (fitness.settings.increments?.[ex?.equipment]) ?? DEFAULT_INCREMENTS[ex?.equipment] ?? 2.5
+
+  const [recommendations, setRecommendations] = useState(() => {
+    if (!coachMode) return {}
+    const recs = {}
+    dayExercises.forEach(de => {
+      const exObj = exerciseMap.get(de.exerciseId)
+      recs[de.exerciseId] = nextRecommendation(lastSetsFor(de.exerciseId), de.zielWdh || [8, 12], de.zielRir || ZIEL_RIR, incOf(exObj))
+    })
+    return recs
+  })
+
   const [draft, setDraft] = useState(() => createSession({
     planId,
     dayId,
     exercises: dayExercises.map(de => {
       const prev = lastSetsFor(de.exerciseId)
       const n = de.zielSaetze || prev.length || 3
-      const saetze = Array.from({ length: n }, (_, i) => createSet({
-        gewicht: prev[i]?.gewicht ?? prev[prev.length - 1]?.gewicht ?? null,
-        wdh: prev[i]?.wdh ?? de.zielWdh?.[0] ?? null,
-        satzTyp: 'normal',
-      }))
+      const exObj = exerciseMap.get(de.exerciseId)
+      const rec = coachMode ? nextRecommendation(prev, de.zielWdh || [8, 12], de.zielRir || ZIEL_RIR, incOf(exObj)) : null
+      const saetze = Array.from({ length: n }, (_, i) => {
+        if (rec) return createSet({ gewicht: rec.gewicht, wdh: rec.wdh, satzTyp: 'normal' })
+        if (de.zielGewicht != null) return createSet({ gewicht: de.zielGewicht, wdh: de.zielWdh?.[0] ?? null, satzTyp: 'normal' })
+        return createSet({
+          gewicht: prev[i]?.gewicht ?? prev[prev.length - 1]?.gewicht ?? null,
+          wdh: prev[i]?.wdh ?? de.zielWdh?.[0] ?? null,
+          satzTyp: 'normal',
+        })
+      })
       return { exerciseId: de.exerciseId, saetze }
     }),
   }))
@@ -187,20 +213,49 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     }))
   }
 
-  const toggleDone = (exIdx, setIdx) => {
-    // turnedOn aus dem aktuellen draft ableiten — NICHT im Updater setzen
-    // (der läuft erst beim Re-Render, das if() unten liefe sonst auf dem alten Wert).
-    const turnedOn = !draft.exercises[exIdx].saetze[setIdx].done
+  const toggleFeedback = (exIdx, setIdx, value) => {
     setDraft(d => ({
       ...d,
       exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
         ...ex,
-        saetze: ex.saetze.map((set, j) => j !== setIdx ? set : { ...set, done: !set.done }),
+        saetze: ex.saetze.map((set, j) => j !== setIdx ? set : { ...set, feedback: set.feedback === value ? null : value }),
       }),
     }))
+  }
+
+  const toggleDone = (exIdx, setIdx) => {
+    // turnedOn aus dem aktuellen draft ableiten — NICHT im Updater setzen
+    // (der läuft erst beim Re-Render, das if() unten liefe sonst auf dem alten Wert).
+    const set = draft.exercises[exIdx].saetze[setIdx]
+    const turnedOn = !set.done
+    const exerciseId = draft.exercises[exIdx].exerciseId
+    const de = dayExercises[exIdx]
+    const exObj = exerciseMap.get(exerciseId)
+    const currentRec = recommendations[exerciseId]
+
+    setDraft(d => ({
+      ...d,
+      exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
+        ...ex,
+        saetze: ex.saetze.map((s, j) => j !== setIdx ? s : { ...s, done: !s.done }),
+      }),
+    }))
+
+    if (turnedOn && coachMode && currentRec && de) {
+      const zielWdh = de.zielWdh || [8, 12]
+      const newRec = adjustRemaining(currentRec, { wdh: set.wdh != null ? parseFloat(set.wdh) : null, feedback: set.feedback }, zielWdh, incOf(exObj))
+      setRecommendations(r => ({ ...r, [exerciseId]: newRec }))
+      setDraft(d => ({
+        ...d,
+        exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
+          ...ex,
+          saetze: ex.saetze.map((s, j) => (j <= setIdx || s.done) ? s : { ...s, gewicht: newRec.gewicht, wdh: newRec.wdh }),
+        }),
+      }))
+    }
+
     if (turnedOn && restEnabled) {
-      const exercise = exerciseMap.get(draft.exercises[exIdx].exerciseId)
-      setRest({ secondsLeft: restSecForExercise(exercise) })
+      setRest({ secondsLeft: restSecForExercise(exObj) })
     }
   }
 
@@ -291,6 +346,11 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
               {openNotiz === exIdx && exercise?.notiz && (
                 <div className={s.notiz}>{exercise.notiz}</div>
               )}
+              {coachMode && recommendations[ex.exerciseId] && (
+                <div className={s.recoLine}>
+                  Empfehlung: {recommendations[ex.exerciseId].gewicht} kg × {recommendations[ex.exerciseId].wdh}
+                </div>
+              )}
               {swapPicker === exIdx && (() => {
                 const alternatives = exercise ? similarExercises(exercise, fitness.exercises, 5) : []
                 return (
@@ -318,7 +378,8 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
                     const isWarmup = set.satzTyp === 'warmup'
                     if (!isWarmup) workingCount += 1
                     return (
-                  <div key={set.id} className={[s.setRow, set.done ? s.setRowDone : ''].join(' ')}>
+                  <div key={set.id} className={s.setBlock}>
+                  <div className={[s.setRow, set.done ? s.setRowDone : ''].join(' ')}>
                     <span className={s.setIdx}>{isWarmup ? 'W' : workingCount}</span>
                     <input
                       className={s.setInput}
@@ -349,6 +410,20 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
                     >
                       <CheckIcon />
                     </button>
+                  </div>
+                  {coachMode && !isWarmup && (
+                    <div className={s.feedbackRow}>
+                      {FEEDBACK_OPTIONS.map(opt => (
+                        <button
+                          key={opt.value}
+                          className={[s.feedbackChip, set.feedback === opt.value ? s.feedbackChipActive : ''].join(' ')}
+                          onClick={() => toggleFeedback(exIdx, setIdx, opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   </div>
                     )
                   })

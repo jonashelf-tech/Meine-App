@@ -1,4 +1,4 @@
-import { REST_DEFAULTS, WARMUP_SCHEME, VOLUME_REF } from './fitnessModel'
+import { REST_DEFAULTS, WARMUP_SCHEME, VOLUME_REF, AUTOREG_DOWN_PCT } from './fitnessModel'
 
 const WORKING = ['normal', 'dropset', 'failure']
 const round1 = (n) => Math.round(n * 10) / 10
@@ -116,6 +116,27 @@ export function volumeZone(muscle, sets) {
   if (sets < ref.mav[1]) return 'optimal'
   if (sets < ref.mrv) return 'high'
   return 'over'
+}
+
+// Empfehlung Session-zu-Session (Double Progression).
+// lastSets = Arbeitssätze der letzten Session dieser Übung [{gewicht,wdh,rir?,feedback?}].
+export function nextRecommendation(lastSets, repRange, zielRir, increment) {
+  if (!lastSets || !lastSets.length) return null // Kalibrierung
+  const topWeight = Math.max(...lastSets.map(s => s.gewicht))
+  const atTop = lastSets.filter(s => s.gewicht === topWeight)
+  const allHitTop = atTop.every(s =>
+    s.wdh >= repRange[1] && (s.rir == null || s.rir <= zielRir[1]) && s.feedback !== 'nichtGeschafft')
+  if (allHitTop) return { gewicht: roundToIncrement(topWeight + increment, increment), wdh: repRange[0] }
+  const bestReps = Math.max(...atTop.map(s => s.wdh))
+  return { gewicht: topWeight, wdh: Math.min(repRange[1], bestReps + 1) }
+}
+
+// Live-Autoregulation für die Restsätze nach einem Satz-Ergebnis.
+export function adjustRemaining(aktuelleEmpfehlung, satzErgebnis, zielWdh, increment) {
+  const under = (satzErgebnis.wdh != null && satzErgebnis.wdh < zielWdh[0]) || satzErgebnis.feedback === 'nichtGeschafft'
+  if (under) return { gewicht: roundToIncrement(aktuelleEmpfehlung.gewicht * (1 - AUTOREG_DOWN_PCT), increment), wdh: aktuelleEmpfehlung.wdh }
+  if (satzErgebnis.feedback === 'leicht') return { gewicht: roundToIncrement(aktuelleEmpfehlung.gewicht + increment, increment), wdh: aktuelleEmpfehlung.wdh }
+  return aktuelleEmpfehlung
 }
 
 // Reale Sätze pro Muskel in der Woche ab weekStart (7 Tage). Warmup zählt 0.
