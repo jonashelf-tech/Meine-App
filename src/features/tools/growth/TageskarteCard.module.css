@@ -1,0 +1,16 @@
+.card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--tool-color); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.head { display: flex; align-items: center; justify-content: space-between; }
+.kategorie { font-size: 0.66rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+.skipBtn { border: none; background: none; color: var(--text-dim); font-size: 0.72rem; cursor: pointer; padding: 4px 0; font-family: var(--font); }
+.skipBtn:hover { color: var(--text); }
+.text { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
+.warumWrap { display: flex; flex-direction: column; gap: 6px; }
+.warumLink { align-self: flex-start; border: none; background: none; color: var(--text-dim); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--font); }
+.warumText { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; border-left: 2px solid var(--border); padding-left: 10px; }
+.timerBtn { align-self: flex-start; border: 1px solid var(--tool-color); background: color-mix(in srgb, var(--tool-color) 12%, transparent); color: var(--tool-color); border-radius: var(--r); padding: 8px 16px; font-size: 0.82rem; cursor: pointer; font-family: var(--font); min-height: 36px; }
+.erledigtBtn { align-self: flex-start; border: 1px solid var(--border); background: none; color: var(--text-dim); border-radius: var(--r); padding: 8px 16px; font-size: 0.82rem; cursor: pointer; font-family: var(--font); min-height: 36px; }
+.erledigtOn { border-color: var(--emerald); color: var(--emerald); background: color-mix(in srgb, var(--emerald) 10%, transparent); }
+.antwort { width: 100%; min-height: 56px; resize: vertical; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--text); padding: 10px; font-size: 0.88rem; font-family: var(--font); }
+.antwort:focus { outline: none; border-color: var(--tool-color); }
+.antwortToggle { align-self: flex-start; border: none; background: none; color: var(--text-dim); font-size: 0.75rem; cursor: pointer; padding: 0; font-family: var(--font); }
+.antwortRead { font-size: 0.88rem; color: var(--text); white-space: pre-wrap; background: var(--bg2); border-radius: var(--r-sm); padding: 10px; }

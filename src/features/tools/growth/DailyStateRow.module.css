@@ -1,0 +1,7 @@
+.row { display: flex; gap: 10px; }
+.feld { flex: 1; display: flex; flex-direction: column; gap: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 8px 10px; }
+.label { font-size: 0.66rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+.dots { display: flex; gap: 4px; }
+.dot { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--border); background: none; padding: 0; cursor: pointer; transition: all 0.15s; }
+.dot:disabled { cursor: default; }
+.dotOn { background: var(--tool-color); border-color: var(--tool-color); }

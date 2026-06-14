@@ -1,0 +1,11 @@
+.page { display: flex; flex-direction: column; gap: 16px; padding: 24px 4px; min-height: 60vh; justify-content: center; }
+.step { font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-num); }
+.titel { font-size: 1.3rem; font-weight: 600; color: var(--text); }
+.text { font-size: 0.92rem; color: var(--text-dim); line-height: 1.6; }
+.weiter { margin-top: 10px; border: none; background: var(--tool-color); color: #08080f; border-radius: var(--r); padding: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: var(--font); min-height: 44px; }
+.kacheln { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kachel { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; cursor: pointer; font-family: var(--font); }
+.kachelOn { border-color: var(--tool-color); background: color-mix(in srgb, var(--tool-color) 10%, transparent); }
+.kachelName { font-size: 0.85rem; color: var(--text); font-weight: 600; }
+.check { color: var(--tool-color); }
+.kachelSub { font-size: 0.68rem; color: var(--text-dim); line-height: 1.4; }
