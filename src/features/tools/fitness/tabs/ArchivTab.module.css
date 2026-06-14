@@ -1,0 +1,267 @@
+.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+
+.title {
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ─── Filter ─────────────────────────────────────────────── */
+.filterSelect {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  padding: 9px 10px;
+  outline: none;
+  cursor: pointer;
+}
+.filterSelect:focus { border-color: var(--tool-color, var(--primary)); }
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  padding: 32px 0;
+  line-height: 1.6;
+}
+
+/* ─── List ───────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: var(--surface);
+  border: none;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.row:hover { background: var(--border-dim); }
+.row:first-child { border-radius: var(--r) var(--r) 0 0; }
+.row:last-child { border-radius: 0 0 var(--r) var(--r); border-bottom: none; }
+.row:only-child { border-radius: var(--r); border-bottom: none; }
+
+.rowHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.rowDate {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.prBadge {
+  font-family: var(--font-num);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent);
+  border-radius: var(--r-sm);
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+.rowSub {
+  font-family: var(--font);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+.rowSummary {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* ─── Detail header ──────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.back:hover { color: var(--text); }
+
+/* ─── Detail head ────────────────────────────────────────── */
+.detailHead {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detailDate {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.detailSub {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  color: var(--text-faint);
+}
+
+.detailSummary {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ─── PR Section ─────────────────────────────────────────── */
+.prSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prTitle {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.prRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.prExercise {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.prValue {
+  font-family: var(--font-num);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--emerald);
+}
+
+/* ─── Exercise cards ─────────────────────────────────────── */
+.exList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exName {
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.setList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.setIdx {
+  font-family: var(--font-num);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.setValue {
+  font-family: var(--font-num);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.setTag {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+}
+
+.setFeedback {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-left: auto;
+}
+
+/* ─── Note ───────────────────────────────────────────────── */
+.note {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
