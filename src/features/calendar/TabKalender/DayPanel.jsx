@@ -4,9 +4,12 @@ import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geb
 import { loadElviDay } from '../../tools/elvi/elviData'
 import { loadSessions as loadKognitivSessions, getDelta } from '../../tools/kognitiv/sessionStore'
 import { getDaySummary as getGrowthDay } from '../../tools/growth/growthStore'
+import { loadSessions as loadFitnessSessions, getExerciseById, loadFitness as loadFitnessAll } from '../../tools/fitness/fitnessStore'
 import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import s from './TabKalender.module.css'
+
+const WORKING_TYPES = ['normal', 'dropset', 'failure']
 
 function formatDur(secs) {
   const m = Math.floor(secs / 60)
@@ -34,7 +37,7 @@ function fmtDelta(moduleId, delta) {
 
 // ─── Day Panel ────────────────────────────────────────────
 export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays = [], weightEntry, activeTools = [], setCurrentTab, setDayplanDate, setGrowthOpenDate, restoreTodo, setRestoreTodo, handleRestore, initialOpen }) {
-  const [open, setOpen] = useState(initialOpen ?? { zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false, growth: false })
+  const [open, setOpen] = useState(initialOpen ?? { zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false, growth: false, fitness: false })
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
 
@@ -53,6 +56,12 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
     [dateKey, activeTools],
   )
   const growthColor = getToolColor('growth', toolColors)
+
+  const fitnessSessions = useMemo(
+    () => activeTools.includes('fitness') ? loadFitnessSessions().filter(sess => sess.date === dateKey) : [],
+    [dateKey, activeTools]
+  )
+  const fitnessColor = getToolColor('fitness', toolColors)
 
   const [y, m, d] = dateKey.split('-')
   const dateObj  = new Date(parseInt(y), parseInt(m) - 1, parseInt(d))
@@ -320,6 +329,62 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
                 </div>
               ))}
               {growthDay.freitext && <div className={s.elviNotes}>{growthDay.freitext}</div>}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Fitness-Karte */}
+      {fitnessSessions.length > 0 && (
+        <div className={s.toolCard} style={{ borderTop: `2px solid ${fitnessColor}` }}>
+          <div className={s.toolCardHead} onClick={() => toggle('fitness')}>
+            <span className={s.toolCardTitle} style={{ color: fitnessColor }}>Training</span>
+            <button
+              className={s.toolCardOpenBtn}
+              style={{ color: fitnessColor, background: `color-mix(in srgb, ${fitnessColor} 15%, transparent)` }}
+              onClick={e => { e.stopPropagation(); setCurrentTab(TOOL_TAB.fitness) }}
+            >
+              → Öffnen
+            </button>
+            <span className={s.toolCardArrow}>{open.fitness ? '▾' : '▸'}</span>
+          </div>
+          {open.fitness && (
+            <div className={s.toolCardBody}>
+              {fitnessSessions.map(sess => {
+                const fitness = loadFitnessAll()
+                const volume = sess.exercises?.reduce((sum, ex) => {
+                  const working = (ex.saetze ?? []).filter(st => WORKING_TYPES.includes(st.satzTyp))
+                  return sum + working.reduce((s2, st) => s2 + (st.gewicht ?? 0) * (st.wdh ?? 0), 0)
+                }, 0) ?? 0
+                const exCount = sess.exercises?.length ?? 0
+                const minutes = Math.round((sess.durationSec ?? 0) / 60)
+                return (
+                  <div key={sess.id} className={s.elviNotes}>
+                    {exCount} Übung{exCount === 1 ? '' : 'en'} · {volume.toLocaleString('de-DE')} kg Volumen · {minutes} min
+                    {sess.prs?.length > 0 && ` · ${sess.prs.length} PR${sess.prs.length === 1 ? '' : 's'}`}
+                    {sess.exercises?.length > 0 && (
+                      <div className={s.elviDoses}>
+                        {sess.exercises.map(ex => {
+                          const exercise = getExerciseById(fitness, ex.exerciseId)
+                          const workingCount = (ex.saetze ?? []).filter(st => WORKING_TYPES.includes(st.satzTyp)).length
+                          return (
+                            <span
+                              key={ex.exerciseId}
+                              className={s.elviDosePill}
+                              style={{
+                                color: fitnessColor,
+                                background: `color-mix(in srgb, ${fitnessColor} 18%, transparent)`,
+                              }}
+                            >
+                              {exercise?.name ?? ex.exerciseId} · {workingCount}×
+                            </span>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
