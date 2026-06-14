@@ -1,5 +1,4 @@
 .page { display: flex; flex-direction: column; gap: 12px; }
-.back { align-self: flex-start; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); border-radius: var(--r); padding: 6px 12px; font-size: 0.78rem; cursor: pointer; font-family: var(--font); }
 .label { font-size: 0.66rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; }
 .hint { font-size: 0.7rem; color: var(--text-dim); line-height: 1.4; }
 .toggleRow { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; font-size: 0.85rem; color: var(--text); cursor: pointer; }

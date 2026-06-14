@@ -150,12 +150,11 @@ export default function TabGrowth({ onBack }) {
   if (nav === 'settings') {
     return (
       <div className={s.page} style={{ '--tool-color': toolColor }}>
-        <ToolHeader onBack={onBack} icon={<ToolIcon id="growth" size={20} />} eyebrow="Tool" title="Growth" />
+        <ToolHeader onBack={() => setNav(null)} icon={<ToolIcon id="growth" size={20} />} eyebrow="Tool" title="Growth" />
         <GrowthSettings
           settings={data.settings}
           onToggleKategorie={(id) => persist(toggleKategorie(dataRef.current, id))}
           onPatch={(patch) => { persist(setSettings(dataRef.current, patch)); if (patch.briefingGesehen === false) setNav(null) }}
-          onBack={() => setNav(null)}
         />
       </div>
     )

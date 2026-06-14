@@ -1,11 +1,9 @@
 import { KategorieKacheln } from './GrowthBriefing'
 import s from './GrowthSettings.module.css'
 
-export default function GrowthSettings({ settings, onToggleKategorie, onPatch, onBack }) {
+export default function GrowthSettings({ settings, onToggleKategorie, onPatch }) {
   return (
     <div className={s.page}>
-      <button className={s.back} onClick={onBack}>← Zurück</button>
-
       <div className={s.label}>Themen</div>
       <KategorieKacheln aktiv={settings.aktiveKategorien} onToggle={onToggleKategorie} />
       <div className={s.hint}>Mindestens 1 Thema bleibt aktiv. Heutige Karte bleibt bestehen — Änderungen wirken ab morgen.</div>
