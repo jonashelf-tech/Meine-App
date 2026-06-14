@@ -47,6 +47,21 @@ export function addSession(session) {
   saveSessions([...loadSessions(), session])
 }
 
+export function saveExercise(exercise) {
+  const f = loadFitness()
+  const idx = f.exercises.findIndex(e => e.id === exercise.id)
+  const exercises = idx >= 0 ? f.exercises.map((e, i) => i === idx ? exercise : e) : [...f.exercises, exercise]
+  saveFitness({ ...f, exercises })
+  return exercises
+}
+
+export function deleteExercise(id) {
+  const f = loadFitness()
+  const exercises = f.exercises.filter(e => e.id !== id)
+  saveFitness({ ...f, exercises })
+  return exercises
+}
+
 // Selektoren
 export const getExerciseById = (fitness, id) => fitness.exercises.find(e => e.id === id) ?? null
 export const getActivePlan   = (fitness) => fitness.plans.find(p => p.id === fitness.meta.activePlanId) ?? null

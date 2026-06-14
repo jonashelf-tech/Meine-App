@@ -1,0 +1,318 @@
+.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+
+/* ─── Search ─────────────────────────────────────────────── */
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 8px 12px;
+}
+
+.searchIcon {
+  color: var(--text-dim);
+  display: flex;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.88rem;
+}
+.searchInput::placeholder { color: var(--text-faint); }
+
+/* ─── New button ─────────────────────────────────────────── */
+.newBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tool-color, var(--primary)) 30%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color, var(--primary));
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.newBtn:hover { background: color-mix(in srgb, var(--tool-color, var(--primary)) 20%, transparent); }
+
+/* ─── List ───────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: var(--surface);
+  border: none;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.row:hover { background: var(--border-dim); }
+.row:first-child { border-radius: var(--r) var(--r) 0 0; }
+.row:last-child { border-radius: 0 0 var(--r) var(--r); border-bottom: none; }
+.row:only-child { border-radius: var(--r); border-bottom: none; }
+
+.rowName {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rowSub {
+  font-family: var(--font);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  padding: 32px 0;
+  line-height: 1.6;
+}
+
+/* ─── Detail header ──────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.back:hover { color: var(--text); }
+
+.saveBtn {
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tool-color, var(--primary)) 30%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--tool-color, var(--primary));
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.saveBtn:hover { background: color-mix(in srgb, var(--tool-color, var(--primary)) 20%, transparent); }
+.saveBtn:disabled { opacity: 0.4; cursor: default; }
+
+/* ─── Fields ─────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.textInput,
+.textarea,
+.select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  padding: 9px 10px;
+  outline: none;
+  width: 100%;
+}
+.textInput:focus,
+.textarea:focus,
+.select:focus { border-color: var(--tool-color, var(--primary)); }
+
+.textarea {
+  resize: vertical;
+  min-height: 64px;
+}
+
+.select {
+  cursor: pointer;
+}
+
+/* ─── Segmented toggle ───────────────────────────────────── */
+.segmented {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 3px;
+  gap: 2px;
+}
+
+.segment {
+  flex: 1;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: calc(var(--r) - 3px);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segmentActive {
+  background: var(--bg3);
+  color: var(--tool-color, var(--primary));
+}
+
+/* ─── Rep range ──────────────────────────────────────────── */
+.rangeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rangeSep {
+  color: var(--text-dim);
+  font-family: var(--font);
+}
+
+.numInput {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-num);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 9px 10px;
+  outline: none;
+  width: 100%;
+  text-align: center;
+}
+.numInput:focus { border-color: var(--tool-color, var(--primary)); }
+
+/* ─── Allokation ─────────────────────────────────────────── */
+.allocList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.allocRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.allocLabel {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.allocInput {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-num);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 7px 8px;
+  outline: none;
+  width: 56px;
+  text-align: center;
+}
+.allocInput:focus { border-color: var(--tool-color, var(--primary)); }
+
+.allocPct {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.allocRemove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.allocRemove:hover { color: var(--rose); }
+
+.sumOk,
+.sumWarn {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 2px;
+}
+.sumOk { color: var(--text-dim); }
+.sumWarn { color: var(--amber); }
+
+/* ─── Delete ─────────────────────────────────────────────── */
+.deleteBtn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 16px;
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--rose) 25%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--rose);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.deleteBtnConfirm {
+  border-color: var(--rose);
+  background: color-mix(in srgb, var(--rose) 8%, transparent);
+}
