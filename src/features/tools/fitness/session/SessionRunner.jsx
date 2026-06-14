@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { createSession, createSet } from '../fitnessModel'
+import { createSession, createSet, WARMUP_SCHEME } from '../fitnessModel'
 import { loadFitness, loadSessions, lastSetsFor, addSession, advancePlanCursor, getActivePlan, getExerciseById } from '../fitnessStore'
-import { detectPRs, restSecForExercise } from '../fitnessLogic'
+import { detectPRs, restSecForExercise, warmupSets } from '../fitnessLogic'
 import SessionSummary from './SessionSummary'
 import s from './SessionRunner.module.css'
 
@@ -24,6 +24,12 @@ const PlusIcon = () => (
 const SmallCloseIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
+const ChevronIcon = ({ open }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
+    <polyline points="6 9 12 15 18 9"/>
   </svg>
 )
 
@@ -62,6 +68,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   }))
 
   const [openNotiz, setOpenNotiz] = useState(null)
+  const [openWarmup, setOpenWarmup] = useState(() => new Set())
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
   const [summary, setSummary] = useState(null)
@@ -107,6 +114,32 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
         return { ...ex, saetze: [...ex.saetze, createSet({ gewicht: last?.gewicht ?? null, wdh: last?.wdh ?? null, satzTyp: 'normal' })] }
       }),
     }))
+  }
+
+  const toggleWarmup = exIdx => {
+    setOpenWarmup(prev => {
+      const next = new Set(prev)
+      if (next.has(exIdx)) next.delete(exIdx)
+      else next.add(exIdx)
+      return next
+    })
+  }
+
+  const addWarmupSets = exIdx => {
+    setDraft(d => ({
+      ...d,
+      exercises: d.exercises.map((ex, i) => {
+        if (i !== exIdx) return ex
+        const workWeight = ex.saetze.map(set => parseFloat(set.gewicht)).find(g => g > 0)
+        const warmups = warmupSets(workWeight).map(w => createSet(w))
+        return { ...ex, saetze: [...warmups, ...ex.saetze] }
+      }),
+    }))
+    setOpenWarmup(prev => {
+      const next = new Set(prev)
+      next.delete(exIdx)
+      return next
+    })
   }
 
   const cycleSetType = (exIdx, setIdx) => {
@@ -223,9 +256,14 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
               <div className={s.lastLine}>Zuletzt: {lastSetsLabel(prevSets)}</div>
 
               <div className={s.setsList}>
-                {ex.saetze.map((set, setIdx) => (
+                {(() => {
+                  let workingCount = 0
+                  return ex.saetze.map((set, setIdx) => {
+                    const isWarmup = set.satzTyp === 'warmup'
+                    if (!isWarmup) workingCount += 1
+                    return (
                   <div key={set.id} className={[s.setRow, set.done ? s.setRowDone : ''].join(' ')}>
-                    <span className={s.setIdx}>{setIdx + 1}</span>
+                    <span className={s.setIdx}>{isWarmup ? 'W' : workingCount}</span>
                     <input
                       className={s.setInput}
                       type="number"
@@ -256,12 +294,37 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
                       <CheckIcon />
                     </button>
                   </div>
-                ))}
+                    )
+                  })
+                })()}
               </div>
 
               <button className={s.addSetBtn} onClick={() => addSet(exIdx)}>
                 <PlusIcon /> Satz
               </button>
+
+              <button className={s.warmupToggle} onClick={() => toggleWarmup(exIdx)}>
+                Aufwärmen <ChevronIcon open={openWarmup.has(exIdx)} />
+              </button>
+              {openWarmup.has(exIdx) && (() => {
+                const workWeight = ex.saetze.map(set => parseFloat(set.gewicht)).find(g => g > 0)
+                if (!workWeight) {
+                  return <div className={s.warmupHint}>Erst ein Arbeitsgewicht eintragen.</div>
+                }
+                const warmups = warmupSets(workWeight)
+                return (
+                  <div className={s.warmupPanel}>
+                    {warmups.map((w, i) => (
+                      <div key={i} className={s.warmupRow}>
+                        {Math.round(WARMUP_SCHEME[i].pct * 100)} % · {w.gewicht} kg × {w.wdh}
+                      </div>
+                    ))}
+                    <button className={s.warmupAddBtn} onClick={() => addWarmupSets(exIdx)}>
+                      Aufwärmsätze hinzufügen
+                    </button>
+                  </div>
+                )
+              })()}
             </div>
           )
         })}
