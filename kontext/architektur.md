@@ -63,7 +63,14 @@ src/
         BirthdaySection.jsx — Tagesplaner-Widget (Chips: Geburtstag + Geschenk, fakeTodo-Pattern)
         TabGeburtstage.jsx  — Avatar-Karten, Sort, Swipe-Delete
         birthdayUtils.js    — Migration, Chip-Logik, Hilfsfunktionen
-      gewicht/        TabGewicht.jsx
+      fitness/
+        TabFitness.jsx          — Shell: ToolHeader + 7 Sub-Tabs (Heute·Pläne·Übungen·Auswertung·Archiv·Körpergewicht·⚙)
+        fitnessModel.js         — Konstanten (MUSCLES, VOLUME_REF, EQUIPMENT, Inkremente, Rest/Warmup) + Factories
+        fitnessStore.js         — load/save SK.fitness (config) + SK.fitnessSessions (Log) + Selektoren
+        koerpergewichtData.js   — Körpergewicht-Daten (SK.weight) — aus altem Gewicht-Tool übernommen
+        FitnessSection.jsx      — Tagesplaner-Widget (Körpergewicht-Eingabe + heutiges Training)
+        tabs/KoerpergewichtTab.jsx — Gewichts-/Kalorien-Tracking (aus altem TabGewicht)
+        tabs/*                  — Heute/Pläne/Übungen/Dashboards/Archiv/Einstellungen (Phase 1: Stubs)
       haushalt/
         HaushaltBriefing.jsx
         HaushaltSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
