@@ -50,7 +50,7 @@ export function rangeBlocked(dayObj, startKey, duration, ignoreKey) {
   return false
 }
 
-export function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions, fitnessSessions = []) {
+export function getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions, fitnessSessions = [], growthDoneDates) {
   const dots = []
 
   if (activeTools.includes('fitness')) {
@@ -75,6 +75,11 @@ export function getToolDots(dk, todos, activeTools, weightEntries, days, toolCol
   if (activeTools.includes('kognitiv') && kognitivSessions) {
     if (kognitivSessions.some(s => s.date === dk))
       dots.push({ id: 'kognitiv', color: getToolColor('kognitiv', toolColors) })
+  }
+
+  if (activeTools.includes('growth') && growthDoneDates) {
+    if (growthDoneDates.includes(dk))
+      dots.push({ id: 'growth', color: getToolColor('growth', toolColors) })
   }
 
   return dots

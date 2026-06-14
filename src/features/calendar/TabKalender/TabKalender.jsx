@@ -5,6 +5,7 @@ import { lv, sv, SK } from '../../../storage'
 import { loadEntries } from '../../tools/fitness/koerpergewichtData'
 import { loadSessions as loadFitnessSessions } from '../../tools/fitness/fitnessStore'
 import { loadSessions as loadKognitivSessions } from '../../tools/kognitiv/sessionStore'
+import { getDoneDates as loadGrowthDoneDates } from '../../tools/growth/growthStore'
 import NavPill from '../../../components/NavPill/NavPill'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
 import { MONTH_NAMES, getMonday, addDays } from './kalenderShared'
@@ -15,7 +16,7 @@ import s from './TabKalender.module.css'
 // Orchestrator: Ansicht-Umschaltung, Navigation, Toggles.
 // Die eigentlichen Ansichten leben in WocheView / MonatView / DayPanel.
 export default function TabKalender() {
-  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setTodos, setDays, calendarDate, setCalendarDate } = useAppStore()
+  const { days, todos, birthdays = [], activeTools = [], toolColors = {}, setCurrentTab, setDayplanDate, setGrowthOpenDate, setTodos, setDays, calendarDate, setCalendarDate } = useAppStore()
   const [view, setView] = useState(() => lv(SK.calView, 'woche'))
   const handleSetView = (v) => { sv(SK.calView, v); setView(v) }
   const today = useMemo(() => {
@@ -36,6 +37,7 @@ export default function TabKalender() {
   const weightEntries    = useMemo(() => loadEntries(), [])
   const kognitivSessions = useMemo(() => loadKognitivSessions(), [])
   const fitnessSessions  = useMemo(() => loadFitnessSessions(), [])
+  const growthDoneDates  = useMemo(() => loadGrowthDoneDates(), [])
 
   // Vom WocheView gesetzt — deaktiviert Page-Swipe während eines Block-Drags
   const weekDraggingRef = useRef(null)
@@ -151,6 +153,7 @@ export default function TabKalender() {
             weightEntries={weightEntries}
             kognitivSessions={kognitivSessions}
             fitnessSessions={fitnessSessions}
+            growthDoneDates={growthDoneDates}
             showTermine={showTermine}
             showTodos={showTodos}
             showTools={showTools}
@@ -172,11 +175,13 @@ export default function TabKalender() {
             weightEntries={weightEntries}
             kognitivSessions={kognitivSessions}
             fitnessSessions={fitnessSessions}
+            growthDoneDates={growthDoneDates}
             showTermine={showTermine}
             showTodos={showTodos}
             showTools={showTools}
             setCurrentTab={setCurrentTab}
             setDayplanDate={setDayplanDate}
+            setGrowthOpenDate={setGrowthOpenDate}
             restoreTodo={restoreTodo}
             setRestoreTodo={setRestoreTodo}
             handleRestore={handleRestore}

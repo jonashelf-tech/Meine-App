@@ -3,6 +3,7 @@ import { getToolColor } from '../../../utils'
 import { getBirthdaysForCalendarDate, formatBirthdayDate } from '../../tools/geburtstage/birthdayUtils'
 import { loadElviDay } from '../../tools/elvi/elviData'
 import { loadSessions as loadKognitivSessions, getDelta } from '../../tools/kognitiv/sessionStore'
+import { getDaySummary as getGrowthDay } from '../../tools/growth/growthStore'
 import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import s from './TabKalender.module.css'
@@ -32,7 +33,7 @@ function fmtDelta(moduleId, delta) {
 }
 
 // ─── Day Panel ────────────────────────────────────────────
-export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays = [], weightEntry, setCurrentTab, setDayplanDate, restoreTodo, setRestoreTodo, handleRestore, initialOpen }) {
+export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays = [], weightEntry, activeTools = [], setCurrentTab, setDayplanDate, setGrowthOpenDate, restoreTodo, setRestoreTodo, handleRestore, initialOpen }) {
   const [open, setOpen] = useState(initialOpen ?? { zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false, growth: false })
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
@@ -47,6 +48,11 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
   const doneCount = doneTodos.length
 
   const elviDay = useMemo(() => loadElviDay(dateKey), [dateKey])
+  const growthDay   = useMemo(
+    () => activeTools.includes('growth') ? getGrowthDay(dateKey) : null,
+    [dateKey, activeTools],
+  )
+  const growthColor = getToolColor('growth', toolColors)
 
   const [y, m, d] = dateKey.split('-')
   const dateObj  = new Date(parseInt(y), parseInt(m) - 1, parseInt(d))
@@ -291,7 +297,33 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
         </div>
       )}
 
-      {/* Growth-Karte folgt in Task 9 (mit Datums-Intent) */}
+      {/* Growth-Karte */}
+      {growthDay && (
+        <div className={s.toolCard} style={{ borderTop: `2px solid ${growthColor}` }}>
+          <div className={s.toolCardHead} onClick={() => toggle('growth')}>
+            <span className={s.toolCardTitle} style={{ color: growthColor }}>Growth</span>
+            <button
+              className={s.toolCardOpenBtn}
+              style={{ color: growthColor, background: `color-mix(in srgb, ${growthColor} 15%, transparent)` }}
+              onClick={e => { e.stopPropagation(); setGrowthOpenDate?.(dateKey); setCurrentTab(TOOL_TAB.growth) }}
+            >
+              → Öffnen
+            </button>
+            <span className={s.toolCardArrow}>{open.growth ? '▾' : '▸'}</span>
+          </div>
+          {open.growth && (
+            <div className={s.toolCardBody}>
+              {growthDay.karten.map(k => (
+                <div key={k.kartenId} className={s.elviNotes}>
+                  <strong>{k.frage}</strong>
+                  {(k.antwort ?? '').trim() ? ` — ${k.antwort}` : ' — ✓ erledigt'}
+                </div>
+              ))}
+              {growthDay.freitext && <div className={s.elviNotes}>{growthDay.freitext}</div>}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Restore-Modal */}
       {restoreTodo && (

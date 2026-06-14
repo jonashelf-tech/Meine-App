@@ -9,9 +9,9 @@ import s from './TabKalender.module.css'
 export default function MonatView({
   monthRef, todayKey, selectedDay, onDayClick,
   days, todos, setTodos,
-  birthdays, activeTools, toolColors, weightEntries, kognitivSessions, fitnessSessions,
+  birthdays, activeTools, toolColors, weightEntries, kognitivSessions, fitnessSessions, growthDoneDates,
   showTermine, showTodos, showTools,
-  setCurrentTab, setDayplanDate,
+  setCurrentTab, setDayplanDate, setGrowthOpenDate,
   restoreTodo, setRestoreTodo, handleRestore,
 }) {
   const monthCells = useMemo(() => {
@@ -43,7 +43,7 @@ export default function MonatView({
           ]
           const visible  = filtered.slice(0, 3)
           const overflow = filtered.length - visible.length
-          const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions, fitnessSessions)
+          const toolDots = getToolDots(dk, todos, activeTools, weightEntries, days, toolColors, kognitivSessions, fitnessSessions, growthDoneDates)
           const bdays    = getBirthdaysForCalendarDate(birthdays, dk)
 
           return (
@@ -105,6 +105,7 @@ export default function MonatView({
           weightEntry={weightEntries.find(e => e.date === selectedDay) ?? null}
           setCurrentTab={setCurrentTab}
           setDayplanDate={setDayplanDate}
+          setGrowthOpenDate={setGrowthOpenDate}
           setTodos={setTodos}
           restoreTodo={restoreTodo}
           setRestoreTodo={setRestoreTodo}

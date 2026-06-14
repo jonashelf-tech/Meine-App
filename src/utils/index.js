@@ -101,7 +101,7 @@ export function getToolColor(toolId, toolColors) {
     reminder:     '#00FF94',
     haushalt:     '#10B981',
     klaeren:      '#34D399',
-    wachstum:     '#4ADE80',
+    growth:       '#4ADE80',
   }
   return DEFAULTS[toolId] ?? '#8B5CF6'
 }

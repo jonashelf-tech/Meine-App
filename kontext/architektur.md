@@ -71,6 +71,13 @@ src/
         FitnessSection.jsx      — Tagesplaner-Widget (Körpergewicht-Eingabe + heutiges Training)
         tabs/KoerpergewichtTab.jsx — Gewichts-/Kalorien-Tracking (aus altem TabGewicht)
         tabs/*                  — Heute/Pläne/Übungen/Dashboards/Archiv/Einstellungen (Phase 1: Stubs)
+      growth/         — Journaling-Tool (ersetzt Wachstum, Tab 18)
+        growthContent.json      — 250 Karten / 6 Kategorien / 4 Opener (Guard: growthContent.test.js)
+        growthStore.js          — Datenlayer: Ziehlogik (60-Tage-Sperre, Skip-Queue, Bonus), Schwelle, Migration, KI-Prompt
+        TabGrowth.jsx           — Tagesansicht (persist zieht dataRef synchron — mehrere Effekte schreiben pro Commit)
+        GrowthSection.jsx       — Tagesplaner-Widget ("Karte offen")
+        DailyStateRow / TageskarteCard / GrowthOpener / GrowthArchiv / GrowthBriefing / GrowthSettings
+        useAutosave.js          — Debounce-Autosave (Freitext + Antworten)
       haushalt/
         HaushaltBriefing.jsx
         HaushaltSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
