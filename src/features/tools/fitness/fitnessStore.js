@@ -88,3 +88,34 @@ export function setActivePlan(id) {
 // Selektoren
 export const getExerciseById = (fitness, id) => fitness.exercises.find(e => e.id === id) ?? null
 export const getActivePlan   = (fitness) => fitness.plans.find(p => p.id === fitness.meta.activePlanId) ?? null
+
+const WORKING_TYPES = ['normal', 'dropset', 'failure']
+
+// Letzte Arbeitssätze einer Übung aus der Historie (chronologisch gespeichert).
+export function lastSetsFor(exerciseId) {
+  const sessions = loadSessions()
+  for (let i = sessions.length - 1; i >= 0; i--) {
+    const ex = sessions[i].exercises?.find(e => e.exerciseId === exerciseId)
+    const working = (ex?.saetze ?? []).filter(s => WORKING_TYPES.includes(s.satzTyp))
+    if (working.length) return working
+  }
+  return []
+}
+
+// planCursor auf den nächsten Tag schieben (mod Tageszahl).
+export function advancePlanCursor(planId, daysLength) {
+  const f = loadFitness()
+  if (!planId || !daysLength) return f.meta
+  const cur = f.meta.planCursor[planId] ?? 0
+  const meta = { ...f.meta, planCursor: { ...f.meta.planCursor, [planId]: (cur + 1) % daysLength } }
+  saveFitness({ ...f, meta })
+  return meta
+}
+
+// Aktueller Plan-Tag laut Cursor.
+export function currentDay(fitness) {
+  const plan = getActivePlan(fitness)
+  if (!plan || !plan.days.length) return { plan: null, day: null, dayIndex: 0 }
+  const dayIndex = (fitness.meta.planCursor[plan.id] ?? 0) % plan.days.length
+  return { plan, day: plan.days[dayIndex], dayIndex }
+}

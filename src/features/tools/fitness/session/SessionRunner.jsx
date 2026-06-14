@@ -1,0 +1,224 @@
+import { useState, useEffect, useRef } from 'react'
+import { createSession, createSet } from '../fitnessModel'
+import { loadFitness, lastSetsFor, addSession, advancePlanCursor, getActivePlan } from '../fitnessStore'
+import s from './SessionRunner.module.css'
+
+// ─── SVG Icons ────────────────────────────────────────────
+const CloseIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+)
+const PlusIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+)
+
+const SET_TYPES = ['normal', 'warmup', 'dropset', 'failure']
+const SET_TYPE_LABELS = { normal: 'Normal', warmup: 'Warmup', dropset: 'Dropset', failure: 'Failure' }
+
+const fmtDuration = sec => {
+  const m = Math.floor(sec / 60)
+  const ss = sec % 60
+  return `${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
+}
+
+const lastSetsLabel = sets => {
+  if (!sets.length) return '—'
+  return sets.map(s => `${s.gewicht ?? '–'} kg × ${s.wdh ?? '–'}`).join(', ')
+}
+
+export default function SessionRunner({ planId, dayId, dayExercises, onClose }) {
+  const fitness = loadFitness()
+  const exerciseMap = useRef(new Map(fitness.exercises.map(e => [e.id, e]))).current
+
+  const [draft, setDraft] = useState(() => createSession({
+    planId,
+    dayId,
+    exercises: dayExercises.map(de => {
+      const prev = lastSetsFor(de.exerciseId)
+      const n = de.zielSaetze || prev.length || 3
+      const saetze = Array.from({ length: n }, (_, i) => createSet({
+        gewicht: prev[i]?.gewicht ?? prev[prev.length - 1]?.gewicht ?? null,
+        wdh: prev[i]?.wdh ?? de.zielWdh?.[0] ?? null,
+        satzTyp: 'normal',
+      }))
+      return { exerciseId: de.exerciseId, saetze }
+    }),
+  }))
+
+  const [openNotiz, setOpenNotiz] = useState(null)
+  const [confirmCancel, setConfirmCancel] = useState(false)
+  const [elapsedSec, setElapsedSec] = useState(0)
+
+  useEffect(() => {
+    const startedAt = new Date(draft.startedAt).getTime()
+    const tick = () => setElapsedSec(Math.round((Date.now() - startedAt) / 1000))
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [draft.startedAt])
+
+  const updateSet = (exIdx, setIdx, patch) => {
+    setDraft(d => ({
+      ...d,
+      exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
+        ...ex,
+        saetze: ex.saetze.map((set, j) => j !== setIdx ? set : { ...set, ...patch }),
+      }),
+    }))
+  }
+
+  const addSet = exIdx => {
+    setDraft(d => ({
+      ...d,
+      exercises: d.exercises.map((ex, i) => {
+        if (i !== exIdx) return ex
+        const last = ex.saetze[ex.saetze.length - 1]
+        return { ...ex, saetze: [...ex.saetze, createSet({ gewicht: last?.gewicht ?? null, wdh: last?.wdh ?? null, satzTyp: 'normal' })] }
+      }),
+    }))
+  }
+
+  const cycleSetType = (exIdx, setIdx) => {
+    setDraft(d => ({
+      ...d,
+      exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
+        ...ex,
+        saetze: ex.saetze.map((set, j) => {
+          if (j !== setIdx) return set
+          const idx = SET_TYPES.indexOf(set.satzTyp)
+          return { ...set, satzTyp: SET_TYPES[(idx + 1) % SET_TYPES.length] }
+        }),
+      }),
+    }))
+  }
+
+  const toggleDone = (exIdx, setIdx) => {
+    setDraft(d => ({
+      ...d,
+      exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
+        ...ex,
+        saetze: ex.saetze.map((set, j) => j !== setIdx ? set : { ...set, done: !set.done }),
+      }),
+    }))
+  }
+
+  const handleCancel = () => {
+    if (!confirmCancel) {
+      setConfirmCancel(true)
+      setTimeout(() => setConfirmCancel(false), 2500)
+      return
+    }
+    onClose()
+  }
+
+  const handleFinish = () => {
+    const exercises = draft.exercises
+      .map(ex => ({
+        exerciseId: ex.exerciseId,
+        saetze: ex.saetze
+          .filter(set => set.gewicht !== null && set.gewicht !== '' && set.wdh !== null && set.wdh !== '')
+          .map(set => ({
+            id: set.id,
+            gewicht: typeof set.gewicht === 'string' ? parseFloat(set.gewicht.replace(',', '.')) : set.gewicht,
+            wdh: typeof set.wdh === 'string' ? parseInt(set.wdh, 10) : set.wdh,
+            satzTyp: set.satzTyp,
+            rir: set.rir,
+            feedback: set.feedback,
+          })),
+      }))
+      .filter(ex => ex.saetze.length > 0)
+
+    const finalSession = {
+      ...draft,
+      exercises,
+      durationSec: Math.round((Date.now() - new Date(draft.startedAt).getTime()) / 1000),
+    }
+
+    addSession(finalSession)
+    const daysLength = getActivePlan(loadFitness())?.days.length
+    advancePlanCursor(planId, daysLength)
+    onClose()
+  }
+
+  return (
+    <div className={s.overlay}>
+      <div className={s.header}>
+        <div className={s.timer}>{fmtDuration(elapsedSec)}</div>
+        <button className={[s.cancelBtn, confirmCancel ? s.cancelBtnConfirm : ''].join(' ')} onClick={handleCancel} aria-label="Abbrechen">
+          {confirmCancel ? 'Wirklich?' : <CloseIcon />}
+        </button>
+      </div>
+
+      <div className={s.body}>
+        {draft.exercises.map((ex, exIdx) => {
+          const exercise = exerciseMap.get(ex.exerciseId)
+          const prevSets = lastSetsFor(ex.exerciseId)
+          return (
+            <div key={ex.exerciseId + exIdx} className={s.card}>
+              <button className={s.exName} onClick={() => setOpenNotiz(o => o === exIdx ? null : exIdx)}>
+                {exercise?.name ?? '—'}
+              </button>
+              {openNotiz === exIdx && exercise?.notiz && (
+                <div className={s.notiz}>{exercise.notiz}</div>
+              )}
+              <div className={s.lastLine}>Zuletzt: {lastSetsLabel(prevSets)}</div>
+
+              <div className={s.setsList}>
+                {ex.saetze.map((set, setIdx) => (
+                  <div key={set.id} className={[s.setRow, set.done ? s.setRowDone : ''].join(' ')}>
+                    <span className={s.setIdx}>{setIdx + 1}</span>
+                    <input
+                      className={s.setInput}
+                      type="number"
+                      step="0.5"
+                      inputMode="decimal"
+                      placeholder="kg"
+                      value={set.gewicht ?? ''}
+                      onChange={e => updateSet(exIdx, setIdx, { gewicht: e.target.value })}
+                    />
+                    <span className={s.setX}>×</span>
+                    <input
+                      className={s.setInput}
+                      type="number"
+                      step="1"
+                      inputMode="numeric"
+                      placeholder="Wdh"
+                      value={set.wdh ?? ''}
+                      onChange={e => updateSet(exIdx, setIdx, { wdh: e.target.value })}
+                    />
+                    <button className={s.typeBtn} onClick={() => cycleSetType(exIdx, setIdx)}>
+                      {SET_TYPE_LABELS[set.satzTyp]}
+                    </button>
+                    <button
+                      className={[s.doneBtn, set.done ? s.doneBtnActive : ''].join(' ')}
+                      onClick={() => toggleDone(exIdx, setIdx)}
+                      aria-label="Satz erledigt"
+                    >
+                      <CheckIcon />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <button className={s.addSetBtn} onClick={() => addSet(exIdx)}>
+                <PlusIcon /> Satz
+              </button>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className={s.footer}>
+        <button className={s.finishBtn} onClick={handleFinish}>Training beenden</button>
+      </div>
+    </div>
+  )
+}

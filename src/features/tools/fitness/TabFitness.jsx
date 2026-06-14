@@ -10,6 +10,7 @@ import DashboardsTab from './tabs/DashboardsTab'
 import ArchivTab from './tabs/ArchivTab'
 import KoerpergewichtTab from './tabs/KoerpergewichtTab'
 import EinstellungenTab from './tabs/EinstellungenTab'
+import SessionRunner from './session/SessionRunner'
 import s from './TabFitness.module.css'
 
 const TABS = [
@@ -26,7 +27,10 @@ export default function TabFitness({ onBack }) {
   const { toolColors } = useAppStore()
   const toolColor = getToolColor('fitness', toolColors)
   const [active, setActive] = useState('heute')
+  const [session, setSession] = useState(null)
   const Active = TABS.find(t => t[0] === active)?.[2] ?? HeuteTab
+
+  const startSession = (planId, dayId, dayExercises) => setSession({ planId, dayId, dayExercises })
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
@@ -38,7 +42,15 @@ export default function TabFitness({ onBack }) {
           </button>
         ))}
       </div>
-      <Active />
+      <Active onStartSession={startSession} />
+      {session && (
+        <SessionRunner
+          planId={session.planId}
+          dayId={session.dayId}
+          dayExercises={session.dayExercises}
+          onClose={() => setSession(null)}
+        />
+      )}
     </div>
   )
 }
