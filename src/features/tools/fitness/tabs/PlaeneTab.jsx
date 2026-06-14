@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { ensureSeeded, savePlan, deletePlan, setActivePlan } from '../fitnessStore'
+import { ensureSeeded, savePlan, deletePlan, setActivePlan, loadSessions } from '../fitnessStore'
 import { createPlan, createPlanDay } from '../fitnessModel'
+import { generateCoachPlan } from '../coach/planGenerator'
+import Onboarding from '../coach/Onboarding'
 import s from './PlaeneTab.module.css'
 
 // ─── SVG Icons ────────────────────────────────────────────
@@ -31,6 +33,7 @@ export default function PlaeneTab() {
   const [activeId, setActiveId] = useState(init.meta.activePlanId)
   const exercises = init.exercises
   const [selId, setSelId] = useState(null)
+  const [onboarding, setOnboarding] = useState(false)
 
   const selected = plans.find(p => p.id === selId) ?? null
 
@@ -43,6 +46,19 @@ export default function PlaeneTab() {
   const handleSetActive = id => {
     const meta = setActivePlan(id)
     setActiveId(meta.activePlanId)
+  }
+
+  const handleCoachDone = coach => {
+    const fitness = ensureSeeded()
+    const plan = generateCoachPlan(coach, fitness.exercises, loadSessions())
+    setPlans(savePlan(plan))
+    setActiveId(setActivePlan(plan.id).activePlanId)
+    setOnboarding(false)
+    setSelId(plan.id)
+  }
+
+  if (onboarding) {
+    return <Onboarding onCancel={() => setOnboarding(false)} onDone={handleCoachDone} />
   }
 
   if (selected) {
@@ -64,9 +80,14 @@ export default function PlaeneTab() {
 
   return (
     <div className={s.page}>
-      <button className={s.newBtn} onClick={handleNew}>
-        <PlusIcon /> Neuer Plan
-      </button>
+      <div className={s.newBtnRow}>
+        <button className={s.newBtn} onClick={handleNew}>
+          <PlusIcon /> Neuer Plan
+        </button>
+        <button className={s.newBtn} onClick={() => setOnboarding(true)}>
+          <PlusIcon /> Coach-Plan
+        </button>
+      </div>
 
       {plans.length === 0 ? (
         <div className={s.empty}>Noch keine Pläne angelegt.</div>
