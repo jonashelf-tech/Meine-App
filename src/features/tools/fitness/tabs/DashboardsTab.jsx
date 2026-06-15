@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import s from './DashboardsTab.module.css'
 import { ensureSeeded, loadSessions, savePlan } from '../fitnessStore'
-import { realSetsPerMuscle, plannedRealSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries, reviewExercise, weeklyVolumeAdjust } from '../fitnessLogic'
+import { realSetsPerMuscle, plannedRealSetsPerMuscle, sessionsPerWeek, volumeZone, weekStartIso, e1rmSeries, reviewExercise, weeklyVolumeAdjust } from '../fitnessLogic'
 import { MUSCLES, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
 import { todayKey } from '../../../../utils'
 
@@ -217,15 +217,17 @@ function MuscleVolumeBars({ data }) {
 // Geplantes Soll-Volumen des aktiven Plans gegen die Referenztabelle.
 function PlannedView({ exercises }) {
   const fitness = ensureSeeded()
+  const rhythm = fitness.settings.rhythm
   const plan = fitness.plans.find(p => p.id === fitness.meta.activePlanId)
-  const planned = useMemo(() => plan ? plannedRealSetsPerMuscle(plan, exercises) : {}, [plan, exercises])
+  const planned = useMemo(() => plan ? plannedRealSetsPerMuscle(plan, exercises, rhythm) : {}, [plan, exercises, rhythm])
 
   if (!plan) {
     return <div className={s.empty}>Kein aktiver Plan — setze einen Plan aktiv, um sein Soll-Volumen pro Muskel zu sehen.</div>
   }
+  const spw = Math.round(sessionsPerWeek(rhythm, plan.days.length) * 10) / 10
   return (
     <>
-      <div className={s.consistency}>{plan.name} · geplantes reales Volumen / Woche</div>
+      <div className={s.consistency}>{plan.name} · reales Volumen / Woche · ~{fmtNum(spw)}× Training</div>
       <MuscleVolumeBars data={planned} />
     </>
   )

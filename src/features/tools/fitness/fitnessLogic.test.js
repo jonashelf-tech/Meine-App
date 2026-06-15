@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
-  allocationOverlap, similarExercises, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
+  allocationOverlap, similarExercises, realSetsPerMuscle, plannedRealSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
   nextRecommendation, adjustRemaining, weeklyVolumeAdjust, recoveryNeeded, reviewExercise,
 } from './fitnessLogic'
 
@@ -135,11 +135,28 @@ describe('realSetsPerMuscle', () => {
       { exerciseId: 'bp', saetze: [ { gewicht: 50, wdh: 10, satzTyp: 'normal' } ] },
     ] },
   ]
-  it('gewichtet Arbeitssätze mit Allokation, nur in der Zielwoche', () => {
+  it('Hauptmuskel voll, Nebenmuskel anteilig, nur in der Zielwoche', () => {
     const res = realSetsPerMuscle(sessions, exercises, '2026-06-08')
-    expect(res.brust).toBeCloseTo(2.1, 5)   // 3 * 0.7
-    expect(res.trizeps).toBeCloseTo(0.9, 5) // 3 * 0.3
+    expect(res.brust).toBeCloseTo(3, 5)     // 3 Sätze × voll (Hauptmuskel)
+    expect(res.trizeps).toBeCloseTo(0.9, 5) // 3 × 0.3 (Nebenmuskel)
     expect(res.schulterSeitlich).toBeCloseTo(1, 5)
+  })
+})
+
+describe('plannedRealSetsPerMuscle', () => {
+  const exercises = [{ id: 'bp', allocation: { brust: 70, trizeps: 30 } }]
+  const plan = { days: [
+    { exercises: [{ exerciseId: 'bp', zielSaetze: 3 }] },
+    { exercises: [{ exerciseId: 'bp', zielSaetze: 3 }] },
+  ] }
+  it('Hauptmuskel voll × Zyklus-Faktor (Default: N=2 → ~2,33×/Woche)', () => {
+    const res = plannedRealSetsPerMuscle(plan, exercises) // 6 (3+3, voll) × (7·2/3 ÷ 2)
+    expect(res.brust).toBeCloseTo(14, 1)
+    expect(res.trizeps).toBeCloseTo(4.2, 1)
+  })
+  it('mit Rhythmus: Sessions/Woche aus on/off', () => {
+    const res = plannedRealSetsPerMuscle(plan, exercises, { on: 1, off: 1 }) // 3,5/Woche → ×1,75
+    expect(res.brust).toBeCloseTo(10.5, 1)
   })
 })
 

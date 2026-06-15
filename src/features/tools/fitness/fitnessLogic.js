@@ -221,19 +221,38 @@ export function trainingDayStatus(rhythm, sessions, today) {
   return { kind: 'train' }
 }
 
-// Geplantes reales Volumen pro Muskel/Woche aus einem Plan: Σ zielSaetze × Allokationsanteil.
-export function plannedRealSetsPerMuscle(plan, exercises) {
+// Reales Volumen einer Übung auf Muskeln verteilen: Hauptmuskel zählt voll (1 Satz),
+// Nebenmuskeln anteilig oben drauf. Akkumuliert in acc.
+export function muscleContribution(exercise, sets, acc = {}) {
+  const alloc = exercise?.allocation || {}
+  const prim = Object.entries(alloc).sort((a, b) => b[1] - a[1])[0]?.[0]
+  for (const [m, pct] of Object.entries(alloc)) {
+    acc[m] = (acc[m] || 0) + sets * (m === prim ? 1 : pct / 100)
+  }
+  return acc
+}
+
+// Trainings/Woche aus dem Rhythmus, sonst Default-Zyklus (alle N Rotationstage + 1 Pause).
+export function sessionsPerWeek(rhythm, rotationLength) {
+  if (rhythm && rhythm.on && rhythm.off) return 7 * rhythm.on / (rhythm.on + rhythm.off)
+  const n = Math.max(1, rotationLength || 1)
+  return 7 * n / (n + 1)
+}
+
+// Geplantes reales Volumen pro Muskel/Woche: Volumen pro Rotation × wie oft die Rotation
+// pro Woche durchlaufen wird (Sessions/Woche ÷ Rotationslänge).
+export function plannedRealSetsPerMuscle(plan, exercises, rhythm) {
   const byId = new Map(exercises.map(e => [e.id, e]))
+  const n = plan?.days?.length || 1
+  const perWeekFactor = sessionsPerWeek(rhythm, n) / n
   const acc = {}
   plan?.days?.forEach(day => {
     day.exercises?.forEach(entry => {
-      const alloc = byId.get(entry.exerciseId)?.allocation
-      if (!alloc) return
-      const sets = entry.zielSaetze || 0
-      Object.entries(alloc).forEach(([m, pct]) => { acc[m] = (acc[m] ?? 0) + sets * pct / 100 })
+      const exObj = byId.get(entry.exerciseId)
+      if (exObj) muscleContribution(exObj, entry.zielSaetze || 0, acc)
     })
   })
-  Object.keys(acc).forEach(m => { acc[m] = round1(acc[m]) })
+  Object.keys(acc).forEach(m => { acc[m] = round1(acc[m] * perWeekFactor) })
   return acc
 }
 
@@ -246,14 +265,10 @@ export function realSetsPerMuscle(sessions, exercises, weekStart) {
   sessions.forEach(sess => {
     if (sess.date < weekStart || sess.date >= endIso) return
     sess.exercises?.forEach(ex => {
-      const alloc = byId.get(ex.exerciseId)?.allocation
-      if (!alloc) return
-      const working = (ex.saetze ?? []).filter(s => WORKING.includes(s.satzTyp))
-      working.forEach(() => {
-        Object.entries(alloc).forEach(([m, pct]) => {
-          acc[m] = (acc[m] ?? 0) + pct / 100
-        })
-      })
+      const exObj = byId.get(ex.exerciseId)
+      if (!exObj) return
+      const working = (ex.saetze ?? []).filter(s => WORKING.includes(s.satzTyp)).length
+      if (working) muscleContribution(exObj, working, acc)
     })
   })
   Object.keys(acc).forEach(m => { acc[m] = round1(acc[m]) })

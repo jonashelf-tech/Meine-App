@@ -1,5 +1,5 @@
 import { VOLUME_REF, AMBITION_LEVELS, SESSION_SET_BUDGET, MAX_EXERCISES_PER_SESSION, REP_PREF, ZIEL_RIR, DEFAULT_INCREMENTS, createPlan, createPlanDay } from '../fitnessModel'
-import { e1rmSeries, roundToIncrement } from '../fitnessLogic'
+import { e1rmSeries, roundToIncrement, muscleContribution } from '../fitnessLogic'
 
 const OBER  = ['brust','ruecken','schulterVorne','schulterSeitlich','schulterHinten','bizeps','trizeps']
 const UNTER = ['quadrizeps','hamstrings','gluteus','waden','bauch']
@@ -16,6 +16,9 @@ const BEINE_BAUCH  = ['quadrizeps','hamstrings','gluteus','waden','bauch']
 // Arnold
 const BRUST_RUECKEN  = ['brust','ruecken','schulterHinten']
 const SCHULTER_ARME_A = ['schulterVorne','schulterSeitlich','bizeps','trizeps']
+// Push/Pull mit verteilten Beinen (Push = Quad-dominant, Pull = Hüft-/Posterior)
+const PUSH_BEINE = ['brust','schulterVorne','schulterSeitlich','trizeps','quadrizeps','waden','bauch']
+const PULL_BEINE = ['ruecken','schulterHinten','bizeps','trapez','hamstrings','gluteus']
 
 const day = (name, muscles) => ({ name, muscles })
 
@@ -31,6 +34,8 @@ export const SPLIT_CATALOG = {
       days: [day('Ganzkörper A', GANZ), day('Ganzkörper B', GANZ)] },
     { id: 'ul2', name: 'Oberkörper / Unterkörper', recommended: false,
       days: [day('Oberkörper', OBER), day('Unterkörper', UNTER)] },
+    { id: 'pushPullBeine2', name: 'Push / Pull (mit Beinen)', recommended: false,
+      days: [day('Push + Beine', PUSH_BEINE), day('Pull + Beine', PULL_BEINE)] },
   ],
   3: [
     { id: 'ulg3', name: 'Ober / Unter / Ganzkörper', recommended: true,
@@ -122,19 +127,17 @@ const primaryMuscle = (alloc) => Object.entries(alloc || {}).sort((a, b) => b[1]
 const quality = (e) => (e.dehnung ?? 3) + (e.stabilitaet ?? 3)
 
 // Wenige Sätze pro Übung, Volumen lieber auf mehrere Übungen verteilen: Anker max 3, Komplement max 2.
+// Hauptmuskel zählt voll (1 Satz/Satz), Nebenmuskel anteilig.
 const setsFor = (ex, remainingReal, m, slot) => {
-  const frac = (ex.allocation?.[m] || 0) / 100
+  const prim = primaryMuscle(ex.allocation)
+  const perSet = m === prim ? 1 : (ex.allocation?.[m] || 0) / 100
   const min = 2
   const max = slot === 0 ? 3 : 2
-  if (frac <= 0) return min
-  return Math.max(min, Math.min(Math.round(remainingReal / frac), max))
+  if (perSet <= 0) return min
+  return Math.max(min, Math.min(Math.round(remainingReal / perSet), max))
 }
-// Jeden Arbeitssatz anteilig allen getroffenen Muskeln gutschreiben (reales Volumen).
-const creditVolume = (realByMuscle, ex, sets) => {
-  for (const [mm, pct] of Object.entries(ex.allocation || {})) {
-    realByMuscle[mm] = (realByMuscle[mm] || 0) + sets * (pct / 100)
-  }
-}
+// Reales Volumen gutschreiben: Hauptmuskel voll, Nebenmuskeln anteilig.
+const creditVolume = (realByMuscle, ex, sets) => { muscleContribution(ex, sets, realByMuscle) }
 
 // Startgewicht aus Historie (e1RM invertiert auf Ziel-Wdh), sonst null (Kalibrierung).
 export function suggestStartWeight(exercise, zielWdh, sessions) {

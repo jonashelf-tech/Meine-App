@@ -328,3 +328,19 @@ zurück zur Vorgabe aus dem ursprünglichen Fitness-Prompt:
   Volumen des aktiven Plans pro Muskel gegen MEV/MAV/MRV (`plannedRealSetsPerMuscle`) —
   macht den Trade-off zwischen Session-Länge und Volumen sichtbar (kurze Sessions auf
   niedriger Frequenz → unter MEV; mehr Tage → grün).
+
+---
+
+# Nachtrag 3 (2026-06-15) — Reales Volumen: Hauptmuskel voll + Zyklus
+
+- **Hauptmuskel = 1 voller Satz** (`muscleContribution`): der Primärmuskel einer Übung zählt
+  pro Arbeitssatz voll, Nebenmuskeln weiter anteilig oben drauf. Behebt das Unterzählen
+  compound-getriebener Muskeln (Rücken/Brust). Gilt für geloggtes UND geplantes Volumen
+  sowie die Generator-Verrechnung.
+- **Zyklus-Faktor** (`sessionsPerWeek`): das Wochenvolumen skaliert mit der tatsächlichen
+  Trainingsfrequenz statt „eine Rotation = eine Woche". Sessions/Woche = `7·on/(on+off)`
+  aus dem Rhythmus, sonst Default-Zyklus „alle N Tage + 1 Pause" = `7·N/(N+1)`. Plan-Soll
+  multipliziert das Volumen pro Rotation mit `Sessions/Woche ÷ N` und zeigt die angenommene
+  Frequenz an.
+- **Neuer Split (Größe 2):** „Push / Pull (mit Beinen)" — Push + Quad/Waden, Pull +
+  Hamstrings/Gluteus, als Zyklus mit Pausentagen gedacht.
