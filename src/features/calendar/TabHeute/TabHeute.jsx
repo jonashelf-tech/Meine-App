@@ -164,10 +164,6 @@ export default function TabHeute() {
     })
   }, [setTodos])
 
-  const handleRemove = useCallback((id) => {
-    setTodos(prev => prev.filter(t => t.id !== id))
-  }, [setTodos])
-
   // ─── Slot mutations ───────────────────────────────────────
   const handleToggleSlotDone = useCallback((slotKey) => {
     setTodaySlots(prev => {
@@ -599,7 +595,6 @@ export default function TabHeute() {
           viewDate={viewDate}
           onToggleDone={handleToggleDone}
           onEdit={handleEdit}
-          onRemove={handleRemove}
           startDrag={startPoolDrag}
           onDoneCalendar={handleDoneCalendar}
           onKlaeren={activeTools.includes('klaeren') ? (todo) => setKlaerenTodo(todo) : undefined}

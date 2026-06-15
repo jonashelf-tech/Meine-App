@@ -36,7 +36,7 @@ const ChevronIcon = ({ collapsed }) => (
 )
 
 // ─── PoolChip ─────────────────────────────────────────────
-function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, startDrag, isPlaced, onKlaeren }) {
+function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPlaced, onKlaeren }) {
   const color = todo.color || '#8B5CF6'
   const [doneFlash, setDoneFlash] = useState(false)
 
@@ -66,7 +66,6 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onRemove, start
       todo={todo}
       onToggleDone={onToggleDone}
       onEdit={onEdit}
-      onRemove={onRemove}
       todos={todos}
       saveTodos={setTodos}
       dragHandle={handle}
@@ -84,7 +83,6 @@ export default function Pool({
   viewDate,
   onToggleDone,
   onEdit,
-  onRemove,
   startDrag,
   onDoneCalendar,
   onKlaeren,        // fn(todo) — opens Klären dialog; wired up when Klären-Tool is built
@@ -93,7 +91,6 @@ export default function Pool({
   const [collapsed,      setCollapsed]      = useState(false)
   const [sort,           setSort]           = useState(() => lv(SK.poolSort, 'standard'))
   const [showAll,        setShowAll]        = useState(false)
-  const [confirmId,      setConfirmId]      = useState(null)
 
   const handleSort = useCallback((key) => {
     setSort(key)
@@ -178,7 +175,6 @@ export default function Pool({
       setTodos={setTodos}
       onToggleDone={() => handleToggle(t.id)}
       onEdit={() => onEdit?.(t.id)}
-      onRemove={() => setConfirmId(t.id)}
       startDrag={startDrag}
       isPlaced={isPlaced(t)}
       onKlaeren={onKlaeren}
@@ -264,26 +260,6 @@ export default function Pool({
           )}
         </>
       )}
-
-      {confirmId && (() => {
-        const todo = todos.find(t => t.id === confirmId)
-        return (
-          <div className={s.dialogOverlay} onClick={() => setConfirmId(null)}>
-            <div className={s.dialog} onClick={e => e.stopPropagation()}>
-              <p className={s.dialogTitle}>"{todo?.text}"</p>
-              <button
-                className={s.dialogBtnDelete}
-                onClick={() => { onRemove?.(confirmId); setConfirmId(null) }}
-              >
-                Löschen
-              </button>
-              <button className={s.dialogBtnCancel} onClick={() => setConfirmId(null)}>
-                Abbrechen
-              </button>
-            </div>
-          </div>
-        )
-      })()}
     </div>
   )
 }

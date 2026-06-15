@@ -14,6 +14,14 @@ const EditIcon = () => (
   </svg>
 )
 
+const TrashIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/>
+    <line x1="10" y1="11" x2="10" y2="17"/>
+    <line x1="14" y1="11" x2="14" y2="17"/>
+  </svg>
+)
+
 const DUR_PRESETS = [
   { label: '5',  value: 5  },
   { label: '10', value: 10 },
@@ -57,6 +65,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const [detailsOpen, setDetailsOpen] = useState(() =>
     isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category)
   )
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   // Auto-Parser als Toggle (persistiert): an = Live-Erkennung + Übernahme
   // beim Hinzufügen. Manuell gesetzte Felder gewinnen immer. Nur beim
@@ -212,6 +221,23 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     onClose()
   }
 
+  const handleDelete = () => {
+    setTodos(prev => prev.filter(t => t.id !== existingTodo.id))
+    // aus allen Tages-Slots entfernen, die dieses Todo referenzieren
+    setDays(prev => {
+      const next = {}
+      for (const [dk, day] of Object.entries(prev)) {
+        const nd = {}
+        for (const [k, slot] of Object.entries(day)) {
+          if (slot?.todoId !== existingTodo.id) nd[k] = slot
+        }
+        next[dk] = nd
+      }
+      return next
+    })
+    onClose()
+  }
+
   return (
     <div
       className={s.overlay}
@@ -223,11 +249,24 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         {/* Header */}
         <div className={s.header}>
           <span className={s.title}>{isEdit ? 'Bearbeiten' : 'Hinzufügen'}</span>
-          <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">
-            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
+          <div className={s.headerActions}>
+            {isEdit && (
+              <button
+                className={[s.deleteBtn, confirmDelete ? s.deleteBtnConfirm : ''].join(' ')}
+                onClick={confirmDelete ? handleDelete : () => setConfirmDelete(true)}
+                onBlur={() => setConfirmDelete(false)}
+                aria-label="Löschen"
+              >
+                <TrashIcon />
+                {confirmDelete ? 'Wirklich löschen?' : 'Löschen'}
+              </button>
+            )}
+            <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Text + Auto */}

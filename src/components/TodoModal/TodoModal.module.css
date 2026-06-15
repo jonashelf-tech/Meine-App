@@ -74,6 +74,39 @@
 }
 .closeBtn:hover { color: var(--text); }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 7px 10px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.deleteBtn:hover {
+  color: var(--rose);
+  background: color-mix(in srgb, var(--rose) 8%, transparent);
+}
+
+.deleteBtnConfirm {
+  color: var(--rose);
+  background: color-mix(in srgb, var(--rose) 12%, transparent);
+  border-color: color-mix(in srgb, var(--rose) 40%, transparent);
+}
+
 /* ─── Text + Auto row ────────────────────────────────────── */
 .textRow {
   display: flex;
