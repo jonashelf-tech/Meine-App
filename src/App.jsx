@@ -135,6 +135,7 @@ export default function App() {
     <div className={styles.app}>
       <div className={styles.content}>
         {currentTab === 0 && <BackupNudge />}
+        <div key={currentTab} className={styles.tabEnter}>
         <ErrorBoundary key={currentTab}>
         {currentTab === 0  && <TabHeute />}
         {currentTab === 1  && <TabKalender />}
@@ -151,6 +152,7 @@ export default function App() {
           )
         })}
         </ErrorBoundary>
+        </div>
       </div>
 
       {!isToolTab && currentTab !== 3 && (

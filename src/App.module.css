@@ -15,6 +15,9 @@
   background: var(--bg);
 }
 
+/* ─── Tab/Tool-Öffnen-Transition ───────────────────────────── */
+.tabEnter { animation: toolEnter var(--dur-slow) var(--ease-out) both; }
+
 /* ─── Placeholder ───────────────────────────────────────── */
 .placeholder {
   display: flex;
