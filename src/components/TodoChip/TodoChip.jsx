@@ -251,7 +251,7 @@ export default function TodoChip({
             {/* Play — Fokus-Timer starten */}
             {onPlay && !todo.done && (
               <button
-                className={s.toolAct}
+                className={[s.toolAct, s.toolActPlay].join(' ')}
                 onClick={e => { e.stopPropagation(); onPlay() }}
                 aria-label="Fokus-Timer starten"
               >

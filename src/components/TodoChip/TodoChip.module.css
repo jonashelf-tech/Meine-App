@@ -294,6 +294,11 @@
   color: var(--primary);
 }
 
+/* Play (Fokus-Timer) — eigene Hover-Farbe (Timer-Identität) */
+.toolActPlay:hover {
+  color: var(--teal);
+}
+
 .toolActHot {
   color: var(--hot);
 }
