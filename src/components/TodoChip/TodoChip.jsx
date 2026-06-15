@@ -16,6 +16,12 @@ const SubDragIcon = () => (
   </svg>
 )
 
+const ProgressChevronIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="2 3 5 7 8 3"/>
+  </svg>
+)
+
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
@@ -56,7 +62,6 @@ export default function TodoChip({
   const [expanded, setExpanded]   = useState(false)
   const [itemInput, setItemInput] = useState('')
   const [flashing, setFlashing]   = useState(false)
-  const [pulsing,  setPulsing]    = useState(false)
   const [subDragOver, setSubDragOver] = useState(null)
   const itemRef    = useRef(null)
   const itemsWrapRef = useRef(null)
@@ -130,6 +135,15 @@ export default function TodoChip({
     document.addEventListener('pointerup', up)
   }, [allItems, todo, updateTodo])
 
+  // ── Expand/collapse sub-items ────────────────────────────
+  const toggleExpanded = useCallback(() => {
+    setExpanded(p => {
+      const n = !p
+      const extraPx = n ? (28 + allItems.length * 34 + 46) : 0
+      onExpandedChange?.(n, extraPx)
+      return n
+    })
+  }, [allItems.length, onExpandedChange])
 
   const { klaerenSettings } = useAppStore()
   const threshold = klaerenSettings?.threshold ?? 7
@@ -140,10 +154,15 @@ export default function TodoChip({
   const ageLabel  = showAge ? fmtAge(ageDays) : null
   const isOld     = ageDays >= threshold
 
+  const timeLabel = [
+    isTermin(todo) ? todo.time : null,
+    todo.duration  ? `${todo.duration}m` : null,
+  ].filter(Boolean).join(' · ')
+
   const metaParts = [
     todo.category,
-    isTermin(todo)      ? `${fmtDateShort(todo.date)} ${todo.time}` : null,
-    isFaelligkeit(todo) ? fmtDateShort(todo.date)                   : null,
+    isTermin(todo)      ? fmtDateShort(todo.date) : null,
+    isFaelligkeit(todo) ? fmtDateShort(todo.date) : null,
   ].filter(Boolean)
 
   return (
@@ -178,48 +197,35 @@ export default function TodoChip({
       >
         <span className={s.stripe} />
 
-        {/* Expand button — full section is clickable */}
-        {!disableExpand && (
-          <button
-            data-expand-btn
-            className={[s.expandBtnWrap, pulsing ? s.expandBtnWrapPulsing : ''].join(' ').trim()}
-            onClick={e => {
-              e.stopPropagation()
-              setPulsing(true)
-              setTimeout(() => setPulsing(false), 400)
-              setExpanded(p => {
-                const n = !p
-                const extraPx = n ? (28 + allItems.length * 34 + 46) : 0
-                onExpandedChange?.(n, extraPx)
-                return n
-              })
-            }}
-          >
-            <div
-              className={[
-                s.expandBtn,
-                todo.done           ? ''
-                : allItems.length > 0 ? s.expandBtnPartial
-                : ''
-              ].join(' ').trim()}
-            >
-              {todo.done
-                ? '✓'
-                : allItems.length > 0
-                  ? `${doneItems}/${allItems.length}`
-                  : ''}
-            </div>
-          </button>
-        )}
-
         {/* Body — single/double tap */}
         <div className={s.body} onClick={tapHandler}>
-          <span className={s.text}>
-            {todo.text || <span className={s.emptyText}>Kein Text</span>}
-            {todo.duration && todo.duration <= 2 && (
-              <span className={s.quickBadge}>⚡</span>
-            )}
-          </span>
+          <div className={s.titleRow}>
+            <span className={s.text}>
+              {todo.text || <span className={s.emptyText}>Kein Text</span>}
+              {todo.duration && todo.duration <= 2 && (
+                <span className={s.quickBadge}>⚡</span>
+              )}
+            </span>
+            {timeLabel && <span className={s.timeLabel}>{timeLabel}</span>}
+          </div>
+
+          {/* Fortschrittsbalken — nur wenn Subtodos */}
+          {!disableExpand && allItems.length > 0 && (
+            <button
+              className={s.progressRow}
+              onClick={e => { e.stopPropagation(); toggleExpanded() }}
+              aria-label="Unterpunkte anzeigen"
+              aria-expanded={expanded}
+            >
+              <span className={s.progressTrack}>
+                <span className={s.progressFill} style={{ width: `${Math.round((doneItems / allItems.length) * 100)}%` }} />
+              </span>
+              <span className={[s.progressChevron, expanded ? s.progressChevronOpen : ''].join(' ')}>
+                <ProgressChevronIcon />
+              </span>
+            </button>
+          )}
+
           {(metaParts.length > 0 || ageLabel) && (
             <span className={s.meta}>
               <span className={s.metaLeft}>{metaParts.join(' · ')}</span>
@@ -257,8 +263,8 @@ export default function TodoChip({
           </button>
         )}
 
-        {/* Remove */}
-        {onRemove && (
+        {/* Remove — nur fakeTodo-Chips ohne onEdit (Reminder/Birthday) */}
+        {onRemove && !onEdit && (
           <button
             className={s.removeBtn}
             onClick={e => { e.stopPropagation(); onRemove() }}
