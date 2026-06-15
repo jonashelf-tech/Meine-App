@@ -224,28 +224,10 @@ export default function TabHeute() {
     sv(SK.visEnd,   end)
   }
 
-  const handleExpandUp   = useCallback(() => setVisStart(v => {
-    const next = Math.max(0, v - 1); saveVis(next, visEnd); return next
-  }), [visEnd])
-  const handleExpandDown = useCallback(() => setVisEnd(v => {
-    const next = Math.min(23, v + 1); saveVis(visStart, next); return next
-  }), [visStart])
-  const handleRemoveHour = useCallback((h) => {
-    if (h === visStart) setVisStart(v => { const next = Math.min(v + 1, visEnd - 1); saveVis(next, visEnd); return next })
-    else if (h === visEnd) setVisEnd(v => { const next = Math.max(v - 1, visStart + 1); saveVis(visStart, next); return next })
+  const handleBandExpand = useCallback((dir) => {
+    if (dir === 'top')  setVisStart(v => { const n = Math.max(0, v - 3);  saveVis(n, visEnd); return n })
+    else                setVisEnd(v   => { const n = Math.min(23, v + 3); saveVis(visStart, n); return n })
   }, [visStart, visEnd])
-
-  const handleExpandUpTo = useCallback((h) => {
-    const next = Math.floor(h)
-    setVisStart(next)
-    saveVis(next, visEnd)
-  }, [visEnd])
-
-  const handleExpandDownTo = useCallback((h) => {
-    const next = Math.floor(h)
-    setVisEnd(next)
-    saveVis(visStart, next)
-  }, [visStart])
 
   // ─── Shift all slots ±30min ───────────────────────────────
   const handleShiftAll = useCallback((dir) => {
@@ -569,11 +551,7 @@ export default function TabHeute() {
           onToggleSlotDone={handleToggleSlotDone}
           onEditTodo={handleEdit}
           onRemoveSlot={handleRemoveSlot}
-          onExpandUpTo={handleExpandUpTo}
-          onExpandDownTo={handleExpandDownTo}
-          onExpandUp={handleExpandUp}
-          onExpandDown={handleExpandDown}
-          onRemoveHour={handleRemoveHour}
+          onTapExpand={handleBandExpand}
           onShiftAll={handleShiftAll}
           onToggleLock={handleToggleLock}
           onFokusMode={() => setHeuteModus('fokus')}

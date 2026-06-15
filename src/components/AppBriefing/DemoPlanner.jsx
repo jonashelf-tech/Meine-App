@@ -25,11 +25,6 @@ export default function DemoPlanner({ slots = {}, todos = [], visibleStart = 8, 
         onEditTodo={noop}
         onRemoveSlot={noop}
         onShiftAll={noop}
-        onExpandUp={noop}
-        onExpandDown={noop}
-        onExpandUpTo={noop}
-        onExpandDownTo={noop}
-        onRemoveHour={noop}
         onToggleLock={noop}
         onCreateBlocker={noop}
         onFokusMode={noop}
