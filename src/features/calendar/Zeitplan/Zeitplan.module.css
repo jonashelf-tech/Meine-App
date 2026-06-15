@@ -35,38 +35,25 @@
   color: var(--primary);
 }
 
-.viewToggle {
-  display: flex;
-  border: 1px solid var(--border-dim);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
 .viewBtn {
-  padding: 4px 9px;
+  padding: 5px 10px;
   font-family: var(--font);
-  font-size: 0.58rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  background: transparent;
-  border: none;
-  color: var(--text-ghost);
+  letter-spacing: 0.04em;
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 8px;
+  color: var(--primary);
   cursor: pointer;
-  transition: all 0.18s;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
   -webkit-tap-highlight-color: transparent;
 }
 
-.viewBtn + .viewBtn {
-  border-left: 1px solid var(--border-dim);
+.viewBtn:hover {
+  background: rgba(139,92,246,0.18);
+  border-color: rgba(139,92,246,0.45);
 }
-
-.viewBtnActive {
-  color: var(--primary);
-  background: rgba(139,92,246,0.1);
-}
-
-
 
 /* ── Flat grid (v2.7-style) ───────────────────────────── */
 .slotsContainer {
@@ -80,8 +67,8 @@
 
 .sgGrid {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  grid-auto-rows: 48px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  grid-auto-rows: minmax(33px, auto);
   overflow: visible;
 }
 
@@ -90,9 +77,9 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 5px;
+  padding-top: 4px;
   font-family: var(--font);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: var(--text-dim);
   border-right: 1px solid var(--border);
@@ -102,21 +89,25 @@
 
 .sgLabelNow {
   color: var(--primary);
-  font-size: 0.67rem;
+  font-size: 0.64rem;
   font-weight: 800;
 }
 
 .sgHalf {
   grid-column: 2;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px dashed var(--border-dim);
   position: relative;
   overflow: visible;
   transition: background 0.12s;
   padding: 2px;
 }
 
+.sgHalf:not(.sgEmpty) {
+  min-height: 44px;
+}
+
 .sgHalfBot {
-  border-bottom: 1px dashed var(--border-dim);
+  border-bottom: 1px solid var(--border);
 }
 
 .sgGrid > :last-child,
@@ -127,7 +118,6 @@
 .sgEmpty {
   display: flex;
   align-items: center;
-  padding-left: 6px;
   cursor: default;
   height: 100%;
 }
@@ -169,18 +159,6 @@
 
 .sgConsumed {
   display: none;
-}
-
-.halfTime {
-  font-size: 0.65rem;
-  color: var(--text-ghost);
-  font-family: var(--font);
-  transition: color 0.12s;
-  user-select: none;
-}
-
-.sgEmpty:hover .halfTime {
-  color: var(--text-ghost);
 }
 
 /* Drop hint */
@@ -296,109 +274,70 @@
   color: var(--text);
 }
 
-/* ── Pill Strip ───────────────────────────────────────────── */
-.pillStrip {
-  display: flex;
-  align-items: stretch;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid var(--border-dim);
-  background: var(--surface-low);
-  margin-bottom: 8px;
-}
-
-.pillBtn {
-  flex-shrink: 0;
-  width: 38px;
-  background: transparent;
-  border: none;
-  color: var(--text-ghost);
-  font-size: 20px;
-  font-family: var(--font);
-  cursor: pointer;
+/* ── frei-Band ────────────────────────────────────────────── */
+.freeBand {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: color 0.15s, background 0.15s;
+  justify-content: space-between;
+  padding: 7px 10px;
+  margin: 6px;
+  border: 1px dashed var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
   -webkit-tap-highlight-color: transparent;
 }
 
-.pillBtn:hover {
-  background: var(--surface);
+.freeBand:hover {
+  background: var(--surface-low);
 }
 
-.pillBtnMinus {
-  border-right: 1px solid var(--border-dim);
+.freeBandLabel {
+  user-select: none;
 }
 
-.pillBtnPlus {
-  border-left: 1px solid var(--border-dim);
+.freeBandPlus {
+  display: flex;
   color: var(--primary);
 }
 
-.pillBtnPlus:hover {
-  background: rgba(139, 92, 246, 0.1);
-  color: #a78bfa;
-}
-
-.pillChips {
-  flex: 1;
-  padding: 6px 8px;
+/* ── All-day-Streifen (Geburtstage) ─────────────────────────── */
+.alldayStrip {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-height: 34px;
-  justify-content: center;
+  padding: 6px;
 }
 
-/* ── Slot-Chip in der Strip ──────────────────────────────── */
-.pillChip {
+.alldayEntry {
   display: flex;
-  align-items: stretch;
-  background: var(--surface-low);
-  border: 1px solid var(--border-dim);
-  border-radius: var(--r);
-  overflow: hidden;
-  cursor: pointer;
-  transition: background 0.14s, border-color 0.14s;
-  -webkit-tap-highlight-color: transparent;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 9px;
+  border-left: 2px solid var(--primary);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: rgba(139,92,246,0.06);
+  cursor: default;
 }
 
-.pillChip:hover {
-  background: var(--surface);
-  border-color: var(--border);
-}
-
-.pillChipStripe {
-  width: 3px;
-  min-width: 3px;
-  flex-shrink: 0;
-}
-
-.pillChipBody {
-  flex: 1;
-  padding: 7px 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.pillChipText {
+.alldayName {
   font-family: var(--font);
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.pillChipMeta {
+.alldayMeta {
+  flex-shrink: 0;
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text-faint);
-  margin-top: 2px;
 }

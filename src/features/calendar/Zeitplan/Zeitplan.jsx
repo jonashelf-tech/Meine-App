@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { sv, lv, SK } from '../../../storage'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
+import { computeBands } from './bandLogic'
 import s from './Zeitplan.module.css'
 import SlotBlock from './SlotBlock'
 import BlockerCard from '../Blocker/BlockerCard'
@@ -27,57 +27,23 @@ function RemoveDialog({ slotText, onBack, onDelete, onClose }) {
   )
 }
 
-// ─── SlotChipPreview ──────────────────────────────────────
-function SlotChipPreview({ slotKey, slot, onTap }) {
-  const h    = parseFloat(slotKey)
-  const hour = String(Math.floor(h)).padStart(2, '0')
-  const min  = h % 1 === 0 ? '00' : '30'
-  const meta = `${hour}:${min}${slot.duration ? ` · ${slot.duration}min` : ''}`
+// ─── FreeBand — "frei"-Band statt PillStrip-Pillen ─────────
+function FreeBand({ band, dir, onTapExpand, registerHalf }) {
+  const label = dir === 'top'
+    ? `bis ${String(band.to).padStart(2, '0')}:00 · frei`
+    : `ab ${String(band.from).padStart(2, '0')}:00 · frei`
+  // Drop-Ziel: erste Stunde des angrenzenden Randes
+  const dropKey = dir === 'top' ? String(band.to - 1) : String(band.from)
   return (
-    <div className={s.pillChip} onClick={() => onTap(h)}>
-      <div className={s.pillChipStripe} style={{ background: slot.color || '#8B5CF6' }} />
-      <div className={s.pillChipBody}>
-        <span className={s.pillChipText}>{slot.text || '—'}</span>
-        <span className={s.pillChipMeta}>{meta}</span>
-      </div>
-    </div>
-  )
-}
-
-// ─── PillStrip ────────────────────────────────────────────
-function PillStrip({ slots, visibleStart, visibleEnd, isTop, onExpand, onShrink, onExpandTo, birthdayPills = [] }) {
-  const outSlots = Object.entries(slots)
-    .filter(([k, v]) => {
-      if (!v) return false
-      const h = Math.floor(parseFloat(k))
-      return isTop ? h < visibleStart : h > visibleEnd
-    })
-    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
-
-  const showBirthdays = isTop && birthdayPills.length > 0
-
-  return (
-    <div className={s.pillStrip}>
-      <button className={[s.pillBtn, s.pillBtnMinus].join(' ')} onClick={onShrink}>−</button>
-      <div className={s.pillChips}>
-        {showBirthdays && birthdayPills.map(b => (
-          <div
-            key={b.id}
-            className={s.pillChip}
-            style={{ borderLeft: `3px solid ${b._color || 'var(--primary)'}`, cursor: 'default', opacity: 0.85 }}
-            title={`${b.name} hat heute Geburtstag`}
-          >
-            <div className={s.pillChipBody}>
-              <span className={s.pillChipText}>{b.name}</span>
-              <span className={s.pillChipMeta}>Geburtstag</span>
-            </div>
-          </div>
-        ))}
-        {outSlots.map(([k, slot]) => (
-          <SlotChipPreview key={k} slotKey={k} slot={slot} onTap={onExpandTo} />
-        ))}
-      </div>
-      <button className={[s.pillBtn, s.pillBtnPlus].join(' ')} onClick={onExpand}>+</button>
+    <div
+      className={s.freeBand}
+      ref={el => registerHalf?.(dropKey, el, 'empty')}
+      onClick={() => onTapExpand?.(dir)}
+    >
+      <span className={s.freeBandLabel}>{label}</span>
+      <span className={s.freeBandPlus}>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
     </div>
   )
 }
@@ -95,11 +61,7 @@ export default function Zeitplan({
   onEditTodo,
   onRemoveSlot,
   onShiftAll,
-  onExpandUp,
-  onExpandDown,
-  onExpandUpTo,
-  onExpandDownTo,
-  onRemoveHour,
+  onTapExpand,
   onToggleLock,
   registerHalf,
   startSlotDrag,
@@ -113,9 +75,6 @@ export default function Zeitplan({
   birthdayPills = [],
   birthdayPillsDate = null,
 }) {
-  // Alles/Minimal: Default Alles, letzter Stand bleibt gespeichert
-  const [hideEmpty, setHideEmptyS]      = useState(() => lv(SK.zeitplanMinimal, false))
-  const setHideEmpty = (v) => { setHideEmptyS(v); sv(SK.zeitplanMinimal, v) }
   const [removeDialog, setRemoveDialog] = useState(null)
 
   const openRemove  = useCallback((slotKey, slotText) => setRemoveDialog({ slotKey, slotText }), [])
@@ -132,16 +91,13 @@ export default function Zeitplan({
   }, [isNow])
   const now = new Date(nowTick)
 
-  const fullHours  = Array.from({ length: 24 }, (_, i) => i)
-  const rangeHours = Array.from({ length: visibleEnd - visibleStart + 1 }, (_, i) => i + visibleStart)
-
   // blockersForDate muss vor hours berechnet werden
   const blockersForDate = useMemo(
     () => getBlockersForDate(blockers, dateLabel),
     [blockers, dateLabel]
   )
 
-  // Birthday-Pills für PillStrip: kalender:true + kein wichtig am Datumstag
+  // Birthday-Streifen: kalender:true + kein wichtig am Datumstag
   const activeBirthdayPills = useMemo(() => {
     if (!birthdayPillsDate) return []
     return getBirthdaysForCalendarDate(birthdayPills, birthdayPillsDate)
@@ -149,11 +105,10 @@ export default function Zeitplan({
       .map(b => ({ ...b, _color: 'var(--primary)' }))
   }, [birthdayPills, birthdayPillsDate])
 
-  const hours = hideEmpty
-    ? fullHours.filter(h =>
-        slots[sk(h, false)] || slots[sk(h, true)] || !!getBlockerForHour(h, blockersForDate)
-      )
-    : rangeHours
+  const { hours, topBand, bottomBand } = useMemo(
+    () => computeBands({ slots, visStart: visibleStart, visEnd: visibleEnd }),
+    [slots, visibleStart, visibleEnd]
+  )
 
   const consumedKeys = new Set()
   for (const key of ALL_SLOT_KEYS) {
@@ -250,9 +205,7 @@ export default function Zeitplan({
               style={{ gridRow: String(rowBase) }}
               ref={el => registerHalf?.(topKey, el, 'empty')}
               onClick={onEmptyTap ? () => onEmptyTap(topKey) : undefined}
-            >
-              <span className={s.halfTime}>:00</span>
-            </div>,
+            />,
 
       botConsumed
         ? <div key={`bot-${h}`} className={s.sgConsumed} />
@@ -290,9 +243,7 @@ export default function Zeitplan({
               style={{ gridRow: String(rowBase + 1) }}
               ref={el => registerHalf?.(botKey, el, 'empty')}
               onClick={onEmptyTap ? () => onEmptyTap(botKey) : undefined}
-            >
-              <span className={s.halfTime}>:30</span>
-            </div>,
+            />,
     ].filter(Boolean)
   })
 
@@ -303,7 +254,6 @@ export default function Zeitplan({
       <div className={s.controls}>
         <button
           className={s.shiftBtn}
-          style={hideEmpty ? { visibility: 'hidden' } : undefined}
           onClick={() => onShiftAll?.(-1)}
           aria-label="Alle Slots 30 Minuten früher"
           title="Alle Slots 30 Minuten früher"
@@ -312,7 +262,6 @@ export default function Zeitplan({
         </button>
         <button
           className={s.shiftBtn}
-          style={hideEmpty ? { visibility: 'hidden' } : undefined}
           onClick={() => onShiftAll?.(1)}
           aria-label="Alle Slots 30 Minuten später"
           title="Alle Slots 30 Minuten später"
@@ -323,31 +272,26 @@ export default function Zeitplan({
         {onCreateBlocker && (
           <button className={s.blockerBtn} onClick={onCreateBlocker}>+ Fenster</button>
         )}
-        <div className={s.viewToggle}>
-          <button className={[s.viewBtn, !hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(false)}>Alles</button>
-          <button className={[s.viewBtn,  hideEmpty ? s.viewBtnActive : ''].join(' ')} onClick={() => setHideEmpty(true)}>Minimal</button>
-          {onFokusMode && (
-            <button className={s.viewBtn} onClick={() => onFokusMode()}>Fokus</button>
-          )}
-        </div>
+        {onFokusMode && (
+          <button className={s.viewBtn} onClick={() => onFokusMode()}>Fokus</button>
+        )}
       </div>
 
-      {/* Top pill strip — nur in Alles-Modus */}
-      {!hideEmpty && (
-        <PillStrip
-          slots={slots}
-          visibleStart={visibleStart}
-          visibleEnd={visibleEnd}
-          isTop={true}
-          onExpand={() => onExpandUp?.()}
-          onShrink={() => onRemoveHour?.(visibleStart)}
-          onExpandTo={(h) => onExpandUpTo?.(h)}
-          birthdayPills={activeBirthdayPills}
-        />
-      )}
-
-      {/* Sections: normal grids + blocker cards */}
+      {/* Sections: all-day-Streifen + normale Grids + Blocker-Cards */}
       <div className={s.slotsContainer}>
+        {activeBirthdayPills.length > 0 && (
+          <div className={s.alldayStrip}>
+            {activeBirthdayPills.map(b => (
+              <div key={b.id} className={s.alldayEntry} title={`${b.name} hat heute Geburtstag`}>
+                <span className={s.alldayName}>{b.name}</span>
+                <span className={s.alldayMeta}>Geburtstag</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {topBand && (
+          <FreeBand band={topBand} dir="top" onTapExpand={onTapExpand} registerHalf={registerHalf} />
+        )}
         {sections.map((sec, si) =>
           sec.type === 'normal'
             ? (
@@ -391,20 +335,10 @@ export default function Zeitplan({
               />
             )
         )}
+        {bottomBand && (
+          <FreeBand band={bottomBand} dir="bottom" onTapExpand={onTapExpand} registerHalf={registerHalf} />
+        )}
       </div>
-
-      {/* Bottom pill strip — nur in Alles-Modus */}
-      {!hideEmpty && (
-        <PillStrip
-          slots={slots}
-          visibleStart={visibleStart}
-          visibleEnd={visibleEnd}
-          isTop={false}
-          onExpand={() => onExpandDown?.()}
-          onShrink={() => onRemoveHour?.(visibleEnd)}
-          onExpandTo={(h) => onExpandDownTo?.(h)}
-        />
-      )}
 
       {/* Remove dialog */}
       {removeDialog && (
