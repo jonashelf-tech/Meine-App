@@ -208,7 +208,6 @@ SK.poolSort       → 'adhs_view_pool_sort'        // 'standard'|'kategorie'|'al
 SK.autoParse      → 'adhs_view_auto_parse'       // Auto-Parser-Toggle im TodoModal (bool)
 SK.calView        → 'adhs_view_cal_view'         // 'woche'|'monat'
 SK.heuteModus     → 'adhs_view_heute_modus'      // 'voll'|'fokus' — Default 'voll', letzter Stand bleibt
-SK.zeitplanMinimal→ 'adhs_view_zeitplan_minimal' // Alles/Minimal-Toggle — Default Alles, letzter Stand bleibt
 SK.weekVisStart   → 'adhs_view_week_vis_start'   // Wochenansicht sichtbarer Start
 SK.weekVisEnd     → 'adhs_view_week_vis_end'     // Wochenansicht sichtbares Ende
 

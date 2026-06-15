@@ -80,7 +80,6 @@ export const SK = {
   autoParse:      `${PREFIX}view_auto_parse`,
   calView:        `${PREFIX}view_cal_view`,
   heuteModus:     `${PREFIX}view_heute_modus`,
-  zeitplanMinimal:`${PREFIX}view_zeitplan_minimal`,
   weekVisStart:   `${PREFIX}view_week_vis_start`,
   weekVisEnd:     `${PREFIX}view_week_vis_end`,
   blockers:        `${PREFIX}blockers`,
@@ -124,7 +123,7 @@ export const BACKUP_CATS = {
     SK.todos, SK.routines, SK.todoOrder, SK.cats, SK.projects,
     SK.days, SK.doneCounters, SK.templates, SK.blockers,
     SK.lastPoolReturn, SK.poolSort, SK.autoParse, SK.visStart, SK.visEnd,
-    SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus, SK.zeitplanMinimal,
+    SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus,
   ],
   tools: [
     SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv,
