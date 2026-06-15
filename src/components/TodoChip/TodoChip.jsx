@@ -22,6 +22,13 @@ const ProgressChevronIcon = () => (
   </svg>
 )
 
+const ProkrastinationIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+  </svg>
+)
+
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
@@ -238,29 +245,34 @@ export default function TodoChip({
           )}
         </div>
 
-        {/* Klaeren Circle Badge */}
-        {onKlaeren && !todo.done && ageDays >= threshold && (
-          <button
-            className={s.klaerenCircle}
-            onClick={e => { e.stopPropagation(); onKlaeren(todo) }}
-            aria-label="Prokrastination"
-          >
-            <span className={s.klaerenCircleNum}>{ageDays}</span>
-            <span className={s.klaerenCircleUnit}>Tage</span>
-          </button>
-        )}
+        {/* Kontextuelle Tool-Aktionen */}
+        {((onPlay && !todo.done) || (onKlaeren && !todo.done)) && (
+          <span className={s.actions}>
+            {/* Play — Fokus-Timer starten */}
+            {onPlay && !todo.done && (
+              <button
+                className={s.toolAct}
+                onClick={e => { e.stopPropagation(); onPlay() }}
+                aria-label="Fokus-Timer starten"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="6 3 21 12 6 21" />
+                </svg>
+              </button>
+            )}
 
-        {/* Play — Fokus-Timer starten */}
-        {onPlay && !todo.done && (
-          <button
-            className={s.playBtn}
-            onClick={e => { e.stopPropagation(); onPlay() }}
-            aria-label="Fokus-Timer starten"
-          >
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="6 3 21 12 6 21" />
-            </svg>
-          </button>
+            {/* Prokrastination — anwählbar solange Tool aktiv, Alter = Highlight */}
+            {onKlaeren && !todo.done && (
+              <button
+                className={[s.toolAct, isOld ? s.toolActHot : ''].join(' ')}
+                style={isOld ? { '--hot': ageColor } : undefined}
+                onClick={e => { e.stopPropagation(); onKlaeren(todo) }}
+                aria-label="Prokrastination"
+              >
+                <ProkrastinationIcon />
+              </button>
+            )}
+          </span>
         )}
 
         {/* Remove — nur fakeTodo-Chips ohne onEdit (Reminder/Birthday) */}

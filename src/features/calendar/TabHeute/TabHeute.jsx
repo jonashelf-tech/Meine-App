@@ -602,7 +602,7 @@ export default function TabHeute() {
           onRemove={handleRemove}
           startDrag={startPoolDrag}
           onDoneCalendar={handleDoneCalendar}
-          onKlaeren={(todo) => setKlaerenTodo(todo)}
+          onKlaeren={activeTools.includes('klaeren') ? (todo) => setKlaerenTodo(todo) : undefined}
           registerHalf={registerHalf}
         />
         {(() => {
