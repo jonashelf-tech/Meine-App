@@ -12,7 +12,7 @@ src/
     PrioBadge/        PrioBadge.jsx
     RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
     Toast/            Toast.jsx
-    TodoChip/         TodoChip.jsx + .module.css  — Stripe wird ausgeblendet wenn `glowColor` prop gesetzt (toolId aktiv)
+    TodoChip/         TodoChip.jsx + .module.css  — Farbe = Streifen links (3px) + Border in Chip-Farbe (gedimmt), kein Glow-Modus
     TodoModal/        TodoModal.jsx + .module.css
     ToolHeader/       ToolHeader.jsx          — Standard-Header für alle Tools
     ToolSection/      ToolSection.jsx
@@ -39,6 +39,7 @@ src/
         MissedReviewModal.jsx   — Modal für TimeEvents (abgelaufene/verpasste Slots)
         SlotBlock.jsx           — Einzelner Slot im Zeitplan (inkl. Play→Fokus-Timer via onPlay)
         SlotSheet.jsx           — Bottom-Sheet beim Tap auf leeren Slot: + Neu / Pool-Todo platzieren
+        bandLogic.js            — rein+getestet: computeBands() — Sichtfenster + "frei"-Bänder außerhalb
         Zeitplan.jsx + .module.css
 
     settings/         TabSettings/TabSettings.jsx
