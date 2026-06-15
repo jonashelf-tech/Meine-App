@@ -47,6 +47,19 @@
   --glow-primary: 0 0 18px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.08);
   --glow-teal:    0 0 18px rgba(20, 184, 166, 0.2),  0 0 40px rgba(20, 184, 166, 0.08);
   --glow-emerald: 0 0 18px rgba(16, 185, 129, 0.2),  0 0 40px rgba(16, 185, 129, 0.08);
+
+  /* ─── Motion ─────────────────────────────────────────── */
+  --dur-fast: 160ms;   /* Mikro: Tap-Feedback, Hover, Toggle */
+  --dur:      240ms;   /* Standard: Aufklappen, Ein-/Ausblenden */
+  --dur-slow: 320ms;   /* Groß: Tool-/Tab-Öffnen, Sheets */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* Erscheinen */
+  --ease-in:  cubic-bezier(0.55, 0, 1, 0.45);    /* Verschwinden */
+  --ease:     cubic-bezier(0.40, 0, 0.20, 1);    /* beidseitig / Bewegung */
+
+  /* ─── Elevation (dezente Tiefe) ──────────────────────── */
+  --edge-hi:   inset 0 1px 0 rgba(255,255,255,0.08);
+  --elev-1:    var(--shadow-sm), var(--edge-hi);
+  --elev-drag: 0 12px 30px rgba(139,92,246,0.30), var(--edge-hi);
 }
 
 /* ─── Reset ────────────────────────────────────────────── */
@@ -90,6 +103,11 @@ body::before {
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toolEnter {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
 }
 
 @keyframes pulse {
