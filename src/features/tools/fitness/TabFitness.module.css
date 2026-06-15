@@ -1,8 +1,75 @@
 .page { padding: 0 0 24px; }
-.tabs { display: flex; gap: 4px; overflow-x: auto; padding: 4px 12px 8px; scrollbar-width: none; }
-.tabs::-webkit-scrollbar { display: none; }
-.tab { flex: 0 0 auto; padding: 7px 12px; border-radius: var(--r-sm); border: 1px solid var(--border);
-  background: var(--surface); color: var(--text-dim); font-size: 0.8rem; font-family: var(--font);
-  cursor: pointer; white-space: nowrap; transition: all .15s; }
-.tabActive { color: var(--tool-color, var(--primary)); border-color: var(--tool-color, var(--primary));
-  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent); }
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 10px;
+}
+
+.tab {
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .15s, background .15s, color .15s;
+}
+.tab:hover { border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 40%, var(--border)); }
+
+.tabActive {
+  color: var(--tool-color, var(--primary));
+  border-color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent);
+}
+
+/* „Mehr" rechts abgesetzt → trennt Sekundär- von Primär-Tabs */
+.moreWrap { position: relative; margin-left: auto; }
+
+.moreBtn { display: inline-flex; align-items: center; gap: 6px; }
+.chev { transition: transform .15s; }
+.chevOpen { transform: rotate(180deg); }
+
+.backdrop { position: fixed; inset: 0; z-index: 40; }
+
+.moreMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.moreItem {
+  text-align: left;
+  padding: 11px 12px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.moreItem:hover { background: var(--bg3); }
+
+.moreItemActive {
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent);
+}
