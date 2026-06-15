@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AMBITION_RANGES, REP_PREF, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
+import { REP_PREF, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
 import { recommendedSplit } from './planGenerator'
 import SplitPicker from './SplitPicker'
 import RhythmPicker from './RhythmPicker'
@@ -14,10 +14,10 @@ const BackIcon = () => (
 const TRAINING_DAYS_OPTIONS = [2, 3, 4, 5, 6]
 
 const AMBITION_OPTIONS = [
-  { value: 'wenig', label: 'Wenig Zeit', hint: `Wenig Zeit (${AMBITION_RANGES.wenig[0]}–${AMBITION_RANGES.wenig[1]})` },
-  { value: 'normal', label: 'Normal', hint: `Normal (${AMBITION_RANGES.normal[0]}–${AMBITION_RANGES.normal[1]})` },
-  { value: 'ambitioniert', label: 'Ambitioniert', hint: `Ambitioniert (${AMBITION_RANGES.ambitioniert[0]}–${AMBITION_RANGES.ambitioniert[1]})` },
-  { value: 'vollgas', label: 'Vollgas', hint: `Vollgas (${AMBITION_RANGES.vollgas[0]}–${AMBITION_RANGES.vollgas[1]})` },
+  { value: 'wenig', label: 'Wenig Zeit', hint: 'Grundvolumen — Minimum pro Muskel' },
+  { value: 'normal', label: 'Normal', hint: 'Solides Optimum' },
+  { value: 'ambitioniert', label: 'Ambitioniert', hint: 'Oberes Optimum' },
+  { value: 'vollgas', label: 'Vollgas', hint: 'Maximum (MRV)' },
 ]
 
 const REP_PREF_OPTIONS = [
@@ -71,13 +71,13 @@ export default function Onboarding({ onDone, onCancel }) {
   }
 
   const canNext = [
-    trainingDays != null,
-    splitId != null,
-    ambition != null,
-    repPref != null,
-    true,
-    true,
-    true,
+    trainingDays != null, // 0 Tage
+    splitId != null,      // 1 Split
+    ambition != null,     // 2 Ambition
+    true,                 // 3 Priorität (optional)
+    repPref != null,      // 4 Wdh-Präferenz
+    true,                 // 5 Rhythmus
+    true,                 // 6 Schmerzen
   ][step]
 
   const handleBack = () => {
@@ -142,14 +142,14 @@ export default function Onboarding({ onDone, onCancel }) {
                 onClick={() => setAmbition(o.value)}
               >
                 <span className={s.optionCardTitle}>{o.label}</span>
-                <span className={s.optionCardSub}>{o.hint} Sätze/Woche</span>
+                <span className={s.optionCardSub}>{o.hint}</span>
               </button>
             ))}
           </div>
         </>
       )}
 
-      {step === 3 && (
+      {step === 4 && (
         <>
           <div className={s.question}>Wie schwer trainierst du am liebsten?</div>
           <div className={s.options}>
@@ -166,7 +166,7 @@ export default function Onboarding({ onDone, onCancel }) {
         </>
       )}
 
-      {step === 4 && (
+      {step === 5 && (
         <>
           <div className={s.question}>Trainings-Rhythmus?</div>
           <div className={s.hint}>Optional — nur ein Hinweis im Heute-Tab (z. B. „heute Pause"), blockt nie. „Aus" = kein fester Rhythmus.</div>
@@ -174,7 +174,7 @@ export default function Onboarding({ onDone, onCancel }) {
         </>
       )}
 
-      {step === 5 && (
+      {step === 6 && (
         <>
           <div className={s.question}>Schmerzen / Einschränkungen?</div>
           <div className={s.hint}>Optional — wähle alles aus, was aktuell Probleme macht. Nichts ausgewählt = keine Einschränkungen.</div>
@@ -192,7 +192,7 @@ export default function Onboarding({ onDone, onCancel }) {
         </>
       )}
 
-      {step === 6 && (
+      {step === 3 && (
         <>
           <div className={s.question}>Prioritäten (optional)</div>
           <div className={s.hint}>Standardmäßig „normal" — passe nur an, wenn du Muskelgruppen besonders betonen oder reduzieren willst.</div>

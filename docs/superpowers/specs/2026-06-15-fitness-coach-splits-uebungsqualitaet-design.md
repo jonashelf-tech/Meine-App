@@ -291,3 +291,24 @@ Isolation 1–3).
   in der Review final bestätigen.
 - Rating-Werte sind Konsens-Schätzungen, im Übungen-Tab jederzeit nachjustierbar.
 - `pattern`-Taxonomie muss alle Seed-Übungen abdecken (Guard sichert das ab).
+
+---
+
+# Nachtrag (2026-06-15) — Volumen-Modell überarbeitet
+
+Nach erstem Praxis-Check (zu viele Übungen/Tag) wurde die Generator-Volumenlogik geschärft —
+zurück zur Vorgabe aus dem ursprünglichen Fitness-Prompt:
+
+- **Reales Volumen statt Primärmuskel-Zählung:** Jede platzierte Übung wird anteilig auf
+  *alle* getroffenen Muskeln gutgeschrieben (`allocation`). Iso-Übungen füllen nur noch die
+  Restlücke bis zum Ziel → Trizeps/Bizeps/Delts sind durch Compounds oft schon gedeckt,
+  deutlich weniger Übungen (statt fixem „≥6 Sätze → 2. Übung": `MIN_ADD`/`SPLIT_MIN` auf
+  realen Restsätzen).
+- **Ambition relativ zum Muskel-Band:** `AMBITION_LEVELS` wählt eine Stufe in
+  `[MEV, Optimal-Mitte, oberes Optimal, MRV]` pro Muskel (statt absoluter Zahlen, die hart
+  geclamped wurden). Priorität verschiebt die Stufe (hoch = +1, niedrig = MEV).
+- **Priorität bestimmt Übungsreihenfolge:** Hoch-Prio-Muskeln zuerst im Tag, Grundübung
+  vor Isolation.
+- **Onboarding-Reihenfolge:** Ambition → Priorität direkt hintereinander.
+- **Komplement-Slot braucht Primär-Treffer:** Fallback auf Sekundärmuskel nur für die
+  Anker-Übung (verhindert schwere Compounds als Lückenfüller für Nebenmuskeln).

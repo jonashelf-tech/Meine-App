@@ -1,4 +1,4 @@
-import { VOLUME_REF, AMBITION_RANGES, REP_PREF, ZIEL_RIR, DEFAULT_INCREMENTS, createPlan, createPlanDay } from '../fitnessModel'
+import { VOLUME_REF, AMBITION_LEVELS, REP_PREF, ZIEL_RIR, DEFAULT_INCREMENTS, createPlan, createPlanDay } from '../fitnessModel'
 import { e1rmSeries, roundToIncrement } from '../fitnessLogic'
 
 const OBER  = ['brust','ruecken','schulterVorne','schulterSeitlich','schulterHinten','bizeps','trizeps']
@@ -19,9 +19,11 @@ const SCHULTER_ARME_A = ['schulterVorne','schulterSeitlich','bizeps','trizeps']
 
 const day = (name, muscles) => ({ name, muscles })
 
-// Übungsauswahl & Satz-Verteilung
-const SPLIT_THRESHOLD = 6   // ab so vielen Sätzen/Muskel/Tag → zweite, komplementäre Übung
+// Übungsauswahl & Satz-Verteilung (in REALEN Sätzen, inkl. indirektem Volumen)
+const MIN_ADD = 2           // Muskel braucht ≥ so viele reale Restsätze für (noch) eine Übung
+const SPLIT_MIN = 3         // zweite Übung nur, wenn danach noch ≥ so viel real fehlt
 const MAX_EX_PER_MUSCLE = 2
+const PRIO_RANK = { high: 0, normal: 1, low: 2 }
 
 // Split-Katalog: pro Größe mehrere Varianten, genau eine `recommended`.
 export const SPLIT_CATALOG = {
@@ -80,17 +82,19 @@ export function splitTemplates(trainingDays, splitId) {
   return variant.days
 }
 
-// Ziel-Wochensätze pro Muskel: Ambition, moduliert durch Priorität, geclamped MEV..MAV-hi, Deckel MRV.
+// Band-Stufen je Muskel relativ zu seiner eigenen Referenz: [MEV, Optimal-Mitte, oberes Optimal, MRV].
+const muscleLevels = (ref) => [ref.mev, Math.round((ref.mav[0] + ref.mav[1]) / 2), ref.mav[1], ref.mrv]
+
+// Ziel-Wochensätze (reale Sätze) pro Muskel: Ambition wählt die Band-Stufe, Priorität verschiebt
+// um eine Stufe (hoch = höher, niedrig = MEV). So skaliert das Ziel pro Muskel statt fix zu clampen.
 export function targetSetsPerMuscle(coach) {
   const out = {}
-  const [alo, ahi] = AMBITION_RANGES[coach.ambition] ?? AMBITION_RANGES.normal
+  const base = AMBITION_LEVELS[coach.ambition] ?? AMBITION_LEVELS.normal
   for (const [m, ref] of Object.entries(VOLUME_REF)) {
     const prio = coach.priorities?.[m] ?? 'normal'
-    let t = prio === 'high' ? ahi : prio === 'low' ? alo : Math.round((alo + ahi) / 2)
-    t = Math.max(ref.mev, Math.min(t, ref.mav[1]))
-    if (prio === 'low') t = ref.mev
-    t = Math.min(t, ref.mrv)
-    out[m] = t
+    if (prio === 'low') { out[m] = ref.mev; continue }
+    const idx = Math.max(0, Math.min(3, base + (prio === 'high' ? 1 : 0)))
+    out[m] = muscleLevels(ref)[idx]
   }
   return out
 }
@@ -118,6 +122,21 @@ export function painExcluded(exercise, pains = []) {
 const primaryMuscle = (alloc) => Object.entries(alloc || {}).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
 const quality = (e) => (e.dehnung ?? 3) + (e.stabilitaet ?? 3)
 
+// Arbeitssätze für `ex`, sodass es ~remainingReal reale Sätze zu m beiträgt (gedeckelt nach Kategorie).
+const setsFor = (ex, remainingReal, m) => {
+  const frac = (ex.allocation?.[m] || 0) / 100
+  const min = ex.kategorie === 'grund' ? 3 : 2
+  const max = ex.kategorie === 'grund' ? 5 : 4
+  if (frac <= 0) return min
+  return Math.max(min, Math.min(Math.round(remainingReal / frac), max))
+}
+// Jeden Arbeitssatz anteilig allen getroffenen Muskeln gutschreiben (reales Volumen).
+const creditVolume = (realByMuscle, ex, sets) => {
+  for (const [mm, pct] of Object.entries(ex.allocation || {})) {
+    realByMuscle[mm] = (realByMuscle[mm] || 0) + sets * (pct / 100)
+  }
+}
+
 // Startgewicht aus Historie (e1RM invertiert auf Ziel-Wdh), sonst null (Kalibrierung).
 export function suggestStartWeight(exercise, zielWdh, sessions) {
   const series = e1rmSeries(sessions, exercise.id)
@@ -133,7 +152,9 @@ export function suggestStartWeight(exercise, zielWdh, sessions) {
 function pickExercise(m, exercises, used, usedPatterns, pains, anchor) {
   const allowed = e => !used.has(e.id) && !painExcluded(e, pains) && (!e.pattern || !usedPatterns.has(e.pattern))
   let cands = exercises.filter(e => allowed(e) && primaryMuscle(e.allocation) === m)
-  if (!cands.length) cands = exercises.filter(e => allowed(e) && (e.allocation?.[m] || 0) > 0)
+  // Fallback (Muskel nur Sekundär) nur für die Anker-Übung — Komplement-Slots brauchen einen Primär-Treffer,
+  // sonst landen schwere Compounds als Lückenfüller für Nebenmuskeln (z. B. 5× Schulterpresse für Seitdelts).
+  if (!cands.length && anchor) cands = exercises.filter(e => allowed(e) && (e.allocation?.[m] || 0) > 0)
   if (!cands.length) return null
   cands.sort((a, b) => {
     if (anchor) {
@@ -156,30 +177,37 @@ export function generateCoachPlan(coach, exercises, sessions = []) {
   const targets = targetSetsPerMuscle(coach)
   const freq = {}
   templates.forEach(t => t.muscles.forEach(m => { freq[m] = (freq[m] || 0) + 1 }))
+  const prioRank = m => PRIO_RANK[coach.priorities?.[m] ?? 'normal']
 
   const days = templates.map(t => {
     const used = new Set()
     const usedPatterns = new Set()
+    const realByMuscle = {} // reale Sätze inkl. indirektem Volumen (Compounds decken Sekundärmuskeln mit ab)
     const exForDay = []
-    t.muscles.forEach(m => {
-      if (!targets[m]) return // nur Muskeln mit Volumen-Ziel bekommen eigene Übung
-      const per = Math.max(1, Math.round(targets[m] / (freq[m] || 1)))
-      const slots = per >= SPLIT_THRESHOLD ? MAX_EX_PER_MUSCLE : 1
-      let remaining = per
-      for (let i = 0; i < slots; i++) {
-        const ex = pickExercise(m, exercises, used, usedPatterns, coach.pains, i === 0)
+    // Hoch-Prio-Muskeln zuerst: kriegen frische Übungsslots, ihre Compounds zahlen aufs übrige Volumen ein.
+    const muscles = t.muscles.filter(m => targets[m]).sort((a, b) => prioRank(a) - prioRank(b))
+    muscles.forEach(m => {
+      const perDay = targets[m] / (freq[m] || 1) // reales Ziel für diesen Muskel an diesem Tag
+      for (let slot = 0; slot < MAX_EX_PER_MUSCLE; slot++) {
+        const remaining = perDay - (realByMuscle[m] || 0)
+        if (remaining < (slot === 0 ? MIN_ADD : SPLIT_MIN)) break // bereits (genug) durch andere Übungen gedeckt
+        const ex = pickExercise(m, exercises, used, usedPatterns, coach.pains, slot === 0)
         if (!ex) break
         used.add(ex.id)
         if (ex.pattern) usedPatterns.add(ex.pattern)
+        const zielSaetze = setsFor(ex, remaining, m)
+        creditVolume(realByMuscle, ex, zielSaetze)
         const zielWdh = repRangeFor(ex.kategorie, coach.repPref)
-        const minS = ex.kategorie === 'grund' ? 3 : 2
-        const maxS = ex.kategorie === 'grund' ? 5 : 4
-        const want = slots === 1 ? per : (i === 0 ? Math.ceil(per * 0.6) : remaining)
-        const zielSaetze = Math.max(minS, Math.min(want, maxS))
-        remaining -= zielSaetze
-        exForDay.push({ exerciseId: ex.id, zielSaetze, zielWdh, zielGewicht: suggestStartWeight(ex, zielWdh, sessions), zielRir: [...ZIEL_RIR] })
+        exForDay.push({
+          exerciseId: ex.id, zielSaetze, zielWdh,
+          zielGewicht: suggestStartWeight(ex, zielWdh, sessions), zielRir: [...ZIEL_RIR],
+          _prio: prioRank(m), _grund: ex.kategorie === 'grund' ? 0 : 1,
+        })
       }
     })
+    // Reihenfolge im Training: Hoch-Prio zuerst, Grundübung vor Isolation.
+    exForDay.sort((a, b) => a._prio - b._prio || a._grund - b._grund)
+    exForDay.forEach(e => { delete e._prio; delete e._grund })
     return createPlanDay({ name: t.name, exercises: exForDay })
   })
 

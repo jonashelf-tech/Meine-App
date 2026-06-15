@@ -30,10 +30,14 @@ describe('SPLIT_CATALOG', () => {
   })
 })
 describe('targetSetsPerMuscle', () => {
-  it('hoch=oberes Ende, niedrig=MEV, clamp MEV..MAV', () => {
+  it('Ambition wählt Band-Stufe pro Muskel, Priorität verschiebt, niedrig=MEV', () => {
     const t = targetSetsPerMuscle({ ambition: 'normal', priorities: { brust: 'high', trizeps: 'low' } })
-    expect(t.brust).toBe(16)   // ambition normal hi=16, brust mav-hi=20 → 16
-    expect(t.trizeps).toBe(6)  // low → mev (trizeps mev=6)
+    expect(t.brust).toBe(20)   // normal(Stufe1)+high(+1)=Stufe2 = oberes Optimal (brust mav-hi=20)
+    expect(t.trizeps).toBe(6)  // niedrig → MEV (trizeps mev=6)
+  })
+  it('normal = Optimal-Mitte, vollgas+high gedeckelt auf MRV', () => {
+    expect(targetSetsPerMuscle({ ambition: 'normal', priorities: {} }).brust).toBe(16) // round((12+20)/2)
+    expect(targetSetsPerMuscle({ ambition: 'vollgas', priorities: { brust: 'high' } }).brust).toBe(22) // MRV
   })
 })
 describe('repRangeFor', () => {

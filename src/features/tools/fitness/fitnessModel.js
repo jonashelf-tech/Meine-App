@@ -81,8 +81,10 @@ export const WARMUP_SCHEME = [
 // ─── Coach-Defaults ───────────────────────────────────────
 export const ZIEL_RIR = [1, 2]
 export const AUTOREG_DOWN_PCT = 0.075
-export const AMBITION_RANGES = {
-  wenig: [8, 10], normal: [12, 16], ambitioniert: [16, 20], vollgas: [20, 25],
+// Ambition → Band-Stufe pro Muskel (0=MEV, 1=Optimal-Mitte, 2=oberes Optimal, 3=MRV).
+// Priorität verschiebt diese Stufe im Generator. Skaliert relativ zur Muskel-Referenz statt fixer Zahlen.
+export const AMBITION_LEVELS = {
+  wenig: 0, normal: 1, ambitioniert: 2, vollgas: 3,
 }
 export const REP_PREF = {
   schwer: [5, 8], standard: [8, 12], leicht: [12, 20],
