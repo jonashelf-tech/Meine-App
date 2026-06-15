@@ -101,7 +101,7 @@ Eine Komponente, ein Aussehen — in Pool, Slot (`SlotBlock`) und Tool-Sektionen
 | **Doppeltipp** | Bearbeiten-Modal | **inkl. Löschen** |
 | **Griff ziehen** | Drag & Drop | Chip hebt sich an |
 
-- Das **✕ entfällt** komplett — Löschen lebt im Bearbeiten-Modal (`TodoModal`).
+- Das **✕ entfällt für echte Todos** (Pool/Slot) — Löschen lebt im Bearbeiten-Modal (`TodoModal`; ein Delete-Button wird dort ergänzt, da bisher keiner existiert). **Ausnahme:** fakeTodo-Chips ohne Edit-Modal (Reminder = „heute abhaken", Birthday = auswählen) behalten ihr ✕ als einzige Aktion.
 - Subtodo-Panel: verbunden unter dem Chip (lila Akzentkante oben), Reihen mit Checkbox/Text/Löschen/Reorder-Griff + „Punkt hinzufügen"-Zeile (Funktion wie heute, nur ruhiger gestaltet).
 
 ### Kontextuelle Tool-Aktionen am Chip

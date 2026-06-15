@@ -142,7 +142,7 @@ git commit -m "polish(prio): Prio-Ampel als kompakte Punkte"
 
 Neuer Aufbau des Chips (Reihenfolge l→r): `stripe` · `body` (Titelzeile mit Zeit/Dauer rechts + Fortschrittsbalken-Zeile darunter) · `actions` (kontextuelle Tool-Icons) · `prioBadgeWrap` · `dragHandle`.
 
-- [ ] **Step 1: ✕ entfernen.** In `TodoChip.jsx` den kompletten `{onRemove && (<button className={s.removeBtn}…>✕</button>)}`-Block löschen. `onRemove`-Prop bleibt vorerst in der Signatur (Pool nutzt es noch für den Lösch-Dialog via Doppeltipp→Modal-Pfad), aber wird im Chip nicht mehr gerendert. *Sauber aufräumen:* wenn nach Phase 1 kein Aufrufer `onRemove` am Chip mehr braucht, Prop + `.removeBtn`-CSS entfernen.
+- [ ] **Step 1: ✕ nur für echte Todos entfernen (gated).** Der ✕-Button hat zwei Bedeutungen: bei echten Todos (Pool/Slot, die `onEdit` übergeben) = Löschen; bei fakeTodo-Chips **ohne** `onEdit` (Reminder = „heute abhaken", Birthday = an-/abwählen) ist er die EINZIGE Aktion und muss bleiben. Daher den Render-Block auf `{onRemove && !onEdit && (<button className={s.removeBtn}…>✕</button>)}` gaten: echte Todos verlieren das ✕ (Löschen wandert ins Modal, Task 1.5), fakeTodo-Chips behalten es. `.removeBtn`-CSS bleibt (fakeTodo nutzt es weiter).
 
 - [ ] **Step 2: Expand-Kreis ersetzen.** Den `expandBtnWrap`/`expandBtn`-Block (Zähler-Kreis links) entfernen. Das Aufklappen läuft künftig über den Fortschrittsbalken (Step 4).
 
@@ -275,6 +275,51 @@ git commit -m "feat(chip): kontextuelle Tool-Aktionen — Prokrastination immer 
 ```bash
 git add src/features/calendar/Zeitplan/SlotBlock.jsx
 git commit -m "fix(slot): SlotBlock an neuen Chip angepasst"
+```
+
+### Task 1.5: Löschen ins TodoModal + Pool-Aufräumen
+
+**Files:**
+- Modify: `src/components/TodoModal/TodoModal.jsx` + `.module.css`
+- Modify: `src/features/calendar/Pool/Pool.jsx`
+- Modify: `src/features/calendar/TabHeute/TabHeute.jsx`
+
+Da echte Todos das Chip-✕ verlieren (1.2), braucht das Bearbeiten-Modal einen Löschen-Button — sonst gibt es keinen Weg mehr, ein Todo zu löschen. (`TodoModal` hat aktuell keinen.)
+
+- [ ] **Step 1: Delete-Button im TodoModal (nur Edit-Modus).** `TodoModal` nutzt bereits `useAppStore()` (`setTodos`, `setDays`) und kennt `isEdit`/`existingTodo`. Im Edit-Modus einen dezenten Löschen-Button (`var(--rose)`, inline SVG-Trash-Icon — kein Emoji) ergänzen. Handler:
+
+```js
+const handleDelete = () => {
+  setTodos(prev => prev.filter(t => t.id !== existingTodo.id))
+  // aus allen Tages-Slots entfernen, die dieses Todo referenzieren
+  setDays(prev => {
+    const next = {}
+    for (const [dk, day] of Object.entries(prev)) {
+      const nd = {}
+      for (const [k, slot] of Object.entries(day)) {
+        if (slot?.todoId !== existingTodo.id) nd[k] = slot
+      }
+      next[dk] = nd
+    }
+    return next
+  })
+  onClose()
+}
+```
+
+Zweistufige Bestätigung (erst Tap „Löschen" → Button wird zu „Wirklich löschen?") minimal halten — kein zusätzliches Modal.
+
+- [ ] **Step 2: Pool-Aufräumen.** Da Pool-Chips `onEdit` übergeben, rendert das ✕ dort nicht mehr (1.2). Pools Lösch-Pfad ist damit tot: die `onRemove`-Weitergabe in `renderChip`/`PoolChip`, den `confirmId`-State und den Lösch-Dialog (`dialogOverlay`/`dialog`) in `Pool.jsx` entfernen.
+
+- [ ] **Step 3: TabHeute-Aufräumen.** `handleRemove` wird nur als `onRemove` an `<Pool>` übergeben → nach Step 2 verwaist. Funktion + die `onRemove={handleRemove}`-Prop am `<Pool>` entfernen.
+
+- [ ] **Step 4: Verifizieren.** `npx vitest run` grün. (Visuell prüft der Controller: echtes Todo doppeltippen → Modal → Löschen entfernt es auch aus dem Zeitplan; Reminder-✕ hakt weiter ab.)
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/components/TodoModal/ src/features/calendar/Pool/Pool.jsx src/features/calendar/TabHeute/TabHeute.jsx
+git commit -m "feat(todo): Löschen ins Bearbeiten-Modal verschoben; Pool-✕-Dialog entfernt"
 ```
 
 ---
@@ -497,7 +542,7 @@ git commit -m "docs: Kontext nachgezogen — Bänder, Chip-Indikatoren, Motion-T
 
 **Spec-Abdeckung:**
 - Motion/Elevation-Standard → Phase 0 ✓ · app-weite Anwendung Tab-Open → Phase 3 ✓
-- Chip: Farbe=Streifen+Border ✓ (bereits Realität, keine Änderung nötig) · Zeit rechts ✓ (1.2) · Fortschrittsbalken + Aufklappen ✓ (1.2) · Prio-Punkt-Ampel ✓ (1.1) · Slim-Griff ✓ (bereits vorhanden, bleibt) · Tiefe + Lift ✓ (1.2/2.1) · ✕ raus ✓ (1.2) · Tool-Aktionen + Prokrastination-immer ✓ (1.3)
+- Chip: Farbe=Streifen+Border ✓ (bereits Realität, keine Änderung nötig) · Zeit rechts ✓ (1.2) · Fortschrittsbalken + Aufklappen ✓ (1.2) · Prio-Punkt-Ampel ✓ (1.1) · Slim-Griff ✓ (bereits vorhanden, bleibt) · Tiefe + Lift ✓ (1.2/2.1) · ✕ raus für echte Todos + Löschen ins Modal ✓ (1.2/1.5) · fakeTodo-✕ bleibt ✓ (1.2) · Tool-Aktionen + Prokrastination-immer ✓ (1.3)
 - Tagesplaner: kein Stauchen ✓ (2.1) · Bänder statt Pillen ✓ (2.2/2.3) · schlankes Raster + Zeitspalte ✓ (2.3) · Touch ≥44 belegt ✓ (2.3) · All-day-Streifen ✓ (2.3) · PillStrip/±/Toggle raus ✓ (2.3/2.4) · 30-Min bleibt ✓ (keine Datenänderung)
 - Prokrastination-Sweep ✓ (4.1) · Doku ✓ (4.2)
 - Erhalten: SlotSheet, Blocker, useTimeEvents, Endzeit-Projektion, „verplant"-Icon, Alter — unangetastet ✓
