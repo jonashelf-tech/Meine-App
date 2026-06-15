@@ -58,8 +58,8 @@ export function useDragDrop() {
       ghost.style.opacity       = '0.9'
       ghost.style.width         = `${rect.width}px`
       ghost.style.height        = `${slotH}px`
-      ghost.style.boxShadow     = `0 8px 32px ${color}55`
-      ghost.style.transform     = 'scale(0.97)'
+      ghost.style.boxShadow     = '0 12px 30px rgba(139,92,246,0.30), inset 0 1px 0 rgba(255,255,255,0.08)'
+      ghost.style.transform     = 'scale(1.03)'
       ghost.style.left          = `${cx0 - offsetX}px`
       ghost.style.top           = `${cy0 - offsetY}px`
       ghost.style.transition    = 'none'
@@ -82,9 +82,6 @@ export function useDragDrop() {
     }
 
     document.body.appendChild(ghost)
-    // Kompakt-Modus während des Drags: leere Zeitplan-Slots schrumpfen
-    // (Zeitplan.module.css reagiert auf body.dnd-active)
-    document.body.classList.add('dnd-active')
 
     const mv = ev => {
       const cx = ev.touches ? ev.touches[0].clientX : ev.clientX
@@ -151,9 +148,6 @@ export function useDragDrop() {
           dropped = true
         }
       }
-      // Erst NACH der Treffer-Ermittlung zurück zur normalen Höhe —
-      // sonst expandiert das Layout vor dem Rect-Check und der Drop verrutscht.
-      document.body.classList.remove('dnd-active')
     }
 
     document.addEventListener('pointermove', mv, { passive: false })

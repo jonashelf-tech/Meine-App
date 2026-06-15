@@ -85,18 +85,6 @@
   overflow: visible;
 }
 
-/* Während eines Drags (body.dnd-active, gesetzt in useDragDrop): leere
-   Halbstunden schrumpfen, belegte behalten ihre Höhe — mehr Stunden im
-   Sichtfeld, kürzere Ziehwege. Trefferzonen bleiben korrekt, weil
-   useDragDrop die Rects bei jeder Pointer-Bewegung live liest. */
-:global(body.dnd-active) .sgGrid {
-  grid-auto-rows: minmax(22px, auto);
-}
-
-:global(body.dnd-active) .sgGrid .sgHalf:not(.sgEmpty) {
-  min-height: 44px;
-}
-
 .sgLabel {
   grid-column: 1;
   display: flex;

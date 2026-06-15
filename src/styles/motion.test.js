@@ -16,3 +16,10 @@ describe('Motion-Tokens', () => {
     expect(vars).toMatch(/@keyframes\s+toolEnter/)
   })
 })
+
+describe('Zeitplan — kein Drag-Stauchen', () => {
+  const zp = readFileSync(join(here, '../features/calendar/Zeitplan/Zeitplan.module.css'), 'utf8')
+  it('hat keine dnd-active Grid-Kompaktion mehr', () => {
+    expect(zp).not.toMatch(/dnd-active[\s\S]*grid-auto-rows/)
+  })
+})
