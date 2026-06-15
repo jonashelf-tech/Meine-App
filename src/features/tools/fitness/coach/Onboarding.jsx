@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { AMBITION_RANGES, REP_PREF, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
-import { splitTemplates } from './planGenerator'
+import { recommendedSplit } from './planGenerator'
+import SplitPicker from './SplitPicker'
+import RhythmPicker from './RhythmPicker'
 import s from './Onboarding.module.css'
 
 const BackIcon = () => (
@@ -38,15 +40,22 @@ const PRIORITY_LEVELS = [
   { value: 'high', label: 'hoch' },
 ]
 
-const TOTAL_STEPS = 5
+const TOTAL_STEPS = 7
 
 export default function Onboarding({ onDone, onCancel }) {
   const [step, setStep] = useState(0)
   const [trainingDays, setTrainingDays] = useState(null)
+  const [splitId, setSplitId] = useState(null)
   const [ambition, setAmbition] = useState(null)
   const [repPref, setRepPref] = useState(null)
+  const [rhythm, setRhythm] = useState(null)
   const [pains, setPains] = useState([])
   const [priorities, setPriorities] = useState({})
+
+  const pickDays = n => {
+    setTrainingDays(n)
+    setSplitId(recommendedSplit(n).id) // Empfohlene vorausgewählt
+  }
 
   const togglePain = value => {
     setPains(p => p.includes(value) ? p.filter(v => v !== value) : [...p, value])
@@ -63,8 +72,10 @@ export default function Onboarding({ onDone, onCancel }) {
 
   const canNext = [
     trainingDays != null,
+    splitId != null,
     ambition != null,
     repPref != null,
+    true,
     true,
     true,
   ][step]
@@ -76,13 +87,11 @@ export default function Onboarding({ onDone, onCancel }) {
 
   const handleNext = () => {
     if (step === TOTAL_STEPS - 1) {
-      onDone({ trainingDays, ambition, repPref, pains, priorities, zyklusModus: false })
+      onDone({ trainingDays, splitId, ambition, repPref, rhythm, pains, priorities })
       return
     }
     setStep(s => s + 1)
   }
-
-  const splitNames = trainingDays ? splitTemplates(trainingDays).map(t => t.name).join(' · ') : ''
 
   return (
     <div className={s.page}>
@@ -98,25 +107,31 @@ export default function Onboarding({ onDone, onCancel }) {
 
       {step === 0 && (
         <>
-          <div className={s.question}>Wie viele Trainingstage pro Woche?</div>
+          <div className={s.question}>Wie viele verschiedene Trainings willst du abwechseln?</div>
+          <div className={s.hint}>Sie rotieren der Reihe nach — du trainierst in deinem Tempo, der Plan wartet auf dich.</div>
           <div className={s.optionsRow}>
             {TRAINING_DAYS_OPTIONS.map(n => (
               <button
                 key={n}
                 className={[s.option, trainingDays === n ? s.optionActive : ''].join(' ')}
-                onClick={() => setTrainingDays(n)}
+                onClick={() => pickDays(n)}
               >
                 {n}
               </button>
             ))}
           </div>
-          {trainingDays && (
-            <div className={s.splitHint}>{splitNames}</div>
-          )}
         </>
       )}
 
       {step === 1 && (
+        <>
+          <div className={s.question}>Welcher Split?</div>
+          <div className={s.hint}>Die empfohlene Variante ist vorausgewählt — du kannst frei wechseln.</div>
+          <SplitPicker trainingDays={trainingDays} value={splitId} onChange={setSplitId} />
+        </>
+      )}
+
+      {step === 2 && (
         <>
           <div className={s.question}>Wie viel Zeit/Ambition für Training?</div>
           <div className={s.options}>
@@ -134,7 +149,7 @@ export default function Onboarding({ onDone, onCancel }) {
         </>
       )}
 
-      {step === 2 && (
+      {step === 3 && (
         <>
           <div className={s.question}>Wie schwer trainierst du am liebsten?</div>
           <div className={s.options}>
@@ -151,7 +166,15 @@ export default function Onboarding({ onDone, onCancel }) {
         </>
       )}
 
-      {step === 3 && (
+      {step === 4 && (
+        <>
+          <div className={s.question}>Trainings-Rhythmus?</div>
+          <div className={s.hint}>Optional — nur ein Hinweis im Heute-Tab (z. B. „heute Pause"), blockt nie. „Aus" = kein fester Rhythmus.</div>
+          <RhythmPicker value={rhythm} onChange={setRhythm} />
+        </>
+      )}
+
+      {step === 5 && (
         <>
           <div className={s.question}>Schmerzen / Einschränkungen?</div>
           <div className={s.hint}>Optional — wähle alles aus, was aktuell Probleme macht. Nichts ausgewählt = keine Einschränkungen.</div>
@@ -169,7 +192,7 @@ export default function Onboarding({ onDone, onCancel }) {
         </>
       )}
 
-      {step === 4 && (
+      {step === 6 && (
         <>
           <div className={s.question}>Prioritäten (optional)</div>
           <div className={s.hint}>Standardmäßig „normal" — passe nur an, wenn du Muskelgruppen besonders betonen oder reduzieren willst.</div>

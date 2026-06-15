@@ -199,6 +199,28 @@ export function recoveryNeeded(muscle, sessions, exercises) {
   return points[n - 1].e < points[n - 2].e && points[n - 2].e < points[n - 3].e
 }
 
+// ─── Zyklus-Rhythmus: Heute-Hinweis (weicher Vorschlag) ──────
+const DAY_MS = 86400000
+const daysBetween = (aIso, bIso) =>
+  Math.round((new Date(aIso + 'T12:00:00') - new Date(bIso + 'T12:00:00')) / DAY_MS)
+const prevIso = (iso) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10) }
+
+// rhythm: null | { on, off }. Liefert null (kein Hinweis) oder { kind: 'done'|'rest'|'train' }.
+// Anker ist das letzte echte Training → verschobene Trainings rechnen sich neu.
+export function trainingDayStatus(rhythm, sessions, today) {
+  if (!rhythm || !rhythm.on || !rhythm.off) return null
+  const dates = new Set((sessions || []).map(s => s.date))
+  if (dates.has(today)) return { kind: 'done' }
+  const past = [...dates].filter(d => d < today).sort()
+  if (!past.length) return { kind: 'train' }
+  const lastDate = past[past.length - 1]
+  const restDaysSoFar = daysBetween(today, lastDate) - 1
+  let streak = 0
+  for (let cursor = lastDate; dates.has(cursor); cursor = prevIso(cursor)) streak++
+  if (streak >= rhythm.on && restDaysSoFar < rhythm.off) return { kind: 'rest' }
+  return { kind: 'train' }
+}
+
 // Reale Sätze pro Muskel in der Woche ab weekStart (7 Tage). Warmup zählt 0.
 export function realSetsPerMuscle(sessions, exercises, weekStart) {
   const byId = new Map(exercises.map(e => [e.id, e]))

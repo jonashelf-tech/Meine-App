@@ -7,23 +7,77 @@ const PUSH  = ['brust','schulterVorne','schulterSeitlich','trizeps']
 const PULL  = ['ruecken','schulterHinten','bizeps','trapez']
 const BEINE = ['quadrizeps','hamstrings','gluteus','waden']
 const GANZ  = ['brust','ruecken','schulterSeitlich','quadrizeps','hamstrings','gluteus','bizeps','trizeps','bauch']
+const ARME  = ['bizeps','trizeps','schulterSeitlich','schulterHinten']
+// 4er-Split
+const BRUST_TAG    = ['brust','trizeps']
+const RUECKEN_TAG  = ['ruecken','bizeps','trapez']
+const SCHULTER_ARME = ['schulterVorne','schulterSeitlich','schulterHinten','bizeps','trizeps']
+const BEINE_BAUCH  = ['quadrizeps','hamstrings','gluteus','waden','bauch']
+// Arnold
+const BRUST_RUECKEN  = ['brust','ruecken','schulterHinten']
+const SCHULTER_ARME_A = ['schulterVorne','schulterSeitlich','bizeps','trizeps']
 
-// Schmerz-Region → Muskeln, die stark belastet werden (Heuristik, da Seed keine painRegions trägt)
-const PAIN_MUSCLES = {
-  schulter: ['schulterVorne','schulterSeitlich','schulterHinten'],
-  knie: ['quadrizeps'],
-  untererRuecken: ['untererRuecken'],
-  ellbogen: ['trizeps','bizeps'],
-  handgelenk: [],
+const day = (name, muscles) => ({ name, muscles })
+
+// Übungsauswahl & Satz-Verteilung
+const SPLIT_THRESHOLD = 6   // ab so vielen Sätzen/Muskel/Tag → zweite, komplementäre Übung
+const MAX_EX_PER_MUSCLE = 2
+
+// Split-Katalog: pro Größe mehrere Varianten, genau eine `recommended`.
+export const SPLIT_CATALOG = {
+  2: [
+    { id: 'ganz2', name: 'Ganzkörper A/B', recommended: true,
+      days: [day('Ganzkörper A', GANZ), day('Ganzkörper B', GANZ)] },
+    { id: 'ul2', name: 'Oberkörper / Unterkörper', recommended: false,
+      days: [day('Oberkörper', OBER), day('Unterkörper', UNTER)] },
+  ],
+  3: [
+    { id: 'ulg3', name: 'Ober / Unter / Ganzkörper', recommended: true,
+      days: [day('Oberkörper', OBER), day('Unterkörper', UNTER), day('Ganzkörper', GANZ)] },
+    { id: 'ppl3', name: 'Push / Pull / Beine', recommended: false,
+      days: [day('Push', PUSH), day('Pull', PULL), day('Beine', BEINE)] },
+    { id: 'ganz3', name: 'Ganzkörper ×3', recommended: false,
+      days: [day('Ganzkörper A', GANZ), day('Ganzkörper B', GANZ), day('Ganzkörper C', GANZ)] },
+  ],
+  4: [
+    { id: 'ul4', name: 'Oberkörper / Unterkörper ×2', recommended: true,
+      days: [day('Oberkörper A', OBER), day('Unterkörper A', UNTER), day('Oberkörper B', OBER), day('Unterkörper B', UNTER)] },
+    { id: 'pfpf4', name: 'Push / Fullbody / Pull / Fullbody', recommended: false,
+      days: [day('Push', PUSH), day('Ganzkörper A', GANZ), day('Pull', PULL), day('Ganzkörper B', GANZ)] },
+    { id: 'split4', name: '4er-Split', recommended: false,
+      days: [day('Brust', BRUST_TAG), day('Rücken', RUECKEN_TAG), day('Schulter & Arme', SCHULTER_ARME), day('Beine', BEINE_BAUCH)] },
+  ],
+  5: [
+    { id: 'ulppl5', name: 'Ober / Unter / Push / Pull / Beine', recommended: true,
+      days: [day('Oberkörper', OBER), day('Unterkörper', UNTER), day('Push', PUSH), day('Pull', PULL), day('Beine', BEINE)] },
+    { id: 'ula5', name: 'Ober / Unter ×2 + Arme & Schultern', recommended: false,
+      days: [day('Oberkörper A', OBER), day('Unterkörper A', UNTER), day('Oberkörper B', OBER), day('Unterkörper B', UNTER), day('Arme & Schultern', ARME)] },
+  ],
+  6: [
+    { id: 'ppl6', name: 'Push / Pull / Beine ×2', recommended: true,
+      days: [day('Push A', PUSH), day('Pull A', PULL), day('Beine A', BEINE), day('Push B', PUSH), day('Pull B', PULL), day('Beine B', BEINE)] },
+    { id: 'arnold6', name: 'Arnold-Split', recommended: false,
+      days: [day('Brust & Rücken A', BRUST_RUECKEN), day('Schulter & Arme A', SCHULTER_ARME_A), day('Beine A', BEINE_BAUCH),
+             day('Brust & Rücken B', BRUST_RUECKEN), day('Schulter & Arme B', SCHULTER_ARME_A), day('Beine B', BEINE_BAUCH)] },
+  ],
 }
 
-export function splitTemplates(trainingDays) {
-  const d = Math.max(2, Math.min(6, trainingDays || 3))
-  if (d === 2) return [{ name: 'Ganzkörper A', muscles: GANZ }, { name: 'Ganzkörper B', muscles: GANZ }]
-  if (d === 3) return [{ name: 'Ganzkörper A', muscles: GANZ }, { name: 'Ganzkörper B', muscles: GANZ }, { name: 'Ganzkörper C', muscles: GANZ }]
-  if (d === 4) return [{ name: 'Oberkörper A', muscles: OBER }, { name: 'Unterkörper A', muscles: UNTER }, { name: 'Oberkörper B', muscles: OBER }, { name: 'Unterkörper B', muscles: UNTER }]
-  if (d === 5) return [{ name: 'Oberkörper A', muscles: OBER }, { name: 'Unterkörper A', muscles: UNTER }, { name: 'Oberkörper B', muscles: OBER }, { name: 'Unterkörper B', muscles: UNTER }, { name: 'Arme & Schultern', muscles: ['bizeps','trizeps','schulterSeitlich','schulterHinten'] }]
-  return [{ name: 'Push A', muscles: PUSH }, { name: 'Pull A', muscles: PULL }, { name: 'Beine A', muscles: BEINE }, { name: 'Push B', muscles: PUSH }, { name: 'Pull B', muscles: PULL }, { name: 'Beine B', muscles: BEINE }]
+const clampSize = (n) => Math.max(2, Math.min(6, n || 3))
+
+export function splitVariants(trainingDays) {
+  return SPLIT_CATALOG[clampSize(trainingDays)]
+}
+
+export function recommendedSplit(trainingDays) {
+  const variants = splitVariants(trainingDays)
+  return variants.find(v => v.recommended) ?? variants[0]
+}
+
+// Tage des gewählten Splits (Default: empfohlene Variante).
+export function splitTemplates(trainingDays, splitId) {
+  const variants = splitVariants(trainingDays)
+  const variant = (splitId && variants.find(v => v.id === splitId)) || recommendedSplit(trainingDays)
+  return variant.days
 }
 
 // Ziel-Wochensätze pro Muskel: Ambition, moduliert durch Priorität, geclamped MEV..MAV-hi, Deckel MRV.
@@ -48,11 +102,21 @@ export function repRangeFor(kategorie, repPref) {
   return kategorie === 'grund' ? [lo, mid] : [mid, hi]
 }
 
+// Schmerz-Region → Muskeln, die stark belastet werden (Heuristik, da Seed keine painRegions trägt)
+const PAIN_MUSCLES = {
+  schulter: ['schulterVorne','schulterSeitlich','schulterHinten'],
+  knie: ['quadrizeps'],
+  untererRuecken: ['untererRuecken'],
+  ellbogen: ['trizeps','bizeps'],
+  handgelenk: [],
+}
+
 export function painExcluded(exercise, pains = []) {
   return pains.some(p => (PAIN_MUSCLES[p] || []).some(m => (exercise.allocation?.[m] || 0) >= 40))
 }
 
 const primaryMuscle = (alloc) => Object.entries(alloc || {}).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
+const quality = (e) => (e.dehnung ?? 3) + (e.stabilitaet ?? 3)
 
 // Startgewicht aus Historie (e1RM invertiert auf Ziel-Wdh), sonst null (Kalibrierung).
 export function suggestStartWeight(exercise, zielWdh, sessions) {
@@ -64,29 +128,57 @@ export function suggestStartWeight(exercise, zielWdh, sessions) {
   return roundToIncrement(w, DEFAULT_INCREMENTS[exercise.equipment] || 2.5)
 }
 
+// Eine Übung für Muskel m wählen — meidet bereits genutzte IDs & Bewegungsmuster.
+// anchor=true: schwere Grundübung als Basis; sonst beste Stretch-Ergänzung.
+function pickExercise(m, exercises, used, usedPatterns, pains, anchor) {
+  const allowed = e => !used.has(e.id) && !painExcluded(e, pains) && (!e.pattern || !usedPatterns.has(e.pattern))
+  let cands = exercises.filter(e => allowed(e) && primaryMuscle(e.allocation) === m)
+  if (!cands.length) cands = exercises.filter(e => allowed(e) && (e.allocation?.[m] || 0) > 0)
+  if (!cands.length) return null
+  cands.sort((a, b) => {
+    if (anchor) {
+      const ga = a.kategorie === 'grund' ? 0 : 1
+      const gb = b.kategorie === 'grund' ? 0 : 1
+      if (ga !== gb) return ga - gb                       // Grundübung als Anker
+      if ((b.last ?? 3) !== (a.last ?? 3)) return (b.last ?? 3) - (a.last ?? 3)
+    } else {
+      if ((b.dehnung ?? 3) !== (a.dehnung ?? 3)) return (b.dehnung ?? 3) - (a.dehnung ?? 3) // Stretch zuerst
+      if ((b.stabilitaet ?? 3) !== (a.stabilitaet ?? 3)) return (b.stabilitaet ?? 3) - (a.stabilitaet ?? 3)
+    }
+    if (quality(b) !== quality(a)) return quality(b) - quality(a)
+    return (b.allocation[m] || 0) - (a.allocation[m] || 0)
+  })
+  return cands[0]
+}
+
 export function generateCoachPlan(coach, exercises, sessions = []) {
-  const templates = splitTemplates(coach.trainingDays)
+  const templates = splitTemplates(coach.trainingDays, coach.splitId)
   const targets = targetSetsPerMuscle(coach)
   const freq = {}
   templates.forEach(t => t.muscles.forEach(m => { freq[m] = (freq[m] || 0) + 1 }))
 
   const days = templates.map(t => {
     const used = new Set()
+    const usedPatterns = new Set()
     const exForDay = []
     t.muscles.forEach(m => {
       if (!targets[m]) return // nur Muskeln mit Volumen-Ziel bekommen eigene Übung
       const per = Math.max(1, Math.round(targets[m] / (freq[m] || 1)))
-      let cands = exercises.filter(e => !used.has(e.id) && primaryMuscle(e.allocation) === m && !painExcluded(e, coach.pains))
-      if (!cands.length) cands = exercises.filter(e => !used.has(e.id) && (e.allocation?.[m] || 0) > 0 && !painExcluded(e, coach.pains))
-      if (!cands.length) return
-      cands.sort((a, b) => (a.kategorie === b.kategorie ? 0 : a.kategorie === 'grund' ? -1 : 1) || (b.allocation[m] || 0) - (a.allocation[m] || 0))
-      const ex = cands[0]
-      used.add(ex.id)
-      const zielWdh = repRangeFor(ex.kategorie, coach.repPref)
-      const minS = ex.kategorie === 'grund' ? 3 : 2
-      const maxS = ex.kategorie === 'grund' ? 5 : 4
-      const zielSaetze = Math.max(minS, Math.min(per, maxS))
-      exForDay.push({ exerciseId: ex.id, zielSaetze, zielWdh, zielGewicht: suggestStartWeight(ex, zielWdh, sessions), zielRir: [...ZIEL_RIR] })
+      const slots = per >= SPLIT_THRESHOLD ? MAX_EX_PER_MUSCLE : 1
+      let remaining = per
+      for (let i = 0; i < slots; i++) {
+        const ex = pickExercise(m, exercises, used, usedPatterns, coach.pains, i === 0)
+        if (!ex) break
+        used.add(ex.id)
+        if (ex.pattern) usedPatterns.add(ex.pattern)
+        const zielWdh = repRangeFor(ex.kategorie, coach.repPref)
+        const minS = ex.kategorie === 'grund' ? 3 : 2
+        const maxS = ex.kategorie === 'grund' ? 5 : 4
+        const want = slots === 1 ? per : (i === 0 ? Math.ceil(per * 0.6) : remaining)
+        const zielSaetze = Math.max(minS, Math.min(want, maxS))
+        remaining -= zielSaetze
+        exForDay.push({ exerciseId: ex.id, zielSaetze, zielWdh, zielGewicht: suggestStartWeight(ex, zielWdh, sessions), zielRir: [...ZIEL_RIR] })
+      }
     })
     return createPlanDay({ name: t.name, exercises: exForDay })
   })

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { EXERCISE_SEED } from './exerciseSeed'
-import { MUSCLES, EQUIPMENT } from './fitnessModel'
+import { MUSCLES, EQUIPMENT, EXERCISE_PATTERNS } from './fitnessModel'
 import { ensureSeeded, loadFitness } from './fitnessStore'
 
 describe('EXERCISE_SEED', () => {
@@ -25,6 +25,16 @@ describe('EXERCISE_SEED', () => {
   it('deckt alle 15 Muskelgruppen ab', () => {
     const covered = new Set(EXERCISE_SEED.flatMap(ex => Object.keys(ex.allocation)))
     MUSCLES.forEach(m => expect(covered.has(m), m).toBe(true))
+  })
+  it('jede Übung hat gültiges Bewegungsmuster + Ratings 1–5', () => {
+    EXERCISE_SEED.forEach(ex => {
+      expect(EXERCISE_PATTERNS, ex.name).toContain(ex.pattern)
+      ;['stabilitaet', 'dehnung', 'last'].forEach(axis => {
+        expect(Number.isInteger(ex[axis]), `${ex.name}.${axis}`).toBe(true)
+        expect(ex[axis], `${ex.name}.${axis}`).toBeGreaterThanOrEqual(1)
+        expect(ex[axis], `${ex.name}.${axis}`).toBeLessThanOrEqual(5)
+      })
+    })
   })
 })
 

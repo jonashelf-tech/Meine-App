@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateCoachPlan, splitTemplates, targetSetsPerMuscle, repRangeFor, painExcluded } from './planGenerator'
+import { generateCoachPlan, splitTemplates, targetSetsPerMuscle, repRangeFor, painExcluded, SPLIT_CATALOG, recommendedSplit } from './planGenerator'
 import { EXERCISE_SEED } from '../exerciseSeed'
 
 const coach = { trainingDays: 4, ambition: 'normal', repPref: 'standard', pains: [], priorities: {} }
@@ -9,6 +9,24 @@ describe('splitTemplates', () => {
     expect(splitTemplates(2)).toHaveLength(2)
     expect(splitTemplates(4)).toHaveLength(4)
     expect(splitTemplates(6)).toHaveLength(6)
+  })
+  it('nutzt die gewählte Variante, sonst die empfohlene', () => {
+    expect(splitTemplates(3, 'ppl3').map(d => d.name)).toEqual(['Push', 'Pull', 'Beine'])
+    expect(splitTemplates(3).map(d => d.name)).toEqual(recommendedSplit(3).days.map(d => d.name))
+    expect(splitTemplates(3, 'gibtsnicht').map(d => d.name)).toEqual(recommendedSplit(3).days.map(d => d.name))
+  })
+})
+
+describe('SPLIT_CATALOG', () => {
+  it('jede Größe hat genau eine empfohlene Variante + eindeutige ids', () => {
+    Object.entries(SPLIT_CATALOG).forEach(([size, variants]) => {
+      expect(variants.filter(v => v.recommended).length, `Größe ${size}`).toBe(1)
+      const ids = new Set()
+      variants.forEach(v => {
+        expect(v.days.length, v.id).toBe(Number(size))
+        expect(ids.has(v.id), v.id).toBe(false); ids.add(v.id)
+      })
+    })
   })
 })
 describe('targetSetsPerMuscle', () => {
@@ -53,5 +71,15 @@ describe('generateCoachPlan', () => {
     const ids = p2.days.flatMap(d => d.exercises.map(e => e.exerciseId))
     const exById = Object.fromEntries(EXERCISE_SEED.map(e => [e.id, e]))
     ids.forEach(id => expect(painExcluded(exById[id], ['schulter'])).toBe(false))
+  })
+  it('kein doppeltes Bewegungsmuster pro Tag (löst Bankdrücken+enges-Bankdrücken)', () => {
+    const exById = Object.fromEntries(EXERCISE_SEED.map(e => [e.id, e]))
+    ;[2, 3, 4, 5, 6].forEach(d => {
+      const p = generateCoachPlan({ ...coach, trainingDays: d }, EXERCISE_SEED, [])
+      p.days.forEach(day => {
+        const patterns = day.exercises.map(e => exById[e.exerciseId].pattern).filter(Boolean)
+        expect(new Set(patterns).size, `${d}er ${day.name}`).toBe(patterns.length)
+      })
+    })
   })
 })

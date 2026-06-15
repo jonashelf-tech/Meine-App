@@ -21,6 +21,30 @@ export const EQUIPMENT_LABELS = {
   kabel: 'Kabel', koerpergewicht: 'Körpergewicht',
 }
 
+// ─── Bewegungsmuster (für Auswahl-Entdopplung & Ranking) ──
+export const EXERCISE_PATTERNS = [
+  'flachDruck', 'schraegDruck', 'brustFly', 'vertikalDruck', 'seitheben',
+  'vertikalZug', 'horizontalZug', 'reverseFly', 'shrug',
+  'bizepsCurl', 'hammerCurl', 'trizepsPushdown', 'trizepsUeberkopf', 'trizepsStirn',
+  'kniebeuge', 'beinstrecker', 'hipHinge', 'beinbeuger', 'hipThrust', 'gluteKickback',
+  'wade', 'bauchCrunch', 'huftBeugung',
+]
+
+export const PATTERN_LABELS = {
+  flachDruck: 'Flachdruck', schraegDruck: 'Schrägdruck', brustFly: 'Brust-Fly',
+  vertikalDruck: 'Überkopfdruck', seitheben: 'Seitheben', vertikalZug: 'Vertikalzug',
+  horizontalZug: 'Horizontalzug', reverseFly: 'Reverse-Fly', shrug: 'Shrug',
+  bizepsCurl: 'Bizeps-Curl', hammerCurl: 'Hammer-Curl', trizepsPushdown: 'Trizeps-Pushdown',
+  trizepsUeberkopf: 'Trizeps Überkopf', trizepsStirn: 'Stirndrücken',
+  kniebeuge: 'Kniebeuge', beinstrecker: 'Beinstrecker', hipHinge: 'Hüftbeuge',
+  beinbeuger: 'Beinbeuger', hipThrust: 'Hip Thrust', gluteKickback: 'Glute Kickback',
+  wade: 'Wade', bauchCrunch: 'Crunch', huftBeugung: 'Hüftbeugung',
+}
+
+// Bewertungs-Achsen (1–5) für das Übungs-Ranking
+export const RATING_AXES = ['stabilitaet', 'dehnung', 'last']
+export const RATING_LABELS = { stabilitaet: 'Stabilität', dehnung: 'Dehnung', last: 'Last' }
+
 export const DEFAULT_INCREMENTS = {
   maschine: 2.5, langhantel: 2.5, kurzhantel: 1, kabel: 2.5, koerpergewicht: 0,
 }
@@ -82,6 +106,10 @@ export const createExercise = (o = {}) => ({
   notiz: o.notiz ?? '',
   restSec: o.restSec ?? null,
   painRegions: o.painRegions ?? [],
+  stabilitaet: o.stabilitaet ?? 3,
+  dehnung: o.dehnung ?? 3,
+  last: o.last ?? 3,
+  pattern: o.pattern ?? null,
   custom: o.custom ?? true,
 })
 

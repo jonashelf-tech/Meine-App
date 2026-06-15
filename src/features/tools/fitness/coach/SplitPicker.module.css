@@ -1,0 +1,60 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--font);
+  padding: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.card:hover { border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 40%, var(--border)); }
+
+.cardActive {
+  border-color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.cardActive .name { color: var(--tool-color, var(--primary)); }
+
+.badge {
+  margin-left: auto;
+  font-family: var(--font);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 15%, transparent);
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.days {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}

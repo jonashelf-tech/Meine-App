@@ -8,8 +8,13 @@ const DEFAULT_SETTINGS = {
   warmupScheme: WARMUP_SCHEME.map(s => ({ ...s })),
   feedbackMode: 'chips',
   zielRir: [...ZIEL_RIR],
+  rhythm: null, // null = kein fester Rhythmus; sonst { on, off } für den Heute-Hinweis
 }
-const DEFAULT_META = { activePlanId: null, planCursor: {}, seeded: false }
+const DEFAULT_META = { activePlanId: null, planCursor: {}, seeded: false, exerciseMetaVersion: 0 }
+
+// Hochzählen, wenn der Seed neue Übungs-Metadaten (pattern/Ratings) bekommt,
+// die per Migration in vorhandene Seed-Übungen gemerged werden sollen.
+const EXERCISE_META_VERSION = 1
 
 const DEFAULT_FITNESS = { exercises: [], plans: [], settings: DEFAULT_SETTINGS, meta: DEFAULT_META }
 
@@ -33,14 +38,46 @@ export function saveSettings(patch) {
   return settings
 }
 
+const SEED_BY_ID = new Map(EXERCISE_SEED.map(e => [e.id, e]))
+
+// Additive, idempotente Migration: mergt pattern + Ratings aus dem Seed in
+// vorhandene Seed-Übungen (custom=false). Eigene Übungen kriegen nur fehlende
+// Felder mit Defaults — Edits bleiben unangetastet.
+function migrateExerciseMeta(f) {
+  if ((f.meta.exerciseMetaVersion ?? 0) >= EXERCISE_META_VERSION) return f
+  const exercises = f.exercises.map(ex => {
+    const seed = ex.custom === false ? SEED_BY_ID.get(ex.id) : null
+    if (seed) {
+      return { ...ex, pattern: seed.pattern, stabilitaet: seed.stabilitaet, dehnung: seed.dehnung, last: seed.last }
+    }
+    return {
+      ...ex,
+      stabilitaet: ex.stabilitaet ?? 3,
+      dehnung: ex.dehnung ?? 3,
+      last: ex.last ?? 3,
+      pattern: ex.pattern ?? null,
+    }
+  })
+  return { ...f, exercises, meta: { ...f.meta, exerciseMetaVersion: EXERCISE_META_VERSION } }
+}
+
 export function ensureSeeded() {
-  const f = loadFitness()
-  if (f.meta.seeded) return f
+  let f = loadFitness()
+  let changed = false
+
+  // Fehlende Seed-Übungen (neue IDs) ergänzen — auch für bereits geseedete Nutzer.
   const existingIds = new Set(f.exercises.map(e => e.id))
   const toAdd = EXERCISE_SEED.filter(e => !existingIds.has(e.id))
-  const next = { ...f, exercises: [...f.exercises, ...toAdd], meta: { ...f.meta, seeded: true } }
-  saveFitness(next)
-  return next
+  if (toAdd.length || !f.meta.seeded) {
+    f = { ...f, exercises: [...f.exercises, ...toAdd], meta: { ...f.meta, seeded: true } }
+    changed = true
+  }
+
+  const migrated = migrateExerciseMeta(f)
+  if (migrated !== f) { f = migrated; changed = true }
+
+  if (changed) saveFitness(f)
+  return f
 }
 
 export function loadSessions() {

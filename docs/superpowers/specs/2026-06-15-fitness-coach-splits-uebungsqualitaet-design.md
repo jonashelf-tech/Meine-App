@@ -211,7 +211,7 @@ Rubrik: `stabilitaet` (Maschine 5, Kabel 4, Langhantel 4, Kurzhantel 3, frei/ins
 Rudern 3; Kurzlast wie Pushdown/Kickback/Beinstrecker/Seitheben 2) · `last` (Compounds 4–5,
 Isolation 1–3).
 
-### Bestand (31) — `pattern · Stab/Dehn/Last`
+### Bestand (32) — `pattern · Stab/Dehn/Last`
 
 | Übung | pattern | Stab | Dehn | Last |
 |---|---|---|---|---|
@@ -245,6 +245,7 @@ Isolation 1–3).
 | Wadenheben stehend | wade | 4 | 4 | 4 |
 | Wadenheben sitzend | wade | 5 | 4 | 3 |
 | Crunch (Kabel) | bauchCrunch | 4 | 3 | 3 |
+| Beinheben hängend | huftBeugung | 2 | 3 | 2 |
 | Kreuzheben (LH) | hipHinge | 3 | 3 | 5 |
 
 ### Neue Stretch-Picks (~8) — inkl. Allokation

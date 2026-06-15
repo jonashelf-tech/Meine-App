@@ -119,6 +119,70 @@
   color: var(--tool-color, var(--primary));
 }
 
+/* ─── Coach-Split ────────────────────────────────────────── */
+.splitCurrent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 14px;
+}
+.splitName {
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.splitDays {
+  font-family: var(--font);
+  font-size: 0.74rem;
+  color: var(--text-dim);
+}
+
+.editActions {
+  display: flex;
+  gap: 10px;
+}
+
+.actionBtn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tool-color, var(--primary)) 30%, transparent);
+  color: var(--tool-color, var(--primary));
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.actionBtn:hover { background: color-mix(in srgb, var(--tool-color, var(--primary)) 22%, transparent); }
+
+.actionBtnConfirm {
+  background: color-mix(in srgb, var(--rose) 16%, transparent);
+  border-color: color-mix(in srgb, var(--rose) 40%, transparent);
+  color: var(--rose);
+}
+
+.actionBtnGhost {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.actionBtnGhost:hover { color: var(--text); border-color: var(--text-dim); }
+
 /* ─── Inkremente ─────────────────────────────────────────── */
 .incList {
   display: flex;

@@ -34,6 +34,16 @@
 }
 .searchInput::placeholder { color: var(--text-faint); }
 
+/* ─── Controls row (Sortierung, Muskel-Filter) ──────────────── */
+.controlsRow {
+  display: flex;
+  gap: 8px;
+}
+.controlsRow .select {
+  flex: 1;
+  width: auto;
+}
+
 /* ─── New button ─────────────────────────────────────────── */
 .newBtn {
   display: flex;
@@ -90,6 +100,44 @@
   font-family: var(--font);
   font-size: 0.72rem;
   color: var(--text-dim);
+}
+
+/* ─── Rating mini-bars (list row) ───────────────────────────── */
+.ratingRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.ratingItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ratingShortLabel {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+}
+
+.ratingTrack {
+  display: flex;
+  gap: 2px;
+}
+
+.ratingSegment {
+  width: 8px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--border);
+}
+
+.ratingSegmentFilled {
+  background: var(--tool-color, var(--primary));
 }
 
 /* ─── Empty ──────────────────────────────────────────────── */

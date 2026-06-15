@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ensureSeeded, savePlan, deletePlan, setActivePlan, loadSessions } from '../fitnessStore'
+import { ensureSeeded, savePlan, deletePlan, setActivePlan, loadSessions, saveSettings } from '../fitnessStore'
 import { createPlan, createPlanDay } from '../fitnessModel'
 import { generateCoachPlan } from '../coach/planGenerator'
 import Onboarding from '../coach/Onboarding'
@@ -48,8 +48,9 @@ export default function PlaeneTab() {
     setActiveId(meta.activePlanId)
   }
 
-  const handleCoachDone = coach => {
+  const handleCoachDone = ({ rhythm, ...coach }) => {
     const fitness = ensureSeeded()
+    saveSettings({ rhythm }) // Rhythmus ist global, gehört nicht in die Plan-Coach-Config
     const plan = generateCoachPlan(coach, fitness.exercises, loadSessions())
     setPlans(savePlan(plan))
     setActiveId(setActivePlan(plan.id).activePlanId)

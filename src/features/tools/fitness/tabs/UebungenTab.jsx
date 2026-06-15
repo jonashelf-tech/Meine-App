@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ensureSeeded, saveExercise, deleteExercise } from '../fitnessStore'
-import { MUSCLES, MUSCLE_LABELS, EQUIPMENT, EQUIPMENT_LABELS, createExercise } from '../fitnessModel'
+import { MUSCLES, MUSCLE_LABELS, EQUIPMENT, EQUIPMENT_LABELS, createExercise, RATING_AXES, RATING_LABELS, EXERCISE_PATTERNS, PATTERN_LABELS } from '../fitnessModel'
 import s from './UebungenTab.module.css'
 
 // ─── SVG Icons ────────────────────────────────────────────
@@ -36,10 +36,28 @@ function allocationSum(allocation) {
   return Object.values(allocation ?? {}).reduce((sum, v) => sum + (Number(v) || 0), 0)
 }
 
+const RATING_SHORT_LABELS = { stabilitaet: 'Stab', dehnung: 'Dehn', last: 'Last' }
+
+// ─── Rating Mini-Bar ────────────────────────────────────────
+function RatingBar({ axis, value }) {
+  return (
+    <span className={s.ratingItem}>
+      <span className={s.ratingShortLabel}>{RATING_SHORT_LABELS[axis]}</span>
+      <span className={s.ratingTrack}>
+        {[1, 2, 3, 4, 5].map(n => (
+          <span key={n} className={[s.ratingSegment, n <= value ? s.ratingSegmentFilled : ''].join(' ')} />
+        ))}
+      </span>
+    </span>
+  )
+}
+
 export default function UebungenTab() {
   const [exercises, setExercises] = useState(() => ensureSeeded().exercises)
   const [selId, setSelId] = useState(null)
   const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('stabilitaet')
+  const [muscleFilter, setMuscleFilter] = useState('')
 
   const selected = exercises.find(e => e.id === selId) ?? null
 
@@ -62,7 +80,12 @@ export default function UebungenTab() {
 
   const filtered = exercises
     .filter(e => e.name.toLowerCase().includes(search.trim().toLowerCase()))
-    .sort((a, b) => a.name.localeCompare(b.name, 'de'))
+    .filter(e => !muscleFilter || primaryMuscle(e.allocation) === muscleFilter)
+    .sort((a, b) => {
+      if (sortBy === 'name') return a.name.localeCompare(b.name, 'de')
+      const diff = b[sortBy] - a[sortBy]
+      return diff !== 0 ? diff : a.name.localeCompare(b.name, 'de')
+    })
 
   return (
     <div className={s.page}>
@@ -75,6 +98,31 @@ export default function UebungenTab() {
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
+      </div>
+
+      <div className={s.controlsRow}>
+        <select
+          className={s.select}
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value)}
+          aria-label="Sortieren nach"
+        >
+          {RATING_AXES.map(axis => (
+            <option key={axis} value={axis}>Sortieren: {RATING_LABELS[axis]}</option>
+          ))}
+          <option value="name">Sortieren: Name</option>
+        </select>
+        <select
+          className={s.select}
+          value={muscleFilter}
+          onChange={e => setMuscleFilter(e.target.value)}
+          aria-label="Muskel-Filter"
+        >
+          <option value="">Alle Muskeln</option>
+          {MUSCLES.map(m => (
+            <option key={m} value={m}>{MUSCLE_LABELS[m]}</option>
+          ))}
+        </select>
       </div>
 
       <button className={s.newBtn} onClick={handleNew}>
@@ -92,6 +140,11 @@ export default function UebungenTab() {
                 <span className={s.rowName}>{ex.name}</span>
                 <span className={s.rowSub}>
                   {pm ? MUSCLE_LABELS[pm] : '—'} · {EQUIPMENT_LABELS[ex.equipment]}
+                </span>
+                <span className={s.ratingRow}>
+                  {RATING_AXES.map(axis => (
+                    <RatingBar key={axis} axis={axis} value={ex[axis]} />
+                  ))}
                 </span>
               </button>
             )
@@ -177,6 +230,37 @@ function DetailView({ exercise, onBack, onSave, onDelete }) {
         >
           {EQUIPMENT.map(eq => (
             <option key={eq} value={eq}>{EQUIPMENT_LABELS[eq]}</option>
+          ))}
+        </select>
+      </div>
+
+      {RATING_AXES.map(axis => (
+        <div className={s.field} key={axis}>
+          <span className={s.label}>{RATING_LABELS[axis]}</span>
+          <div className={s.segmented}>
+            {[1, 2, 3, 4, 5].map(n => (
+              <button
+                key={n}
+                className={[s.segment, draft[axis] === n ? s.segmentActive : ''].join(' ')}
+                onClick={() => update({ [axis]: n })}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className={s.field}>
+        <span className={s.label}>Bewegungsmuster</span>
+        <select
+          className={s.select}
+          value={draft.pattern ?? ''}
+          onChange={e => update({ pattern: e.target.value || null })}
+        >
+          <option value="">— kein Muster —</option>
+          {EXERCISE_PATTERNS.map(p => (
+            <option key={p} value={p}>{PATTERN_LABELS[p]}</option>
           ))}
         </select>
       </div>
