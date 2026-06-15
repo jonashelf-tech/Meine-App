@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import s from './DashboardsTab.module.css'
 import { ensureSeeded, loadSessions, savePlan } from '../fitnessStore'
-import { realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries, reviewExercise, weeklyVolumeAdjust } from '../fitnessLogic'
+import { realSetsPerMuscle, plannedRealSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries, reviewExercise, weeklyVolumeAdjust } from '../fitnessLogic'
 import { MUSCLES, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
 import { todayKey } from '../../../../utils'
 
@@ -168,6 +168,69 @@ function WeekCheckCard() {
   )
 }
 
+// Balken pro Muskel: reale Sätze gegen die MEV/MAV/MRV-Referenz (geloggt oder geplant).
+function MuscleVolumeBars({ data }) {
+  const trackedMuscles = MUSCLES.filter(m => VOLUME_REF[m])
+  const untrackedMuscles = MUSCLES.filter(m => !VOLUME_REF[m])
+  return (
+    <>
+      <div className={s.bars}>
+        {trackedMuscles.map(m => {
+          const sets = data[m] ?? 0
+          const ref = VOLUME_REF[m]
+          const zone = volumeZone(m, sets)
+          const fillPct = Math.min(sets, ref.mrv) / ref.mrv * 100
+          const mevPct = ref.mev / ref.mrv * 100
+          const mavHiPct = ref.mav[1] / ref.mrv * 100
+          return (
+            <div key={m} className={s.bar}>
+              <div className={s.barHead}>
+                <span className={s.barLabel}>{MUSCLE_LABELS[m]}</span>
+                <span className={s.barValue}>{fmtNum(sets)}</span>
+              </div>
+              <div className={s.track}>
+                <div className={s.fill} style={{ width: `${fillPct}%`, background: ZONE_VARS[zone] }} />
+                <div className={s.tick} style={{ left: `${mevPct}%` }} />
+                <div className={s.tick} style={{ left: `${mavHiPct}%` }} />
+              </div>
+              <div className={s.ref}>MEV {ref.mev} · MAV {ref.mav[0]}–{ref.mav[1]} · MRV {ref.mrv}</div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className={s.untracked}>
+        <div className={s.untrackedTitle}>Nur getrackt</div>
+        <div className={s.untrackedList}>
+          {untrackedMuscles.map(m => (
+            <div key={m} className={s.untrackedRow}>
+              <span className={s.untrackedLabel}>{MUSCLE_LABELS[m]}</span>
+              <span className={s.untrackedValue}>{fmtNum(data[m] ?? 0)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
+
+// Geplantes Soll-Volumen des aktiven Plans gegen die Referenztabelle.
+function PlannedView({ exercises }) {
+  const fitness = ensureSeeded()
+  const plan = fitness.plans.find(p => p.id === fitness.meta.activePlanId)
+  const planned = useMemo(() => plan ? plannedRealSetsPerMuscle(plan, exercises) : {}, [plan, exercises])
+
+  if (!plan) {
+    return <div className={s.empty}>Kein aktiver Plan — setze einen Plan aktiv, um sein Soll-Volumen pro Muskel zu sehen.</div>
+  }
+  return (
+    <>
+      <div className={s.consistency}>{plan.name} · geplantes reales Volumen / Woche</div>
+      <MuscleVolumeBars data={planned} />
+    </>
+  )
+}
+
 function VolumeView({ sessions, exercises }) {
   const currentWeekStart = weekStartIso(todayKey())
   const [weekStart, setWeekStart] = useState(currentWeekStart)
@@ -181,9 +244,6 @@ function VolumeView({ sessions, exercises }) {
     () => sessions.filter(sess => sess.date >= weekStart && sess.date < weekEndExclusive).length,
     [sessions, weekStart, weekEndExclusive]
   )
-
-  const trackedMuscles = MUSCLES.filter(m => VOLUME_REF[m])
-  const untrackedMuscles = MUSCLES.filter(m => !VOLUME_REF[m])
 
   const hasAnySessions = sessions.length > 0
 
@@ -217,49 +277,7 @@ function VolumeView({ sessions, exercises }) {
       {!hasAnySessions ? (
         <div className={s.empty}>Noch keine Trainingsdaten — leg los, dann erscheint hier dein Volumen.</div>
       ) : (
-        <>
-          <div className={s.bars}>
-            {trackedMuscles.map(m => {
-              const sets = real[m] ?? 0
-              const ref = VOLUME_REF[m]
-              const zone = volumeZone(m, sets)
-              const fillPct = Math.min(sets, ref.mrv) / ref.mrv * 100
-              const mevPct = ref.mev / ref.mrv * 100
-              const mavHiPct = ref.mav[1] / ref.mrv * 100
-              return (
-                <div key={m} className={s.bar}>
-                  <div className={s.barHead}>
-                    <span className={s.barLabel}>{MUSCLE_LABELS[m]}</span>
-                    <span className={s.barValue}>{fmtNum(sets)}</span>
-                  </div>
-                  <div className={s.track}>
-                    <div
-                      className={s.fill}
-                      style={{ width: `${fillPct}%`, background: ZONE_VARS[zone] }}
-                    />
-                    <div className={s.tick} style={{ left: `${mevPct}%` }} />
-                    <div className={s.tick} style={{ left: `${mavHiPct}%` }} />
-                  </div>
-                  <div className={s.ref}>
-                    MEV {ref.mev} · MAV {ref.mav[0]}–{ref.mav[1]} · MRV {ref.mrv}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className={s.untracked}>
-            <div className={s.untrackedTitle}>Nur getrackt</div>
-            <div className={s.untrackedList}>
-              {untrackedMuscles.map(m => (
-                <div key={m} className={s.untrackedRow}>
-                  <span className={s.untrackedLabel}>{MUSCLE_LABELS[m]}</span>
-                  <span className={s.untrackedValue}>{fmtNum(real[m] ?? 0)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
+        <MuscleVolumeBars data={real} />
       )}
     </>
   )
@@ -320,16 +338,22 @@ export default function DashboardsTab() {
   const sessions = loadSessions()
   const exercises = fitness.exercises
 
-  const [view, setView] = useState('volumen')
+  const [view, setView] = useState('plan')
 
   return (
     <div className={s.page}>
       <div className={s.toggle}>
         <button
+          className={[s.toggleBtn, view === 'plan' ? s.toggleBtnActive : ''].join(' ')}
+          onClick={() => setView('plan')}
+        >
+          Plan-Soll
+        </button>
+        <button
           className={[s.toggleBtn, view === 'volumen' ? s.toggleBtnActive : ''].join(' ')}
           onClick={() => setView('volumen')}
         >
-          Volumen
+          Geloggt
         </button>
         <button
           className={[s.toggleBtn, view === 'kraft' ? s.toggleBtnActive : ''].join(' ')}
@@ -339,9 +363,9 @@ export default function DashboardsTab() {
         </button>
       </div>
 
-      {view === 'volumen'
-        ? <VolumeView sessions={sessions} exercises={exercises} />
-        : <StrengthView sessions={sessions} exercises={exercises} />}
+      {view === 'plan' && <PlannedView exercises={exercises} />}
+      {view === 'volumen' && <VolumeView sessions={sessions} exercises={exercises} />}
+      {view === 'kraft' && <StrengthView sessions={sessions} exercises={exercises} />}
     </div>
   )
 }

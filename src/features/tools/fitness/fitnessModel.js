@@ -86,6 +86,13 @@ export const AUTOREG_DOWN_PCT = 0.075
 export const AMBITION_LEVELS = {
   wenig: 0, normal: 1, ambitioniert: 2, vollgas: 3,
 }
+
+// Ambition deckelt zusätzlich die Arbeitssätze pro Session (Zeit/Aufwand pro Einheit).
+// Hält Sessions kurz; Wochenvolumen kommt über die Frequenz, nicht über Mammut-Einheiten.
+export const SESSION_SET_BUDGET = {
+  wenig: 10, normal: 15, ambitioniert: 20, vollgas: 25,
+}
+export const MAX_EXERCISES_PER_SESSION = 8
 export const REP_PREF = {
   schwer: [5, 8], standard: [8, 12], leicht: [12, 20],
 }

@@ -221,6 +221,22 @@ export function trainingDayStatus(rhythm, sessions, today) {
   return { kind: 'train' }
 }
 
+// Geplantes reales Volumen pro Muskel/Woche aus einem Plan: Σ zielSaetze × Allokationsanteil.
+export function plannedRealSetsPerMuscle(plan, exercises) {
+  const byId = new Map(exercises.map(e => [e.id, e]))
+  const acc = {}
+  plan?.days?.forEach(day => {
+    day.exercises?.forEach(entry => {
+      const alloc = byId.get(entry.exerciseId)?.allocation
+      if (!alloc) return
+      const sets = entry.zielSaetze || 0
+      Object.entries(alloc).forEach(([m, pct]) => { acc[m] = (acc[m] ?? 0) + sets * pct / 100 })
+    })
+  })
+  Object.keys(acc).forEach(m => { acc[m] = round1(acc[m]) })
+  return acc
+}
+
 // Reale Sätze pro Muskel in der Woche ab weekStart (7 Tage). Warmup zählt 0.
 export function realSetsPerMuscle(sessions, exercises, weekStart) {
   const byId = new Map(exercises.map(e => [e.id, e]))

@@ -312,3 +312,19 @@ zurück zur Vorgabe aus dem ursprünglichen Fitness-Prompt:
 - **Onboarding-Reihenfolge:** Ambition → Priorität direkt hintereinander.
 - **Komplement-Slot braucht Primär-Treffer:** Fallback auf Sekundärmuskel nur für die
   Anker-Übung (verhindert schwere Compounds als Lückenfüller für Nebenmuskeln).
+
+---
+
+# Nachtrag 2 (2026-06-15) — Session-Budget & Volumen-Auswertung
+
+- **Wenige Sätze pro Übung:** Anker max 3, Komplement max 2 (lieber „3 + 2" auf zwei
+  Übungen als 5× dieselbe).
+- **Session-Budget pro Ambition** (`SESSION_SET_BUDGET`: wenig 10 / normal 15 /
+  ambitioniert 20 / vollgas 25 Arbeitssätze, plus Deckel `MAX_EXERCISES_PER_SESSION = 8`):
+  hält Einheiten kurz. Verteilung **Breite zuerst** (eine Anker-Übung je Muskel nach
+  Priorität), dann Tiefe (Zweitübungen), bis das Budget greift. Wochenvolumen kommt über
+  die **Frequenz** (mehr Trainingstage), nicht über Mammut-Einheiten.
+- **Auswertung „Plan-Soll":** neuer Reiter im Auswertungs-Tab zeigt das geplante **reale**
+  Volumen des aktiven Plans pro Muskel gegen MEV/MAV/MRV (`plannedRealSetsPerMuscle`) —
+  macht den Trade-off zwischen Session-Länge und Volumen sichtbar (kurze Sessions auf
+  niedriger Frequenz → unter MEV; mehr Tage → grün).
