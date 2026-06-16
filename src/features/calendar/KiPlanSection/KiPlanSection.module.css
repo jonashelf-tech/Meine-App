@@ -108,6 +108,10 @@
 
 /* ─── Build button ───────────────────────────────────────── */
 .buildBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: rgba(139, 92, 246, 0.1);
   border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: var(--r-sm);

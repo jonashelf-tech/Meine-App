@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { sk, skLabel, getDurationKeys, ALL_SLOT_KEYS } from '../../../utils'
+import SettingsIcon from '../../../components/SettingsIcon'
 import s from './KiPlanSection.module.css'
 
 // ─── Algo plan builder ────────────────────────────────────
@@ -121,7 +122,7 @@ export default function KiPlanSection({ todos = [], slots = {}, onAccept }) {
         </div>
 
         <button className={s.buildBtn} onClick={handleBuild}>
-          ⚙ Plan erstellen
+          <SettingsIcon size={14} />Plan erstellen
         </button>
       </div>
 
