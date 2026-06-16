@@ -3,6 +3,7 @@ import { createBlocker, formatHour } from './blockerUtils'
 import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
 import { NEON } from '../../../utils'
 import RepeatPicker from '../../../components/RepeatPicker/RepeatPicker'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './BlockerModal.module.css'
 
 const HOUR_OPTIONS = Array.from({ length: 48 }, (_, i) => i * 0.5)
@@ -86,12 +87,12 @@ export default function BlockerModal({ blocker = null, date, onSave, onDelete, o
   }
 
   return (
-    <div
-      className={s.overlay}
-      style={keyboardOffset > 0 ? { paddingBottom: keyboardOffset } : {}}
-      onClick={onClose}
+    <Overlay
+      variant="sheet"
+      onClose={onClose}
+      style={keyboardOffset > 0 ? { paddingBottom: keyboardOffset } : undefined}
     >
-      <div className={s.modal} onClick={e => e.stopPropagation()}>
+      <div className={s.modal}>
 
         {/* Titel + Farb-Dot */}
         <div className={s.titleRow}>
@@ -182,6 +183,6 @@ export default function BlockerModal({ blocker = null, date, onSave, onDelete, o
         </div>
 
       </div>
-    </div>
+    </Overlay>
   )
 }

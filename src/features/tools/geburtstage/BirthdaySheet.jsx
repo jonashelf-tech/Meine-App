@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
 import { useToast } from '../../../components/Toast/Toast'
 import { createBirthday, parseDateInput } from './birthdayUtils'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './BirthdaySheet.module.css'
 
 const WICHTIG_PRESETS  = [7, 14]
@@ -103,8 +104,8 @@ export default function BirthdaySheet({ birthday = null, onSave, onClose }) {
     : {}
 
   return (
-    <div className={s.overlay} style={overlayStyle} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className={s.sheet} onClick={e => e.stopPropagation()}>
+    <Overlay variant="sheet" onClose={onClose} style={overlayStyle}>
+      <div className={s.sheet}>
         <div className={s.handle} />
         <div className={s.label}>{isEdit ? 'Bearbeiten' : 'Neuer Geburtstag'}</div>
 
@@ -219,6 +220,6 @@ export default function BirthdaySheet({ birthday = null, onSave, onClose }) {
           {isEdit ? 'Speichern' : 'Hinzufügen'}
         </button>
       </div>
-    </div>
+    </Overlay>
   )
 }
