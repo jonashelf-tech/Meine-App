@@ -38,3 +38,33 @@ describe('Overlay — CSS', () => {
     expect(css).toMatch(/slideInBottom/)
   })
 })
+
+const root = join(here, '..', '..')
+const migrated = [
+  'components/TodoModal/TodoModal.module.css',
+  'features/tools/klaeren/KlaerenModal.module.css',
+  'features/calendar/Zeitplan/MissedReviewModal.module.css',
+  'features/calendar/Zeitplan/Zeitplan.module.css',
+  'features/calendar/Zeitplan/SlotSheet.module.css',
+  'features/tools/geburtstage/BirthdaySheet.module.css',
+  'features/tools/kognitiv/CheckinModal.module.css',
+  'features/calendar/Blocker/BlockerModal.module.css',
+  'features/calendar/Blocker/RepeatDeleteSheet.module.css',
+  'components/UpdatePrompt/UpdatePrompt.module.css',
+  'features/tools/rezepte/Konfigurator.module.css',
+]
+
+describe('Overlay — Anti-Drift (migrierte Dialoge ohne eigenen Backdrop/Entrance)', () => {
+  for (const rel of migrated) {
+    const txt = readFileSync(join(root, rel), 'utf8')
+    it(`${rel} definiert keinen eigenen Voll-Backdrop`, () => {
+      // Kein "position:fixed; inset:0; … background: rgba(0,0,0,…)" mehr (= Dialog-Backdrop)
+      const hasFixedFullBackdrop =
+        /position:\s*fixed[\s\S]{0,80}inset:\s*0[\s\S]{0,140}background:\s*rgba\(0,\s*0,\s*0/.test(txt)
+      expect(hasFixedFullBackdrop).toBe(false)
+    })
+    it(`${rel} definiert keinen scaleIn/slideUp-Keyframe mehr`, () => {
+      expect(txt).not.toMatch(/@keyframes\s+(scaleIn|slideUp)/)
+    })
+  }
+})
