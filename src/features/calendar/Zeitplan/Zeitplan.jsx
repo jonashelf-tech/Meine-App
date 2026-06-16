@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import { computeBands } from './bandLogic'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './Zeitplan.module.css'
 import SlotBlock from './SlotBlock'
 import BlockerCard from '../Blocker/BlockerCard'
@@ -10,8 +11,8 @@ import { getBlockersForDate, getBlockerForHour } from '../Blocker/blockerUtils'
 // ─── RemoveDialog ─────────────────────────────────────────
 function RemoveDialog({ slotText, onBack, onDelete, onClose }) {
   return (
-    <div className={s.dialogOverlay} onClick={onClose}>
-      <div className={s.dialog} onClick={e => e.stopPropagation()}>
+    <Overlay variant="center" onClose={onClose}>
+      <div className={s.dialog}>
         <p className={s.dialogTitle}>"{slotText}"</p>
         <button className={s.dialogBtn} onClick={onBack}>
           ↩ Zurück auf Liste
@@ -23,7 +24,7 @@ function RemoveDialog({ slotText, onBack, onDelete, onClose }) {
           Abbrechen
         </button>
       </div>
-    </div>
+    </Overlay>
   )
 }
 

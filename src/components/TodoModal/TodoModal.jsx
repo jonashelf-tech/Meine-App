@@ -6,6 +6,7 @@ import { parseTodoText } from '../../features/todos/parseTodoText'
 import { parseHHMM, minutesToSk, NEON } from '../../utils'
 import { lv, sv, SK } from '../../storage'
 import RepeatPicker from '../RepeatPicker/RepeatPicker'
+import Overlay from '../Overlay/Overlay'
 import s from './TodoModal.module.css'
 
 const EditIcon = () => (
@@ -239,11 +240,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   }
 
   return (
-    <div
-      className={s.overlay}
-      style={keyboardOffset > 0 ? { alignItems: 'flex-start', paddingTop: 20, paddingBottom: keyboardOffset } : {}}
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}
-    >
+    <Overlay variant="center" onClose={onClose} style={keyboardOffset > 0 ? { alignItems: 'flex-start', paddingTop: 20, paddingBottom: keyboardOffset } : undefined}>
       <div className={s.modal}>
 
         {/* Header */}
@@ -489,6 +486,6 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         </button>
 
       </div>
-    </div>
+    </Overlay>
   )
 }

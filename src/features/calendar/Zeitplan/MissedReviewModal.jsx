@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './MissedReviewModal.module.css'
 
 // ─── Icon ──────────────────────────────────────────────────
@@ -60,7 +61,7 @@ export default function MissedReviewModal({ items, variant, onDone, onIgnore, on
   if (!items.length) return null
 
   return (
-    <div className={s.overlay}>
+    <Overlay variant="center">
       <div className={s.modal}>
 
         {/* Header */}
@@ -130,6 +131,6 @@ export default function MissedReviewModal({ items, variant, onDone, onIgnore, on
         </div>
 
       </div>
-    </div>
+    </Overlay>
   )
 }
