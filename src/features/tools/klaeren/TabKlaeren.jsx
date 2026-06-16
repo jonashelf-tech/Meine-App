@@ -3,6 +3,7 @@ import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import KlaerenModal from './KlaerenModal'
+import SettingsIcon from '../../../components/SettingsIcon'
 import s from './TabKlaeren.module.css'
 
 function getAgeDays(createdAt) {
@@ -89,7 +90,7 @@ export default function TabKlaeren({ onBack }) {
             className={s.settingsToggle}
             onClick={() => setSettingsOpen(p => !p)}
           >
-            <span>⚙ Einstellungen</span>
+            <span className={s.settingsLabel}><SettingsIcon size={13} />Einstellungen</span>
             <span className={[s.settingsArrow, settingsOpen ? s.settingsArrowOpen : ''].join(' ')}>›</span>
           </button>
           {settingsOpen && (

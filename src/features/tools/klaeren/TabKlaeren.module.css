@@ -118,6 +118,12 @@
   background: var(--surface-low);
 }
 
+.settingsLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .settingsArrow {
   transition: transform 0.2s;
   display: inline-block;

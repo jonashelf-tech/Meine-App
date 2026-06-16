@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '../../../../store'
 import { getToolColor } from '../../../../utils'
+import SettingsIcon from '../../../../components/SettingsIcon'
 import {
   isoToday, isoAddDays, isoLabel, isoNavLabel,
   loadEntries, saveEntries, upsertEntry,
@@ -194,7 +195,7 @@ export default function KoerpergewichtTab() {
     <div className={s.page} style={{ '--tool-color': toolColor }}>
       {/* Tab nav */}
       <div className={s.tabs}>
-        {[['dashboard','Dashboard'],['verlauf','Verlauf'],['einstellungen','⚙']].map(([id,lb])=>(
+        {[['dashboard','Dashboard'],['verlauf','Verlauf'],['einstellungen',<SettingsIcon size={15} />]].map(([id,lb])=>(
           <button key={id} className={[s.tab,activeTab===id?s.tabActive:''].join(' ')} onClick={()=>setActiveTab(id)}>{lb}</button>
         ))}
       </div>
