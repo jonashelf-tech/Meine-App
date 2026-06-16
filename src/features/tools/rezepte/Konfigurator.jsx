@@ -4,6 +4,7 @@ import { verteilePortionen, rezeptAusKonfig, konfigAusRezept } from './konfigura
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
 import { IconChevron, IconCheck, IconClose, IconPlus } from './icons'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './Konfigurator.module.css'
 
 const DEFAULT_GPP = 100
@@ -213,7 +214,7 @@ export default function Konfigurator({
       )}
 
       {saveDialog && (
-        <div className={s.saveDialogOverlay} onClick={e => { if (e.target === e.currentTarget) setSaveDialog(false) }}>
+        <Overlay variant="center" onClose={() => setSaveDialog(false)}>
           <div className={s.saveDialog}>
             <div className={s.saveDialogTitle}>Als Rezept speichern</div>
             <input className={s.saveInput} value={saveName} onChange={e => setSaveName(e.target.value)}
@@ -241,7 +242,7 @@ export default function Konfigurator({
               <button className={s.cancelBtn} onClick={() => setSaveDialog(false)}>Abbrechen</button>
             </div>
           </div>
-        </div>
+        </Overlay>
       )}
     </div>
   )

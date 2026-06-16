@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './KlaerenModal.module.css'
 
 const SCREENS = ['relevanz', 'hindernis', 'wert', 'schritte']
@@ -62,11 +63,10 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
     : {}
 
   return (
-    <div className={s.overlay} style={overlayStyle} onClick={onClose}>
+    <Overlay variant="center" onClose={onClose} style={overlayStyle}>
       <div
         className={s.modal}
         style={{ '--tool-color': toolColor }}
-        onClick={e => e.stopPropagation()}
       >
 
         {/* ── Screen: relevanz ─────────────────────── */}
@@ -195,6 +195,6 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
         )}
 
       </div>
-    </div>
+    </Overlay>
   )
 }

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { skLabel, getDurationKeys } from '../../../utils'
 import { getActiveTodos, sortTodos } from '../poolLogic'
 import PrioBadge from '../../../components/PrioBadge/PrioBadge'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './SlotSheet.module.css'
 
 // Bottom-Sheet beim Tap auf einen leeren Slot: neues Todo direkt im Slot
@@ -22,8 +23,8 @@ export default function SlotSheet({ slotKey, dateLabel = null, todos, todaySlots
   }
 
   return (
-    <div className={s.overlay} onClick={onClose}>
-      <div className={s.sheet} onClick={e => e.stopPropagation()}>
+    <Overlay variant="sheet" onClose={onClose}>
+      <div className={s.sheet}>
 
         <div className={s.header}>
           <span className={s.time}>{dateLabel ? `${dateLabel} · ` : ''}{skLabel(slotKey)}</span>
@@ -65,6 +66,6 @@ export default function SlotSheet({ slotKey, dateLabel = null, todos, todaySlots
         )}
 
       </div>
-    </div>
+    </Overlay>
   )
 }

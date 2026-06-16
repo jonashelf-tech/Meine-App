@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { getLastCheckin, saveCheckin } from './checkinStore'
 import { getDayState } from '../../daily/dailyState'
 import { todayKey } from '../../../utils'
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './CheckinModal.module.css'
 
 const TIMER_SECS = 120
@@ -98,16 +99,16 @@ export default function CheckinModal({ onSave, onSkip }) {
 
   if (timerEntry) {
     return (
-      <div className={s.backdrop}>
+      <Overlay variant="sheet">
         <div className={s.modal}>
           <ArrivalTimer entry={timerEntry} onDone={onSave} />
         </div>
-      </div>
+      </Overlay>
     )
   }
 
   return (
-    <div className={s.backdrop}>
+    <Overlay variant="sheet">
       <div className={s.modal}>
         <div className={s.header}>
           <div className={s.title}>Wie geht's dir heute?</div>
@@ -162,6 +163,6 @@ export default function CheckinModal({ onSave, onSkip }) {
           <button className={s.saveBtn} onClick={handleSave}>Fertig →</button>
         </div>
       </div>
-    </div>
+    </Overlay>
   )
 }

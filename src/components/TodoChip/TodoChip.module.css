@@ -30,6 +30,7 @@
     background var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease),
     box-shadow var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease),
     transform var(--dur-fast) var(--ease);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -64,7 +65,7 @@
 
 /* Flash on done */
 .doneFlash {
-  animation: doneFlash 0.65s ease;
+  animation: doneFlash 0.65s var(--ease);
 }
 
 /* ── Stripe ──────────────────────────────────────────────── */
@@ -377,7 +378,8 @@
   gap: 8px;
   padding: 8px 12px 8px 14px;
   border-bottom: 1px solid var(--border-dim);
-  transition: background 0.1s;
+  transition: background 0.1s, opacity var(--dur-fast) var(--ease);
+  animation: chipIn var(--dur-fast) var(--ease-out);
   -webkit-tap-highlight-color: transparent;
 }
 

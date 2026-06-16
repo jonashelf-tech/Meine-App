@@ -1,9 +1,10 @@
+import Overlay from '../../../components/Overlay/Overlay'
 import s from './RepeatDeleteSheet.module.css'
 
 export default function RepeatDeleteSheet({ onDeleteThis, onDeleteFuture, onClose }) {
   return (
-    <div className={s.overlay} onClick={onClose}>
-      <div className={s.sheet} onClick={e => e.stopPropagation()}>
+    <Overlay variant="sheet" onClose={onClose}>
+      <div className={s.sheet}>
         <p className={s.title}>Zeitfenster löschen</p>
         <button className={s.btn} onClick={onDeleteThis}>
           Nur diesen löschen
@@ -13,6 +14,6 @@ export default function RepeatDeleteSheet({ onDeleteThis, onDeleteFuture, onClos
         </button>
         <button className={s.cancel} onClick={onClose}>Abbrechen</button>
       </div>
-    </div>
+    </Overlay>
   )
 }

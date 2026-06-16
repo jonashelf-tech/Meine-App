@@ -23,3 +23,12 @@ describe('Zeitplan — kein Drag-Stauchen', () => {
     expect(zp).not.toMatch(/dnd-active[\s\S]*grid-auto-rows/)
   })
 })
+
+describe('Overlay-Tokens', () => {
+  it('definiert --z-overlay', () => {
+    expect(vars).toMatch(/--z-overlay\s*:/)
+  })
+  it('hat den overlayIn-Keyframe', () => {
+    expect(vars).toMatch(/@keyframes\s+overlayIn/)
+  })
+})

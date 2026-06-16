@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
+import Overlay from '../Overlay/Overlay'
 import s from './UpdatePrompt.module.css'
 
 // Mindestabstand zwischen zwei Update-Checks (verhindert, dass jeder Tap
@@ -43,7 +44,7 @@ export default function UpdatePrompt() {
   if (!needRefresh) return null
 
   return (
-    <div className={s.backdrop}>
+    <Overlay variant="sheet">
       <div className={s.modal}>
         <div className={s.header}>
           <div className={s.title}>Neue Version verfügbar</div>
@@ -58,6 +59,6 @@ export default function UpdatePrompt() {
           </button>
         </div>
       </div>
-    </div>
+    </Overlay>
   )
 }

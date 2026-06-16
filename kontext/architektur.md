@@ -169,7 +169,9 @@ Globale Variablen nur in `styles/vars.css`.
 **Border-Radius:** `--r` 14px · `--r-sm` 8px · `--r-lg` 20px
 **Shadows:** `--shadow-sm` · `--shadow-md` · `--shadow-lg`
 **Glows:** `--glow-primary` · `--glow-teal` · `--glow-emerald`
-**Keyframes:** `fadeInUp` · `pulse` · `slideInBottom` · `glowPulse` · `shimmer`
+**Keyframes:** `fadeInUp` · `toolEnter` · `overlayIn` · `pulse` · `slideInBottom` · `glowPulse` · `shimmer`
+**Motion-Tokens:** `--dur-fast` 160ms · `--dur` 240ms · `--dur-slow` 320ms · `--ease-out` (Enter) · `--ease-in` (Exit) · `--ease` · Elevation `--elev-1` · `--elev-drag`
+**z-index:** `--z-overlay` 400 (alle Dialoge) · Toast 9999
 **Accessibility:** `@media (prefers-reduced-motion: reduce)` — alle Animationen aus
 
 **Light Mode** (`data-theme="light"` und `@media (prefers-color-scheme: light)`):
@@ -178,6 +180,26 @@ Globale Variablen nur in `styles/vars.css`.
 - `App.module.css`: Tab-Bar mit hellem frosted-glass Hintergrund + dunkle Icon-Farben via `data-theme` Override
 - Alle ~30 CSS-Module-Dateien: hardcodierte `rgba(255,255,255,X)` durch CSS-Variablen ersetzt (--text, --text-dim, --text-ghost, --text-faint, --border, --border-dim, --surface, --surface-low, --bg2). Box-shadows absichtlich nicht geändert.
 - Toast: Light-Mode-Override mit warmem Hintergrund (statt dunklem Popup)
+
+---
+
+## Dialoge — `<Overlay>`-Primitive
+
+`src/components/Overlay/Overlay.jsx` rahmt **alle** echten Dialoge (Backdrop + Karte) einheitlich.
+
+```jsx
+<Overlay variant="center" | "sheet" onClose={fn} style={backdropStyle?}>
+  {children /* eigene Karte des Dialogs */}
+</Overlay>
+```
+
+- **Backdrop kanonisch:** `rgba(0,0,0,0.62)` + `blur(18px) saturate(130%)`, `z-index: var(--z-overlay)`, Fade-in über `--dur-fast`. Pro Dialog **kein** eigener Backdrop mehr.
+- **`center`** mittig (Keyframe `overlayIn`), **`sheet`** unten angedockt (Keyframe `slideInBottom`) — beide `--dur`/`--ease-out`.
+- **Schließt** bei Backdrop-Tap (nur wenn der Backdrop selbst getroffen wird) **und Escape**. Bewusst nicht-schließbare Dialoge (MissedReview, CheckinModal, UpdatePrompt) übergeben einfach kein `onClose`.
+- `role="dialog"` + `aria-modal`. `style` wird auf den Backdrop durchgereicht (z.B. Keyboard-Offset).
+- **Genutzt von:** TodoModal · KlaerenModal · MissedReviewModal · Zeitplan-RemoveDialog · UpdatePrompt · Konfigurator-SaveDialog (center) — SlotSheet · BirthdaySheet · CheckinModal · BlockerModal · RepeatDeleteSheet (sheet).
+- **Nicht** für Vollbild-Modi (FokusView, Kognitiv-Übungen, Fitness-Session, Briefings) — anderer Archetyp.
+- **Guard:** `src/components/Overlay/overlay.test.js` erzwingt, dass migrierte Dialog-CSS keinen eigenen Backdrop bzw. `scaleIn`/`slideUp`-Keyframe mehr definieren.
 
 ---
 
