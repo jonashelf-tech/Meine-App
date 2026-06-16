@@ -167,7 +167,6 @@ export default function TodoChip({
   ].filter(Boolean).join(' · ')
 
   const metaParts = [
-    todo.category,
     isTermin(todo)      ? fmtDateShort(todo.date) : null,
     isFaelligkeit(todo) ? fmtDateShort(todo.date) : null,
   ].filter(Boolean)
@@ -214,6 +213,7 @@ export default function TodoChip({
                   <span className={s.quickBadge}>⚡</span>
                 )}
               </span>
+              {todo.category && <span className={s.categoryTag}>{todo.category}</span>}
               {timeLabel && <span className={s.timeLabel}>{timeLabel}</span>}
             </div>
 

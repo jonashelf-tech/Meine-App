@@ -118,6 +118,17 @@
   font-size: 0.72rem;
 }
 
+/* ── Category tag (inline auf der Titelzeile) ─────────────── */
+.categoryTag {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
 /* ── Time/duration label (rechts auf der Titelzeile) ──────── */
 .timeLabel {
   font-family: var(--font-num);
