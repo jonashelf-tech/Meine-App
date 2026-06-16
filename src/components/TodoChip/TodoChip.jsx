@@ -206,42 +206,46 @@ export default function TodoChip({
 
         {/* Body — single/double tap */}
         <div className={s.body} onClick={tapHandler}>
-          <div className={s.titleRow}>
-            <span className={s.text}>
-              {todo.text || <span className={s.emptyText}>Kein Text</span>}
-              {todo.duration && todo.duration <= 2 && (
-                <span className={s.quickBadge}>⚡</span>
-              )}
-            </span>
-            {timeLabel && <span className={s.timeLabel}>{timeLabel}</span>}
+          <div className={s.titleBlock}>
+            <div className={s.titleRow}>
+              <span className={s.text}>
+                {todo.text || <span className={s.emptyText}>Kein Text</span>}
+                {todo.duration && todo.duration <= 2 && (
+                  <span className={s.quickBadge}>⚡</span>
+                )}
+              </span>
+              {timeLabel && <span className={s.timeLabel}>{timeLabel}</span>}
+            </div>
+
+            {(metaParts.length > 0 || ageLabel) && (
+              <span className={s.meta}>
+                <span className={s.metaLeft}>{metaParts.join(' · ')}</span>
+                {ageLabel && (
+                  <span className={[s.ageTag, isOld ? s.ageTagOld : ''].join(' ')}>
+                    {ageLabel}
+                  </span>
+                )}
+              </span>
+            )}
           </div>
 
-          {/* Fortschrittsbalken — nur wenn Subtodos */}
-          {!disableExpand && allItems.length > 0 && (
+          {/* Expand-Zone — immer vorhanden (einheitlicher Look + Hinzufügen bei
+              0 Punkten). flex:1 füllt die Chip-Resthöhe → großes Tap-Ziel, das
+              auf hohen Slot-Chips bis zur vollen Höhe mitwächst. */}
+          {!disableExpand && (
             <button
-              className={s.progressRow}
+              className={s.expandZone}
               onClick={e => { e.stopPropagation(); toggleExpanded() }}
-              aria-label="Unterpunkte anzeigen"
+              aria-label={allItems.length > 0 ? 'Unterpunkte anzeigen' : 'Unterpunkt hinzufügen'}
               aria-expanded={expanded}
             >
               <span className={s.progressTrack}>
-                <span className={s.progressFill} style={{ width: `${Math.round((doneItems / allItems.length) * 100)}%` }} />
+                <span className={s.progressFill} style={{ width: `${allItems.length ? Math.round((doneItems / allItems.length) * 100) : 0}%` }} />
               </span>
               <span className={[s.progressChevron, expanded ? s.progressChevronOpen : ''].join(' ')}>
                 <ProgressChevronIcon />
               </span>
             </button>
-          )}
-
-          {(metaParts.length > 0 || ageLabel) && (
-            <span className={s.meta}>
-              <span className={s.metaLeft}>{metaParts.join(' · ')}</span>
-              {ageLabel && (
-                <span className={[s.ageTag, isOld ? s.ageTagOld : ''].join(' ')}>
-                  {ageLabel}
-                </span>
-              )}
-            </span>
           )}
         </div>
 
