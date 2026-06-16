@@ -51,6 +51,7 @@
 .checkinRow { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 .checkinItem { display: flex; align-items: center; gap: 6px; }
 .checkinLbl { font-size: 0.68rem; color: var(--text-dim); }
+.checkinIcon { display: flex; align-items: center; color: var(--text-dim); }
 .checkinMedi { font-size: 0.68rem; color: var(--text-dim); }
 .checkinNote { font-size: 0.7rem; color: var(--text-dim); font-style: italic; }
 .dots { display: flex; gap: 3px; align-items: center; }

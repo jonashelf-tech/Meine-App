@@ -161,16 +161,6 @@
   display: none;
 }
 
-/* Drop hint */
-.dropHint {
-  margin-left: auto;
-  padding-right: 8px;
-  font-size: 1rem;
-  color: var(--primary);
-  opacity: 0.5;
-  font-weight: 300;
-}
-
 
 /* ── Zeitfenster Button ───────────────────────────────────── */
 .blockerBtn {

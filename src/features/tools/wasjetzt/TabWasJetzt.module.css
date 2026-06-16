@@ -167,7 +167,8 @@
 }
 
 .emptyEmoji {
-  font-size: 2rem;
+  color: var(--text-faint);
+  display: flex;
 }
 
 .emptyText {
@@ -226,6 +227,10 @@
 
 .regenBtn {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   padding: 11px;
   border-radius: var(--r);
   border: 1px solid var(--border);

@@ -89,7 +89,9 @@ export default function Results({ session, fromArchive = false, onBack }) {
             )}
             {checkin.medi?.name && (
               <span className={s.checkinItem}>
-                <span className={s.checkinLbl}>💊</span>
+                <span className={s.checkinIcon}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+                </span>
                 <span className={s.checkinMedi}>
                   {checkin.medi.name}
                   {checkin.medi.dosierung ? ` ${checkin.medi.dosierung}` : ''}
