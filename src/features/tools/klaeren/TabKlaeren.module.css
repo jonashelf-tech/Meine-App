@@ -118,7 +118,7 @@
   background: var(--surface-low);
 }
 
-.settingsLabel {
+.settingsToggleLabel {
   display: inline-flex;
   align-items: center;
   gap: 6px;

@@ -90,7 +90,7 @@ export default function TabKlaeren({ onBack }) {
             className={s.settingsToggle}
             onClick={() => setSettingsOpen(p => !p)}
           >
-            <span className={s.settingsLabel}><SettingsIcon size={13} />Einstellungen</span>
+            <span className={s.settingsToggleLabel}><SettingsIcon size={13} />Einstellungen</span>
             <span className={[s.settingsArrow, settingsOpen ? s.settingsArrowOpen : ''].join(' ')}>›</span>
           </button>
           {settingsOpen && (
