@@ -207,7 +207,3 @@
 .poolBtn:active {
   background: rgba(139, 92, 246, 0.28);
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .modal { animation: none; }
-}
