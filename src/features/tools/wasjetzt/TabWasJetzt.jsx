@@ -74,7 +74,9 @@ export default function TabWasJetzt({ onBack }) {
       <div className={s.cards} key={genKey}>
         {cards.length === 0 ? (
           <div className={s.empty}>
-            <span className={s.emptyEmoji}>🔍</span>
+            <span className={s.emptyEmoji}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
             <span className={s.emptyText}>Keine passenden Aufgaben —{'\n'}mehr Zeit wählen oder Todos anlegen</span>
           </div>
         ) : allDone ? (
@@ -118,7 +120,8 @@ export default function TabWasJetzt({ onBack }) {
       {!allDone && cards.length > 0 && (
         <div className={s.footer}>
           <button className={s.regenBtn} onClick={() => regen(zeitBudget)}>
-            🔀 Neue Vorschläge
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg>
+            Neue Vorschläge
           </button>
         </div>
       )}
