@@ -209,3 +209,23 @@
   border-color: var(--border);
   transform: scale(1.1);
 }
+
+/* ── KI-Toggle ──────────────────────────────────────────── */
+.kiToggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.kiToggleOn {
+  background: color-mix(in srgb, var(--tool-color) 12%, transparent);
+  border-color: color-mix(in srgb, var(--tool-color) 40%, transparent);
+  color: var(--tool-color);
+}

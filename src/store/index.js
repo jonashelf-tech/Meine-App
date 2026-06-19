@@ -128,7 +128,7 @@ export const useAppStore = create((set, get) => ({
   },
 
   // ─── Klaeren Settings ──────────────────────────────────
-  klaerenSettings: lv(SK.klaerenSettings, { threshold: 30, ageColor: '#FB923C' }),
+  klaerenSettings: lv(SK.klaerenSettings, { threshold: 30, ageColor: '#FB923C', kiZerlegen: true }),
   setKlaerenSettings: (s) => {
     const next = typeof s === 'function' ? s(get().klaerenSettings) : s
     set({ klaerenSettings: next })

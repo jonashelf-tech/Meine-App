@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react'
 import { useAppStore } from '../../../store'
-import { getToolColor } from '../../../utils'
+import { getToolColor, todayKey } from '../../../utils'
 import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
 import Overlay from '../../../components/Overlay/Overlay'
+import { buildZerlegenPrompt, parseZerlegenResult } from '../../todos/kiBridge'
 import s from './KlaerenModal.module.css'
 
 const SCREENS = ['relevanz', 'hindernis', 'wert', 'schritte']
@@ -21,7 +22,7 @@ function ProgressDots({ current }) {
 }
 
 export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
-  const { toolColors } = useAppStore()
+  const { toolColors, klaerenSettings } = useAppStore()
   const toolColor      = getToolColor('klaeren', toolColors)
   const keyboardOffset = useKeyboardOffset()
 
@@ -30,6 +31,10 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
   const [wert,      setWert]      = useState('')
   const [steps,     setSteps]     = useState(todo.subItems || [])
   const [stepInput, setStepInput] = useState('')
+  const [kiOpen,    setKiOpen]    = useState(false)
+  const [kiInput,   setKiInput]   = useState('')
+  const [kiError,   setKiError]   = useState(null)
+  const [kiCopied,  setKiCopied]  = useState(false)
   const stepRef = useRef(null)
 
   const doneSteps = steps.filter(st => st.done).length
@@ -174,6 +179,73 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
                     <button className={s.stepRm} onClick={() => removeStep(step.id)}>✕</button>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* KI-Zerlegen */}
+            {klaerenSettings?.kiZerlegen !== false && (
+              <div className={s.kiSection}>
+                <button
+                  className={s.kiBtn}
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(
+                        buildZerlegenPrompt(todo, { hindernis, wert, today: todayKey() })
+                      )
+                    } catch { /* clipboard nicht verfügbar */ }
+                    setKiCopied(true)
+                    setKiOpen(true)
+                  }}
+                >
+                  ✦ Mit KI zerlegen
+                </button>
+                {kiOpen && (
+                  <>
+                    <div className={s.kiHint}>
+                      {kiCopied ? '✓ Prompt kopiert' : 'Prompt bereit'} — in deine KI einfügen, Antwort hier zurück:
+                    </div>
+                    <textarea
+                      className={s.textarea}
+                      placeholder='KI-Antwort hier einfügen…'
+                      value={kiInput}
+                      onChange={e => setKiInput(e.target.value)}
+                      rows={5}
+                      onClick={e => e.stopPropagation()}
+                    />
+                    {kiError && <div className={s.kiError}>{kiError}</div>}
+                    <button
+                      className={s.confirmBtn}
+                      onClick={() => {
+                        const { steps: parsed, error } = parseZerlegenResult(kiInput)
+                        if (error) {
+                          setKiError(error)
+                        } else {
+                          setSteps(prev => [
+                            ...prev,
+                            ...parsed.map(text => ({ id: crypto.randomUUID(), text, done: false })),
+                          ])
+                          setKiOpen(false)
+                          setKiInput('')
+                          setKiError(null)
+                        }
+                      }}
+                    >
+                      Schritte übernehmen
+                    </button>
+                    <button
+                      className={s.skipLink}
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(
+                            buildZerlegenPrompt(todo, { hindernis, wert, today: todayKey() })
+                          )
+                        } catch { /* clipboard nicht verfügbar */ }
+                      }}
+                    >
+                      Prompt nochmal kopieren
+                    </button>
+                  </>
+                )}
               </div>
             )}
 

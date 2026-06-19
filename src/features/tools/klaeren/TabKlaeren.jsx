@@ -128,6 +128,15 @@ export default function TabKlaeren({ onBack }) {
                   ))}
                 </div>
               </div>
+              <div className={s.settingsRow}>
+                <span className={s.settingsLabel}>Mit KI zerlegen</span>
+                <button
+                  className={[s.kiToggle, klaerenSettings?.kiZerlegen !== false ? s.kiToggleOn : ''].join(' ')}
+                  onClick={() => setKlaerenSettings({ ...klaerenSettings, kiZerlegen: klaerenSettings?.kiZerlegen === false })}
+                >
+                  {klaerenSettings?.kiZerlegen !== false ? 'An' : 'Aus'}
+                </button>
+              </div>
             </div>
           )}
         </div>
