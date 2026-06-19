@@ -276,9 +276,27 @@
   user-select: none;
 }
 
-.freeBandPlus {
+.freeBandControls {
   display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.freeBandBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
   color: var(--primary);
+  cursor: pointer;
+  padding: 4px 7px;
+  border-radius: var(--r-sm);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.freeBandBtn:hover {
+  background: var(--surface);
 }
 
 /* ── All-day-Streifen (Geburtstage) ─────────────────────────── */

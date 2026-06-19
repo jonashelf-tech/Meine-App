@@ -17,7 +17,7 @@ const SubDragIcon = () => (
 )
 
 const ProgressChevronIcon = () => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="12" height="12" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="2 3 5 7 8 3"/>
   </svg>
 )
@@ -192,7 +192,6 @@ export default function TodoChip({
           flashing  ? s.doneFlash : '',
           todo.done ? s.chipDone  : '',
           !todo.done && isOld ? s.chipOld : '',
-          !floatExpand && expanded ? s.chipExpanded : '',
           className || ''
         ].join(' ').trim()}
         style={{
@@ -203,7 +202,20 @@ export default function TodoChip({
       >
         <span className={s.stripe} />
 
-        {/* Body — single/double tap */}
+        {/* Aufklapp-Button — volle Chip-Höhe, links: großes Tap-Ziel, getrennt
+            vom Body, damit Abhaken (Body) und Aufklappen sich nicht überlappen. */}
+        {!disableExpand && (
+          <button
+            className={[s.expandBtn, expanded ? s.expandBtnOpen : ''].join(' ')}
+            onClick={e => { e.stopPropagation(); toggleExpanded() }}
+            aria-label={allItems.length > 0 ? 'Unterpunkte anzeigen' : 'Unterpunkt hinzufügen'}
+            aria-expanded={expanded}
+          >
+            <ProgressChevronIcon />
+          </button>
+        )}
+
+        {/* Body — single/double tap (abhaken / bearbeiten) */}
         <div className={s.body} onClick={tapHandler}>
           <div className={s.titleBlock}>
             <div className={s.titleRow}>
@@ -229,23 +241,11 @@ export default function TodoChip({
             )}
           </div>
 
-          {/* Expand-Zone — immer vorhanden (einheitlicher Look + Hinzufügen bei
-              0 Punkten). flex:1 füllt die Chip-Resthöhe → großes Tap-Ziel, das
-              auf hohen Slot-Chips bis zur vollen Höhe mitwächst. */}
-          {!disableExpand && (
-            <button
-              className={s.expandZone}
-              onClick={e => { e.stopPropagation(); toggleExpanded() }}
-              aria-label={allItems.length > 0 ? 'Unterpunkte anzeigen' : 'Unterpunkt hinzufügen'}
-              aria-expanded={expanded}
-            >
-              <span className={s.progressTrack}>
-                <span className={s.progressFill} style={{ width: `${allItems.length ? Math.round((doneItems / allItems.length) * 100) : 0}%` }} />
-              </span>
-              <span className={[s.progressChevron, expanded ? s.progressChevronOpen : ''].join(' ')}>
-                <ProgressChevronIcon />
-              </span>
-            </button>
+          {/* Fortschrittsbalken — unten im Body, nur wenn Unterpunkte existieren */}
+          {!disableExpand && allItems.length > 0 && (
+            <span className={s.progressTrack}>
+              <span className={s.progressFill} style={{ width: `${Math.round((doneItems / allItems.length) * 100)}%` }} />
+            </span>
           )}
         </div>
 
@@ -308,6 +308,7 @@ export default function TodoChip({
             ...(floatExpand ? {
               position:     'absolute',
               top:          'calc(100% + 4px)',
+              marginTop:    0,
               left:         0,
               right:        0,
               zIndex:       50,

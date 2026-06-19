@@ -29,7 +29,7 @@ function RemoveDialog({ slotText, onBack, onDelete, onClose }) {
 }
 
 // ─── FreeBand — "frei"-Band statt PillStrip-Pillen ─────────
-function FreeBand({ band, dir, onTapExpand, registerHalf }) {
+function FreeBand({ band, dir, onTapExpand, onTapShrink, registerHalf }) {
   const label = dir === 'top'
     ? `bis ${String(band.to).padStart(2, '0')}:00 · frei`
     : `ab ${String(band.from).padStart(2, '0')}:00 · frei`
@@ -42,8 +42,21 @@ function FreeBand({ band, dir, onTapExpand, registerHalf }) {
       onClick={() => onTapExpand?.(dir)}
     >
       <span className={s.freeBandLabel}>{label}</span>
-      <span className={s.freeBandPlus}>
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span className={s.freeBandControls}>
+        <button
+          className={s.freeBandBtn}
+          onClick={e => { e.stopPropagation(); onTapShrink?.(dir) }}
+          aria-label="Zeitbereich verkleinern"
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round"><path d="M5 12h14"/></svg>
+        </button>
+        <button
+          className={s.freeBandBtn}
+          onClick={e => { e.stopPropagation(); onTapExpand?.(dir) }}
+          aria-label="Zeitbereich erweitern"
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
       </span>
     </div>
   )
@@ -63,6 +76,7 @@ export default function Zeitplan({
   onRemoveSlot,
   onShiftAll,
   onTapExpand,
+  onTapShrink,
   onToggleLock,
   registerHalf,
   startSlotDrag,
@@ -291,7 +305,7 @@ export default function Zeitplan({
           </div>
         )}
         {topBand && (
-          <FreeBand band={topBand} dir="top" onTapExpand={onTapExpand} registerHalf={registerHalf} />
+          <FreeBand band={topBand} dir="top" onTapExpand={onTapExpand} onTapShrink={onTapShrink} registerHalf={registerHalf} />
         )}
         {sections.map((sec, si) =>
           sec.type === 'normal'
@@ -337,7 +351,7 @@ export default function Zeitplan({
             )
         )}
         {bottomBand && (
-          <FreeBand band={bottomBand} dir="bottom" onTapExpand={onTapExpand} registerHalf={registerHalf} />
+          <FreeBand band={bottomBand} dir="bottom" onTapExpand={onTapExpand} onTapShrink={onTapShrink} registerHalf={registerHalf} />
         )}
       </div>
 
