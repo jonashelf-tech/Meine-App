@@ -321,9 +321,6 @@ export default function TodoChip({
             } : {})
           }}
         >
-          {/* Header */}
-          {!floatExpand && <div className={s.itemsHeader}>{todo.text}</div>}
-
           {/* Rows */}
           {allItems.map((item, idx) => (
             <div

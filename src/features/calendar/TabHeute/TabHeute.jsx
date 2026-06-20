@@ -225,15 +225,15 @@ export default function TabHeute() {
   }
 
   const handleBandExpand = useCallback((dir) => {
-    if (dir === 'top')  setVisStart(v => { const n = Math.max(0, v - 3);  saveVis(n, visEnd); return n })
-    else                setVisEnd(v   => { const n = Math.min(23, v + 3); saveVis(visStart, n); return n })
+    if (dir === 'top')  setVisStart(v => { const n = Math.max(0, v - 1);  saveVis(n, visEnd); return n })
+    else                setVisEnd(v   => { const n = Math.min(23, v + 1); saveVis(visStart, n); return n })
   }, [visStart, visEnd])
 
   // Verkleinern: trimmt nur leere Randzeit — belegte Stunden bleiben sichtbar
   // (computeBands erzwingt min/max der belegten Slots), daher keine Slot-Sperre nötig.
   const handleBandShrink = useCallback((dir) => {
-    if (dir === 'top')  setVisStart(v => { const n = Math.min(visEnd - 1, v + 3);  saveVis(n, visEnd); return n })
-    else                setVisEnd(v   => { const n = Math.max(visStart + 1, v - 3); saveVis(visStart, n); return n })
+    if (dir === 'top')  setVisStart(v => { const n = Math.min(visEnd - 1, v + 1);  saveVis(n, visEnd); return n })
+    else                setVisEnd(v   => { const n = Math.max(visStart + 1, v - 1); saveVis(visStart, n); return n })
   }, [visStart, visEnd])
 
   // ─── Shift all slots ±30min ───────────────────────────────
