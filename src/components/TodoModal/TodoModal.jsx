@@ -240,7 +240,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   }
 
   return (
-    <Overlay variant="center" onClose={onClose} style={keyboardOffset > 0 ? { alignItems: 'flex-start', paddingTop: 20, paddingBottom: keyboardOffset } : undefined}>
+    <Overlay variant="center" onClose={onClose} closeOnBackdrop={false} style={keyboardOffset > 0 ? { alignItems: 'flex-start', paddingTop: 20, paddingBottom: keyboardOffset } : undefined}>
       <div className={s.modal}>
 
         {/* Header */}
