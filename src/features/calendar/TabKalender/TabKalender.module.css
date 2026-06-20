@@ -1,6 +1,6 @@
 ﻿.page {
   padding-bottom: 24px;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .segmented {
@@ -186,9 +186,17 @@
 .weekWrapper {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-dim);
   border-radius: var(--r);
+  overflow: clip;
+}
+
+.weekStickyTop {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: var(--bg2);
+  box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.5);
 }
 
 .weekHeaderRow {
@@ -207,7 +215,7 @@
   align-items: center;
   padding: 6px 2px 4px;
   gap: 1px;
-  border-left: 1px solid var(--border);
+  border-left: 1px solid var(--border-dim);
 }
 
 .weekDayHeadName {
@@ -308,8 +316,6 @@
 
 .weekScrollBody {
   display: flex;
-  overflow-y: auto;
-  max-height: 600px;
 }
 
 .weekTimeAxis {
@@ -378,7 +384,7 @@
   position: absolute;
   left: 2px;
   right: 2px;
-  border-radius: 6px;
+  border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -392,10 +398,10 @@
   touch-action: none;
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--slot-color, var(--primary)) 88%, #fff),
-    var(--slot-color, var(--primary))
+    color-mix(in srgb, var(--slot-color, var(--primary)) 50%, #000),
+    color-mix(in srgb, var(--slot-color, var(--primary)) 30%, #000)
   );
-  box-shadow: 0 1px 6px color-mix(in srgb, var(--slot-color, var(--primary)) 40%, transparent);
+  box-shadow: var(--elev-1);
   user-select: none;
   -webkit-user-select: none;
 }
@@ -408,14 +414,14 @@
   );
 }
 
-.weekSlotTodo::before {
+.weekSlotBlock::before {
   content: '';
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   width: 3px;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--slot-color, var(--primary));
 }
 
 .weekSlotName {
@@ -462,36 +468,43 @@
 .weekPillStrip {
   display: flex;
   align-items: center;
-  gap: 3px;
-  background: rgba(139,92,246,0.07);
-  border-bottom: 1px solid rgba(139,92,246,0.15);
-  padding: 3px 4px;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 5px 6px;
+  padding: 5px 6px 5px 10px;
+  background: none;
+  border: 1px dashed var(--border-dim);
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+}
+
+.weekPillControls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   flex-shrink: 0;
 }
 
 .weekPillStripBot {
-  border-bottom: none;
-  border-top: 1px solid rgba(139,92,246,0.15);
+  margin-top: 6px;
 }
 
 .weekPillBtn {
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
-  background: rgba(139,92,246,0.18);
-  border: 1px solid rgba(139,92,246,0.3);
-  color: var(--primary);
-  font-family: var(--font);
-  font-size: 0.7rem;
-  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 4px 7px;
+  border-radius: var(--r-sm);
+  background: none;
+  border: none;
+  color: var(--primary);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s;
 }
+
+.weekPillBtn:hover { background: var(--surface); }
 
 .weekPillBtn:active { background: rgba(139,92,246,0.3); }
 
@@ -524,9 +537,9 @@
 
 .weekPillEmpty {
   font-family: var(--font);
-  font-size: 0.5rem;
-  color: var(--text-ghost);
-  padding: 0 4px;
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  padding: 0;
 }
 
 /* ─── Toggle Strip ───────────────────────────────────────── */

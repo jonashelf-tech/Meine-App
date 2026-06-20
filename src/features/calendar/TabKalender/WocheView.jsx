@@ -33,7 +33,6 @@ function WeekPillStrip({ days, weekDays, visibleStart, visibleEnd, isTop, onExpa
 
   return (
     <div className={[s.weekPillStrip, isTop ? '' : s.weekPillStripBot].join(' ')}>
-      <button className={s.weekPillBtn} onClick={onShrink}>−</button>
       <div className={s.weekPillChips}>
         {outSlots.length === 0
           ? <span className={s.weekPillEmpty}>{emptyText}</span>
@@ -44,7 +43,14 @@ function WeekPillStrip({ days, weekDays, visibleStart, visibleEnd, isTop, onExpa
             ))
         }
       </div>
-      <button className={s.weekPillBtn} onClick={onExpand}>+</button>
+      <span className={s.weekPillControls}>
+        <button className={s.weekPillBtn} onClick={onShrink} aria-label="Bereich verkleinern">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round"><path d="M5 12h14"/></svg>
+        </button>
+        <button className={s.weekPillBtn} onClick={onExpand} aria-label="Bereich erweitern">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </span>
     </div>
   )
 }
@@ -142,7 +148,6 @@ export default function WocheView({
   const [dragTarget,      setDragTarget]      = useState(null)
   const dragTargetRef = useRef(null)
   const clickTimers   = useRef({})
-  const weekScrollRef = useRef(null)
   const colRefs       = useRef({})
   const dragJustEnded = useRef(false)
 
@@ -157,14 +162,6 @@ export default function WocheView({
     if (h < visibleStart || h >= visibleEnd) return null
     return ((h - visibleStart) * 60 + m) / 30 * SLOT_H
   }, [isCurrentWeek, visibleStart, visibleEnd])
-
-  // Beim Öffnen der Wochenansicht zur aktuellen Uhrzeit scrollen
-  useEffect(() => {
-    if (!weekScrollRef.current) return
-    const scrollTo = Math.max(0, (new Date().getHours() - visibleStart) * 2 * SLOT_H - 80)
-    weekScrollRef.current.scrollTop = scrollTo
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   useEffect(() => {
     const timers = clickTimers.current
@@ -303,6 +300,7 @@ export default function WocheView({
   return (
     <>
       <div className={s.weekWrapper}>
+        <div className={s.weekStickyTop}>
         {/* Spalten-Header */}
         <div className={s.weekHeaderRow}>
           <div className={s.weekTimeCorner} />
@@ -377,9 +375,10 @@ export default function WocheView({
             })}
           </div>
         )}
+        </div>
 
-        {/* Scrollbares Zeitgitter */}
-        <div className={s.weekScrollBody} ref={weekScrollRef}>
+        {/* Zeitgitter */}
+        <div className={s.weekScrollBody}>
           <div className={s.weekTimeAxis}>
             {Array.from({ length: (visibleEnd - visibleStart) * 2 }, (_, i) => {
               const h      = visibleStart + i * 0.5
