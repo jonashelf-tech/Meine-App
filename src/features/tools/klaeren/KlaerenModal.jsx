@@ -63,12 +63,22 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
     onSave(updated)
   }
 
+  // KI-Prompt in die Zwischenablage — genutzt vom Schnellstart (relevanz) und schritte
+  const copyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        buildZerlegenPrompt(todo, { hindernis, wert, today: todayKey() })
+      )
+    } catch { /* clipboard nicht verfügbar */ }
+    setKiCopied(true)
+  }
+
   const overlayStyle = keyboardOffset > 0
     ? { alignItems: 'flex-start', paddingTop: 20, paddingBottom: keyboardOffset }
     : {}
 
   return (
-    <Overlay variant="center" onClose={onClose} style={overlayStyle}>
+    <Overlay variant="center" onClose={onClose} closeOnBackdrop={false} style={overlayStyle}>
       <div
         className={s.modal}
         style={{ '--tool-color': toolColor }}
@@ -85,6 +95,11 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
             <button className={s.confirmBtn} onClick={() => setScreen('hindernis')}>
               Angehen ✓
             </button>
+            {klaerenSettings?.kiZerlegen !== false && (
+              <button className={s.kiBtn} onClick={() => { copyPrompt(); setKiOpen(true); setScreen('schritte') }}>
+                ✦ Direkt mit KI zerlegen
+              </button>
+            )}
             <button className={s.loslassenBtn} onClick={() => onDelete(todo.id)}>
               Loslassen &amp; löschen
             </button>
@@ -187,15 +202,7 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
               <div className={s.kiSection}>
                 <button
                   className={s.kiBtn}
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(
-                        buildZerlegenPrompt(todo, { hindernis, wert, today: todayKey() })
-                      )
-                    } catch { /* clipboard nicht verfügbar */ }
-                    setKiCopied(true)
-                    setKiOpen(true)
-                  }}
+                  onClick={() => { copyPrompt(); setKiOpen(true) }}
                 >
                   ✦ Mit KI zerlegen
                 </button>
@@ -234,13 +241,7 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
                     </button>
                     <button
                       className={s.skipLink}
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(
-                            buildZerlegenPrompt(todo, { hindernis, wert, today: todayKey() })
-                          )
-                        } catch { /* clipboard nicht verfügbar */ }
-                      }}
+                      onClick={copyPrompt}
                     >
                       Prompt nochmal kopieren
                     </button>

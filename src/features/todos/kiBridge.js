@@ -9,7 +9,8 @@
  */
 export function buildZerlegenPrompt(todo, { hindernis, wert, today }) {
   const lines = []
-  lines.push('Du hilfst mir (ich habe ADHS), eine Aufgabe in die kleinsten machbaren Schritte zu zerlegen.')
+  lines.push('Du hilfst mir (ich habe ADHS), eine Aufgabe in kleine, konkrete Schritte zu zerlegen.')
+  lines.push('')
 
   let aufgabeLine = `Aufgabe: «${todo.text}»`
   if (todo.category) aufgabeLine += ` · Kategorie: ${todo.category}`
@@ -25,14 +26,17 @@ export function buildZerlegenPrompt(todo, { hindernis, wert, today }) {
   }
 
   lines.push('')
-  lines.push('Regeln:')
-  lines.push('- Sehr kleine, konkrete Schritte — jeder in einem Sitzen machbar.')
-  lines.push('- Fehlen dir Infos? Stell mir ZUERST kurze Rückfragen, bevor du die Schritte gibst.')
-  lines.push('- Du darfst vorschlagen, wo ich eine Nummer/Info nachschlagen sollte (als eigener Schritt).')
-  lines.push('- Wenn die Schritte stehen, gib NUR diesen Block aus:')
+  lines.push('So gehst du vor:')
+  lines.push('- Fehlt dir etwas Wichtiges? Stell mir ZUERST kurze Rückfragen und warte auf meine Antwort.')
+  lines.push('- Sonst zerlege direkt: etwa 3–7 kleine Schritte, jeder in einem Sitzen machbar, auf Deutsch.')
+  lines.push('- Der erste Schritt soll in ~2 Minuten machbar sein — ein leichter Einstieg.')
+  lines.push('- Ein Schritt darf auch sein, eine Info/Nummer kurz nachzuschlagen.')
+  lines.push('')
+  lines.push('Wenn die Schritte feststehen, gib sie als ALLERLETZTES so aus — nur dieser Block, kein Text danach:')
   lines.push('<<<SCHRITTE')
-  lines.push('["Schritt 1", "Schritt 2", …]')
+  lines.push('["erster kleiner Schritt", "zweiter Schritt", "dritter Schritt"]')
   lines.push('SCHRITTE>>>')
+  lines.push('')
   lines.push(`Heute: ${today}`)
 
   return lines.join('\n')
