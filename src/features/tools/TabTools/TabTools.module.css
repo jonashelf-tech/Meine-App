@@ -337,3 +337,40 @@
 .addBtnFlash {
   animation: addBtnFlash 0.45s ease-out forwards;
 }
+
+/* ─── Per-Tool Reset ────────────────────────────────────── */
+.resetBtn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  font-family: var(--font);
+  line-height: 1;
+}
+
+.resetBtn:hover {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+.resetBtnConfirm {
+  background: rgba(251, 113, 133, 0.1);
+  border-color: var(--rose);
+  color: var(--rose);
+  font-size: 0.6rem;
+  border-radius: var(--r-sm);
+  width: auto;
+  padding: 0 8px;
+  white-space: nowrap;
+}

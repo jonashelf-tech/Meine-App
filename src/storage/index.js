@@ -93,6 +93,7 @@ export const SK = {
   kognitivCheckinSkip: `${PREFIX}kognitiv_checkin_skip`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
   lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
+  updateSnoozed:   `${PREFIX}update_snoozed`,
   projects:        `${PREFIX}projects`,
   wachstum:        `${PREFIX}wachstum_v1`,     // LEGACY (altes Wachstum-Tool; Habits eingefroren, Journal → growth migriert)
   growth:          `${PREFIX}growth_v1`,

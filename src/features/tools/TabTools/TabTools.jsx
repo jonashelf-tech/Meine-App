@@ -3,6 +3,7 @@ import { useAppStore } from '../../../store'
 import { TOOL_REGISTRY, ToolIcon } from '../toolRegistry'
 import { TOOL_TAB } from '../toolTabs'
 import { unusedDays, UNUSED_DAYS } from '../toolUsage'
+import { TOOL_RESETS, resetTool } from '../toolReset'
 import { getToolColor } from '../../../utils'
 import s from './TabTools.module.css'
 
@@ -16,6 +17,24 @@ const SWATCHES = [
 ]
 
 const allToolsSorted = [...TOOL_REGISTRY].sort((a, b) => a.name.localeCompare(b.name, 'de'))
+
+function ToolResetButton({ toolId }) {
+  const [confirm, setConfirm] = useState(false)
+  const handle = (e) => {
+    e.stopPropagation()
+    if (!confirm) { setConfirm(true); return }
+    resetTool(toolId)
+  }
+  return (
+    <button
+      className={[s.resetBtn, confirm ? s.resetBtnConfirm : ''].join(' ')}
+      onClick={handle}
+      onBlur={() => setConfirm(false)}
+    >
+      {confirm ? '⚠ Wirklich?' : '↺'}
+    </button>
+  )
+}
 
 export default function TabTools() {
   const [showAll, setShowAll] = useState(false)
@@ -268,6 +287,7 @@ export default function TabTools() {
                   >
                     {isActive ? '✓' : '+'}
                   </button>
+                  {TOOL_RESETS[tool.id] && <ToolResetButton toolId={tool.id} />}
                 </div>
                 {openColorPicker === tool.id && (
                   <div className={s.swatchPanel}>

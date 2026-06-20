@@ -7,33 +7,7 @@ import {
   markOffDeviceBackup,
 } from '../../../storage'
 import { useToast } from '../../../components/Toast/Toast'
-import { TOOL_REGISTRY, ToolIcon } from '../../tools/toolRegistry'
-import { TOOL_RESETS, resetTool } from '../../tools/toolReset'
 import s from './TabSettings.module.css'
-
-const RESETTABLE_TOOLS = TOOL_REGISTRY.filter(t => TOOL_RESETS[t.id])
-
-function ToolResetRow({ tool }) {
-  const [confirm, setConfirm] = useState(false)
-  const handle = () => {
-    if (!confirm) { setConfirm(true); return }
-    resetTool(tool.id)
-  }
-  return (
-    <div className={s.toolResetRow}>
-      <span className={s.toolResetName}>
-        <ToolIcon id={tool.id} size={18} /> {tool.name}
-      </span>
-      <button
-        className={[s.toolResetBtn, confirm ? s.toolResetBtnConfirm : ''].join(' ')}
-        onClick={handle}
-        onBlur={() => setConfirm(false)}
-      >
-        {confirm ? '⚠ Wirklich?' : '↺ Zurücksetzen'}
-      </button>
-    </div>
-  )
-}
 
 const THEMES = [
   { id: 'system', label: 'System' },
@@ -87,10 +61,9 @@ function CatSelect({ cats, onChange }) {
 }
 
 export default function TabSettings() {
-  const { settings, setSettings, theme, setTheme, accentColor, setAccentColor, setBriefingOpen } = useAppStore()
+  const { theme, setTheme, accentColor, setAccentColor, setBriefingOpen } = useAppStore()
   const { showToast } = useToast()
 
-  const [showKey, setShowKey]           = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [backupOpen, setBackupOpen]     = useState(false)
   const [restoreOpen, setRestoreOpen]   = useState(false)
@@ -102,12 +75,6 @@ export default function TabSettings() {
   const accentInputRef = useRef(null)
 
   const lastAutoBackup = lv(SK.lastAutoBackup, null)
-
-  const aiEnabled = settings?.aiEnabled ?? false
-  const apiKey    = settings?.apiKey ?? ''
-
-  const toggleAi    = () => setSettings(s => ({ ...s, aiEnabled: !aiEnabled }))
-  const updateApiKey = (v) => setSettings(s => ({ ...s, apiKey: v }))
 
   const toggleBackup = () => { setBackupOpen(p => !p); setRestoreOpen(false) }
   const toggleRestore = () => { setRestoreOpen(p => !p); setBackupOpen(false); setRestoreData(null) }
@@ -189,42 +156,6 @@ export default function TabSettings() {
       <h2 className={s.title}>Einstellungen</h2>
 
       <section className={s.card}>
-        <h3 className={s.cardTitle}>KI-Funktionen</h3>
-        <div className={s.row}>
-          <span className={s.rowLabel}>KI aktivieren</span>
-          <button
-            className={[s.toggle, aiEnabled ? s.toggleOn : ''].join(' ')}
-            onClick={toggleAi}
-            aria-pressed={aiEnabled}
-          >
-            <div className={s.toggleThumb} />
-          </button>
-        </div>
-        {aiEnabled && (
-          <div className={s.keyWrap}>
-            <div className={s.keyInputRow}>
-              <input
-                className={s.keyInput}
-                type={showKey ? 'text' : 'password'}
-                value={apiKey}
-                onChange={e => updateApiKey(e.target.value)}
-                placeholder="sk-ant-..."
-              />
-              <button className={s.keyToggle} onClick={() => setShowKey(p => !p)}>
-                {showKey
-                  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                }
-              </button>
-            </div>
-            <p className={s.infoText}>
-              Anthropic API Key. Kosten ~0.20–0.50&nbsp;€/Monat bei normaler Nutzung.
-            </p>
-          </div>
-        )}
-      </section>
-
-      <section className={s.card}>
         <h3 className={s.cardTitle}>Erscheinungsbild</h3>
         <div className={s.rowLabel}>Theme</div>
         <div className={s.segmented}>
@@ -268,14 +199,7 @@ export default function TabSettings() {
       </section>
 
       <section className={s.card}>
-        <h3 className={s.cardTitle}>Einführung</h3>
-        <button className={s.actionBtn} onClick={() => setBriefingOpen(true)}>
-          ↻ Einführung nochmal ansehen
-        </button>
-      </section>
-
-      <section className={s.card}>
-        <h3 className={s.cardTitle}>Speicher</h3>
+        <h3 className={s.cardTitle}>Daten &amp; Backup</h3>
 
         <div className={s.autoBackupRow}>
           <span className={s.autoBackupLabel}>Auto-Backup</span>
@@ -329,7 +253,12 @@ export default function TabSettings() {
           <button className={[s.actionBtn, s.actionBtnKi].join(' ')} onClick={handleReadableExport}>
             ✦ Für KI exportieren
           </button>
+        </div>
+      </section>
 
+      <section className={s.card}>
+        <h3 className={s.cardTitle}>Wartung</h3>
+        <div className={s.btnGroup}>
           <button className={[s.actionBtn, s.actionBtnSecondary].join(' ')} onClick={handleCacheReset}>
             ↺ Cache leeren
           </button>
@@ -343,16 +272,10 @@ export default function TabSettings() {
       </section>
 
       <section className={s.card}>
-        <h3 className={s.cardTitle}>Tools zurücksetzen</h3>
-        <p className={s.infoText}>
-          Setzt ein Tool auf den Urzustand zurück — alle eigenen Daten des Tools
-          werden gelöscht und die Standard-Vorlagen wiederhergestellt.
-        </p>
-        <div className={s.toolResetList}>
-          {RESETTABLE_TOOLS.map(tool => (
-            <ToolResetRow key={tool.id} tool={tool} />
-          ))}
-        </div>
+        <h3 className={s.cardTitle}>Einführung</h3>
+        <button className={s.actionBtn} onClick={() => setBriefingOpen(true)}>
+          ↻ Einführung nochmal ansehen
+        </button>
       </section>
     </div>
   )

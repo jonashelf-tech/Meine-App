@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import Overlay from '../Overlay/Overlay'
+import { lv, sv, SK } from '../../storage'
+import { todayKey } from '../../utils'
 import s from './UpdatePrompt.module.css'
 
 // Mindestabstand zwischen zwei Update-Checks (verhindert, dass jeder Tap
@@ -41,7 +43,7 @@ export default function UpdatePrompt() {
     }
   }, [])
 
-  if (!needRefresh) return null
+  if (!needRefresh || lv(SK.updateSnoozed, null) === todayKey()) return null
 
   return (
     <Overlay variant="sheet">
@@ -51,7 +53,7 @@ export default function UpdatePrompt() {
           <div className={s.sub}>Eine aktualisierte Version der App ist bereit.</div>
         </div>
         <div className={s.actions}>
-          <button className={s.laterBtn} onClick={() => setNeedRefresh(false)}>
+          <button className={s.laterBtn} onClick={() => { sv(SK.updateSnoozed, todayKey()); setNeedRefresh(false) }}>
             Später
           </button>
           <button className={s.updateBtn} onClick={() => updateServiceWorker(true)}>
