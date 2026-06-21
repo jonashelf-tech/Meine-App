@@ -1,6 +1,7 @@
 // src/features/tools/projekte/ProjektQuickAdd.jsx
 import { useState } from 'react'
 import { createBlock } from '../../todos/Block'
+import { todayKey } from '../../../utils'
 import s from './ProjektQuickAdd.module.css'
 
 const PlusIcon = () => (
@@ -55,7 +56,7 @@ export default function ProjektQuickAdd({ catName, onAdd }) {
           type="date"
           className={s.dateInput}
           value={showFromDate}
-          min={new Date().toISOString().slice(0, 10)}
+          min={todayKey()}
           onChange={e => setShowFromDate(e.target.value)}
         />
       )}

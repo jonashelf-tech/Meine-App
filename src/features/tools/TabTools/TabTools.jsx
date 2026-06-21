@@ -18,6 +18,10 @@ const SWATCHES = [
 
 const allToolsSorted = [...TOOL_REGISTRY].sort((a, b) => a.name.localeCompare(b.name, 'de'))
 
+// Vorübergehend geparkt — bleiben aktivierbar, aber nicht mehr in der Haupt-Liste sichtbar.
+const STUFF_IDS = ['elvi', 'timer', 'garten', 'pizza', 'projekte', 'reminder', 'wasjetzt', 'rad']
+const stuffTools = STUFF_IDS.map(id => TOOL_REGISTRY.find(t => t.id === id)).filter(Boolean)
+
 function ToolResetButton({ toolId }) {
   const [confirm, setConfirm] = useState(false)
   const handle = (e) => {
@@ -45,12 +49,14 @@ export default function TabTools() {
   const [openColorPicker,  setOpenColorPicker]  = useState(null)
   const [colorPickerTool,  setColorPickerTool]  = useState(null)
   const [flashId,          setFlashId]          = useState(null)
+  const [stuffOpen,        setStuffOpen]        = useState(false)
   const cardRefs     = useRef({})
   const colorInputRef = useRef(null)
 
   const myTools = activeTools
     .map(id => TOOL_REGISTRY.find(t => t.id === id))
     .filter(Boolean)
+  const mainTools = myTools.filter(t => !STUFF_IDS.includes(t.id))
 
   const openTool = (tool) => {
     const tab = TOOL_TAB[tool.id]
@@ -91,6 +97,7 @@ export default function TabTools() {
     const snapshots = useAppStore.getState().activeTools
       .map(id => TOOL_REGISTRY.find(t => t.id === id))
       .filter(Boolean)
+      .filter(t => !STUFF_IDS.includes(t.id))
 
     const onMove = (me) => {
       const dy = me.clientY - startY
@@ -144,8 +151,17 @@ export default function TabTools() {
         const order = [...useAppStore.getState().activeTools]
         const from  = order.indexOf(toolId)
         order.splice(from, 1)
-        let to = insertAfter + 1
-        if (insertAfter >= from) to = insertAfter
+
+        // insertAfter ist ein Index in `snapshots` (nur Haupttools) — auf die echte
+        // Position in `order` (inkl. ausgeblendeter Stuff-Tools) zurückrechnen.
+        let to
+        if (insertAfter < 0) {
+          const firstOther = snapshots.find(t => t.id !== toolId)
+          to = firstOther ? order.indexOf(firstOther.id) : 0
+        } else {
+          const afterTool = snapshots[insertAfter]
+          to = afterTool ? order.indexOf(afterTool.id) + 1 : order.length
+        }
         order.splice(Math.max(0, Math.min(to, order.length)), 0, toolId)
         useAppStore.getState().setActiveTools(order)
       }
@@ -160,12 +176,12 @@ export default function TabTools() {
 
   // ── Meine Tools Liste rendern ─────────────────────────────
   const renderMyTools = () => {
-    if (myTools.length === 0) {
+    if (mainTools.length === 0) {
       return <p className={s.empty}>Noch keine Tools aktiviert.<br />Wechsle zu "Alle Tools".</p>
     }
 
     const items = []
-    myTools.forEach((tool, idx) => {
+    mainTools.forEach((tool, idx) => {
       const toolColor  = getToolColor(tool.id, toolColors)
       const isDragging = dragId === tool.id
       const dustDays   = unusedDays(tool.id)
@@ -233,11 +249,68 @@ export default function TabTools() {
       )
     })
 
-    if (dragId && insertAfterIdx === myTools.length - 1) {
+    if (dragId && insertAfterIdx === mainTools.length - 1) {
       items.push(<div key="line-end" className={s.insertLine} />)
     }
 
     return items
+  }
+
+  // ── Chip für "Alle Tools" + "Stuff"-Schublade ─────────────
+  const renderChip = (tool) => {
+    const isActive  = activeTools.includes(tool.id)
+    const toolColor = getToolColor(tool.id, toolColors)
+    return (
+      <div key={tool.id}>
+        <div
+          className={[s.allChip, isActive ? '' : s.allChipInactive].join(' ')}
+          style={{ '--tool-color': toolColor }}
+          onClick={() => {
+            if (isActive) openTool(tool)
+            else { setFlashId(tool.id); setTimeout(() => setFlashId(null), 500) }
+          }}
+        >
+          <button
+            className={s.colorBar}
+            onClick={e => { e.stopPropagation(); setOpenColorPicker(prev => prev === tool.id ? null : tool.id) }}
+            title="Farbe ändern"
+          />
+          <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
+          <div className={s.listText}>
+            <span className={s.cardName}>{tool.name}</span>
+            <span className={s.cardDesc}>{tool.description}</span>
+          </div>
+          <button
+            className={[s.addBtn, isActive ? s.addBtnActive : '', flashId === tool.id ? s.addBtnFlash : ''].join(' ')}
+            onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
+          >
+            {isActive ? '✓' : '+'}
+          </button>
+          {TOOL_RESETS[tool.id] && <ToolResetButton toolId={tool.id} />}
+        </div>
+        {openColorPicker === tool.id && (
+          <div className={s.swatchPanel}>
+            {SWATCHES.map(hex => {
+              const isActiveColor = toolColor.toLowerCase() === hex.toLowerCase()
+              const isDimmed = !isActiveColor && getUsedByOthers(tool.id).includes(hex.toLowerCase())
+              return (
+                <button
+                  key={hex}
+                  className={[s.swatch, isActiveColor ? s.swatchActive : '', isDimmed ? s.swatchDimmed : ''].join(' ')}
+                  style={{ '--sw': hex }}
+                  onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
+                />
+              )
+            })}
+            <button
+              className={s.swatchCustom}
+              onClick={e => handleCustomColorClick(tool.id, toolColor, e)}
+              title="Eigene Farbe"
+            >+</button>
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -258,67 +331,20 @@ export default function TabTools() {
 
       {showAll && (
         <div className={s.list}>
-          {allToolsSorted.map(tool => {
-            const isActive  = activeTools.includes(tool.id)
-            const toolColor = getToolColor(tool.id, toolColors)
-            return (
-              <div key={tool.id}>
-                <div
-                  className={[s.allChip, isActive ? '' : s.allChipInactive].join(' ')}
-                  style={{ '--tool-color': toolColor }}
-                  onClick={() => {
-                    if (isActive) openTool(tool)
-                    else { setFlashId(tool.id); setTimeout(() => setFlashId(null), 500) }
-                  }}
-                >
-                  <button
-                    className={s.colorBar}
-                    onClick={e => { e.stopPropagation(); setOpenColorPicker(prev => prev === tool.id ? null : tool.id) }}
-                    title="Farbe ändern"
-                  />
-                  <span className={s.listIcon}><ToolIcon id={tool.id} size={22} /></span>
-                  <div className={s.listText}>
-                    <span className={s.cardName}>{tool.name}</span>
-                    <span className={s.cardDesc}>{tool.description}</span>
-                  </div>
-                  <button
-                    className={[s.addBtn, isActive ? s.addBtnActive : '', flashId === tool.id ? s.addBtnFlash : ''].join(' ')}
-                    onClick={e => { e.stopPropagation(); toggleTool(tool.id) }}
-                  >
-                    {isActive ? '✓' : '+'}
-                  </button>
-                  {TOOL_RESETS[tool.id] && <ToolResetButton toolId={tool.id} />}
-                </div>
-                {openColorPicker === tool.id && (
-                  <div className={s.swatchPanel}>
-                    {SWATCHES.map(hex => {
-                      const isActive = toolColor.toLowerCase() === hex.toLowerCase()
-                      const isDimmed = !isActive && getUsedByOthers(tool.id).includes(hex.toLowerCase())
-                      return (
-                        <button
-                          key={hex}
-                          className={[s.swatch, isActive ? s.swatchActive : '', isDimmed ? s.swatchDimmed : ''].join(' ')}
-                          style={{ '--sw': hex }}
-                          onClick={e => { e.stopPropagation(); handleColorChange(tool.id, hex); setOpenColorPicker(null) }}
-                        />
-                      )
-                    })}
-                    <button
-                      className={s.swatchCustom}
-                      onClick={e => handleCustomColorClick(tool.id, toolColor, e)}
-                      title="Eigene Farbe"
-                    >+</button>
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          {allToolsSorted.map(renderChip)}
         </div>
       )}
 
       {!showAll && (
         <div className={s.list}>
           {renderMyTools()}
+          <button
+            className={[s.allToolsToggle, stuffOpen ? s.allToolsToggleOn : ''].join(' ')}
+            onClick={() => setStuffOpen(v => !v)}
+          >
+            {stuffOpen ? '✕ Stuff schließen' : '📦 Stuff'}
+          </button>
+          {stuffOpen && stuffTools.map(renderChip)}
         </div>
       )}
     </div>
