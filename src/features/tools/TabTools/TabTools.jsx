@@ -340,13 +340,18 @@ export default function TabTools() {
       {!showAll && (
         <div className={s.list}>
           {renderMyTools()}
-          <button
-            className={[s.allToolsToggle, stuffOpen ? s.allToolsToggleOn : ''].join(' ')}
-            onClick={() => setStuffOpen(v => !v)}
-          >
-            {stuffOpen ? '✕ Stuff schließen' : '📦 Stuff'}
-          </button>
-          {stuffOpen && stuffTools.map(renderChip)}
+        </div>
+      )}
+
+      <button
+        className={[s.allToolsToggle, stuffOpen ? s.allToolsToggleOn : ''].join(' ')}
+        onClick={() => setStuffOpen(v => !v)}
+      >
+        {stuffOpen ? '✕ Stuff schließen' : '📦 Stuff'}
+      </button>
+      {stuffOpen && (
+        <div className={s.list}>
+          {stuffTools.map(renderChip)}
         </div>
       )}
     </div>

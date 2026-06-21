@@ -13,12 +13,16 @@ const FELDER = [
 
 export default function DailyStateRow({ date, editable, onTouched }) {
   const [state, setState] = useState(() => getDayState(date))
+  const [popped, setPopped] = useState(null) // `${key}-${n}` — kurzer Tipp-Pop
   useEffect(() => { setState(getDayState(date)) }, [date])
 
   const setField = (key, val) => {
     if (!editable) return
     setState(setDayState(date, { [key]: val }))
     onTouched?.()
+    const id = `${key}-${val}`
+    setPopped(id)
+    setTimeout(() => setPopped(p => (p === id ? null : p)), 260)
   }
 
   return (
@@ -30,7 +34,7 @@ export default function DailyStateRow({ date, editable, onTouched }) {
             {[1, 2, 3, 4, 5].map(n => (
               <button
                 key={n}
-                className={[s.dot, (state?.[key] ?? 0) >= n ? s.dotOn : ''].join(' ')}
+                className={[s.dot, (state?.[key] ?? 0) >= n ? s.dotOn : '', popped === `${key}-${n}` ? s.pop : ''].join(' ')}
                 onClick={() => setField(key, n)}
                 disabled={!editable}
                 aria-label={`${label} ${n} von 5`}
