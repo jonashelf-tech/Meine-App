@@ -1,0 +1,7 @@
+.step { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 8px 2px; position: relative; }
+.skip { position: absolute; top: 0; right: 0; border: none; background: none; color: var(--text-dim); font-size: 0.78rem; font-family: var(--font); cursor: pointer; padding: 6px; min-height: 36px; }
+.title { font-size: 1.05rem; color: var(--text); font-weight: 600; text-align: center; margin-top: 24px; animation: fadeInUp .4s ease both; }
+.field { width: 100%; flex: 1; min-height: 140px; resize: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); padding: 14px; font-size: 0.95rem; font-family: var(--font); animation: fadeInUp .4s ease .06s both; }
+.field:focus { outline: none; border-color: var(--tool-color); }
+.cta { min-height: 48px; border: none; border-radius: var(--r); background: var(--tool-color); color: #08080f; font-size: 0.95rem; font-weight: 600; font-family: var(--font); cursor: pointer; box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; gap: 8px; animation: fadeInUp .4s ease .12s both; }
+.cta:active { transform: scale(.97); }
