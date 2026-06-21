@@ -8,7 +8,7 @@ import StepKarte from './StepKarte'
 import StepBonusFrage from './StepBonusFrage'
 import StepFreitext from './StepFreitext'
 import StepAbschluss from './StepAbschluss'
-import { flowSteps } from './growthFlow'
+import { flowSteps } from './growthFlowLogic'
 import {
   ensureDayCard, openerForDate, setAntwort, setFreitext, markStateTouched,
   skipKarte, drawBonusKarte, isEditable, MAX_KARTEN_PRO_TAG,

@@ -5,20 +5,21 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
 import { TOOL_TAB } from '../toolTabs'
 import {
-  loadGrowth, saveGrowth, ensureDayCard, setFreitext, isEditable,
-  skipKarte, drawBonusKarte, setAntwort, markStateTouched, setTimerKarte, isTageskarteOffen,
-  openerForDate, markOpenerShown, setSettings, toggleKategorie, buildKiPrompt,
+  loadGrowth, saveGrowth, isEditable, setTimerKarte,
+  setSettings, toggleKategorie, buildKiPrompt, markFlowAbgeschlossen,
 } from './growthStore'
+import { growthViewMode } from './growthFlowLogic'
 import { loadDailyStates } from '../../daily/dailyState'
-import { useAutosave } from './useAutosave'
-import DailyStateRow from './DailyStateRow'
-import TageskarteCard from './TageskarteCard'
-import GrowthOpener from './GrowthOpener'
-import GrowthArchiv from './GrowthArchiv'
+import GrowthFlow from './GrowthFlow'
+import GrowthOverview from './GrowthOverview'
 import GrowthBriefing from './GrowthBriefing'
 import GrowthSettings from './GrowthSettings'
 import s from './TabGrowth.module.css'
 
+// Router des Growth-Tools: briefing | settings | flow | overview.
+// Der geführte Fluss (GrowthFlow) und der Ruhezustand (GrowthOverview) kapseln
+// die Tagesansicht; hier leben nur die geteilten Effekte (Tageswechsel,
+// Timer-Rückkehr, Back-Interceptor, KI-Export, Kalender-Intent).
 export default function TabGrowth({ onBack }) {
   const { toolColors, setBackInterceptor, growthOpenDate, setGrowthOpenDate, setTimerAutoStart, setCurrentTab } = useAppStore()
   const toolColor = getToolColor('growth', toolColors)
@@ -26,14 +27,13 @@ export default function TabGrowth({ onBack }) {
   const [data, setData] = useState(() => loadGrowth())
   const [today, setToday] = useState(() => todayKey())
   const [viewDate, setViewDate] = useState(() => useAppStore.getState().growthOpenDate ?? todayKey())
-  const [nav, setNav] = useState(null) // null | 'settings'
+  const [nav, setNav] = useState(null)            // null | 'settings'
+  const [forceFlow, setForceFlow] = useState(false) // aus der Übersicht in den Fluss
 
   const dataRef = useRef(data)
   dataRef.current = data
-  // Sync-Update von dataRef: mehrere Effekte/Autosave persistieren im selben
-  // Commit nacheinander (ensureDayCard, Opener, Freitext). Ohne das synchrone
-  // Mitziehen läsen sie alle denselben stale State und überschreiben sich —
-  // die gezogene Tageskarte ginge verloren.
+  // dataRef synchron mitziehen: Flow/Overview rufen persist über Renders hinweg;
+  // ohne das läsen Folge-Callbacks stale State und überschrieben sich.
   const persist = (next) => {
     if (next === dataRef.current) return
     dataRef.current = next
@@ -44,7 +44,7 @@ export default function TabGrowth({ onBack }) {
   // Intent aus dem Kalender-DayPanel einmalig konsumieren
   useEffect(() => { if (growthOpenDate) setGrowthOpenDate(null) }, [growthOpenDate, setGrowthOpenDate])
 
-  // Tageswechsel bei offener App: beim Sichtbarwerden Datum prüfen (Spec §5)
+  // Tageswechsel bei offener App: beim Sichtbarwerden Datum prüfen
   useEffect(() => {
     const check = () => {
       const t = todayKey()
@@ -56,57 +56,36 @@ export default function TabGrowth({ onBack }) {
     return () => { document.removeEventListener('visibilitychange', onVis); window.removeEventListener('focus', check) }
   }, [today])
 
-  // Swipe-Back: Settings/Vergangenheit → eine Ebene zurück statt Tool schließen
+  // Swipe-/Hardware-Back: Settings → Fluss → Vergangenheit → Tool schließen
   useEffect(() => {
     const handler = nav !== null ? () => setNav(null)
+      : forceFlow ? () => setForceFlow(false)
       : viewDate !== today ? () => setViewDate(today)
       : null
     setBackInterceptor(handler)
     return () => setBackInterceptor(null)
-  }, [nav, viewDate, today, setBackInterceptor])
+  }, [nav, forceFlow, viewDate, today, setBackInterceptor])
 
   const editable = isEditable(viewDate, today)
 
-  // Tageskarte sicherstellen (nur für editierbare Tage; deterministisch via Persistenz)
-  useEffect(() => {
-    if (!data.settings.briefingGesehen || !editable) return
-    persist(ensureDayCard(dataRef.current, viewDate))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewDate, today, data.settings.briefingGesehen])
-
-  const day = data.days[viewDate]
-
-  // Timer-Karte: bestehenden Fokustimer mit Kartendauer starten; Karte am Tag
-  // vormerken, damit beim Rückweg das Antwortfeld aufgeht (auch wenn der Timer
-  // im Hintergrund ablief und das Tool später manuell geöffnet wird).
-  const [timerRueckkehr, setTimerRueckkehr] = useState(null)
+  // Timer-Karte starten (bestehender Fokustimer mit Kartendauer)
   const handleStartTimer = (karte) => {
     persist(setTimerKarte(dataRef.current, viewDate, karte.id))
     setTimerAutoStart({ text: karte.text, color: toolColor, duration: karte.timer, returnTab: TOOL_TAB.growth })
     setCurrentTab(TOOL_TAB.timer)
   }
 
-  // Rückkehr vom Timer: vorgemerkte Karte einmalig konsumieren
+  // Rückkehr vom Timer: vorgemerkte Karte einmalig konsumieren (öffnet ihr Feld)
+  const [timerRueckkehr, setTimerRueckkehr] = useState(null)
   useEffect(() => {
     const id = dataRef.current.days[todayKey()]?.timerKarteId
     if (!id) return
     setTimerRueckkehr(id)
     persist(setTimerKarte(dataRef.current, todayKey(), null))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Opener: nur beim ersten Öffnen des Tages, nur heute, abschaltbar.
-  // „Gezeigt" wird sofort beim Rendern persistiert (strikt 1× pro Tag).
-  const showOpener = data.settings.briefingGesehen && data.settings.openerAn
-    && viewDate === today && data.openerShownFor !== today
-  const [openerAktiv, setOpenerAktiv] = useState(false)
-  useEffect(() => {
-    if (showOpener) {
-      setOpenerAktiv(true)
-      persist(markOpenerShown(dataRef.current, today))
-    }
-  }, [showOpener, today])
-
-  // KI-Export: fertigen Prompt in die Zwischenablage (keine API, keine Netzwerk-Calls)
+  // KI-Export: fertigen Prompt in die Zwischenablage (keine API)
   const [kiKopiert, setKiKopiert] = useState(false)
   const handleKiExport = async (nTage) => {
     const prompt = buildKiPrompt(dataRef.current, loadDailyStates(), nTage, today)
@@ -119,13 +98,6 @@ export default function TabGrowth({ onBack }) {
     }
   }
 
-  // Freitext mit Autosave (ab dem ersten Zeichen)
-  const [freitext, onFreitext] = useAutosave(
-    day?.freitext ?? '',
-    (text) => persist(setFreitext(dataRef.current, viewDate, text)),
-    [viewDate],
-  )
-
   const SettingsIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="3" />
@@ -133,7 +105,7 @@ export default function TabGrowth({ onBack }) {
     </svg>
   )
 
-  // First-Open: Briefing mit Pflicht-Kategorienauswahl (alle Hooks liefen bereits oben)
+  // First-Open: Briefing mit Pflicht-Kategorienauswahl
   if (!data.settings.briefingGesehen) {
     return (
       <div className={s.page} style={{ '--tool-color': toolColor }}>
@@ -160,6 +132,8 @@ export default function TabGrowth({ onBack }) {
     )
   }
 
+  const mode = forceFlow ? 'flow' : growthViewMode(data, viewDate, today)
+
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
       <ToolHeader
@@ -175,70 +149,35 @@ export default function TabGrowth({ onBack }) {
       />
 
       {viewDate !== today && (
-        <button className={s.backToToday} onClick={() => setViewDate(today)}>
+        <button className={s.backToToday} onClick={() => { setForceFlow(false); setViewDate(today) }}>
           ← Zurück zu heute
         </button>
       )}
-
       {viewDate !== today && !editable && (
         <div className={s.readOnlyHint}>Nur lesen — älter als 3 Tage</div>
       )}
 
-      {/* Daily State — geteilt mit Kognitiv, optional */}
-      <DailyStateRow
-        date={viewDate}
-        editable={editable}
-        onTouched={() => persist(markStateTouched(dataRef.current, viewDate))}
-      />
-
-      {openerAktiv && viewDate === today && (
-        <GrowthOpener opener={openerForDate(today)} onDone={() => setOpenerAktiv(false)} />
-      )}
-
-      {/* Karten: Tageskarte zuerst, dann Bonus */}
-      {(day?.karten ?? []).map(eintrag => (
-        <TageskarteCard
-          key={eintrag.kartenId}
-          eintrag={eintrag}
+      {mode === 'flow' ? (
+        <GrowthFlow
+          data={data}
+          persist={persist}
           date={viewDate}
-          editable={editable}
-          istTageskarte={eintrag.kartenId === day.tageskarteId}
-          skipMoeglich={
-            viewDate === today && editable && !day.skipVerwendet &&
-            eintrag.kartenId === day.tageskarteId &&
-            !(eintrag.antwort ?? '').trim() && !eintrag.erledigt
-          }
-          autoOpen={timerRueckkehr === eintrag.kartenId}
-          onPatch={(patch) => persist(setAntwort(dataRef.current, viewDate, eintrag.kartenId, patch))}
-          onSkip={() => persist(skipKarte(dataRef.current, viewDate))}
-          onStartTimer={(karte) => handleStartTimer(karte)}
+          today={today}
+          onStartTimer={handleStartTimer}
+          onFinished={() => { persist(markFlowAbgeschlossen(dataRef.current, viewDate)); setForceFlow(false) }}
         />
-      ))}
-
-      {/* Bonus: erst nach beantworteter Tageskarte, max 3 gesamt, nur heute */}
-      {viewDate === today && day && !isTageskarteOffen(data, viewDate) && day.karten.length < 3 && (
-        <button className={s.bonusBtn} onClick={() => persist(drawBonusKarte(dataRef.current, viewDate))}>
-          Noch eine ziehen?
-        </button>
-      )}
-
-      {/* Freitext — immer sichtbar, jeden Tag, unabhängig von der Karte */}
-      <div className={s.section}>
-        {editable ? (
-          <textarea
-            className={s.freitext}
-            value={freitext}
-            onChange={e => onFreitext(e.target.value)}
-            placeholder="Ein Satz reicht."
-            rows={3}
-          />
-        ) : (
-          <div className={s.freitextRead}>{day?.freitext || '—'}</div>
-        )}
-      </div>
-
-      {viewDate === today && (
-        <GrowthArchiv data={data} today={today} onOpen={(d) => setViewDate(d)}>
+      ) : (
+        <GrowthOverview
+          data={data}
+          persist={persist}
+          date={viewDate}
+          today={today}
+          editable={editable}
+          autoOpenKartenId={timerRueckkehr}
+          onStartTimer={handleStartTimer}
+          onLosgehen={() => setForceFlow(true)}
+          onOpenDay={(d) => { setForceFlow(false); setViewDate(d) }}
+        >
           {data.settings.kiExportAn && (
             <div className={s.kiRow}>
               <span className={s.kiLabel}>{kiKopiert ? '✓ In Zwischenablage kopiert' : 'Für KI exportieren:'}</span>
@@ -247,7 +186,7 @@ export default function TabGrowth({ onBack }) {
               ))}
             </div>
           )}
-        </GrowthArchiv>
+        </GrowthOverview>
       )}
     </div>
   )

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { growthViewMode, flowSteps } from './growthFlow'
+import { growthViewMode, flowSteps } from './growthFlowLogic'
 import { emptyDay } from './growthStore'
 
 const T = '2026-06-21'

@@ -14,7 +14,7 @@ const CheckIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
 )
 
-export default function GrowthOverview({ data, persist, date, today, editable, onLosgehen, onOpenDay, onStartTimer, children }) {
+export default function GrowthOverview({ data, persist, date, today, editable, autoOpenKartenId, onLosgehen, onOpenDay, onStartTimer, children }) {
   const day = data.days[date] ?? {}
   const hatEintrag = dayHasEntry(day)
   const istHeute = date === today
@@ -65,6 +65,7 @@ export default function GrowthOverview({ data, persist, date, today, editable, o
           editable={editable}
           istTageskarte={eintrag.kartenId === day.tageskarteId}
           skipMoeglich={false}
+          autoOpen={eintrag.kartenId === autoOpenKartenId}
           onPatch={(p) => persist(setAntwort(data, date, eintrag.kartenId, p))}
           onStartTimer={onStartTimer}
         />
