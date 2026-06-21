@@ -28,7 +28,7 @@ export default function TabGrowth({ onBack }) {
   const [today, setToday] = useState(() => todayKey())
   const [viewDate, setViewDate] = useState(() => useAppStore.getState().growthOpenDate ?? todayKey())
   const [nav, setNav] = useState(null)            // null | 'settings'
-  const [forceFlow, setForceFlow] = useState(false) // aus der Übersicht in den Fluss
+  const [mode, setMode] = useState(() => growthViewMode(data, viewDate, today)) // 'flow' | 'overview'
 
   const dataRef = useRef(data)
   dataRef.current = data
@@ -56,15 +56,20 @@ export default function TabGrowth({ onBack }) {
     return () => { document.removeEventListener('visibilitychange', onVis); window.removeEventListener('focus', check) }
   }, [today])
 
+  // View-Mode nur bei Datums-/Tageswechsel neu bestimmen — NICHT bei reinen
+  // Dateneingaben, sonst kippt der Fluss in die Übersicht, sobald man den
+  // Check-in tippt (stateTouched → dayHasEntry).
+  useEffect(() => { setMode(growthViewMode(dataRef.current, viewDate, today)) }, [viewDate, today])
+
   // Swipe-/Hardware-Back: Settings → Fluss → Vergangenheit → Tool schließen
   useEffect(() => {
     const handler = nav !== null ? () => setNav(null)
-      : forceFlow ? () => setForceFlow(false)
+      : mode === 'flow' ? () => setMode('overview')
       : viewDate !== today ? () => setViewDate(today)
       : null
     setBackInterceptor(handler)
     return () => setBackInterceptor(null)
-  }, [nav, forceFlow, viewDate, today, setBackInterceptor])
+  }, [nav, mode, viewDate, today, setBackInterceptor])
 
   const editable = isEditable(viewDate, today)
 
@@ -132,8 +137,6 @@ export default function TabGrowth({ onBack }) {
     )
   }
 
-  const mode = forceFlow ? 'flow' : growthViewMode(data, viewDate, today)
-
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
       <ToolHeader
@@ -149,7 +152,7 @@ export default function TabGrowth({ onBack }) {
       />
 
       {viewDate !== today && (
-        <button className={s.backToToday} onClick={() => { setForceFlow(false); setViewDate(today) }}>
+        <button className={s.backToToday} onClick={() => setViewDate(today)}>
           ← Zurück zu heute
         </button>
       )}
@@ -164,7 +167,7 @@ export default function TabGrowth({ onBack }) {
           date={viewDate}
           today={today}
           onStartTimer={handleStartTimer}
-          onFinished={() => { persist(markFlowAbgeschlossen(dataRef.current, viewDate)); setForceFlow(false) }}
+          onFinished={() => { persist(markFlowAbgeschlossen(dataRef.current, viewDate)); setMode('overview') }}
         />
       ) : (
         <GrowthOverview
@@ -175,8 +178,8 @@ export default function TabGrowth({ onBack }) {
           editable={editable}
           autoOpenKartenId={timerRueckkehr}
           onStartTimer={handleStartTimer}
-          onLosgehen={() => setForceFlow(true)}
-          onOpenDay={(d) => { setForceFlow(false); setViewDate(d) }}
+          onLosgehen={() => setMode('flow')}
+          onOpenDay={(d) => setViewDate(d)}
         >
           {data.settings.kiExportAn && (
             <div className={s.kiRow}>

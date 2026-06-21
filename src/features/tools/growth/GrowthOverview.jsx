@@ -3,8 +3,9 @@
 // sind via TageskarteCard inline editierbar (≤3 Tage), kein erneuter Wizard.
 import {
   dayHasEntry, isTageskarteOffen, drawBonusKarte, markStateTouched,
-  setAntwort, MAX_KARTEN_PRO_TAG,
+  setAntwort, setFreitext, MAX_KARTEN_PRO_TAG,
 } from './growthStore'
+import { useAutosave } from './useAutosave'
 import DailyStateRow from './DailyStateRow'
 import TageskarteCard from './TageskarteCard'
 import GrowthArchiv from './GrowthArchiv'
@@ -16,6 +17,7 @@ const CheckIcon = () => (
 
 export default function GrowthOverview({ data, persist, date, today, editable, autoOpenKartenId, onLosgehen, onOpenDay, onStartTimer, children }) {
   const day = data.days[date] ?? {}
+  const [freitext, onFreitext] = useAutosave(day.freitext ?? '', (t) => persist(setFreitext(data, date, t)), [date])
   const hatEintrag = dayHasEntry(day)
   const istHeute = date === today
   const d = new Date(date + 'T00:00:00')
@@ -70,6 +72,15 @@ export default function GrowthOverview({ data, persist, date, today, editable, a
           onStartTimer={onStartTimer}
         />
       ))}
+
+      {(editable || (day.freitext ?? '').trim()) && (
+        <div className={s.block}>
+          <div className={s.blockLabel}>Notiz</div>
+          {editable
+            ? <textarea className={s.freitext} value={freitext} onChange={e => onFreitext(e.target.value)} placeholder="Ein Satz reicht." rows={2} />
+            : <div className={s.freitextRead}>{day.freitext}</div>}
+        </div>
+      )}
 
       {kannBonus && (
         <button className={s.bonusBtn} onClick={() => persist(drawBonusKarte(data, date))}>+ Noch eine Karte ziehen?</button>
