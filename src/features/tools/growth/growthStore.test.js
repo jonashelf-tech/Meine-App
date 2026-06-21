@@ -6,7 +6,7 @@ import {
   collectLockedIds, ensureDayCard, skipKarte, drawBonusKarte,
   setAntwort, setFreitext, markStateTouched,
   dayHasEntry, getDoneDates, isTageskarteOffen, isEditable, nextDate,
-  buildKiPrompt, karteById, MAX_KARTEN_PRO_TAG,
+  buildKiPrompt, karteById, MAX_KARTEN_PRO_TAG, markFlowAbgeschlossen,
 } from './growthStore'
 
 beforeEach(() => localStorage.clear())
@@ -15,6 +15,21 @@ beforeEach(() => localStorage.clear())
 const rng0 = () => 0
 const allCats = { aktiveKategorien: content.kategorien.map(k => k.id), openerAn: true, kiExportAn: false, briefingGesehen: true }
 const base = () => ({ ...loadGrowth(), settings: { ...loadGrowth().settings, ...allCats } })
+
+describe('markFlowAbgeschlossen', () => {
+  it('setzt das Flag und legt den Tag bei Bedarf an', () => {
+    const data = { days: {}, settings: {} }
+    const next = markFlowAbgeschlossen(data, '2026-06-21')
+    expect(next.days['2026-06-21'].flowAbgeschlossen).toBe(true)
+  })
+
+  it('lässt bestehende Tagesdaten unangetastet', () => {
+    const data = { days: { '2026-06-21': { ...emptyDay(), freitext: 'hallo' } }, settings: {} }
+    const next = markFlowAbgeschlossen(data, '2026-06-21')
+    expect(next.days['2026-06-21'].freitext).toBe('hallo')
+    expect(next.days['2026-06-21'].flowAbgeschlossen).toBe(true)
+  })
+})
 
 describe('Migration — altes Wachstum-Journal → Freitext', () => {
   it('übernimmt Journal-Texte in leere Tage, überschreibt nichts', () => {
