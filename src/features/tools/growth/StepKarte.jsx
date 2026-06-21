@@ -12,18 +12,23 @@ const CheckIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
 )
 
-export default function StepKarte({ eintrag, date, editable, istTageskarte, skipMoeglich, onPatch, onSkip, onStartTimer, onWeiter }) {
+export default function StepKarte({ eintrag, date, editable, istTageskarte, skipMoeglich, onPatch, onAndereKarte, onSkip, onStartTimer, onWeiter }) {
   const karte = karteById(eintrag.kartenId)
   const [warumOffen, setWarumOffen] = useState(false)
   const [antwort, onAntwort] = useAutosave(eintrag.antwort ?? '', (t) => onPatch({ antwort: t }), [date, eintrag.kartenId])
   if (!karte) return null
   const kategorie = KATEGORIEN.find(k => k.id === karte.kategorie)
+  // „Weiter" erst möglich, wenn etwas dasteht (Antwort) oder die Aufgabe erledigt ist.
+  const canWeiter = antwort.trim().length > 0 || eintrag.erledigt
 
   return (
     <div className={s.step}>
       <div className={s.head}>
         <span className={s.eyebrow}>{kategorie?.name}{!istTageskarte && ' · Bonus'}</span>
-        {skipMoeglich && <button className={s.skip} onClick={onSkip}>Andere Karte</button>}
+        <div className={s.headActions}>
+          {skipMoeglich && <button className={s.skip} onClick={onAndereKarte}>Andere Karte</button>}
+          <button className={s.skip} onClick={onSkip}>Überspringen</button>
+        </div>
       </div>
       <div className={s.text}>{karte.text}</div>
       {karte.warum && (
@@ -52,7 +57,7 @@ export default function StepKarte({ eintrag, date, editable, istTageskarte, skip
         rows={3}
         disabled={!editable}
       />
-      <button className={s.cta} onClick={onWeiter}>Weiter</button>
+      <button className={s.cta} onClick={onWeiter} disabled={!canWeiter}>Weiter</button>
     </div>
   )
 }

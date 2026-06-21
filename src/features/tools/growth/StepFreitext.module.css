@@ -5,3 +5,4 @@
 .field:focus { outline: none; border-color: var(--tool-color); }
 .cta { min-height: 48px; border: none; border-radius: var(--r); background: var(--tool-color); color: #08080f; font-size: 0.95rem; font-weight: 600; font-family: var(--font); cursor: pointer; box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; gap: 8px; animation: fadeInUp .4s ease .12s both; }
 .cta:active { transform: scale(.97); }
+.cta:disabled { opacity: .4; cursor: default; box-shadow: none; }

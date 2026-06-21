@@ -31,7 +31,8 @@ export default function GrowthFlow({ data, persist, date, today, onFinished, onS
   const [finishing, setFinishing] = useState(false)
 
   const go = (next) => { setDir(next >= idx ? 'forward' : 'back'); setIdx(next) }
-  const finish = () => { setDir('forward'); setFinishing(true) }
+  const finish = () => { setDir('forward'); setFinishing(true) }  // Fertig: Abschluss-Animation
+  const skip = () => onFinished()                                  // Überspringen: direkt zur Übersicht
 
   if (finishing) {
     return <div className={s.flow}><StepAbschluss onDone={onFinished} /></div>
@@ -48,7 +49,12 @@ export default function GrowthFlow({ data, persist, date, today, onFinished, onS
           istTageskarte={false} skipMoeglich={false}
           onPatch={(p) => persist(setAntwort(data, date, bonusKartenId, p))}
           onStartTimer={onStartTimer}
-          onWeiter={() => { setBonusKartenId(null); setBonusOffen(true) }} />
+          onSkip={skip}
+          onWeiter={() => {
+            setBonusKartenId(null)
+            if ((day.karten?.length ?? 0) >= MAX_KARTEN_PRO_TAG) go(idx + 1) // 3 Karten → direkt letzter Screen
+            else setBonusOffen(true)
+          }} />
       )
     }
     if (bonusOffen) {
@@ -67,7 +73,7 @@ export default function GrowthFlow({ data, persist, date, today, onFinished, onS
       return (
         <StepAnkommen key="ankommen" date={date} settings={data.settings} opener={openerForDate(date)}
           onStateTouched={() => persist(markStateTouched(data, date))}
-          onWeiter={() => go(idx + 1)} onSkip={finish} />
+          onWeiter={() => go(idx + 1)} onSkip={skip} />
       )
     }
     if (stepName === 'karte') {
@@ -78,7 +84,8 @@ export default function GrowthFlow({ data, persist, date, today, onFinished, onS
           istTageskarte
           skipMoeglich={editable && !day.skipVerwendet && !(eintrag.antwort ?? '').trim() && !eintrag.erledigt}
           onPatch={(p) => persist(setAntwort(data, date, day.tageskarteId, p))}
-          onSkip={() => persist(skipKarte(data, date))}
+          onAndereKarte={() => persist(skipKarte(data, date))}
+          onSkip={skip}
           onStartTimer={onStartTimer}
           onWeiter={() => setBonusOffen(true)} />
       )
@@ -87,7 +94,7 @@ export default function GrowthFlow({ data, persist, date, today, onFinished, onS
       return (
         <StepFreitext key="freitext" date={date} initial={day.freitext} editable={editable}
           onSave={(t) => persist(setFreitext(data, date, t))}
-          onFertig={finish} onSkip={finish} />
+          onFertig={finish} onSkip={skip} />
       )
     }
     return null
