@@ -76,12 +76,19 @@ src/
         session/SessionSummary.jsx — Abschluss-Screen (Dauer/Volumen/PRs)
         tabs/KoerpergewichtTab.jsx — Gewichts-/Kalorien-Tracking (aus altem TabGewicht)
         tabs/HeuteTab · PlaeneTab · UebungenTab · DashboardsTab (Volumen+Kraft) · ArchivTab — Free Mode (Phase 2+3); EinstellungenTab noch Stub
-      growth/         — Journaling-Tool (ersetzt Wachstum, Tab 18)
+      growth/         — Journaling-Tool (ersetzt Wachstum, Tab 18) — geführter Fluss + Übersicht
         growthContent.json      — 250 Karten / 6 Kategorien / 4 Opener (Guard: growthContent.test.js)
-        growthStore.js          — Datenlayer: Ziehlogik (60-Tage-Sperre, Skip-Queue, Bonus), Schwelle, Migration, KI-Prompt
-        TabGrowth.jsx           — Tagesansicht (persist zieht dataRef synchron — mehrere Effekte schreiben pro Commit)
+        growthStore.js          — Datenlayer: Ziehlogik (60-Tage-Sperre, Skip-Queue, Bonus), Schwelle, Migration, KI-Prompt, flowAbgeschlossen-Flag
+        growthFlowLogic.js      — pure: growthViewMode (flow|overview) + flowSteps (Guard: growthFlowLogic.test.js) — NB: ≠ GrowthFlow.jsx (Case-Kollision auf Windows!)
+        TabGrowth.jsx           — Router: briefing | settings | flow | overview. Mode ist STATE (nicht pro Render abgeleitet, sonst kippt der Fluss bei Check-in-Eingabe in die Übersicht). persist zieht dataRef synchron.
+        GrowthFlow.jsx          — geführte State-Machine: Ankommen → Karte → (Bonus?) → Freitext → Abschluss, über FlowStepper
+        FlowStepper.jsx         — „Tiefe"-Übergang (entering/leaving Layer gleichzeitig; Commit per Timeout → reduced-motion-sicher)
+        BreathingCircle.jsx     — Atemkreis (4 ein/6 aus) + 2-Min-Ring + Breath-Label (ambient, kein Auto-Weiter)
+        StepAnkommen.jsx        — Ankommen + Check-in verschmolzen; Atemkreis nur bei settings.openerAn (Toggle entfernt nur die Atem-Ebene)
+        StepKarte / StepBonusFrage / StepFreitext / StepAbschluss — die übrigen Flow-Schritte
+        GrowthOverview.jsx      — Ruhezustand (Ziel von Fertig/Überspringen + Re-Entry): Check-in + Karten (inline edit via TageskarteCard) + Notiz + frühere Tage
         GrowthSection.jsx       — Tagesplaner-Widget ("Karte offen")
-        DailyStateRow / TageskarteCard / GrowthOpener / GrowthArchiv / GrowthBriefing / GrowthSettings
+        DailyStateRow / TageskarteCard / GrowthArchiv / GrowthBriefing / GrowthSettings
         useAutosave.js          — Debounce-Autosave (Freitext + Antworten)
       haushalt/
         HaushaltBriefing.jsx
