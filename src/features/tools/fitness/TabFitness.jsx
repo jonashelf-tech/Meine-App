@@ -38,6 +38,7 @@ export default function TabFitness({ onBack }) {
   const [active, setActive] = useState('heute')
   const [moreOpen, setMoreOpen] = useState(false)
   const [session, setSession] = useState(null)
+  const [autoOnboard, setAutoOnboard] = useState(false)
   const Active = TABS[active]?.[1] ?? HeuteTab
   const isMoreActive = MORE.includes(active)
 
@@ -82,7 +83,13 @@ export default function TabFitness({ onBack }) {
           )}
         </div>
       </div>
-      <Active onStartSession={startSession} />
+      <Active
+        onStartSession={startSession}
+        onStartOnboarding={() => { setActive('plaene'); setAutoOnboard(true) }}
+        onOpenTab={select}
+        autoOnboard={autoOnboard}
+        onAutoOnboardConsumed={() => setAutoOnboard(false)}
+      />
       {session && (
         <SessionRunner
           planId={session.planId}

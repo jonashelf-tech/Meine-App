@@ -66,16 +66,20 @@ src/
         birthdayUtils.js    — Migration, Chip-Logik, Hilfsfunktionen
       fitness/
         TabFitness.jsx          — Shell: ToolHeader + 7 Sub-Tabs (Heute·Pläne·Übungen·Auswertung·Archiv·Körpergewicht·⚙)
-        fitnessModel.js         — Konstanten (MUSCLES, VOLUME_REF, EQUIPMENT, Inkremente, Rest/Warmup) + Factories
-        fitnessStore.js         — load/save SK.fitness (config) + SK.fitnessSessions (Log) + Selektoren + ensureSeeded
-        fitnessLogic.js         — rein+getestet: e1rm, bestWorkingE1rm, restSecForExercise, warmupSets, detectPRs, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries, similarExercises
+        fitnessModel.js         — Konstanten (MUSCLES, MUSCLE_GROUPS [6 UI-Gruppen→Muskeln], VOLUME_REF, EQUIPMENT, Inkremente, Rest/Warmup, SESSION_SET_BUDGET, REP_PREF) + Factories
+        fitnessStore.js         — load/save SK.fitness (config: settings.schedule {flex|fixed days}, settings.rhythm [legacy/Zyklus]) + SK.fitnessSessions (Log) + Selektoren + ensureSeeded
+        fitnessLogic.js         — rein+getestet: e1rm, bestWorkingE1rm, restSecForExercise, warmupSets, detectPRs, realSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries, similarExercises; Scheduling: scheduleStatus, weeklyFrequency, isoWeekday; Dashboard: weeklyStreak, sessionsThisWeek, avgDurationMin, estSessionMin
         exerciseSeed.js         — 32 Standard-Übungen (stabile IDs, custom:false)
         koerpergewichtData.js   — Körpergewicht-Daten (SK.weight) — aus altem Gewicht-Tool übernommen
         FitnessSection.jsx      — Tagesplaner-Widget (Körpergewicht-Eingabe + heutiges Training)
         session/SessionRunner.jsx — Live-Session (Satz-Logging, Vorwerte, Rest-Timer, Warmup, Gerät-besetzt)
         session/SessionSummary.jsx — Abschluss-Screen (Dauer/Volumen/PRs)
         tabs/KoerpergewichtTab.jsx — Gewichts-/Kalorien-Tracking (aus altem TabGewicht)
-        tabs/HeuteTab · PlaeneTab · UebungenTab · DashboardsTab (Volumen+Kraft) · ArchivTab — Free Mode (Phase 2+3); EinstellungenTab noch Stub
+        tabs/HeuteTab.jsx       — Dashboard (Redesign Richtung B): Schedule-Hinweis, Hero „Jetzt dran" (Rotation/Chips/CTA), 3 Kacheln (Woche/Streak/Ø Dauer), Muskel-Balance (6 Gruppen), Quick-Actions, Leerzustand → onStartOnboarding()
+        tabs/PlaeneTab (Listen + Editor, Redesign B) · UebungenTab · DashboardsTab (Volumen+Kraft) · ArchivTab. PlaeneTab nimmt `autoOnboard`-Prop (von TabFitness gesetzt über HeuteTab-Leerzustand) → öffnet Onboarding automatisch; handleCoachDone → saveSettings({schedule})
+        tabs/EinstellungenTab.jsx — Wann-trainierst-du (primär: Flexibel|Feste Tage + Wochentag-Picker Mo–So, direkt saveSettings({schedule})) · Rest-Timer-Toggle · Erweitert: Zyklus (RhythmPicker, sekundär/optional) · Coach-Split-Editor (falls aktiver Coach-Plan) · Feedback-Modus · Gewichts-Inkremente
+        coach/Onboarding.jsx     — Geführtes Briefing (Redesign B): Intro → 4 Schritte (Umfang · Intensität+Längen-Schätzung · Fokus [6 Gruppen Aus·Weniger·Normal·Mehr]+Schmerzen · Wann [Flexibel|Feste Tage]) → Finish mit tippbarer Tag-Vorschau. Slide-Übergänge, live Zusammenfassung (kein Layout-Shift). Emit: {trainingDays, splitId, ambition, repPref, priorities[per-Muskel], pains, schedule}
+        coach/planGenerator.js   — SPLIT_CATALOG (Varianten/Größe, genau 1× recommended) + generateCoachPlan; Prio-Level `off`→Muskel raus, sonst low/normal/high. coach/SplitPicker (Onboarding+Settings), coach/RhythmPicker (legacy/Zyklus)
       growth/         — Journaling-Tool (ersetzt Wachstum, Tab 18) — geführter Fluss + Übersicht
         growthContent.json      — 250 Karten / 6 Kategorien / 4 Opener (Guard: growthContent.test.js)
         growthStore.js          — Datenlayer: Ziehlogik (60-Tage-Sperre, Skip-Queue, Bonus), Schwelle, Migration, KI-Prompt, flowAbgeschlossen-Flag

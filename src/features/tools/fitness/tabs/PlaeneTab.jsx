@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ensureSeeded, savePlan, deletePlan, setActivePlan, loadSessions, saveSettings } from '../fitnessStore'
 import { createPlan, createPlanDay } from '../fitnessModel'
 import { generateCoachPlan } from '../coach/planGenerator'
+import { estSessionMin } from '../fitnessLogic'
 import Onboarding from '../coach/Onboarding'
 import s from './PlaeneTab.module.css'
 
@@ -26,14 +27,34 @@ const TrashIcon = () => (
     <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
   </svg>
 )
+const SparkleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" />
+  </svg>
+)
+const CheckIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+)
+const DumbbellIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+    <path d="M7 21h10" /><path d="M12 3v18" /><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+  </svg>
+)
 
-export default function PlaeneTab() {
+export default function PlaeneTab({ autoOnboard, onAutoOnboardConsumed }) {
   const init = ensureSeeded()
   const [plans, setPlans] = useState(init.plans)
   const [activeId, setActiveId] = useState(init.meta.activePlanId)
   const exercises = init.exercises
   const [selId, setSelId] = useState(null)
   const [onboarding, setOnboarding] = useState(false)
+
+  useEffect(() => {
+    if (autoOnboard) { setOnboarding(true); onAutoOnboardConsumed?.() }
+  }, [autoOnboard])
 
   const selected = plans.find(p => p.id === selId) ?? null
 
@@ -48,9 +69,9 @@ export default function PlaeneTab() {
     setActiveId(meta.activePlanId)
   }
 
-  const handleCoachDone = ({ rhythm, ...coach }) => {
+  const handleCoachDone = ({ schedule, ...coach }) => {
     const fitness = ensureSeeded()
-    saveSettings({ rhythm }) // Rhythmus ist global, gehört nicht in die Plan-Coach-Config
+    saveSettings({ schedule }) // Schedule ist global, gehört nicht in die Plan-Coach-Config
     const plan = generateCoachPlan(coach, fitness.exercises, loadSessions())
     setPlans(savePlan(plan))
     setActiveId(setActivePlan(plan.id).activePlanId)
@@ -81,27 +102,35 @@ export default function PlaeneTab() {
 
   return (
     <div className={s.page}>
-      <div className={s.newBtnRow}>
+      <div className={s.actionRow}>
+        <button className={s.coachBtn} onClick={() => setOnboarding(true)}>
+          <SparkleIcon /> Coach-Plan
+        </button>
         <button className={s.newBtn} onClick={handleNew}>
           <PlusIcon /> Neuer Plan
-        </button>
-        <button className={s.newBtn} onClick={() => setOnboarding(true)}>
-          <PlusIcon /> Coach-Plan
         </button>
       </div>
 
       {plans.length === 0 ? (
-        <div className={s.empty}>Noch keine Pläne angelegt.</div>
+        <div className={s.emptyCard}>
+          <div className={s.emptyGlyph}><DumbbellIcon /></div>
+          <div className={s.emptyTitle}>Noch keine Pläne angelegt</div>
+          <div className={s.emptyText}>Lass den Coach in wenigen Schritten einen Plan bauen — oder starte mit einem leeren Plan.</div>
+        </div>
       ) : (
         <div className={s.list}>
           {plans.map(plan => (
-            <div key={plan.id} className={s.row} onClick={() => setSelId(plan.id)}>
-              <div className={s.rowMain}>
-                <span className={s.rowName}>{plan.name}</span>
-                <span className={s.rowSub}>{plan.days.length} Tage</span>
+            <div
+              key={plan.id}
+              className={[s.card, plan.id === activeId ? s.cardActive : ''].join(' ')}
+              onClick={() => setSelId(plan.id)}
+            >
+              <div className={s.cardMain}>
+                <span className={s.cardName}>{plan.name}</span>
+                <span className={s.cardSub}>{plan.days.length} {plan.days.length === 1 ? 'Tag' : 'Tage'}</span>
               </div>
               {plan.id === activeId ? (
-                <span className={s.activeBadge}>Aktiv</span>
+                <span className={s.activeBadge}><CheckIcon /> Aktiv</span>
               ) : (
                 <button
                   className={s.activateBtn}
@@ -199,7 +228,7 @@ function DetailView({ plan, exercises, onBack, onSave, onDelete }) {
   return (
     <div className={s.page}>
       <div className={s.header}>
-        <button className={s.back} onClick={onBack} aria-label="Zurück"><BackIcon /></button>
+        <button className={s.iconBtn} onClick={onBack} aria-label="Zurück"><BackIcon /></button>
         <button className={s.saveBtn} onClick={() => onSave(draft)} disabled={draft.name.trim().length === 0}>Speichern</button>
       </div>
 
@@ -213,82 +242,91 @@ function DetailView({ plan, exercises, onBack, onSave, onDelete }) {
         />
       </div>
 
-      <div className={s.modeChip}>Free Mode</div>
-
-      <div className={s.daysList}>
-        {draft.days.map(day => (
-          <div key={day.id} className={s.dayCard}>
-            <div className={s.dayHeader}>
-              <input
-                className={s.dayNameInput}
-                type="text"
-                value={day.name}
-                onChange={e => updateDay(day.id, { name: e.target.value })}
-              />
-              <button
-                className={[s.iconBtn, confirmDelDay === day.id ? s.iconBtnConfirm : ''].join(' ')}
-                onClick={() => removeDay(day.id)}
-                aria-label="Tag entfernen"
-              >
-                <TrashIcon />
-              </button>
-            </div>
-
-            {day.exercises.length === 0 ? (
-              <div className={s.dayEmpty}>Noch keine Übungen.</div>
-            ) : (
-              <div className={s.exList}>
-                {day.exercises.map((ex, idx) => (
-                  <div key={idx} className={s.exRow}>
-                    <span className={s.exName}>{exerciseName(ex.exerciseId)}</span>
-                    <div className={s.exInputs}>
-                      <div className={s.exField}>
-                        <span className={s.exFieldLabel}>Sätze</span>
-                        <input
-                          className={s.numInput}
-                          type="number"
-                          min="1"
-                          value={ex.zielSaetze}
-                          onChange={e => updateExercise(day.id, idx, { zielSaetze: Number(e.target.value) || 0 })}
-                        />
-                      </div>
-                      <div className={s.exField}>
-                        <span className={s.exFieldLabel}>Wdh</span>
-                        <div className={s.rangeRow}>
-                          <input
-                            className={s.numInput}
-                            type="number"
-                            min="1"
-                            value={ex.zielWdh[0]}
-                            onChange={e => updateExercise(day.id, idx, { zielWdh: [Number(e.target.value) || 0, ex.zielWdh[1]] })}
-                          />
-                          <span className={s.rangeSep}>–</span>
-                          <input
-                            className={s.numInput}
-                            type="number"
-                            min="1"
-                            value={ex.zielWdh[1]}
-                            onChange={e => updateExercise(day.id, idx, { zielWdh: [ex.zielWdh[0], Number(e.target.value) || 0] })}
-                          />
-                        </div>
-                      </div>
-                      <button className={s.iconBtn} onClick={() => removeExercise(day.id, idx)} aria-label="Übung entfernen">
-                        <TrashIcon />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button className={s.addExBtn} onClick={() => { setPickerDayId(day.id); setPickerSearch('') }}>
-              <PlusIcon /> Übung
-            </button>
-          </div>
-        ))}
+      <div className={[s.modeChip, draft.modus === 'coach' ? s.modeChipCoach : ''].join(' ')}>
+        {draft.modus === 'coach' ? <SparkleIcon /> : null}
+        {draft.modus === 'coach' ? 'Coach' : 'Free Mode'}
       </div>
 
-      <button className={s.newBtn} onClick={addDay}>
+      <div className={s.daysList}>
+        {draft.days.map(day => {
+          const totalSets = day.exercises.reduce((a, e) => a + (e.zielSaetze || 0), 0)
+          return (
+            <div key={day.id} className={s.dayCard}>
+              <div className={s.dayHeader}>
+                <input
+                  className={s.dayNameInput}
+                  type="text"
+                  value={day.name}
+                  onChange={e => updateDay(day.id, { name: e.target.value })}
+                />
+                {day.exercises.length > 0 && (
+                  <span className={s.dayMeta}>~{estSessionMin(totalSets)} min</span>
+                )}
+                <button
+                  className={[s.dayDelBtn, confirmDelDay === day.id ? s.dayDelBtnConfirm : ''].join(' ')}
+                  onClick={() => removeDay(day.id)}
+                  aria-label="Tag entfernen"
+                >
+                  <TrashIcon />
+                </button>
+              </div>
+
+              {day.exercises.length === 0 ? (
+                <div className={s.dayEmpty}>Noch keine Übungen.</div>
+              ) : (
+                <div className={s.exList}>
+                  {day.exercises.map((ex, idx) => (
+                    <div key={idx} className={s.exRow}>
+                      <span className={s.exName}>{exerciseName(ex.exerciseId)}</span>
+                      <div className={s.exInputs}>
+                        <div className={s.exField}>
+                          <span className={s.exFieldLabel}>Sätze</span>
+                          <input
+                            className={s.numInput}
+                            type="number"
+                            min="1"
+                            value={ex.zielSaetze}
+                            onChange={e => updateExercise(day.id, idx, { zielSaetze: Number(e.target.value) || 0 })}
+                          />
+                        </div>
+                        <div className={s.exField}>
+                          <span className={s.exFieldLabel}>Wdh</span>
+                          <div className={s.rangeRow}>
+                            <input
+                              className={s.numInput}
+                              type="number"
+                              min="1"
+                              value={ex.zielWdh[0]}
+                              onChange={e => updateExercise(day.id, idx, { zielWdh: [Number(e.target.value) || 0, ex.zielWdh[1]] })}
+                            />
+                            <span className={s.rangeSep}>–</span>
+                            <input
+                              className={s.numInput}
+                              type="number"
+                              min="1"
+                              value={ex.zielWdh[1]}
+                              onChange={e => updateExercise(day.id, idx, { zielWdh: [ex.zielWdh[0], Number(e.target.value) || 0] })}
+                            />
+                          </div>
+                        </div>
+                        <button className={s.iconBtn} onClick={() => removeExercise(day.id, idx)} aria-label="Übung entfernen">
+                          <TrashIcon />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button className={s.addExBtn} onClick={() => { setPickerDayId(day.id); setPickerSearch('') }}>
+                <PlusIcon /> Übung
+              </button>
+            </div>
+          )
+        })}
+      </div>
+
+      <button className={s.addDayBtn} onClick={addDay}>
         <PlusIcon /> Tag
       </button>
 
@@ -300,7 +338,7 @@ function DetailView({ plan, exercises, onBack, onSave, onDelete }) {
         <div className={s.pickerOverlay}>
           <div className={s.pickerHeader}>
             <span className={s.pickerTitle}>Übung wählen</span>
-            <button className={s.back} onClick={() => setPickerDayId(null)} aria-label="Schließen">
+            <button className={s.iconBtn} onClick={() => setPickerDayId(null)} aria-label="Schließen">
               <BackIcon />
             </button>
           </div>

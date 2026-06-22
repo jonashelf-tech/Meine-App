@@ -39,6 +39,11 @@ describe('targetSetsPerMuscle', () => {
     expect(targetSetsPerMuscle({ ambition: 'normal', priorities: {} }).brust).toBe(16) // round((12+20)/2)
     expect(targetSetsPerMuscle({ ambition: 'vollgas', priorities: { brust: 'high' } }).brust).toBe(22) // MRV
   })
+  it('off → Muskel bekommt kein Target', () => {
+    const t = targetSetsPerMuscle({ ambition: 'normal', priorities: { bizeps: 'off' } })
+    expect(t.bizeps).toBeUndefined()
+    expect(t.trizeps).toBeDefined() // unbeteiligte Muskeln unverändert
+  })
 })
 describe('repRangeFor', () => {
   it('grund schwerer, isolation leichter', () => {
@@ -83,6 +88,17 @@ describe('generateCoachPlan', () => {
       p.days.forEach(day => {
         const patterns = day.exercises.map(e => exById[e.exerciseId].pattern).filter(Boolean)
         expect(new Set(patterns).size, `${d}er ${day.name}`).toBe(patterns.length)
+      })
+    })
+  })
+  it('Priorität off → kein Tag enthält eine Übung mit diesem Primärmuskel', () => {
+    const exById = Object.fromEntries(EXERCISE_SEED.map(e => [e.id, e]))
+    const primaryMuscle = (alloc) => Object.entries(alloc || {}).sort((a, b) => b[1] - a[1])[0]?.[0]
+    const p = generateCoachPlan({ ...coach, priorities: { bizeps: 'off', trizeps: 'off' } }, EXERCISE_SEED, [])
+    p.days.forEach(day => {
+      day.exercises.forEach(e => {
+        const prim = primaryMuscle(exById[e.exerciseId].allocation)
+        expect(['bizeps', 'trizeps']).not.toContain(prim)
       })
     })
   })

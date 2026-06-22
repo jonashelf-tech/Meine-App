@@ -119,6 +119,35 @@
   color: var(--tool-color, var(--primary));
 }
 
+/* ─── Wochentag-Picker ───────────────────────────────────── */
+.wdays {
+  display: flex;
+  gap: 6px;
+}
+
+.wday {
+  flex: 1;
+  height: 44px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.wdayActive {
+  border-color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 16%, transparent);
+  color: var(--tool-color, var(--primary));
+}
+
 /* ─── Coach-Split ────────────────────────────────────────── */
 .splitCurrent {
   display: flex;

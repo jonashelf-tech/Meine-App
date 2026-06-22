@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   MUSCLES, MUSCLE_LABELS, EQUIPMENT, VOLUME_REF, DEFAULT_INCREMENTS,
+  MUSCLE_GROUPS, MUSCLE_GROUP_LABELS,
   genId, createExercise, createPlan, createPlanDay, createSession, createSet,
 } from './fitnessModel'
 
@@ -17,6 +18,17 @@ describe('Konstanten', () => {
   })
   it('jedes Equipment hat ein Inkrement', () => {
     EQUIPMENT.forEach(e => expect(DEFAULT_INCREMENTS[e]).toBeDefined())
+  })
+})
+
+describe('MUSCLE_GROUPS', () => {
+  it('jede Gruppe hat ein Label', () => {
+    Object.keys(MUSCLE_GROUPS).forEach(g => expect(MUSCLE_GROUP_LABELS[g]).toBeTruthy())
+  })
+  it('Vereinigung aller Gruppen-Muskeln == Menge der VOLUME_REF-Keys', () => {
+    const fromGroups = new Set(Object.values(MUSCLE_GROUPS).flat())
+    const fromVolumeRef = new Set(Object.keys(VOLUME_REF))
+    expect(fromGroups).toEqual(fromVolumeRef)
   })
 })
 

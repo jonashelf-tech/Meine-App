@@ -8,11 +8,23 @@ import s from './EinstellungenTab.module.css'
 
 const DAY_OPTIONS = [2, 3, 4, 5, 6]
 
+const WEEKDAYS = [
+  { iso: 1, label: 'Mo' }, { iso: 2, label: 'Di' }, { iso: 3, label: 'Mi' }, { iso: 4, label: 'Do' },
+  { iso: 5, label: 'Fr' }, { iso: 6, label: 'Sa' }, { iso: 7, label: 'So' },
+]
+
 export default function EinstellungenTab() {
   const [settings, setSettings] = useState(() => loadFitness().settings)
   const [fitness, setFitness] = useState(() => ensureSeeded())
 
   const update = (patch) => setSettings(saveSettings(patch))
+
+  const schedule = settings.schedule ?? { mode: 'flex' }
+  const setScheduleMode = (mode) => update({ schedule: mode === 'flex' ? { mode: 'flex' } : { mode: 'fixed', days: schedule.days ?? [] } })
+  const toggleScheduleDay = (iso) => {
+    const days = schedule.days ?? []
+    update({ schedule: { mode: 'fixed', days: days.includes(iso) ? days.filter(v => v !== iso) : [...days, iso] } })
+  }
 
   const activePlan = getActivePlan(fitness)
   const coachPlan = activePlan && activePlan.modus === 'coach' ? activePlan : null
@@ -60,6 +72,41 @@ export default function EinstellungenTab() {
       <div className={s.title}>Einstellungen</div>
 
       <div className={s.section}>
+        <div className={s.sectionTitle}>Wann trainierst du?</div>
+        <div className={s.segmented}>
+          <button
+            type="button"
+            className={`${s.segment} ${schedule.mode === 'flex' ? s.segmentActive : ''}`}
+            onClick={() => setScheduleMode('flex')}
+          >
+            Flexibel
+          </button>
+          <button
+            type="button"
+            className={`${s.segment} ${schedule.mode === 'fixed' ? s.segmentActive : ''}`}
+            onClick={() => setScheduleMode('fixed')}
+          >
+            Feste Tage
+          </button>
+        </div>
+        {schedule.mode === 'fixed' && (
+          <div className={s.wdays}>
+            {WEEKDAYS.map(w => (
+              <button
+                key={w.iso}
+                type="button"
+                className={`${s.wday} ${(schedule.days ?? []).includes(w.iso) ? s.wdayActive : ''}`}
+                onClick={() => toggleScheduleDay(w.iso)}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className={s.hint}>Die Rotation bleibt die Wahrheit, nichts verfällt — beeinflusst nur Erinnerungen &amp; das Wochenvolumen.</div>
+      </div>
+
+      <div className={s.section}>
         <div className={s.sectionTitle}>Rest-Timer</div>
         <button
           type="button"
@@ -74,7 +121,7 @@ export default function EinstellungenTab() {
       </div>
 
       <div className={s.section}>
-        <div className={s.sectionTitle}>Trainings-Rhythmus</div>
+        <div className={s.sectionTitle}>Erweitert: Zyklus</div>
         <RhythmPicker value={settings.rhythm} onChange={(r) => update({ rhythm: r })} />
         <div className={s.hint}>Steuert nur den Hinweis im Heute-Tab (z. B. „heute Pause"). Reiner Vorschlag — blockt nie.</div>
       </div>
