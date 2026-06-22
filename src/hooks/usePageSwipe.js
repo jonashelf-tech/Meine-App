@@ -51,7 +51,18 @@ export function usePageSwipe(ref, opts) {
       } else {
         el.style.transition = 'transform 200ms cubic-bezier(0.34,1.56,0.64,1)'
         el.style.transform  = 'translateX(0)'
+        clearTransformAfterSettle()
       }
+    }
+
+    // Wichtig: ein zurückbleibendes `transform` (auch translateX(0)) macht das
+    // Element zum containing-block für `position:fixed` darin (Drag-Ghost, Modals).
+    // Daher am Ruhepunkt komplett entfernen.
+    function clearTransformAfterSettle() {
+      el.addEventListener('transitionend', function clr() {
+        el.removeEventListener('transitionend', clr)
+        el.style.transform = ''
+      }, { once: true })
     }
 
     function navigate(dir) {
@@ -75,6 +86,7 @@ export function usePageSwipe(ref, opts) {
           requestAnimationFrame(() => {
             el.style.transition = `transform 180ms ${ease}`
             el.style.transform  = 'translateX(0)'
+            clearTransformAfterSettle()
           })
         })
       }, { once: true })

@@ -186,7 +186,8 @@
 .weekWrapper {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-dim);
+  border: 1px solid var(--border);
+  border-left: 2px solid color-mix(in srgb, var(--primary) 28%, transparent);
   border-radius: var(--r);
   overflow: hidden;
   background: var(--bg2);
@@ -334,17 +335,18 @@
   flex-direction: column;
 }
 
+/* Stunden-Zahlen wie im Tagesplaner (.sgLabel): zentriert, --text-dim, 700. */
 .weekTimeLabel {
   font-family: var(--font);
-  font-size: 0.58rem;
-  font-weight: 600;
-  color: var(--text-faint);
-  text-align: right;
-  padding-right: 5px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-align: center;
   height: 28px;
   display: flex;
   align-items: flex-start;
-  padding-top: 1px;
+  justify-content: center;
+  padding-top: 4px;
   flex-shrink: 0;
 }
 
@@ -1179,6 +1181,12 @@
   transform-origin: top left;
   overflow: hidden;
   will-change: left, top;
+}
+
+/* Todo-Ghost: getönt + Kontur, passend zu .weekSlotTodo (statt Vollfläche). */
+.weekDragChipTodo {
+  background: color-mix(in srgb, var(--slot-color, var(--primary)) 30%, var(--bg2));
+  border: 1px solid color-mix(in srgb, var(--slot-color, var(--primary)) 55%, transparent);
 }
 
 /* ─── Tool-Karten (DayPanel) ──────────────────────────────── */
