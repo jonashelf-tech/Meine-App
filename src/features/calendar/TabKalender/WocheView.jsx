@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { dateKey as toDateKey, getToolColor } from '../../../utils'
 import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
@@ -614,9 +615,15 @@ export default function WocheView({
         const colRect  = colEl.getBoundingClientRect()
         const chipH    = slotToHeight(dragging.slot.duration)
         const slotPx   = slotToTop(dragTarget.key, visibleStart)
-        return (
+        // Portal an <body>: macht den fixed-Ghost unabhängig von Vorfahr-Transforms
+        // (z.B. dem translateX des Swipe-Containers) → sitzt exakt am Zielslot.
+        return createPortal(
           <div
-            className={[s.weekDragChip, dragTarget.blocked ? s.weekDragChipBlocked : ''].join(' ')}
+            className={[
+              s.weekDragChip,
+              dragging.slot.todoId ? s.weekDragChipTodo : '',
+              dragTarget.blocked ? s.weekDragChipBlocked : '',
+            ].join(' ')}
             style={{
               left:           colRect.left + 2,
               top:            colRect.top  + slotPx,
@@ -626,7 +633,8 @@ export default function WocheView({
             }}
           >
             {chipH >= 14 && <span className={s.weekSlotName}>{dragging.slot.text}</span>}
-          </div>
+          </div>,
+          document.body,
         )
       })()}
     </>
