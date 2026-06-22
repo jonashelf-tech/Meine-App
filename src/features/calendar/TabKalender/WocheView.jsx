@@ -150,6 +150,7 @@ export default function WocheView({
   const clickTimers   = useRef({})
   const colRefs       = useRef({})
   const dragJustEnded = useRef(false)
+  const scrollBodyRef = useRef(null)
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek = weekDays.some(d => toDateKey(d) === todayKey)
@@ -166,6 +167,14 @@ export default function WocheView({
   useEffect(() => {
     const timers = clickTimers.current
     return () => { Object.values(timers).forEach(clearTimeout) }
+  }, [])
+
+  // Beim Öffnen der aktuellen Woche grob zur Jetzt-Zeit scrollen (Innen-Scroll).
+  useEffect(() => {
+    if (!isCurrentWeek || nowTop == null) return
+    const el = scrollBodyRef.current
+    if (el) el.scrollTop = Math.max(0, nowTop - 96)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleToggleSlotDone = (dk, key, slot, slotTodo) => {
@@ -330,18 +339,6 @@ export default function WocheView({
           })}
         </div>
 
-        {/* PillStrip oben */}
-        <WeekPillStrip
-          days={days}
-          weekDays={weekDays}
-          visibleStart={visibleStart}
-          visibleEnd={visibleEnd}
-          isTop={true}
-          onExpand={expandStart}
-          onShrink={shrinkStart}
-          onExpandTo={expandToStart}
-        />
-
         {/* Allday-Streifen — Geburtstage + Todos ohne Uhrzeit */}
         {(showTodos || showTermine) && (
           <div className={s.weekAlldayRow}>
@@ -356,7 +353,7 @@ export default function WocheView({
                     <div
                       key={b.id}
                       className={s.weekAlldayBar}
-                      style={{ background: getToolColor('geburtstage', toolColors) }}
+                      style={{ '--bar-color': getToolColor('geburtstage', toolColors) }}
                     >
                       <span className={s.weekAlldayBarText}>{b.name}</span>
                     </div>
@@ -365,7 +362,7 @@ export default function WocheView({
                     <div
                       key={t.id}
                       className={s.weekAlldayBar}
-                      style={{ background: t.color || 'var(--primary)' }}
+                      style={{ '--bar-color': t.color || 'var(--primary)' }}
                     >
                       <span className={s.weekAlldayBarText}>{t.text}</span>
                     </div>
@@ -375,10 +372,22 @@ export default function WocheView({
             })}
           </div>
         )}
+
+        {/* PillStrip oben — „früher anzeigen", direkt über dem Gitter */}
+        <WeekPillStrip
+          days={days}
+          weekDays={weekDays}
+          visibleStart={visibleStart}
+          visibleEnd={visibleEnd}
+          isTop={true}
+          onExpand={expandStart}
+          onShrink={shrinkStart}
+          onExpandTo={expandToStart}
+        />
         </div>
 
-        {/* Zeitgitter */}
-        <div className={s.weekScrollBody}>
+        {/* Zeitgitter — eigener Scroll-Bereich (Innen-Scroll) */}
+        <div className={s.weekScrollBody} ref={scrollBodyRef}>
           <div className={s.weekTimeAxis}>
             {Array.from({ length: (visibleEnd - visibleStart) * 2 }, (_, i) => {
               const h      = visibleStart + i * 0.5
@@ -386,7 +395,7 @@ export default function WocheView({
               if (!isHour) return <div key={i} className={s.weekTimeLabel} />
               return (
                 <div key={i} className={s.weekTimeLabel}>
-                  {String(Math.floor(h)).padStart(2, '0')}:00
+                  {String(Math.floor(h)).padStart(2, '0')}
                 </div>
               )
             })}
