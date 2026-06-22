@@ -4,12 +4,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  padding: 4px 12px 10px;
+  gap: 3px;
+  padding: 4px 0 10px;
 }
 
 .tab {
-  padding: 10px 14px;
+  padding: 9px 4px;
   border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: var(--surface);
@@ -32,7 +32,7 @@
 /* „Mehr" rechts abgesetzt → trennt Sekundär- von Primär-Tabs */
 .moreWrap { position: relative; margin-left: auto; }
 
-.moreBtn { display: inline-flex; align-items: center; gap: 6px; }
+.moreBtn { display: inline-flex; align-items: center; gap: 3px; }
 .chev { transition: transform .15s; }
 .chevOpen { transform: rotate(180deg); }
 
