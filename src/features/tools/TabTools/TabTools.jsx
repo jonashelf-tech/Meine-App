@@ -344,7 +344,7 @@ export default function TabTools() {
       )}
 
       <button
-        className={[s.allToolsToggle, stuffOpen ? s.allToolsToggleOn : ''].join(' ')}
+        className={[s.allToolsToggle, s.stuffToggle, stuffOpen ? s.allToolsToggleOn : ''].join(' ')}
         onClick={() => setStuffOpen(v => !v)}
       >
         {stuffOpen ? '✕ Stuff schließen' : '📦 Stuff'}
