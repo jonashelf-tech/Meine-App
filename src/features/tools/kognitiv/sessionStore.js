@@ -29,26 +29,6 @@ export function barFraction(metric, best, higherIsBetter) {
 
 const isHigherBetter = (moduleId) => MODULE_CONFIG[moduleId]?.higherIsBetter ?? false
 
-const PRACTICE_KEY = SK.kognitivPractice
-
-function currentISOWeek() {
-  const d = new Date()
-  const day = d.getUTCDay() || 7
-  d.setUTCDate(d.getUTCDate() + 4 - day)
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return `${d.getUTCFullYear()}-W${Math.ceil(((d - yearStart) / 86400000 + 1) / 7)}`
-}
-
-export function isPracticeAvailable(moduleId) {
-  const data = lv(PRACTICE_KEY) ?? {}
-  return data[moduleId] !== currentISOWeek()
-}
-
-export function markPracticeUsed(moduleId) {
-  const data = lv(PRACTICE_KEY) ?? {}
-  sv(PRACTICE_KEY, { ...data, [moduleId]: currentISOWeek() })
-}
-
 const genId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 

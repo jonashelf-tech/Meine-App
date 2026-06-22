@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react'
 import { MODULE_CONFIG } from './moduleConfig'
-import { isPracticeAvailable } from './sessionStore'
 import ModuleIcon from './ModuleIcon'
 import s from './Briefing.module.css'
 
-export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
+export default function Briefing({ moduleId, onStart, onBack }) {
   const m = MODULE_CONFIG[moduleId]
   const variant = m.defaultVariant
   const [infoOpen, setInfoOpen] = useState(() => !localStorage.getItem(`briefing-seen-${moduleId}`))
-  const canPractice = isPracticeAvailable(moduleId)
 
   useEffect(() => { localStorage.setItem(`briefing-seen-${moduleId}`, '1') }, [moduleId])
 
@@ -73,12 +71,6 @@ export default function Briefing({ moduleId, onStart, onPractice, onBack }) {
         <button className={s.startBtn} onClick={() => onStart(variant)}>
           Starten →
         </button>
-
-        {canPractice && (
-          <button className={s.practiceBtn} onClick={() => onPractice(variant)}>
-            Üben <span className={s.practiceSub}>· 1× diese Woche · nicht gewertet</span>
-          </button>
-        )}
       </div>
     </div>
   )

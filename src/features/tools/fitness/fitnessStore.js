@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS = {
   feedbackMode: 'chips',
   zielRir: [...ZIEL_RIR],
   rhythm: null, // null = kein fester Rhythmus; sonst { on, off } für den Heute-Hinweis
+  schedule: { mode: 'flex' }, // { mode:'flex' } | { mode:'fixed', days:[1..7] } (ISO-Wochentag, Mo=1..So=7)
 }
 const DEFAULT_META = { activePlanId: null, planCursor: {}, seeded: false, exerciseMetaVersion: 0 }
 

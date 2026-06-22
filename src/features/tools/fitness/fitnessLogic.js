@@ -241,10 +241,11 @@ export function sessionsPerWeek(rhythm, rotationLength) {
 
 // Geplantes reales Volumen pro Muskel/Woche: Volumen pro Rotation × wie oft die Rotation
 // pro Woche durchlaufen wird (Sessions/Woche ÷ Rotationslänge).
-export function plannedRealSetsPerMuscle(plan, exercises, rhythm) {
+// freqOverride: optionale explizite Sessions/Woche (z. B. aus weeklyFrequency), ersetzt sessionsPerWeek(rhythm).
+export function plannedRealSetsPerMuscle(plan, exercises, rhythm, freqOverride = null) {
   const byId = new Map(exercises.map(e => [e.id, e]))
   const n = plan?.days?.length || 1
-  const perWeekFactor = sessionsPerWeek(rhythm, n) / n
+  const perWeekFactor = (freqOverride ?? sessionsPerWeek(rhythm, n)) / n
   const acc = {}
   plan?.days?.forEach(day => {
     day.exercises?.forEach(entry => {
@@ -274,3 +275,68 @@ export function realSetsPerMuscle(sessions, exercises, weekStart) {
   Object.keys(acc).forEach(m => { acc[m] = round1(acc[m]) })
   return acc
 }
+
+// ─── Scheduling (feste Wochentage, ersetzt den Rhythmus-Schritt im Onboarding) ──
+
+// ISO-Wochentag: Mo=1..So=7 (JS getDay() ist 0=So..6=Sa).
+export function isoWeekday(iso) {
+  const d = new Date(iso + 'T12:00:00')
+  return ((d.getDay() + 6) % 7) + 1
+}
+
+// schedule: null | { mode:'flex' } | { mode:'fixed', days:[1..7] }.
+// Liefert null (kein Hinweis) oder { kind:'done'|'rest'|'train' } — nie blockierend.
+export function scheduleStatus(schedule, sessions, today) {
+  if (!schedule || schedule.mode !== 'fixed') return null
+  const dates = new Set((sessions || []).map(s => s.date))
+  if (dates.has(today)) return { kind: 'done' }
+  return (schedule.days || []).includes(isoWeekday(today)) ? { kind: 'train' } : { kind: 'rest' }
+}
+
+// Trainings/Woche fürs Volumen: fixed → Anzahl Wochentage; sonst Rhythmus/Default-Zyklus.
+export function weeklyFrequency(settings, rotationLength) {
+  if (settings?.schedule?.mode === 'fixed') return Math.max(1, (settings.schedule.days || []).length)
+  if (settings?.rhythm?.on && settings?.rhythm?.off) return sessionsPerWeek(settings.rhythm, rotationLength)
+  return sessionsPerWeek(null, rotationLength)
+}
+
+// Aufeinanderfolgende Wochen mit ≥1 Training, bis zur aktuellen Woche.
+// Grace: hat die aktuelle Woche noch kein Training, wird ab der Vorwoche gezählt.
+export function weeklyStreak(sessions, today) {
+  if (!sessions || !sessions.length) return 0
+  const weeks = new Set(sessions.map(s => weekStartIso(s.date)))
+  let cursor = weekStartIso(today)
+  if (!weeks.has(cursor)) {
+    const d = new Date(cursor + 'T12:00:00'); d.setDate(d.getDate() - 7)
+    cursor = d.toISOString().slice(0, 10)
+  }
+  let streak = 0
+  while (weeks.has(cursor)) {
+    streak++
+    const d = new Date(cursor + 'T12:00:00'); d.setDate(d.getDate() - 7)
+    cursor = d.toISOString().slice(0, 10)
+  }
+  return streak
+}
+
+// Distinkte Trainingstage in der aktuellen Woche (ab weekStartIso(today)).
+export function sessionsThisWeek(sessions, today) {
+  const weekStart = weekStartIso(today)
+  const end = new Date(weekStart + 'T12:00:00'); end.setDate(end.getDate() + 7)
+  const endIso = end.toISOString().slice(0, 10)
+  const dates = new Set(
+    (sessions || []).filter(s => s.date >= weekStart && s.date < endIso).map(s => s.date)
+  )
+  return dates.size
+}
+
+// Ø Dauer (Minuten) der letzten n Sessions mit durationSec>0. Leer → 0.
+export function avgDurationMin(sessions, n = 5) {
+  const durations = (sessions || []).filter(s => s.durationSec > 0).slice(-n).map(s => s.durationSec)
+  if (!durations.length) return 0
+  const avgSec = durations.reduce((sum, s) => sum + s, 0) / durations.length
+  return Math.round(avgSec / 60)
+}
+
+// Geschätzte Session-Dauer (Minuten, auf 5 gerundet): Arbeitssätze · 2,5 min + 10 min Aufwärmen.
+export const estSessionMin = (workingSets) => Math.round((workingSets * 2.5 + 10) / 5) * 5

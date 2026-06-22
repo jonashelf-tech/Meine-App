@@ -13,6 +13,22 @@ export const MUSCLE_LABELS = {
   waden: 'Waden', bauch: 'Bauch', untererRuecken: 'Unterer Rücken',
 }
 
+// ─── UI-Muskelgruppen (6 Gruppen → VOLUME_REF-Muskeln) ────
+// Nur UI-Schicht: Onboarding/Einstellungen setzen Gruppen, gespeichert wird weiter pro Muskel.
+export const MUSCLE_GROUPS = {
+  brust: ['brust'],
+  ruecken: ['ruecken'],
+  beine: ['quadrizeps', 'hamstrings', 'gluteus', 'waden'],
+  schultern: ['schulterSeitlich', 'schulterHinten'],
+  arme: ['bizeps', 'trizeps'],
+  bauch: ['bauch'],
+}
+
+export const MUSCLE_GROUP_LABELS = {
+  brust: 'Brust', ruecken: 'Rücken', beine: 'Beine',
+  schultern: 'Schultern', arme: 'Arme', bauch: 'Bauch',
+}
+
 // ─── Equipment + Inkremente (kg) ──────────────────────────
 export const EQUIPMENT = ['maschine', 'langhantel', 'kurzhantel', 'kabel', 'koerpergewicht']
 

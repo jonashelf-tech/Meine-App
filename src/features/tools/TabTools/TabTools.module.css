@@ -62,6 +62,10 @@
   background: rgba(139,92,246,0.07);
 }
 
+.stuffToggle {
+  margin-top: 16px;
+}
+
 /* ─── Shared List ───────────────────────────────────────── */
 .list {
   display: flex;

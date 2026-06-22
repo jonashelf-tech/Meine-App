@@ -5,3 +5,6 @@
 .dot { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--border); background: none; padding: 0; cursor: pointer; transition: all 0.15s; }
 .dot:disabled { cursor: default; }
 .dotOn { background: var(--tool-color); border-color: var(--tool-color); }
+.pop { animation: dsPop 260ms ease-out; }
+@keyframes dsPop { 0% { transform: scale(1); } 45% { transform: scale(1.28); box-shadow: 0 0 8px var(--tool-color); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .pop { animation: none; } }

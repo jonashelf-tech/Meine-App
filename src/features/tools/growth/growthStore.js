@@ -28,7 +28,7 @@ export function markOpenerShown(data, date) {
 }
 
 export function emptyDay() {
-  return { tageskarteId: null, skipVerwendet: false, karten: [], freitext: '', stateTouched: false, timerKarteId: null }
+  return { tageskarteId: null, skipVerwendet: false, karten: [], freitext: '', stateTouched: false, timerKarteId: null, flowAbgeschlossen: false }
 }
 
 const DEFAULT_SETTINGS = () => ({
@@ -194,6 +194,12 @@ export function setTimerKarte(data, date, kartenId) {
   const day = data.days[date]
   if (!day) return data
   return { ...data, days: { ...data.days, [date]: { ...day, timerKarteId: kartenId } } }
+}
+
+// Flow für diesen Tag abgeschlossen/übersprungen → Re-Entry zeigt Übersicht.
+export function markFlowAbgeschlossen(data, date) {
+  const day = { ...emptyDay(), ...(data.days[date] ?? {}), flowAbgeschlossen: true }
+  return { ...data, days: { ...data.days, [date]: day } }
 }
 
 // ─── Erfolgs-Schwelle / Offen-Logik ───────────────────────

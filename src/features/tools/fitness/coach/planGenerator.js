@@ -96,6 +96,7 @@ export function targetSetsPerMuscle(coach) {
   const base = AMBITION_LEVELS[coach.ambition] ?? AMBITION_LEVELS.normal
   for (const [m, ref] of Object.entries(VOLUME_REF)) {
     const prio = coach.priorities?.[m] ?? 'normal'
+    if (prio === 'off') continue
     if (prio === 'low') { out[m] = ref.mev; continue }
     const idx = Math.max(0, Math.min(3, base + (prio === 'high' ? 1 : 0)))
     out[m] = muscleLevels(ref)[idx]

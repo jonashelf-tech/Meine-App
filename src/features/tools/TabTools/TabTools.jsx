@@ -16,11 +16,13 @@ const SWATCHES = [
   '#FCD34D', '#FB923C', '#F87171', '#E879F9',
 ]
 
-const allToolsSorted = [...TOOL_REGISTRY].sort((a, b) => a.name.localeCompare(b.name, 'de'))
-
-// Vorübergehend geparkt — bleiben aktivierbar, aber nicht mehr in der Haupt-Liste sichtbar.
+// Vorübergehend geparkt — eigener Bereich, taucht nicht mehr unter "Alle Tools" auf.
 const STUFF_IDS = ['elvi', 'timer', 'garten', 'pizza', 'projekte', 'reminder', 'wasjetzt', 'rad']
 const stuffTools = STUFF_IDS.map(id => TOOL_REGISTRY.find(t => t.id === id)).filter(Boolean)
+
+const allToolsSorted = TOOL_REGISTRY
+  .filter(t => !STUFF_IDS.includes(t.id))
+  .sort((a, b) => a.name.localeCompare(b.name, 'de'))
 
 function ToolResetButton({ toolId }) {
   const [confirm, setConfirm] = useState(false)
@@ -338,13 +340,18 @@ export default function TabTools() {
       {!showAll && (
         <div className={s.list}>
           {renderMyTools()}
-          <button
-            className={[s.allToolsToggle, stuffOpen ? s.allToolsToggleOn : ''].join(' ')}
-            onClick={() => setStuffOpen(v => !v)}
-          >
-            {stuffOpen ? '✕ Stuff schließen' : '📦 Stuff'}
-          </button>
-          {stuffOpen && stuffTools.map(renderChip)}
+        </div>
+      )}
+
+      <button
+        className={[s.allToolsToggle, s.stuffToggle, stuffOpen ? s.allToolsToggleOn : ''].join(' ')}
+        onClick={() => setStuffOpen(v => !v)}
+      >
+        {stuffOpen ? '✕ Stuff schließen' : '📦 Stuff'}
+      </button>
+      {stuffOpen && (
+        <div className={s.list}>
+          {stuffTools.map(renderChip)}
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { useAppStore } from '../../../store'
 import { ToolIcon } from '../toolRegistry'
 import { MODULE_CONFIG } from './moduleConfig'
-import { isDoneToday, saveSession, markPracticeUsed } from './sessionStore'
+import { isDoneToday, saveSession } from './sessionStore'
 import { isCheckinHandledToday, markCheckinSkipped } from './checkinStore'
 import CheckinModal     from './CheckinModal'
 import KognitivSettings from './KognitivSettings'
@@ -104,10 +104,6 @@ export default function TabKognitiv({ onBack, onExercising }) {
       moduleId={nav.moduleId}
       onBack={goBack}
       onStart={(variant) => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant })}
-      onPractice={(variant) => {
-        markPracticeUsed(nav.moduleId)
-        startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant, practice: true })
-      }}
     /></div>
   }
   if (nav?.screen === 'done-today') {
@@ -115,11 +111,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
       moduleId={nav.moduleId}
       onBack={goBack}
       onViewResult={(session) => setNav({ screen: 'results', session, fromArchive: true })}
-      onPractice={() => {
-        const defaultVariant = MODULE_CONFIG[nav.moduleId].defaultVariant
-        markPracticeUsed(nav.moduleId)
-        startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant: defaultVariant, practice: true })
-      }}
+      onRepeat={() => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant: MODULE_CONFIG[nav.moduleId].defaultVariant })}
     /></div>
   }
   if (nav?.screen === 'exercise') {
@@ -135,7 +127,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
     const Ex = ExMap[nav.moduleId]
     if (Ex) return <Ex
       variant={nav.variant}
-      onDone={(session) => setNav({ screen: 'results', session, fromArchive: nav.practice ?? false })}
+      onDone={(session) => setNav({ screen: 'results', session, fromArchive: false })}
       onAbort={goBack}
     />
     return <div className={s.placeholder}>Exercise {nav.moduleId} — noch nicht implementiert</div>

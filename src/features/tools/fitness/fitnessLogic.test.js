@@ -3,6 +3,7 @@ import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
   allocationOverlap, similarExercises, realSetsPerMuscle, plannedRealSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
   nextRecommendation, adjustRemaining, weeklyVolumeAdjust, recoveryNeeded, reviewExercise,
+  isoWeekday, scheduleStatus, weeklyFrequency, weeklyStreak, sessionsThisWeek, avgDurationMin,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -158,6 +159,10 @@ describe('plannedRealSetsPerMuscle', () => {
     const res = plannedRealSetsPerMuscle(plan, exercises, { on: 1, off: 1 }) // 3,5/Woche → ×1,75
     expect(res.brust).toBeCloseTo(10.5, 1)
   })
+  it('freqOverride gewinnt vor rhythm-basierter Berechnung', () => {
+    const res = plannedRealSetsPerMuscle(plan, exercises, { on: 1, off: 1 }, 4) // freqOverride=4 statt 3,5
+    expect(res.brust).toBeCloseTo(12, 1) // 6 (3+3 voll) × (4/2)
+  })
 })
 
 describe('e1rmSeries', () => {
@@ -248,6 +253,94 @@ describe('reviewExercise', () => {
     const r = reviewExercise(sessions, 'x')
     expect(r.trend).toBe('flat')
     expect(r.feedbackDist).toEqual({ leicht: 0, passt: 0, hart: 0, nichtGeschafft: 0 })
+  })
+})
+
+describe('isoWeekday', () => {
+  it('Mo=1..So=7', () => {
+    expect(isoWeekday('2026-06-08')).toBe(1) // Mo
+    expect(isoWeekday('2026-06-09')).toBe(2) // Di
+    expect(isoWeekday('2026-06-14')).toBe(7) // So
+  })
+})
+
+describe('scheduleStatus', () => {
+  const sessions = [{ date: '2026-06-08' }]
+  it('flex → kein Hinweis (null)', () => {
+    expect(scheduleStatus({ mode: 'flex' }, sessions, '2026-06-09')).toBeNull()
+  })
+  it('kein schedule → null', () => {
+    expect(scheduleStatus(null, sessions, '2026-06-09')).toBeNull()
+  })
+  it('fixed, heute bereits getraint → done', () => {
+    expect(scheduleStatus({ mode: 'fixed', days: [1] }, sessions, '2026-06-08')).toEqual({ kind: 'done' })
+  })
+  it('fixed, heute Trainingstag laut Plan, noch offen → train', () => {
+    expect(scheduleStatus({ mode: 'fixed', days: [2] }, sessions, '2026-06-09')).toEqual({ kind: 'train' })
+  })
+  it('fixed, heute kein Trainingstag → rest', () => {
+    expect(scheduleStatus({ mode: 'fixed', days: [1, 3] }, sessions, '2026-06-09')).toEqual({ kind: 'rest' })
+  })
+})
+
+describe('weeklyFrequency', () => {
+  it('fixed → Anzahl der Tage', () => {
+    expect(weeklyFrequency({ schedule: { mode: 'fixed', days: [1, 3, 5] } }, 3)).toBe(3)
+  })
+  it('fixed ohne Tage → mind. 1', () => {
+    expect(weeklyFrequency({ schedule: { mode: 'fixed', days: [] } }, 3)).toBe(1)
+  })
+  it('rhythm vorhanden → sessionsPerWeek(rhythm)', () => {
+    expect(weeklyFrequency({ schedule: { mode: 'flex' }, rhythm: { on: 1, off: 1 } }, 3)).toBe(3.5)
+  })
+  it('flex ohne rhythm → Default-Zyklus aus rotationLength', () => {
+    expect(weeklyFrequency({ schedule: { mode: 'flex' } }, 2)).toBeCloseTo(7 * 2 / 3, 5)
+  })
+})
+
+describe('weeklyStreak', () => {
+  it('leer → 0', () => expect(weeklyStreak([], '2026-06-15')).toBe(0))
+  it('nur diese Woche trainiert → 1', () => {
+    expect(weeklyStreak([{ date: '2026-06-15' }], '2026-06-16')).toBe(1)
+  })
+  it('diese + Vorwoche → 2', () => {
+    const sessions = [{ date: '2026-06-08' }, { date: '2026-06-15' }]
+    expect(weeklyStreak(sessions, '2026-06-16')).toBe(2)
+  })
+  it('Lücke stoppt den Streak', () => {
+    const sessions = [{ date: '2026-06-01' }, { date: '2026-06-15' }] // Woche 1.6. fehlt dazwischen (8.6. Lücke)
+    expect(weeklyStreak(sessions, '2026-06-16')).toBe(1)
+  })
+  it('Grace: aktuelle Woche noch kein Training → ab Vorwoche zählen', () => {
+    const sessions = [{ date: '2026-06-08' }, { date: '2026-06-15' }]
+    expect(weeklyStreak(sessions, '2026-06-20')).toBe(2) // Woche v. 15.6. läuft noch
+  })
+})
+
+describe('sessionsThisWeek', () => {
+  it('zählt distinkte Trainingstage der aktuellen Woche', () => {
+    const sessions = [
+      { date: '2026-06-08' }, { date: '2026-06-09' }, { date: '2026-06-09' }, // doppelt am selben Tag
+      { date: '2026-06-01' }, // andere Woche
+    ]
+    expect(sessionsThisWeek(sessions, '2026-06-10')).toBe(2)
+  })
+  it('leer → 0', () => expect(sessionsThisWeek([], '2026-06-10')).toBe(0))
+})
+
+describe('avgDurationMin', () => {
+  it('leer → 0', () => expect(avgDurationMin([])).toBe(0))
+  it('Mittel der letzten n Sessions mit durationSec>0', () => {
+    const sessions = [
+      { durationSec: 0 }, // ignoriert
+      { durationSec: 3000 }, // 50 min
+      { durationSec: 3600 }, // 60 min
+    ]
+    expect(avgDurationMin(sessions, 5)).toBe(55)
+  })
+  it('nutzt nur die letzten n', () => {
+    const sessions = [{ durationSec: 600 }, { durationSec: 6000 }, { durationSec: 6000 }] // 10, 100, 100 min
+    expect(avgDurationMin(sessions, 2)).toBe(100) // nur die letzten 2
   })
 })
 

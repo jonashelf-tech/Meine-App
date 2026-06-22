@@ -1,0 +1,27 @@
+.overview { display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
+/* Gestaffelte Enthüllung nach dem Abschluss */
+.overview > * { animation: fadeInUp .4s ease both; }
+.overview > *:nth-child(2) { animation-delay: .05s; }
+.overview > *:nth-child(3) { animation-delay: .10s; }
+.overview > *:nth-child(4) { animation-delay: .15s; }
+.overview > *:nth-child(5) { animation-delay: .20s; }
+.overview > *:nth-child(n+6) { animation-delay: .25s; }
+
+.header { display: flex; align-items: flex-start; justify-content: space-between; }
+.date { font-size: 0.78rem; color: var(--text-dim); text-transform: capitalize; }
+.affirm { font-size: 1.1rem; color: var(--text); font-weight: 600; margin-top: 2px; }
+.check { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--emerald); color: var(--emerald); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+.block { display: flex; flex-direction: column; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; }
+.blockLabel { font-size: 0.66rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.freitext { width: 100%; min-height: 52px; resize: vertical; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--text); padding: 10px; font-size: 0.9rem; font-family: var(--font); }
+.freitext:focus { outline: none; border-color: var(--tool-color); }
+.freitextRead { font-size: 0.9rem; color: var(--text); white-space: pre-wrap; }
+
+.bonusBtn { align-self: center; border: 1px dashed color-mix(in srgb, var(--tool-color) 40%, transparent); background: none; color: var(--tool-color); border-radius: var(--r); padding: 10px 16px; font-size: 0.82rem; cursor: pointer; font-family: var(--font); }
+
+.empty { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 30px 0; }
+.emptyText { font-size: 0.9rem; color: var(--text-dim); }
+.losBtn { min-height: 48px; border: none; border-radius: var(--r); background: var(--tool-color); color: #08080f; font-size: 0.95rem; font-weight: 600; font-family: var(--font); cursor: pointer; padding: 0 28px; box-shadow: var(--shadow-md); }
+.losBtn:active { transform: scale(.97); }
