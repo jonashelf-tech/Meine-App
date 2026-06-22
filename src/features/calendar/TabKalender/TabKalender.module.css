@@ -188,48 +188,52 @@
   flex-direction: column;
   border: 1px solid var(--border-dim);
   border-radius: var(--r);
-  overflow: clip;
+  overflow: hidden;
+  background: var(--bg2);
+  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* Fixe Kopfzone — Wochentage + Ganztägig + „früher" bleiben oben stehen,
+   nur das Stundengitter darunter scrollt (weekScrollBody). */
 .weekStickyTop {
-  position: sticky;
-  top: 0;
-  z-index: 6;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
   background: var(--bg2);
-  box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 12px -10px rgba(0, 0, 0, 0.7);
 }
 
 .weekHeaderRow {
   display: flex;
-  background: var(--bg3);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-bottom: 1px solid var(--border-dim);
   flex-shrink: 0;
+  padding-top: 2px;
 }
 
-.weekTimeCorner { width: 32px; flex-shrink: 0; }
+.weekTimeCorner { width: 28px; flex-shrink: 0; }
 
 .weekDayHead {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 6px 2px 4px;
-  gap: 1px;
-  border-left: 1px solid var(--border-dim);
+  padding: 7px 2px 5px;
+  gap: 2px;
 }
 
 .weekDayHeadName {
   font-family: var(--font);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--text-dim);
   text-transform: uppercase;
 }
 
 .weekDayHeadNum {
   font-family: var(--font);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1;
@@ -271,11 +275,11 @@
 }
 
 .weekAlldayLabel {
-  width: 32px;
+  width: 28px;
   flex-shrink: 0;
   font-family: var(--font);
-  font-size: 0.58rem;
-  color: var(--text-dim);
+  font-size: 0.55rem;
+  color: var(--text-faint);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -284,29 +288,27 @@
 
 .weekAlldayCol {
   flex: 1;
-  border-left: 1px solid var(--border);
-  padding: 2px;
+  padding: 3px 2px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1px;
-  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+  align-items: stretch;
+  justify-content: center;
 }
 
 .weekAlldayBar {
-  height: 5px;
-  border-radius: 2px;
-  min-width: 18px;
-  flex: 1;
+  border-radius: 0 4px 4px 0;
   display: flex;
   align-items: center;
-  padding: 0 2px;
+  padding: 1px 4px;
   overflow: hidden;
-  opacity: 0.7;
+  background: color-mix(in srgb, var(--bar-color, var(--primary)) 16%, transparent);
+  border-left: 2px solid var(--bar-color, var(--primary));
 }
 
 .weekAlldayBarText {
   font-family: var(--font);
-  font-size: 0.32rem;
+  font-size: 0.58rem;
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;
@@ -314,12 +316,19 @@
   text-overflow: ellipsis;
 }
 
+/* Innen-Scroll: nur die Stunden scrollen, Kopf/Ganztägig bleiben fix.
+   max-height tunt die Karte auf die Viewport-Höhe (per Screenshot justiert). */
 .weekScrollBody {
   display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(100dvh - 320px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .weekTimeAxis {
-  width: 32px;
+  width: 28px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -327,10 +336,11 @@
 
 .weekTimeLabel {
   font-family: var(--font);
-  font-size: 0.52rem;
-  color: var(--text-ghost);
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-faint);
   text-align: right;
-  padding-right: 4px;
+  padding-right: 5px;
   height: 28px;
   display: flex;
   align-items: flex-start;
@@ -342,19 +352,20 @@
 
 .weekDayCol {
   flex: 1;
-  border-left: 1px solid var(--border-dim);
+  border-left: 1px solid color-mix(in srgb, var(--border-dim) 65%, transparent);
   position: relative;
   cursor: crosshair;
   /* height wird per inline style gesetzt */
 }
 
+/* Nur eine ruhige Stundenlinie (alle 56px) — kein Halbstunden-Raster mehr. */
 .weekDayCol::before {
   content: '';
   position: absolute;
   inset: 0;
   background-image: repeating-linear-gradient(
     to bottom,
-    transparent,
+    transparent 0,
     transparent 55px,
     var(--border-dim) 55px,
     var(--border-dim) 56px
@@ -362,22 +373,8 @@
   pointer-events: none;
 }
 
-.weekDayCol::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 27px,
-    var(--border-dim) 27px,
-    var(--border-dim) 28px
-  );
-  pointer-events: none;
-}
-
 .weekDayColToday {
-  background: rgba(139,92,246,0.04);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
 .weekSlotBlock {
@@ -406,12 +403,11 @@
   -webkit-user-select: none;
 }
 
+/* Todo deutlich von Terminen unterscheidbar: ruhiger, getönt + Kontur statt Vollfläche. */
 .weekSlotTodo {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--slot-color, var(--primary)) 50%, #000),
-    color-mix(in srgb, var(--slot-color, var(--primary)) 30%, #000)
-  );
+  background: color-mix(in srgb, var(--slot-color, var(--primary)) 24%, var(--bg2));
+  border: 1px solid color-mix(in srgb, var(--slot-color, var(--primary)) 48%, transparent);
+  box-shadow: none;
 }
 
 .weekSlotBlock::before {
@@ -426,7 +422,7 @@
 
 .weekSlotName {
   font-family: var(--font);
-  font-size: 0.52rem;
+  font-size: 0.56rem;
   font-weight: 700;
   color: #fff;
   overflow: hidden;
@@ -438,7 +434,7 @@
 
 .weekSlotTime {
   font-family: var(--font);
-  font-size: 0.46rem;
+  font-size: 0.5rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1;
@@ -449,9 +445,10 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--rose);
+  background: var(--primary);
   z-index: 2;
   pointer-events: none;
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.6);
 }
 
 .weekNowDot {
@@ -461,7 +458,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--rose);
+  background: var(--primary);
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.7);
 }
 
 /* ─── Week PillStrip ─────────────────────────────────────── */
@@ -470,11 +468,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin: 5px 6px;
-  padding: 5px 6px 5px 10px;
-  background: none;
-  border: 1px dashed var(--border-dim);
-  border-radius: var(--r-sm);
+  padding: 6px 8px 6px 10px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-dim);
   flex-shrink: 0;
 }
 
@@ -486,7 +483,8 @@
 }
 
 .weekPillStripBot {
-  margin-top: 6px;
+  border-bottom: none;
+  border-top: 1px solid var(--border-dim);
 }
 
 .weekPillBtn {
