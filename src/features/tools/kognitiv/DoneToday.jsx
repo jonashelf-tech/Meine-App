@@ -1,11 +1,10 @@
 import { MODULE_CONFIG } from './moduleConfig'
-import { getLastSession, isPracticeAvailable } from './sessionStore'
+import { getLastSession } from './sessionStore'
 import s from './DoneToday.module.css'
 
-export default function DoneToday({ moduleId, onBack, onViewResult, onPractice }) {
-  const m          = MODULE_CONFIG[moduleId]
-  const last       = getLastSession(moduleId)
-  const canPractice = isPracticeAvailable(moduleId)
+export default function DoneToday({ moduleId, onBack, onViewResult, onRepeat }) {
+  const m    = MODULE_CONFIG[moduleId]
+  const last = getLastSession(moduleId)
 
   const time = last
     ? new Date(last.startedAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
@@ -23,8 +22,7 @@ export default function DoneToday({ moduleId, onBack, onViewResult, onPractice }
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div className={s.msg}>Heute erledigt</div>
-        <div className={s.sub}>Dein Gehirn braucht Zeit zum Verarbeiten. Morgen wieder.</div>
-        <div className={s.nextPill}>Morgen ab 00:00 wieder verfügbar</div>
+        <div className={s.sub}>Dein Gehirn braucht Zeit zum Verarbeiten — eine Runde reicht meist. Magst du trotzdem nochmal, geht das jederzeit.</div>
       </div>
       {last && (
         <div className={s.lastBox}>
@@ -38,11 +36,9 @@ export default function DoneToday({ moduleId, onBack, onViewResult, onPractice }
           </div>
         </div>
       )}
-      {canPractice && (
-        <button className={s.practiceBtn} onClick={onPractice}>
-          Üben <span className={s.practiceSub}>· 1× diese Woche · nicht gewertet →</span>
-        </button>
-      )}
+      <button className={s.repeatBtn} onClick={onRepeat}>
+        Nochmal trainieren <span className={s.repeatSub}>· wird gewertet →</span>
+      </button>
     </div>
   )
 }
