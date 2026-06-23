@@ -29,8 +29,8 @@ function WeekPillStrip({ days, weekDays, visibleStart, visibleEnd, isTop, onExpa
   outSlots.sort((a, b) => a.h - b.h)
 
   const emptyText = isTop
-    ? `Keine Termine vor ${String(visibleStart).padStart(2, '0')}:00`
-    : `Keine Termine nach ${String(visibleEnd).padStart(2, '0')}:00`
+    ? `bis ${String(visibleStart).padStart(2, '0')}:00 · frei`
+    : `ab ${String(visibleEnd).padStart(2, '0')}:00 · frei`
 
   return (
     <div className={[s.weekPillStrip, isTop ? '' : s.weekPillStripBot].join(' ')}>
@@ -155,6 +155,11 @@ export default function WocheView({
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek = weekDays.some(d => toDateKey(d) === todayKey)
+  const hasAllday = weekDays.some(date => {
+    const dk = toDateKey(date)
+    return getBirthdaysForCalendarDate(birthdays, dk).length > 0 ||
+      (showTodos && todos.some(t => t.date === dk && !t.time))
+  })
 
   const nowTop = useMemo(() => {
     if (!isCurrentWeek) return null
@@ -341,9 +346,9 @@ export default function WocheView({
         </div>
 
         {/* Allday-Streifen — Geburtstage + Todos ohne Uhrzeit */}
-        {(showTodos || showTermine) && (
+        {hasAllday && (
           <div className={s.weekAlldayRow}>
-            <div className={s.weekAlldayLabel}>Ganzt.</div>
+            <div className={s.weekAlldayLabel} />
             {weekDays.map(date => {
               const dk          = toDateKey(date)
               const bdays       = getBirthdaysForCalendarDate(birthdays, dk)
@@ -402,6 +407,11 @@ export default function WocheView({
             })}
           </div>
           <div className={s.weekColsBody}>
+            <div className={s.weekGridLines} aria-hidden="true">
+              {Array.from({ length: visibleEnd - visibleStart }, (_, i) => (
+                <div key={i} className={s.weekGridHour} />
+              ))}
+            </div>
             {weekDays.map(date => {
               const dk    = toDateKey(date)
               const slots = days[dk] ?? {}
