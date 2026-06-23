@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useId, useMemo, useState } from 'react'
 import s from './DashboardsTab.module.css'
 import { ensureSeeded, loadSessions, savePlan } from '../fitnessStore'
-import { realSetsPerMuscle, plannedRealSetsPerMuscle, sessionsPerWeek, volumeZone, weekStartIso, e1rmSeries, reviewExercise, weeklyVolumeAdjust } from '../fitnessLogic'
+import { realSetsPerMuscle, plannedRealSetsPerMuscle, sessionsPerWeek, volumeZone, weekStartIso, e1rmSeries, reviewExercise, weeklyVolumeAdjust, weeklyTonnage } from '../fitnessLogic'
 import { MUSCLES, MUSCLE_LABELS, VOLUME_REF } from '../fitnessModel'
 import { todayKey } from '../../../../utils'
 
@@ -20,7 +20,7 @@ const fmtNum = (n) => n.toLocaleString('de-DE')
 
 const ZONE_VARS = {
   low: 'var(--text-dim)',
-  optimal: 'var(--emerald)',
+  optimal: 'var(--tool-color)',
   high: 'var(--amber)',
   over: 'var(--rose)',
 }
@@ -55,6 +55,7 @@ const fmtDate = (iso) => {
 }
 
 function Sparkline({ series }) {
+  const gradientId = useId()
   const values = series.map(p => p.e1rm)
   const min = Math.min(...values)
   const max = Math.max(...values)
@@ -67,12 +68,22 @@ function Sparkline({ series }) {
   const x = (i) => series.length > 1 ? (i / (series.length - 1)) * W : W / 2
   const y = (v) => H - ((v - yMin) / (yMax - yMin)) * H
   const points = series.map((p, i) => `${x(i)},${y(p.e1rm)}`).join(' ')
+  const areaPoints = `${x(0)},${H} ${points} ${x(series.length - 1)},${H}`
 
   return (
     <div className={s.sparkWrap}>
       <svg className={s.sparkSvg} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--tool-color, var(--primary))" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="var(--tool-color, var(--primary))" stopOpacity="0" />
+          </linearGradient>
+        </defs>
         {series.length > 1 && (
-          <polyline points={points} fill="none" stroke="var(--tool-color, var(--primary))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <>
+            <polygon points={areaPoints} fill={`url(#${gradientId})`} stroke="none" />
+            <polyline points={points} fill="none" stroke="var(--tool-color, var(--primary))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </>
         )}
         {series.map((p, i) => (
           <circle key={p.date} cx={x(i)} cy={y(p.e1rm)} r="3" fill="var(--tool-color, var(--primary))" />
@@ -189,7 +200,10 @@ function MuscleVolumeBars({ data }) {
                 <span className={s.barValue}>{fmtNum(sets)}</span>
               </div>
               <div className={s.track}>
-                <div className={s.fill} style={{ width: `${fillPct}%`, background: ZONE_VARS[zone] }} />
+                <div
+                  className={[s.fill, zone === 'optimal' ? s.fillOptimal : ''].join(' ')}
+                  style={{ width: `${fillPct}%`, background: ZONE_VARS[zone] }}
+                />
                 <div className={s.tick} style={{ left: `${mevPct}%` }} />
                 <div className={s.tick} style={{ left: `${mavHiPct}%` }} />
               </div>
@@ -242,17 +256,24 @@ function VolumeView({ sessions, exercises }) {
 
   const real = useMemo(() => realSetsPerMuscle(sessions, exercises, weekStart), [sessions, exercises, weekStart])
 
-  const sessionCount = useMemo(
-    () => sessions.filter(sess => sess.date >= weekStart && sess.date < weekEndExclusive).length,
+  const weekSessions = useMemo(
+    () => sessions.filter(sess => sess.date >= weekStart && sess.date < weekEndExclusive),
     [sessions, weekStart, weekEndExclusive]
   )
+  const sessionCount = weekSessions.length
+
+  const tonnageT = useMemo(() => weeklyTonnage(sessions, weekStart) / 1000, [sessions, weekStart])
+
+  const avgDurationMinWeek = useMemo(() => {
+    const durations = weekSessions.filter(sess => sess.durationSec > 0).map(sess => sess.durationSec)
+    if (!durations.length) return null
+    return Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length / 60)
+  }, [weekSessions])
 
   const hasAnySessions = sessions.length > 0
 
   return (
     <>
-      <WeekCheckCard />
-
       <div className={s.weekNav}>
         <button className={s.navBtn} onClick={() => setWeekStart(w => isoAddDays(w, -7))} aria-label="Vorherige Woche">
           <Chevron direction="left" />
@@ -270,24 +291,40 @@ function VolumeView({ sessions, exercises }) {
         </button>
       </div>
 
-      <div className={s.consistency}>
-        {sessionCount > 0
-          ? `${sessionCount} Training${sessionCount === 1 ? '' : 's'} diese Woche`
-          : 'Noch kein Training diese Woche'}
+      <div className={s.tiles}>
+        <div className={[s.tile, s.tileHighlight].join(' ')}>
+          <div className={s.tileNum}>{sessionCount}</div>
+          <div className={s.tileLabel}>Trainings</div>
+        </div>
+        <div className={s.tile}>
+          <div className={s.tileNum}>
+            {tonnageT.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}<small> t</small>
+          </div>
+          <div className={s.tileLabel}>Volumen</div>
+        </div>
+        <div className={s.tile}>
+          <div className={s.tileNum}>
+            {avgDurationMinWeek == null ? '—' : <>{avgDurationMinWeek}<small> min</small></>}
+          </div>
+          <div className={s.tileLabel}>Ø Dauer</div>
+        </div>
       </div>
+
+      <WeekCheckCard />
 
       {!hasAnySessions ? (
         <div className={s.empty}>Noch keine Trainingsdaten — leg los, dann erscheint hier dein Volumen.</div>
       ) : (
-        <MuscleVolumeBars data={real} />
+        <>
+          <div className={s.consistency}>Reales Volumen pro Muskel</div>
+          <MuscleVolumeBars data={real} />
+        </>
       )}
     </>
   )
 }
 
 function StrengthView({ sessions, exercises }) {
-  const [expandedId, setExpandedId] = useState(null)
-
   const rows = useMemo(() => {
     return exercises
       .map(ex => {
@@ -312,25 +349,18 @@ function StrengthView({ sessions, exercises }) {
 
   return (
     <div className={s.strengthList}>
-      {rows.map(({ exercise, series, current, trend }) => {
-        const isOpen = expandedId === exercise.id
-        return (
-          <div key={exercise.id} className={s.strengthCard}>
-            <button
-              className={s.strengthRow}
-              onClick={() => setExpandedId(isOpen ? null : exercise.id)}
-              aria-expanded={isOpen}
-            >
-              <span className={s.strengthName}>{exercise.name}</span>
-              <span className={s.strengthRight}>
-                <span className={s.strengthValue}>{fmtKg(current)}</span>
-                <TrendArrow trend={trend} />
-              </span>
-            </button>
-            {isOpen && <Sparkline series={series} />}
+      {rows.map(({ exercise, series, current, trend }) => (
+        <div key={exercise.id} className={s.strengthCard}>
+          <div className={s.strengthRow}>
+            <span className={s.strengthName}>{exercise.name}</span>
+            <span className={s.strengthRight}>
+              <span className={s.strengthValue}>{fmtKg(current)}</span>
+              <TrendArrow trend={trend} />
+            </span>
           </div>
-        )
-      })}
+          <Sparkline series={series} />
+        </div>
+      ))}
     </div>
   )
 }

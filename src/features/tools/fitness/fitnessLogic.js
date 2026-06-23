@@ -273,6 +273,19 @@ export function realSetsPerMuscle(sessions, exercises, weekStart) {
   return acc
 }
 
+// Summe der Arbeitssatz-Tonnage (kg) aller Sessions in der Woche ab weekStart (7 Tage, Ende exklusiv).
+export function weeklyTonnage(sessions, weekStart) {
+  const d = new Date(weekStart + 'T12:00:00')
+  d.setDate(d.getDate() + 7)
+  const end = d.toISOString().slice(0, 10)
+  return sessions
+    .filter(s => s.date >= weekStart && s.date < end)
+    .reduce((sum, s) => sum + (s.exercises || []).reduce((a, ex) =>
+      a + (ex.saetze || [])
+        .filter(set => WORKING.includes(set.satzTyp))
+        .reduce((b, set) => b + (set.gewicht || 0) * (set.wdh || 0), 0), 0), 0)
+}
+
 // ─── Scheduling (feste Wochentage, ersetzt den Rhythmus-Schritt im Onboarding) ──
 
 // ISO-Wochentag: Mo=1..So=7 (JS getDay() ist 0=So..6=Sa).
