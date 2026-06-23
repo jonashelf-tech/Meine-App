@@ -69,6 +69,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   const fitness = loadFitness()
   const exerciseMap = useRef(new Map(fitness.exercises.map(e => [e.id, e]))).current
   const restEnabled = useRef(loadFitness().settings.restTimerEnabled !== false).current
+  const restSec = useRef(loadFitness().settings.restTimerSec ?? 120).current
 
   const plan = fitness.plans.find(p => p.id === planId)
   const coachMode = plan?.modus === 'coach'
@@ -262,7 +263,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     }
 
     if (turnedOn && restEnabled) {
-      setRest({ secondsLeft: restSecForExercise(exObj) })
+      setRest({ secondsLeft: restSecForExercise(exObj, restSec) })
     }
   }
 

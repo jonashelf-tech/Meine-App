@@ -25,10 +25,9 @@ describe('roundToIncrement', () => {
 })
 
 describe('restSecForExercise', () => {
-  it('restSec-Override gewinnt', () => expect(restSecForExercise({ restSec: 90, defaultRepRange: [8, 12] })).toBe(90))
-  it('schwer (5er) → 240', () => expect(restSecForExercise({ restSec: null, defaultRepRange: [5, 8] })).toBe(240))
-  it('mittel (8er) → 180', () => expect(restSecForExercise({ restSec: null, defaultRepRange: [8, 12] })).toBe(180))
-  it('leicht (12er) → 120', () => expect(restSecForExercise({ restSec: null, defaultRepRange: [12, 20] })).toBe(120))
+  it('restSec-Override gewinnt', () => expect(restSecForExercise({ restSec: 90 })).toBe(90))
+  it('ohne Override → Default 120', () => expect(restSecForExercise({ restSec: null })).toBe(120))
+  it('übergebener Default greift', () => expect(restSecForExercise({ restSec: null }, 150)).toBe(150))
 })
 
 describe('warmupSets', () => {

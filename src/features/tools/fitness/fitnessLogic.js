@@ -1,4 +1,4 @@
-import { REST_DEFAULTS, WARMUP_SCHEME, VOLUME_REF, AUTOREG_DOWN_PCT } from './fitnessModel'
+import { WARMUP_SCHEME, VOLUME_REF, AUTOREG_DOWN_PCT } from './fitnessModel'
 
 const WORKING = ['normal', 'dropset', 'failure']
 const round1 = (n) => Math.round(n * 10) / 10
@@ -15,12 +15,9 @@ export function roundToIncrement(gewicht, increment) {
   return Math.round(gewicht / increment) * increment
 }
 
-// restSec-Override gewinnt; sonst aus defaultRepRange[0] (schwereres Ende) via REST_DEFAULTS.
-export function restSecForExercise(exercise) {
-  if (exercise?.restSec != null) return exercise.restSec
-  const reps = exercise?.defaultRepRange?.[0] ?? 10
-  const bucket = REST_DEFAULTS.find(b => reps <= b.maxReps) ?? REST_DEFAULTS[REST_DEFAULTS.length - 1]
-  return bucket.sec
+// restSec-Override gewinnt; sonst der konfigurierbare Default (Sek.).
+export function restSecForExercise(exercise, defaultSec = 120) {
+  return exercise?.restSec ?? defaultSec
 }
 
 // Warmup-Sätze vom Arbeitsgewicht; Gewicht auf 0,5 kg gerundet.

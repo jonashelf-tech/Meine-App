@@ -82,13 +82,6 @@ export const VOLUME_REF = {
 // Muskeln ohne Eintrag (schulterVorne, trapez, unterarme, untererRuecken):
 // nur tracken, keine Zielvorgabe.
 
-// ─── Rest-Timer-Defaults (Sekunden, nach Wdh-Bereich) ─────
-export const REST_DEFAULTS = [
-  { maxReps: 5,  sec: 240 },        // 1–5 Wdh
-  { maxReps: 10, sec: 180 },        // 6–10 Wdh
-  { maxReps: Infinity, sec: 120 },  // 10–20+ Wdh
-]
-
 // ─── Warmup-Schema (Anteil vom Arbeitsgewicht × Wdh) ──────
 export const WARMUP_SCHEME = [
   { pct: 0.5, reps: 10 }, { pct: 0.75, reps: 4 }, { pct: 0.9, reps: 2 },
