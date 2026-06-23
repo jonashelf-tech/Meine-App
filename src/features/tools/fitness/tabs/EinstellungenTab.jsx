@@ -8,6 +8,11 @@ import s from './EinstellungenTab.module.css'
 
 const DAY_OPTIONS = [2, 3, 4, 5, 6]
 
+const REST_SEC_OPTIONS = [
+  { sec: 60, label: '1:00' }, { sec: 90, label: '1:30' }, { sec: 120, label: '2:00' },
+  { sec: 150, label: '2:30' }, { sec: 180, label: '3:00' },
+]
+
 const WEEKDAYS = [
   { iso: 1, label: 'Mo' }, { iso: 2, label: 'Di' }, { iso: 3, label: 'Mi' }, { iso: 4, label: 'Do' },
   { iso: 5, label: 'Fr' }, { iso: 6, label: 'Sa' }, { iso: 7, label: 'So' },
@@ -118,6 +123,18 @@ export default function EinstellungenTab() {
           </span>
           <span className={s.toggleLabel}>Rest-Timer automatisch starten</span>
         </button>
+        <div className={s.restChips}>
+          {REST_SEC_OPTIONS.map(opt => (
+            <button
+              key={opt.sec}
+              type="button"
+              className={`${s.restChip} ${(settings.restTimerSec ?? 120) === opt.sec ? s.restChipActive : ''}`}
+              onClick={() => update({ restTimerSec: opt.sec })}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className={s.section}>

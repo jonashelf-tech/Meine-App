@@ -44,6 +44,44 @@
   background: color-mix(in srgb, var(--rose) 10%, transparent);
 }
 
+/* ─── Fortschritts-Header ────────────────────────────────── */
+.progressHeader {
+  flex-shrink: 0;
+  padding: 10px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressTrack {
+  height: 5px;
+  border-radius: 6px;
+  background: var(--surface-low, var(--bg2));
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--teal), var(--tool-color, var(--primary)));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--tool-color, var(--primary)) 45%, transparent);
+  transition: width 0.25s ease-out;
+}
+
+.progressLabel {
+  align-self: flex-end;
+  font-family: var(--font);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.progressLabel strong {
+  font-family: var(--font-num);
+  font-weight: 700;
+  color: var(--text);
+}
+
 /* ─── Body ───────────────────────────────────────────────── */
 .body {
   flex: 1;
@@ -62,6 +100,19 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: opacity 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.cardActive {
+  border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 45%, var(--border));
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--tool-color, var(--primary)) 10%, transparent) 0%, transparent 65%),
+    var(--surface);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent);
+}
+
+.cardDone {
+  opacity: 0.6;
 }
 
 .cardHead {
@@ -69,6 +120,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+.exNameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .exName {
@@ -81,6 +139,27 @@
   font-weight: 700;
   color: var(--text);
   cursor: pointer;
+}
+
+.doneMark {
+  color: var(--tool-color, var(--primary));
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.activeBadge {
+  font-family: var(--font);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--tool-color, var(--primary));
+  border-radius: 999px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .swapBtn {
@@ -204,11 +283,19 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: opacity 0.15s;
+  padding: 2px 6px;
+  margin: -2px -6px;
+  border-radius: var(--r-sm);
+  transition: opacity 0.15s, background 0.15s, box-shadow 0.15s;
 }
 .setRowDone { opacity: 0.45; }
 .setRowDone .setInput,
 .setRowDone .typeBtn { text-decoration: line-through; }
+
+.setRowActive {
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 8%, transparent);
+  box-shadow: inset 3px 0 0 var(--tool-color, var(--primary));
+}
 
 .feedbackRow {
   display: flex;
@@ -437,7 +524,7 @@
 
 .finishBtn {
   width: 100%;
-  background: var(--tool-color, var(--primary));
+  background: linear-gradient(120deg, var(--tool-color, var(--primary)), var(--teal));
   border: none;
   border-radius: var(--r);
   color: var(--bg);
@@ -446,4 +533,5 @@
   font-weight: 700;
   padding: 14px;
   cursor: pointer;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--tool-color, var(--primary)) 28%, transparent);
 }

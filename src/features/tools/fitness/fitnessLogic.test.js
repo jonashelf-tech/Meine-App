@@ -3,7 +3,7 @@ import {
   e1rm, roundToIncrement, restSecForExercise, warmupSets, bestWorkingE1rm, detectPRs,
   allocationOverlap, similarExercises, realSetsPerMuscle, plannedRealSetsPerMuscle, volumeZone, weekStartIso, e1rmSeries,
   nextRecommendation, adjustRemaining, weeklyVolumeAdjust, recoveryNeeded, reviewExercise,
-  isoWeekday, scheduleStatus, weeklyFrequency, weeklyStreak, sessionsThisWeek, avgDurationMin,
+  isoWeekday, scheduleStatus, weeklyFrequency, weeklyStreak, sessionsThisWeek, avgDurationMin, weeklyTonnage,
 } from './fitnessLogic'
 
 describe('e1rm (Epley)', () => {
@@ -25,10 +25,9 @@ describe('roundToIncrement', () => {
 })
 
 describe('restSecForExercise', () => {
-  it('restSec-Override gewinnt', () => expect(restSecForExercise({ restSec: 90, defaultRepRange: [8, 12] })).toBe(90))
-  it('schwer (5er) → 240', () => expect(restSecForExercise({ restSec: null, defaultRepRange: [5, 8] })).toBe(240))
-  it('mittel (8er) → 180', () => expect(restSecForExercise({ restSec: null, defaultRepRange: [8, 12] })).toBe(180))
-  it('leicht (12er) → 120', () => expect(restSecForExercise({ restSec: null, defaultRepRange: [12, 20] })).toBe(120))
+  it('restSec-Override gewinnt', () => expect(restSecForExercise({ restSec: 90 })).toBe(90))
+  it('ohne Override → Default 120', () => expect(restSecForExercise({ restSec: null })).toBe(120))
+  it('übergebener Default greift', () => expect(restSecForExercise({ restSec: null }, 150)).toBe(150))
 })
 
 describe('warmupSets', () => {
@@ -341,6 +340,34 @@ describe('avgDurationMin', () => {
   it('nutzt nur die letzten n', () => {
     const sessions = [{ durationSec: 600 }, { durationSec: 6000 }, { durationSec: 6000 }] // 10, 100, 100 min
     expect(avgDurationMin(sessions, 2)).toBe(100) // nur die letzten 2
+  })
+})
+
+describe('weeklyTonnage', () => {
+  it('leer → 0', () => expect(weeklyTonnage([], '2026-06-08')).toBe(0))
+  it('eine Session in der Woche, zwei Arbeitssätze → Summe gewicht*wdh', () => {
+    const sessions = [
+      { date: '2026-06-09', exercises: [{ saetze: [
+        { gewicht: 50, wdh: 10, satzTyp: 'normal' },   // 500
+        { gewicht: 60, wdh: 8, satzTyp: 'normal' },    // 480
+      ] }] },
+    ]
+    expect(weeklyTonnage(sessions, '2026-06-08')).toBe(980)
+  })
+  it('Warmup-Satz zählt nicht', () => {
+    const sessions = [
+      { date: '2026-06-09', exercises: [{ saetze: [
+        { gewicht: 50, wdh: 10, satzTyp: 'normal' },   // 500
+        { gewicht: 20, wdh: 10, satzTyp: 'warmup' },   // ignoriert
+      ] }] },
+    ]
+    expect(weeklyTonnage(sessions, '2026-06-08')).toBe(500)
+  })
+  it('Session außerhalb der Woche zählt nicht', () => {
+    const sessions = [
+      { date: '2026-06-01', exercises: [{ saetze: [{ gewicht: 100, wdh: 10, satzTyp: 'normal' }] }] },
+    ]
+    expect(weeklyTonnage(sessions, '2026-06-08')).toBe(0)
   })
 })
 

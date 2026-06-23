@@ -1,4 +1,4 @@
-import { REST_DEFAULTS, WARMUP_SCHEME, VOLUME_REF, AUTOREG_DOWN_PCT } from './fitnessModel'
+import { WARMUP_SCHEME, VOLUME_REF, AUTOREG_DOWN_PCT } from './fitnessModel'
 
 const WORKING = ['normal', 'dropset', 'failure']
 const round1 = (n) => Math.round(n * 10) / 10
@@ -15,12 +15,9 @@ export function roundToIncrement(gewicht, increment) {
   return Math.round(gewicht / increment) * increment
 }
 
-// restSec-Override gewinnt; sonst aus defaultRepRange[0] (schwereres Ende) via REST_DEFAULTS.
-export function restSecForExercise(exercise) {
-  if (exercise?.restSec != null) return exercise.restSec
-  const reps = exercise?.defaultRepRange?.[0] ?? 10
-  const bucket = REST_DEFAULTS.find(b => reps <= b.maxReps) ?? REST_DEFAULTS[REST_DEFAULTS.length - 1]
-  return bucket.sec
+// restSec-Override gewinnt; sonst der konfigurierbare Default (Sek.).
+export function restSecForExercise(exercise, defaultSec = 120) {
+  return exercise?.restSec ?? defaultSec
 }
 
 // Warmup-Sätze vom Arbeitsgewicht; Gewicht auf 0,5 kg gerundet.
@@ -274,6 +271,19 @@ export function realSetsPerMuscle(sessions, exercises, weekStart) {
   })
   Object.keys(acc).forEach(m => { acc[m] = round1(acc[m]) })
   return acc
+}
+
+// Summe der Arbeitssatz-Tonnage (kg) aller Sessions in der Woche ab weekStart (7 Tage, Ende exklusiv).
+export function weeklyTonnage(sessions, weekStart) {
+  const d = new Date(weekStart + 'T12:00:00')
+  d.setDate(d.getDate() + 7)
+  const end = d.toISOString().slice(0, 10)
+  return sessions
+    .filter(s => s.date >= weekStart && s.date < end)
+    .reduce((sum, s) => sum + (s.exercises || []).reduce((a, ex) =>
+      a + (ex.saetze || [])
+        .filter(set => WORKING.includes(set.satzTyp))
+        .reduce((b, set) => b + (set.gewicht || 0) * (set.wdh || 0), 0), 0), 0)
 }
 
 // ─── Scheduling (feste Wochentage, ersetzt den Rhythmus-Schritt im Onboarding) ──

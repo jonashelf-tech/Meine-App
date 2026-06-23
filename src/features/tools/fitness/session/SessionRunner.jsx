@@ -65,10 +65,22 @@ const primaryMuscle = allocation => {
   return entries.reduce((best, cur) => cur[1] > best[1] ? cur : best)[0]
 }
 
+// ─── Reine Anzeige-Ableitungen (kein State, kein Logik-Change) ────
+const isWork = set => set.satzTyp !== 'warmup'
+const isExerciseDone = ex => {
+  const work = ex.saetze.filter(isWork)
+  return work.length > 0 && work.every(s => s.done)
+}
+const runnerProgress = exercises => exercises.reduce((acc, ex) => {
+  ex.saetze.forEach(s => { if (isWork(s)) { acc.total++; if (s.done) acc.done++ } })
+  return acc
+}, { done: 0, total: 0 })
+
 export default function SessionRunner({ planId, dayId, dayExercises, onClose }) {
   const fitness = loadFitness()
   const exerciseMap = useRef(new Map(fitness.exercises.map(e => [e.id, e]))).current
   const restEnabled = useRef(loadFitness().settings.restTimerEnabled !== false).current
+  const restSec = useRef(loadFitness().settings.restTimerSec ?? 120).current
 
   const plan = fitness.plans.find(p => p.id === planId)
   const coachMode = plan?.modus === 'coach'
@@ -262,7 +274,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     }
 
     if (turnedOn && restEnabled) {
-      setRest({ secondsLeft: restSecForExercise(exObj) })
+      setRest({ secondsLeft: restSecForExercise(exObj, restSec) })
     }
   }
 
@@ -333,6 +345,10 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     )
   }
 
+  const progress = runnerProgress(draft.exercises)
+  const activeExIdx = draft.exercises.findIndex(ex => !isExerciseDone(ex))
+  const progressPct = progress.total > 0 ? (progress.done / progress.total * 100) : 0
+
   return (
     <div className={s.overlay}>
       <div className={s.header}>
@@ -342,23 +358,39 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
         </button>
       </div>
 
+      <div className={s.progressHeader}>
+        <div className={s.progressTrack}>
+          <div className={s.progressFill} style={{ width: `${progressPct}%` }} />
+        </div>
+        <div className={s.progressLabel}><strong>{progress.done}</strong> / {progress.total} Sätze</div>
+      </div>
+
       <div className={s.body}>
         {draft.exercises.map((ex, exIdx) => {
           const exercise = exerciseMap.get(ex.exerciseId)
           const prevSets = lastSetsFor(ex.exerciseId)
+          const exDone = isExerciseDone(ex)
+          const exActive = exIdx === activeExIdx
+          const activeSetIdx = exActive ? ex.saetze.findIndex(set => isWork(set) && !set.done) : -1
           return (
-            <div key={ex.exerciseId + exIdx} className={s.card}>
+            <div key={ex.exerciseId + exIdx} className={[s.card, exActive ? s.cardActive : '', exDone ? s.cardDone : ''].join(' ')}>
               <div className={s.cardHead}>
-                <button className={s.exName} onClick={() => setOpenNotiz(o => o === exIdx ? null : exIdx)}>
-                  {exercise?.name ?? '—'}
-                </button>
-                <button
-                  className={s.swapBtn}
-                  onClick={() => setSwapPicker(p => p === exIdx ? null : exIdx)}
-                  aria-label="Gerät besetzt — Alternative finden"
-                >
-                  <SwapIcon /> Gerät besetzt
-                </button>
+                <div className={s.exNameRow}>
+                  <button className={s.exName} onClick={() => setOpenNotiz(o => o === exIdx ? null : exIdx)}>
+                    {exercise?.name ?? '—'}
+                  </button>
+                  {exDone && <span className={s.doneMark}><CheckIcon /></span>}
+                </div>
+                <div className={s.exNameRow}>
+                  {exActive && <span className={s.activeBadge}>aktiv</span>}
+                  <button
+                    className={s.swapBtn}
+                    onClick={() => setSwapPicker(p => p === exIdx ? null : exIdx)}
+                    aria-label="Gerät besetzt — Alternative finden"
+                  >
+                    <SwapIcon /> Gerät besetzt
+                  </button>
+                </div>
               </div>
               {openNotiz === exIdx && exercise?.notiz && (
                 <div className={s.notiz}>{exercise.notiz}</div>
@@ -396,7 +428,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
                     if (!isWarmup) workingCount += 1
                     return (
                   <div key={set.id} className={s.setBlock}>
-                  <div className={[s.setRow, set.done ? s.setRowDone : ''].join(' ')}>
+                  <div className={[s.setRow, set.done ? s.setRowDone : '', setIdx === activeSetIdx ? s.setRowActive : ''].join(' ')}>
                     <span className={s.setIdx}>{isWarmup ? 'W' : workingCount}</span>
                     <input
                       className={s.setInput}

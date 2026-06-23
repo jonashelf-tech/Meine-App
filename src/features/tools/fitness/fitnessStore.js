@@ -4,6 +4,7 @@ import { EXERCISE_SEED } from './exerciseSeed'
 
 const DEFAULT_SETTINGS = {
   restTimerEnabled: true,
+  restTimerSec: 120,
   increments: { ...DEFAULT_INCREMENTS },
   warmupScheme: WARMUP_SCHEME.map(s => ({ ...s })),
   feedbackMode: 'chips',

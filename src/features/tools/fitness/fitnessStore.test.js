@@ -9,6 +9,7 @@ describe('fitnessStore', () => {
     expect(f.exercises).toEqual([])
     expect(f.plans).toEqual([])
     expect(f.settings.restTimerEnabled).toBe(true)
+    expect(f.settings.restTimerSec).toBe(120)
     expect(f.meta.activePlanId).toBeNull()
   })
   it('save→load Round-Trip', () => {
@@ -27,6 +28,7 @@ describe('fitnessStore', () => {
     const f = loadFitness()
     expect(f.settings.feedbackMode).toBe('rir')
     expect(f.settings.restTimerEnabled).toBe(true) // Default ergänzt
+    expect(f.settings.restTimerSec).toBe(120) // Default ergänzt
   })
   it('saveSessions überschreibt die Liste', () => {
     addSession({ id: 's1', date: '2026-06-13' })
