@@ -394,6 +394,11 @@ export default function WocheView({
 
         {/* Zeitgitter — eigener Scroll-Bereich (Innen-Scroll) */}
         <div className={s.weekScrollBody} ref={scrollBodyRef}>
+          <div className={s.weekGridLines} style={{ height: colHeight }} aria-hidden="true">
+            {Array.from({ length: visibleEnd - visibleStart }, (_, i) => (
+              <div key={i} className={s.weekGridHour} />
+            ))}
+          </div>
           <div className={s.weekTimeAxis}>
             {Array.from({ length: (visibleEnd - visibleStart) * 2 }, (_, i) => {
               const h      = visibleStart + i * 0.5
@@ -407,11 +412,6 @@ export default function WocheView({
             })}
           </div>
           <div className={s.weekColsBody}>
-            <div className={s.weekGridLines} aria-hidden="true">
-              {Array.from({ length: visibleEnd - visibleStart }, (_, i) => (
-                <div key={i} className={s.weekGridHour} />
-              ))}
-            </div>
             {weekDays.map(date => {
               const dk    = toDateKey(date)
               const slots = days[dk] ?? {}

@@ -212,7 +212,7 @@
   padding-top: 2px;
 }
 
-.weekTimeCorner { width: 28px; flex-shrink: 0; }
+.weekTimeCorner { width: 24px; flex-shrink: 0; }
 
 .weekDayHead {
   flex: 1;
@@ -276,7 +276,7 @@
 }
 
 .weekAlldayLabel {
-  width: 28px;
+  width: 24px;
   flex-shrink: 0;
   font-family: var(--font);
   font-size: 0.55rem;
@@ -321,6 +321,7 @@
    max-height tunt die Karte auf die Viewport-Höhe (per Screenshot justiert). */
 .weekScrollBody {
   display: flex;
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   max-height: calc(100dvh - 320px);
@@ -329,16 +330,12 @@
 }
 
 .weekTimeAxis {
-  width: 28px;
+  width: 24px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border);
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0 55px,
-    var(--border) 55px 56px
-  );
+  position: relative;
+  z-index: 1;
 }
 
 /* Stunden-Zahlen wie im Tagesplaner (.sgLabel): zentriert, --text-dim, 700. */
@@ -356,22 +353,24 @@
   flex-shrink: 0;
 }
 
-.weekColsBody { flex: 1; display: flex; position: relative; }
+.weekColsBody { flex: 1; display: flex; position: relative; z-index: 1; }
 
 .weekDayCol {
   flex: 1;
   border-left: 1px solid color-mix(in srgb, var(--border-dim) 65%, transparent);
   position: relative;
-  z-index: 1;
   cursor: crosshair;
   /* height wird per inline style gesetzt */
 }
 
-/* Gitterlinien wie im Tagesplaner: Stundenlinie durchgehend (über die Zeitspalte),
-   Halbstunde gestrichelt nur im Spaltenbereich. */
+/* Gitterlinien wie im Tagesplaner: Stundenlinie durchgehend über die ganze Breite
+   (inkl. Zeitspalte), Halbstunde gestrichelt nur im Spaltenbereich. Eigene Höhe
+   (colHeight per inline style) statt inset:0 → scrollt voll mit, kein früher Abriss. */
 .weekGridLines {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 0;
   pointer-events: none;
 }
@@ -387,7 +386,7 @@
 .weekGridHour::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: 24px;
   right: 0;
   top: 28px;
   border-top: 1px dashed var(--border-dim);
