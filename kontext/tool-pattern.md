@@ -418,31 +418,35 @@ Tool mit mehreren eigenständigen Übungs-Modulen + Session-Historie. Referenz f
 ```js
 MODULE_CONFIG[id] = {
   id, name, color, domain,        // color = Modulfarbe, domain = Kategorie-Label
-  desc, duration,                 // Anzeige in Briefing
+  desc, duration,                 // Anzeige im Vorbildschirm
+  steps?,                         // optional: Schritt-Liste (nur geteilt)
   measured, notMeasured,          // string[] — was gemessen wird / nicht
   mainMetricLabel, mainMetricUnit,// Hauptkennzahl in Results/Dashboard
-  variants, defaultVariant,       // Schwierigkeitsvarianten
+  higherIsBetter,                 // Metrik-Richtung
 }
 MODULE_ORDER  // Reihenfolge der Module
 ```
-9 Module: alertness · zahlensuche · gedaechtnis · gonogo · nback · taskswitching · cpt · selektiv · geteilt.
+7 Module: alertness · zahlensuche · gedaechtnis · gonogo · nback · taskswitching · geteilt.
+**Keine Schwierigkeitsvarianten** — alle Module laufen fest auf „Normal" (variant/defaultVariant 2026-06 entfernt: aus Config, Start-Fluss, allen 7 Übungen + Datenmodell `createSession`).
 
-**Färbung:** Komponenten (ModuleList/Briefing/Results/Dashboard/ModuleDetail) setzen `style={{ '--accent': m.color }}` und leiten Töne via `color-mix()` ab. Grün/Rot bleiben **semantisch** (Erfolg/Fehler), nicht modulgefärbt.
+**Färbung:** Modul-Screens (ModuleList/Briefing/ModuleDemo/Results/Dashboard/ModuleDetail/Settings) setzen `style={{ '--accent': m.color }}` und leiten Töne via `color-mix()` ab. Tool-Chrome (Tab-Leiste/Statistik-Kacheln/Erst-Briefing) nutzt `--tool-color` (= `--primary`, am TabKognitiv-Root gesetzt). Grün/Rot bleiben **semantisch** (Erfolg/Fehler).
 
-**`ModuleIcon.jsx`:** distinktes Linien-SVG pro Modul-ID (`<ModuleIcon id={id} size={20} />`). `currentColor` folgt der Modulfarbe. Fallback = Kreis.
+**`ModuleIcon.jsx`:** distinktes Linien-SVG pro Modul-ID. `currentColor` folgt der Modulfarbe. Fallback = Kreis.
 
-**`exercises/ExerciseShell.jsx`:** gemeinsame Chrome für alle 9 Übungen — immersive Bühne (#05050e) + dünne Fortschrittsleiste in Modulfarbe + dezenter SVG-Abbrechen-Button.
+**`ModuleDemo.jsx` (+ .module.css):** kleine Endlos-Demo des Kern-Mechanismus je Modul — reine CSS/SVG-Loops in der Bildsprache der echten Übung, **kein** Timer/Scoring/sessionStore-Import. Erbt `var(--accent)`, `prefers-reduced-motion` friert ein. Sitzt im Vorbildschirm als „So läuft's"-Bühne.
+
+**`Briefing.jsx` (Vorbildschirm):** Hero (Icon-Glow, Titel, Meta-Pills) + `ModuleDemo` + aufklappbare Details (steps/Gemessen/Nicht relevant) + Gradient-CTA. Startet via `onStart()` (kein variant-Argument mehr).
+
+**`KognitivBriefing.jsx`:** einmaliges Erst-Briefing (4 Screens, Muster wie `GrowthBriefing`). Gate in `TabKognitiv` via `SK.kognitivIntroSeen` (liegt in `BACKUP_CATS.einstellungen`).
+
+**`exercises/ExerciseShell.jsx`:** gemeinsame Chrome für alle 7 Übungen — immersive Bühne + dünne Fortschrittsleiste in Modulfarbe + dezenter SVG-Abbrechen-Button.
 ```jsx
-<ExerciseShell
-  moduleId={id}
-  progress={n} total={N}   // trial-basiert: Leiste = progress/total
-  durationMs={ms}          // ODER zeitbasiert: CSS-Animation exFill
-  onAbort={...}
-  onTap={...}              // liegt auf der Bühne (Spiele mit "irgendwo tippen")
->{stimuli}</ExerciseShell>
+<ExerciseShell moduleId={id} progress={n} total={N} durationMs={ms} onAbort={...} onTap={...}>{stimuli}</ExerciseShell>
 ```
-Stimuli nutzen `var(--accent)`. Übungs-CSS hat **kein** eigenes `.root`/`.closeBtn` mehr (kommt aus der Shell).
+Stimuli nutzen `var(--accent)`. Übungs-CSS hat **kein** eigenes `.root`/`.closeBtn` (kommt aus der Shell).
 
-**Dashboard:** Leerzustand wenn nichts trainiert; zeigt nur Module mit Sessions.
+**Dashboard (Statistik):** Leerzustand wenn nichts trainiert; sonst 3 Summen-Kacheln + Modul-Karten (nur Module mit Sessions).
+
+**Einstellungen:** je Modul Frei/Erinnerung/Termin (Segmented). „Termin"/„Erinnerung" → Modul erscheint oben in `ModuleList` unter „Heute dran" (`getScheduledToday`, blendet heute schon Erledigte aus).
 
 **Session-Historie:** via `sessionStore.js` (kein globaler Store) — siehe Abschnitt "Standalone SessionStore" oben. **Wichtig:** Session-Key `SK.kognitiv` gehört in `BACKUP_CATS.tools`, sonst geht die Historie bei Teil-Restore verloren.

@@ -56,7 +56,7 @@ export default function Results({ session, fromArchive = false, onBack }) {
       ? `${cToX(i).toFixed(1)},${cToY(tap.time).toFixed(1)}` : null)
     .filter(Boolean).join(' ')
 
-  const deltaLabel = delta !== null
+  const deltaLabel = delta != null && delta !== 0
     ? (delta > 0
         ? `▲ ${Math.abs(delta)}${m.mainMetricUnit} besser`
         : `▼ ${Math.abs(delta)}${m.mainMetricUnit} schlechter`)

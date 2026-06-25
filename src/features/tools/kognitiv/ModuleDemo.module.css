@@ -1,0 +1,178 @@
+.stage {
+  position: relative;
+  height: 172px;
+  padding: 10px 10px 30px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(125% 90% at 50% 0%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
+    var(--bg2);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag {
+  position: absolute; top: 11px; left: 13px;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-faint);
+}
+.loop { position: absolute; top: 10px; right: 12px; color: var(--text-faint); display: inline-flex; }
+.caption {
+  position: absolute; bottom: 11px; left: 12px; right: 12px;
+  text-align: center; font-size: 0.7rem; color: var(--text-dim); line-height: 1.3;
+}
+
+/* ── Alertness — Kreis erscheint + Tipp-Ripple ───────────────── */
+.dot {
+  position: relative; width: 50px; height: 50px; border-radius: 50%;
+  background: var(--accent); animation: aPop 2.6s var(--ease-out) infinite;
+}
+.dot::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--accent); animation: aRing 2.6s var(--ease-out) infinite;
+}
+@keyframes aPop {
+  0%, 8%  { transform: scale(0);  opacity: 0; box-shadow: none; }
+  16%     { transform: scale(1);  opacity: 1; box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 55%, transparent); }
+  34%     { transform: scale(1);  opacity: 1; }
+  44%     { transform: scale(.55); opacity: 0; }
+  100%    { transform: scale(0);  opacity: 0; }
+}
+@keyframes aRing {
+  0%, 12% { transform: scale(1); opacity: 0; }
+  18%     { opacity: .6; }
+  34%     { transform: scale(2.3); opacity: 0; }
+  100%    { opacity: 0; }
+}
+
+/* ── Go / No-Go — grün tippen, rot still ─────────────────────── */
+.gngDot {
+  position: relative; width: 52px; height: 52px; border-radius: 50%;
+  animation: gng 4s infinite;
+}
+.gngDot::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--accent); animation: gngRing 4s infinite;
+}
+@keyframes gng {
+  0%, 20%   { background: var(--accent); box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 55%, transparent); }
+  25%, 45%  { background: var(--surface-low); box-shadow: none; }
+  50%, 72%  { background: var(--rose); box-shadow: 0 0 24px color-mix(in srgb, var(--rose) 45%, transparent); }
+  77%, 100% { background: var(--surface-low); box-shadow: none; }
+}
+@keyframes gngRing {
+  0% { transform: scale(1); opacity: .6; }
+  16% { transform: scale(2); opacity: 0; }
+  16.01%, 100% { opacity: 0; }
+}
+
+/* ── Zahlensuche — Zahlen der Reihe nach ─────────────────────── */
+.zGrid { display: grid; grid-template-columns: repeat(3, 34px); gap: 6px; }
+.zCell {
+  height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-num); font-size: 0.82rem; font-weight: 700;
+  color: var(--text-dim); background: var(--surface-low); border: 1px solid var(--border);
+}
+.zT1 { animation: zPop 3s infinite; }
+.zT2 { animation: zPop 3s infinite 1s; }
+.zT3 { animation: zPop 3s infinite 2s; }
+@keyframes zPop {
+  0%, 22%   { background: var(--accent); color: var(--bg); border-color: var(--accent); transform: scale(1.12); }
+  34%, 100% { background: var(--surface-low); color: var(--text-dim); border-color: var(--border); transform: scale(1); }
+}
+
+/* ── Arbeitsgedächtnis — Leucht-Sequenz ──────────────────────── */
+.gRing { position: relative; width: 134px; height: 124px; }
+.gDot {
+  position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface-low); border: 1px solid var(--border);
+}
+.gS1, .gS2, .gS3 { animation: gLight 3s infinite; }
+.gS2 { animation-delay: .7s; }
+.gS3 { animation-delay: 1.4s; }
+@keyframes gLight {
+  0%, 6%    { background: var(--surface-low); box-shadow: none; transform: translate(-50%, -50%) scale(1); }
+  11%       { background: var(--accent); box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 60%, transparent); transform: translate(-50%, -50%) scale(1.3); }
+  24%       { background: var(--accent); }
+  32%, 100% { background: var(--surface-low); box-shadow: none; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ── N-Back — Symbol-Strom mit Treffer ───────────────────────── */
+.nbStack { position: relative; width: 64px; height: 64px; }
+.nbShape { position: absolute; inset: 0; margin: auto; opacity: 0; }
+.nbCirc { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 20%, transparent); }
+.nbSq   { width: 46px; height: 46px; border-radius: 10px; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 20%, transparent); }
+.nbTri  { width: 0; height: 0; border-left: 27px solid transparent; border-right: 27px solid transparent; border-bottom: 46px solid color-mix(in srgb, var(--accent) 55%, transparent); }
+.nbA { animation: nbShow 3.6s infinite; }
+.nbB { animation: nbShow 3.6s infinite .9s; }
+.nbC { animation: nbShow 3.6s infinite 1.8s; }
+.nbD { animation: nbShow 3.6s infinite 2.7s; }
+@keyframes nbShow {
+  0%   { opacity: 0; }
+  5%   { opacity: 1; }
+  19%  { opacity: 1; }
+  25%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+.nbBadge {
+  position: absolute; top: -10px; right: -22px;
+  font-size: 0.58rem; font-weight: 700; color: var(--emerald);
+  background: color-mix(in srgb, var(--emerald) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--emerald) 35%, transparent);
+  border-radius: 20px; padding: 2px 7px; opacity: 0;
+  animation: nbBadge 3.6s infinite 1.8s;
+}
+@keyframes nbBadge {
+  0%, 2% { opacity: 0; transform: scale(.6); }
+  8%     { opacity: 1; transform: scale(1); }
+  19%    { opacity: 1; }
+  25%, 100% { opacity: 0; }
+}
+
+/* ── Task Switching — Regel + Symbol wechseln ────────────────── */
+.tsWrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.tsPills { position: relative; width: 92px; height: 24px; }
+.tsPill {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; opacity: 0;
+}
+.tsForm  { color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); animation: halfA 3.4s infinite; }
+.tsColor { color: var(--teal);   background: color-mix(in srgb, var(--teal) 16%, transparent);   border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent);   animation: halfB 3.4s infinite; }
+.tsSym { position: relative; width: 40px; height: 40px; }
+.tsGlyph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-num); font-size: 1.7rem; font-weight: 700; opacity: 0; }
+.tsX { color: var(--accent); animation: halfA 3.4s infinite; }
+.tsO { color: var(--teal);   animation: halfB 3.4s infinite; }
+
+/* ── Geteilte Aufmerksamkeit — Ringe + Ton ───────────────────── */
+.gtWrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.gtRing { position: relative; width: 100px; height: 92px; }
+.gtDot {
+  position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid color-mix(in srgb, var(--accent) 55%, transparent); background: transparent;
+  animation: gtFill 3s infinite;
+}
+@keyframes gtFill {
+  0%, 100% { background: transparent; box-shadow: none; }
+  8%       { background: var(--accent); box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 55%, transparent); }
+  16%      { background: transparent; box-shadow: none; }
+}
+.gtTone { position: relative; width: 64px; height: 16px; }
+.gtHigh, .gtLow { position: absolute; inset: 0; text-align: center; font-family: var(--font-num); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; opacity: 0; }
+.gtHigh { color: var(--accent);   animation: halfA 2.4s infinite; }
+.gtLow  { color: var(--text-dim); animation: halfB 2.4s infinite; }
+
+/* ── geteilte Cross-Fade-Helfer ──────────────────────────────── */
+@keyframes halfA { 0% { opacity: 0; } 6% { opacity: 1; } 44% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes halfB { 0%, 50% { opacity: 0; } 56% { opacity: 1; } 94% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage * { animation: none !important; }
+  .dot, .gngDot { background: var(--accent); }
+  .nbA, .tsForm, .tsX, .gtHigh { opacity: 1; }
+  .zT1, .gS1 { background: var(--accent); }
+}

@@ -64,7 +64,7 @@ export default function ModuleDetail({ moduleId, onBack, onSelectSession }) {
           const delta = prev ? computeDelta(prev.mainMetric, sess.mainMetric, hib) : null
           return (
             <button key={sess.id} className={s.sessRow} onClick={() => onSelectSession(sess)}>
-              <div className={s.sessDate}>{fmtDate(sess.startedAt)} · {fmtTime(sess.startedAt)} · {sess.variant}</div>
+              <div className={s.sessDate}>{fmtDate(sess.startedAt)} · {fmtTime(sess.startedAt)}</div>
               <div className={s.sessRight}>
                 <span className={[s.sessDelta, delta == null ? '' : delta > 0 ? s.deltaGood : s.deltaBad].join(' ')}>
                   {delta == null ? '' : delta > 0 ? `▲${delta}` : `▼${Math.abs(delta)}`}

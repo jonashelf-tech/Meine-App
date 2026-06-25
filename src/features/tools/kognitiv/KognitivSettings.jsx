@@ -18,38 +18,38 @@ export default function KognitivSettings() {
 
   return (
     <div className={s.root}>
+      <div className={s.intro}>Lege je Modul fest, ob du frei trainierst, erinnert wirst oder einen festen Termin hast. Terminierte Module erscheinen oben unter „Heute dran".</div>
+
       {MODULE_ORDER.map(id => {
         const m   = MODULE_CONFIG[id]
         const cfg = schedule[id] ?? { mode: 'free' }
 
         return (
-          <div key={id} className={s.card}>
-            <div className={s.cardTop}>
-              <span className={s.name}>{m.name}</span>
-              <div className={s.modeToggle}>
-                <button
-                  className={[s.modeBtn, cfg.mode === 'free' ? s.modeBtnOn : ''].join(' ')}
-                  onClick={() => update(id, { mode: 'free' })}
-                >
-                  Frei
-                </button>
-                <button
-                  className={[s.modeBtn, cfg.mode === 'reminder' ? s.modeBtnOn : ''].join(' ')}
-                  onClick={() => update(id, { mode: 'reminder' })}
-                >
-                  Erinnerung
-                </button>
-                <button
-                  className={[s.modeBtn, cfg.mode === 'scheduled' ? s.modeBtnOn : ''].join(' ')}
-                  onClick={() => update(id, {
-                    mode: 'scheduled',
-                    time: cfg.time ?? '09:00',
-                    days: cfg.days ?? [1, 2, 3, 4, 5],
-                  })}
-                >
-                  Termin
-                </button>
-              </div>
+          <div key={id} className={s.card} style={{ '--accent': m.color }}>
+            <div className={s.name}>{m.name}</div>
+            <div className={s.modeToggle}>
+              <button
+                className={[s.modeBtn, cfg.mode === 'free' ? s.modeBtnOn : ''].join(' ')}
+                onClick={() => update(id, { mode: 'free' })}
+              >
+                Frei
+              </button>
+              <button
+                className={[s.modeBtn, cfg.mode === 'reminder' ? s.modeBtnOn : ''].join(' ')}
+                onClick={() => update(id, { mode: 'reminder' })}
+              >
+                Erinnerung
+              </button>
+              <button
+                className={[s.modeBtn, cfg.mode === 'scheduled' ? s.modeBtnOn : ''].join(' ')}
+                onClick={() => update(id, {
+                  mode: 'scheduled',
+                  time: cfg.time ?? '09:00',
+                  days: cfg.days ?? [1, 2, 3, 4, 5],
+                })}
+              >
+                Termin
+              </button>
             </div>
 
             {cfg.mode === 'scheduled' && (

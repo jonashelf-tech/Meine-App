@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { useAppStore } from '../../../store'
+import { sv, lv, SK } from '../../../storage'
 import { ToolIcon } from '../toolRegistry'
 import { MODULE_CONFIG } from './moduleConfig'
 import { isDoneToday, saveSession } from './sessionStore'
@@ -9,6 +10,7 @@ import CheckinModal     from './CheckinModal'
 import KognitivSettings from './KognitivSettings'
 import ModuleList from './ModuleList'
 import Briefing   from './Briefing'
+import KognitivBriefing from './KognitivBriefing'
 import DoneToday  from './DoneToday'
 import Results       from './Results'
 import Dashboard     from './Dashboard'
@@ -30,11 +32,12 @@ export default function TabKognitiv({ onBack, onExercising }) {
   const [tab, setTab] = useState('modules')
   const [nav, setNav] = useState(null)
   const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null
+  const [introSeen, setIntroSeen] = useState(() => lv(SK.kognitivIntroSeen, false))
   const pendingExerciseRef = useRef(null)
   const { kognitivAutoStart, setKognitivAutoStart, setBackInterceptor } = useAppStore()
 
-  // Sub-Screens (Briefing, Übung, Auswertung …) sind immersiv: Vollbild + untere Nav aus.
-  const isImmersive = nav !== null || countdown !== null
+  // Sub-Screens (Erst-Briefing, Briefing, Übung, Auswertung …) sind immersiv: Vollbild + untere Nav aus.
+  const isImmersive = nav !== null || countdown !== null || !introSeen
   useEffect(() => { onExercising?.(isImmersive) }, [isImmersive, onExercising])
 
   useEffect(() => {
@@ -80,6 +83,14 @@ export default function TabKognitiv({ onBack, onExercising }) {
     }
   }, [])
 
+  if (!introSeen) {
+    return (
+      <div className={s.overlay}>
+        <KognitivBriefing onComplete={() => { sv(SK.kognitivIntroSeen, true); setIntroSeen(true) }} />
+      </div>
+    )
+  }
+
   if (nav?.screen === 'checkin') {
     return (
       <CheckinModal
@@ -103,7 +114,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
     return <div className={s.overlay}><Briefing
       moduleId={nav.moduleId}
       onBack={goBack}
-      onStart={(variant) => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant })}
+      onStart={() => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId })}
     /></div>
   }
   if (nav?.screen === 'done-today') {
@@ -111,7 +122,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
       moduleId={nav.moduleId}
       onBack={goBack}
       onViewResult={(session) => setNav({ screen: 'results', session, fromArchive: true })}
-      onRepeat={() => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId, variant: MODULE_CONFIG[nav.moduleId].defaultVariant })}
+      onRepeat={() => startWithCountdown({ screen: 'exercise', moduleId: nav.moduleId })}
     /></div>
   }
   if (nav?.screen === 'exercise') {
@@ -126,7 +137,6 @@ export default function TabKognitiv({ onBack, onExercising }) {
     }
     const Ex = ExMap[nav.moduleId]
     if (Ex) return <Ex
-      variant={nav.variant}
       onDone={(session) => setNav({ screen: 'results', session, fromArchive: false })}
       onAbort={goBack}
     />
@@ -155,7 +165,7 @@ export default function TabKognitiv({ onBack, onExercising }) {
   }
 
   return (
-    <div className={s.root}>
+    <div className={s.root} style={{ '--tool-color': 'var(--primary)' }}>
       <ToolHeader onBack={onBack} icon={<ToolIcon id="kognitiv" size={20} />} eyebrow="Tool" title="Kognitiv" />
       <div className={s.tabBar}>
         <button className={[s.tabBtn, tab === 'modules'   ? s.tabOn : ''].join(' ')} onClick={() => setTab('modules')}>Module</button>

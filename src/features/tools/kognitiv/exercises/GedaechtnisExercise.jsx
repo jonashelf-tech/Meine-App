@@ -38,10 +38,9 @@ function randSeq(len) {
   return seq
 }
 
-export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
-  const isHard = variant === 'Schwer'
-  const showMs = isHard ? 550 : SHOW_MS
-  const gapMs  = isHard ? 200 : GAP_MS
+export default function GedaechtnisExercise({ onDone, onAbort }) {
+  const showMs = SHOW_MS
+  const gapMs  = GAP_MS
 
   const [phase,     setPhase]     = useState('show')
   const [roundIdx,  setRoundIdx]  = useState(0)
@@ -89,7 +88,6 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
     const maxSeqLen       = completedRounds > 0 ? lenForRound(completedRounds - 1) : 0
     const session = createSession({
       moduleId: 'gedaechtnis',
-      variant,
       startedAt: startedAt.current,
       duration,
       score: { correctRounds: completedRounds, maxSeqLen, mistakes: mistakesRef.current },
@@ -97,7 +95,7 @@ export default function GedaechtnisExercise({ variant, onDone, onAbort }) {
       taps: tapsRef.current,
     })
     onDone(session)
-  }, [variant, onDone])
+  }, [onDone])
 
   const handleCircleTap = useCallback((circIdx) => {
     if (phase !== 'input') return

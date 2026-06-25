@@ -1,14 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { MODULE_CONFIG } from './moduleConfig'
 import ModuleIcon from './ModuleIcon'
+import ModuleDemo from './ModuleDemo'
 import s from './Briefing.module.css'
+
+const ClockIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></svg>
+)
+const PlayIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" /></svg>
+)
 
 export default function Briefing({ moduleId, onStart, onBack }) {
   const m = MODULE_CONFIG[moduleId]
-  const variant = m.defaultVariant
-  const [infoOpen, setInfoOpen] = useState(() => !localStorage.getItem(`briefing-seen-${moduleId}`))
-
-  useEffect(() => { localStorage.setItem(`briefing-seen-${moduleId}`, '1') }, [moduleId])
+  const [detailsOpen, setDetailsOpen] = useState(false)
 
   return (
     <div className={s.root} style={{ '--accent': m.color }}>
@@ -20,58 +25,49 @@ export default function Briefing({ moduleId, onStart, onBack }) {
 
       <div className={s.scroll}>
         <div className={s.hero}>
-          <div className={s.iconWrap}>
-            <ModuleIcon id={moduleId} size={28} />
-          </div>
+          <div className={s.iconWrap}><ModuleIcon id={moduleId} size={26} /></div>
           <div className={s.domain}>{m.domain}</div>
-          <div className={s.name}>{m.name}</div>
-          <div className={s.durationPill}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            {m.duration}
+          <h1 className={s.name}>{m.name}</h1>
+          <div className={s.meta}>
+            <span className={s.metaPill}><ClockIcon /> {m.duration}</span>
+            <span className={s.metaPill}>misst {m.mainMetricLabel}</span>
           </div>
           <p className={s.desc}>{m.desc}</p>
-          {m.steps && (
-            <ol className={s.steps}>
-              {m.steps.map((step, i) => (
-                <li key={i}>{step}</li>
-              ))}
-            </ol>
-          )}
         </div>
 
-        <button className={s.infoToggle} onClick={() => setInfoOpen(v => !v)}>
-          <span className={s.infoToggleLabel}>Was gemessen wird</span>
-          <span className={[s.infoChevron, infoOpen ? s.infoChevronOpen : ''].join(' ')}>›</span>
+        <ModuleDemo moduleId={moduleId} />
+
+        <button className={s.detailsToggle} onClick={() => setDetailsOpen(v => !v)}>
+          <span className={s.detailsLabel}>Details</span>
+          <span className={[s.chev, detailsOpen ? s.chevOpen : ''].join(' ')}>›</span>
         </button>
 
-        {infoOpen && (
-          <>
+        {detailsOpen && (
+          <div className={s.details}>
+            {m.steps && (
+              <ol className={s.steps}>
+                {m.steps.map((step, i) => <li key={i}>{step}</li>)}
+              </ol>
+            )}
             <div className={s.infoBlock}>
               <div className={s.infoLabel} data-type="measured">Gemessen</div>
               {m.measured.map(item => (
-                <div key={item} className={s.infoRow}>
-                  <div className={s.dot} data-type="measured" />
-                  {item}
-                </div>
+                <div key={item} className={s.infoRow}><span className={s.idot} data-type="measured" />{item}</div>
               ))}
             </div>
-
             <div className={s.infoBlock}>
               <div className={s.infoLabel} data-type="not">Nicht relevant</div>
               {m.notMeasured.map(item => (
-                <div key={item} className={s.infoRow}>
-                  <div className={s.dot} data-type="not" />
-                  {item}
-                </div>
+                <div key={item} className={s.infoRow}><span className={s.idot} data-type="not" />{item}</div>
               ))}
             </div>
-          </>
+          </div>
         )}
-
-        <button className={s.startBtn} onClick={() => onStart(variant)}>
-          Starten →
-        </button>
       </div>
+
+      <button className={s.startBtn} onClick={() => onStart()}>
+        <PlayIcon /> Starten
+      </button>
     </div>
   )
 }

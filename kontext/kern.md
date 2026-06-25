@@ -228,12 +228,16 @@ SK.birthdaySort      → 'adhs_bday_sort'
 SK.reminder          → 'adhs_reminder_v1'         // { items: [...] }
 SK.reminderDismissed → 'adhs_reminder_dismissed'  // { "YYYY-MM-DD": [ids] }
 SK.elvi              → 'adhs_elvi_v1'             // { doses, savedDays } — Leser: elvi/elviData.js
+SK.timerStart        → 'adhs_timer_startTs'       // ephemer (laufender Timer), NICHT im Backup
+SK.timerTotal        → 'adhs_timer_totalSecs'     // ephemer (laufender Timer), NICHT im Backup
+SK.timerRunning      → 'adhs_timer_running'       // ephemer (laufender Timer), NICHT im Backup
 SK.haushalt          → 'adhs_haushalt_v1'
 SK.haushaltEnergie   → 'adhs_haushalt_energie'    // lokaler UI-State (Normal/Low Energy)
 SK.kognitiv          → 'adhs_kognitiv_sessions'   // Session-Archiv (Array)
 SK.kognitivCheckin   → 'adhs_kognitiv_checkin'    // { "YYYY-MM-DD": CheckinEntry }
 SK.kognitivSchedule  → 'adhs_kognitiv_schedule'   // { [moduleId]: { mode, days, time } }
 SK.kognitivPractice  → 'adhs_kognitiv_practice'   // ephemer (Wochen-Gate), NICHT im Backup
+SK.kognitivIntroSeen → 'adhs_kognitiv_intro_seen' // bool — Erst-Briefing gesehen (Backup: einstellungen)
 SK.klaerenSettings   → 'adhs_klaeren_settings'    // { threshold, ageColor }
 SK.wachstum          → 'adhs_wachstum_v1'         // LEGACY (altes Wachstum-Tool; Habit-Checks zählt Garten weiter, Journal → growth migriert)
 SK.growth            → 'adhs_growth_v1'           // { days{ tageskarteId, skipVerwendet, karten[], freitext, stateTouched, timerKarteId }, queuedCard, openerShownFor, settings } — Leser: growth/growthStore.js
