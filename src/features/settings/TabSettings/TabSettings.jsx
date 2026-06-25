@@ -260,7 +260,7 @@ export default function TabSettings() {
         <h3 className={s.cardTitle}>Wartung</h3>
         <div className={s.btnGroup}>
           <button className={[s.actionBtn, s.actionBtnSecondary].join(' ')} onClick={handleCacheReset}>
-            ↺ Cache leeren
+            ↺ Update suchen
           </button>
           <button
             className={[s.actionBtn, s.actionBtnDanger, confirmReset ? s.actionBtnConfirm : ''].join(' ')}
