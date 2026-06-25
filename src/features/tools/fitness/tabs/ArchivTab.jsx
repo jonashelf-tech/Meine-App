@@ -193,6 +193,9 @@ function DetailView({ session, fitness, onBack }) {
                       {set.feedback && (
                         <span className={s.setFeedback}>{FEEDBACK_LABELS[set.feedback] ?? set.feedback}</span>
                       )}
+                      {set.rir != null && (
+                        <span className={s.setFeedback}>RIR {set.rir}</span>
+                      )}
                     </div>
                   )
                 })}

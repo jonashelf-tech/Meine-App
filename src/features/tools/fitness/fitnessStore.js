@@ -7,7 +7,7 @@ const DEFAULT_SETTINGS = {
   restTimerSec: 120,
   increments: { ...DEFAULT_INCREMENTS },
   warmupScheme: WARMUP_SCHEME.map(s => ({ ...s })),
-  feedbackMode: 'chips',
+  feedbackMode: 'rir',
   zielRir: [...ZIEL_RIR],
   rhythm: null, // null = kein fester Rhythmus; sonst { on, off } für den Heute-Hinweis
   schedule: { mode: 'flex' }, // { mode:'flex' } | { mode:'fixed', days:[1..7] } (ISO-Wochentag, Mo=1..So=7)

@@ -205,6 +205,15 @@ describe('adjustRemaining', () => {
   it('passt → unverändert', () => {
     expect(adjustRemaining(rec, { wdh: 8, feedback: 'passt' }, [8, 10], 2.5)).toEqual(rec)
   })
+  it('RIR über Ziel (3 > 2) → zu leicht → +1 Inkrement', () => {
+    expect(adjustRemaining(rec, { wdh: 8, rir: 3 }, [8, 10], 2.5, [1, 2]).gewicht).toBe(102.5)
+  })
+  it('RIR 0 (bis Versagen, Default) bei getroffenen Wdh → halten', () => {
+    expect(adjustRemaining(rec, { wdh: 8, rir: 0 }, [8, 10], 2.5, [1, 2])).toEqual(rec)
+  })
+  it('RIR egal — zu wenig Wdh gewinnt → runter', () => {
+    expect(adjustRemaining(rec, { wdh: 5, rir: 2 }, [8, 10], 2.5, [1, 2]).gewicht).toBe(92.5)
+  })
 })
 
 describe('similarExercises', () => {

@@ -198,7 +198,7 @@ export default function EinstellungenTab() {
             RIR
           </button>
         </div>
-        <div className={s.hint}>Wie du nach jedem Satz Rückmeldung gibst (Coach-Modus).</div>
+        <div className={s.hint}>Rückmeldung pro Satz (Coach-Modus). RIR = wie viele Wdh noch drin gewesen wären (leer/0 = bis Versagen). Chips = leicht/passt/hart.</div>
       </div>
 
       <div className={s.section}>
@@ -212,9 +212,9 @@ export default function EinstellungenTab() {
                 step="0.5"
                 min="0"
                 className={s.incInput}
-                value={settings.increments[eq]}
+                value={settings.increments[eq] ?? ''}
                 onChange={e => {
-                  const value = e.target.value === '' ? 0 : Number(e.target.value)
+                  const value = e.target.value === '' ? null : Number(e.target.value)
                   update({ increments: { ...settings.increments, [eq]: value } })
                 }}
               />

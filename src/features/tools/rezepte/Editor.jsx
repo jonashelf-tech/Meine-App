@@ -76,7 +76,7 @@ export default function Editor({
 
   const removeZutat = (zutatId) => set('zutaten', (draft.zutaten ?? []).filter(z => z.zutatId !== zutatId))
   const setZutatMenge = (zutatId, val) =>
-    set('zutaten', (draft.zutaten ?? []).map(z => z.zutatId === zutatId ? { ...z, menge: parseFloat(val) || 0 } : z))
+    set('zutaten', (draft.zutaten ?? []).map(z => z.zutatId === zutatId ? { ...z, menge: val === '' ? null : Number(val) } : z))
   const addZutat = (id) => {
     if (!id) return
     const z2 = zutaten.find(z => z.id === id)
@@ -85,7 +85,7 @@ export default function Editor({
 
   const removeKomponente = (rezeptId) => set('komponenten', (draft.komponenten ?? []).filter(k => k.rezeptId !== rezeptId))
   const setKompMenge = (rezeptId, val) =>
-    set('komponenten', (draft.komponenten ?? []).map(k => k.rezeptId === rezeptId ? { ...k, menge: parseFloat(val) || 0 } : k))
+    set('komponenten', (draft.komponenten ?? []).map(k => k.rezeptId === rezeptId ? { ...k, menge: val === '' ? null : Number(val) } : k))
   const addKomponente = (id) => {
     if (!id) return
     const r = rById(id)
@@ -247,7 +247,7 @@ export default function Editor({
                 <input
                   className={s.mengeInline}
                   type="number"
-                  value={z.menge}
+                  value={z.menge ?? ''}
                   onChange={e => setZutatMenge(z.zutatId, e.target.value)}
                 />
                 <span className={s.ingredUnit}>{z2?.einheit ?? 'g'}</span>
@@ -269,7 +269,7 @@ export default function Editor({
                 <input
                   className={s.mengeInline}
                   type="number"
-                  value={k.menge}
+                  value={k.menge ?? ''}
                   onChange={e => setKompMenge(k.rezeptId, e.target.value)}
                 />
                 <span className={s.ingredUnit}>{r?.ergibtEinheit ?? 'ml'}</span>

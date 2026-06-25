@@ -32,6 +32,12 @@ const SparkleIcon = () => (
     <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" />
   </svg>
 )
+const ChevronIcon = ({ up }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: up ? 'none' : 'rotate(180deg)' }}>
+    <polyline points="6 15 12 9 18 15" />
+  </svg>
+)
 const CheckIcon = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
@@ -196,6 +202,20 @@ function DetailView({ plan, exercises, onBack, onSave, onDelete }) {
     }))
   }
 
+  const moveExercise = (dayId, idx, dir) => {
+    setDraft(d => ({
+      ...d,
+      days: d.days.map(day => {
+        if (day.id !== dayId) return day
+        const target = idx + dir
+        if (target < 0 || target >= day.exercises.length) return day
+        const exercises = [...day.exercises]
+        ;[exercises[idx], exercises[target]] = [exercises[target], exercises[idx]]
+        return { ...day, exercises }
+      }),
+    }))
+  }
+
   const addExercise = (dayId, exercise) => {
     setDraft(d => ({
       ...d,
@@ -277,7 +297,13 @@ function DetailView({ plan, exercises, onBack, onSave, onDelete }) {
                 <div className={s.exList}>
                   {day.exercises.map((ex, idx) => (
                     <div key={idx} className={s.exRow}>
-                      <span className={s.exName}>{exerciseName(ex.exerciseId)}</span>
+                      <div className={s.exHeader}>
+                        <span className={s.exName}>{exerciseName(ex.exerciseId)}</span>
+                        <div className={s.reorder}>
+                          <button className={s.reorderBtn} onClick={() => moveExercise(day.id, idx, -1)} disabled={idx === 0} aria-label="Übung nach oben"><ChevronIcon up /></button>
+                          <button className={s.reorderBtn} onClick={() => moveExercise(day.id, idx, 1)} disabled={idx === day.exercises.length - 1} aria-label="Übung nach unten"><ChevronIcon /></button>
+                        </div>
+                      </div>
                       <div className={s.exInputs}>
                         <div className={s.exField}>
                           <span className={s.exFieldLabel}>Sätze</span>
@@ -285,8 +311,8 @@ function DetailView({ plan, exercises, onBack, onSave, onDelete }) {
                             className={s.numInput}
                             type="number"
                             min="1"
-                            value={ex.zielSaetze}
-                            onChange={e => updateExercise(day.id, idx, { zielSaetze: Number(e.target.value) || 0 })}
+                            value={ex.zielSaetze ?? ''}
+                            onChange={e => updateExercise(day.id, idx, { zielSaetze: e.target.value === '' ? null : Number(e.target.value) })}
                           />
                         </div>
                         <div className={s.exField}>
@@ -296,16 +322,16 @@ function DetailView({ plan, exercises, onBack, onSave, onDelete }) {
                               className={s.numInput}
                               type="number"
                               min="1"
-                              value={ex.zielWdh[0]}
-                              onChange={e => updateExercise(day.id, idx, { zielWdh: [Number(e.target.value) || 0, ex.zielWdh[1]] })}
+                              value={ex.zielWdh[0] ?? ''}
+                              onChange={e => updateExercise(day.id, idx, { zielWdh: [e.target.value === '' ? null : Number(e.target.value), ex.zielWdh[1]] })}
                             />
                             <span className={s.rangeSep}>–</span>
                             <input
                               className={s.numInput}
                               type="number"
                               min="1"
-                              value={ex.zielWdh[1]}
-                              onChange={e => updateExercise(day.id, idx, { zielWdh: [ex.zielWdh[0], Number(e.target.value) || 0] })}
+                              value={ex.zielWdh[1] ?? ''}
+                              onChange={e => updateExercise(day.id, idx, { zielWdh: [ex.zielWdh[0], e.target.value === '' ? null : Number(e.target.value)] })}
                             />
                           </div>
                         </div>

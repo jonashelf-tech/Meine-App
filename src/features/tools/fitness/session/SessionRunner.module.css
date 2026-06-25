@@ -117,16 +117,49 @@
 
 .cardHead {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
 }
+
+/* Übungs-Reihenfolge im Training verschieben */
+.reorder {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.reorderBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 20px;
+  padding: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.reorderBtn:hover:not(:disabled) { color: var(--text); border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 35%, var(--border)); }
+.reorderBtn:disabled { opacity: 0.3; cursor: default; }
 
 .exNameRow {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
   min-width: 0;
+}
+
+/* Badge + „Gerät besetzt": feste Breite rechts, schrumpft nie → Name weicht aus statt zu überlaufen */
+.exMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .exName {
@@ -139,6 +172,8 @@
   font-weight: 700;
   color: var(--text);
   cursor: pointer;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .doneMark {
@@ -289,8 +324,7 @@
   transition: opacity 0.15s, background 0.15s, box-shadow 0.15s;
 }
 .setRowDone { opacity: 0.45; }
-.setRowDone .setInput,
-.setRowDone .typeBtn { text-decoration: line-through; }
+.setRowDone .setInput { text-decoration: line-through; }
 
 .setRowActive {
   background: color-mix(in srgb, var(--tool-color, var(--primary)) 8%, transparent);
@@ -321,6 +355,33 @@
   border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 40%, transparent);
   color: var(--tool-color, var(--primary));
 }
+
+/* RIR-Eingabe inline in der Satz-Zeile (RIR-Modus). Leeres Feld = gedämpfter Default „0" = bis Versagen. */
+.rirTag {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.rirInput {
+  width: 44px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-num);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 4px;
+  outline: none;
+  text-align: center;
+}
+.rirInput:focus { border-color: var(--tool-color, var(--primary)); }
+.rirInput::placeholder { color: var(--text-faint); font-family: var(--font-num); font-weight: 700; }
 
 .setIdx {
   font-family: var(--font-num);
@@ -354,22 +415,6 @@
   font-family: var(--font);
   font-size: 0.8rem;
   flex-shrink: 0;
-}
-
-.typeBtn {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text-dim);
-  font-family: var(--font);
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 8px 6px;
-  cursor: pointer;
-  flex-shrink: 0;
-  white-space: nowrap;
 }
 
 .doneBtn {

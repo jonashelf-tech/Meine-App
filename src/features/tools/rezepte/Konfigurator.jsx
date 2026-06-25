@@ -68,7 +68,7 @@ export default function Konfigurator({
   const setGPP = (slot, itemId, val) => {
     setSlots(prev => ({
       ...prev,
-      [slot]: (prev[slot] ?? []).map(i => i.id === itemId ? { ...i, gProPortion: parseFloat(val) || 0 } : i),
+      [slot]: (prev[slot] ?? []).map(i => i.id === itemId ? { ...i, gProPortion: val === '' ? null : Number(val) } : i),
     }))
   }
 

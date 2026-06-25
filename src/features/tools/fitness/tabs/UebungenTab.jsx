@@ -272,16 +272,16 @@ function DetailView({ exercise, onBack, onSave, onDelete }) {
             className={s.numInput}
             type="number"
             min="1"
-            value={draft.defaultRepRange[0]}
-            onChange={e => update({ defaultRepRange: [Number(e.target.value) || 0, draft.defaultRepRange[1]] })}
+            value={draft.defaultRepRange[0] ?? ''}
+            onChange={e => update({ defaultRepRange: [e.target.value === '' ? null : Number(e.target.value), draft.defaultRepRange[1]] })}
           />
           <span className={s.rangeSep}>–</span>
           <input
             className={s.numInput}
             type="number"
             min="1"
-            value={draft.defaultRepRange[1]}
-            onChange={e => update({ defaultRepRange: [draft.defaultRepRange[0], Number(e.target.value) || 0] })}
+            value={draft.defaultRepRange[1] ?? ''}
+            onChange={e => update({ defaultRepRange: [draft.defaultRepRange[0], e.target.value === '' ? null : Number(e.target.value)] })}
           />
         </div>
       </div>
@@ -319,8 +319,8 @@ function DetailView({ exercise, onBack, onSave, onDelete }) {
                 type="number"
                 min="0"
                 max="100"
-                value={pct}
-                onChange={e => updateAllocation(muscle, Number(e.target.value) || 0)}
+                value={pct ?? ''}
+                onChange={e => updateAllocation(muscle, e.target.value === '' ? null : Number(e.target.value))}
               />
               <span className={s.allocPct}>%</span>
               <button className={s.allocRemove} onClick={() => removeAllocation(muscle)} aria-label="Entfernen">

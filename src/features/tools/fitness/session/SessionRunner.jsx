@@ -39,8 +39,6 @@ const SwapIcon = () => (
   </svg>
 )
 
-const SET_TYPES = ['normal', 'warmup', 'dropset', 'failure']
-const SET_TYPE_LABELS = { normal: 'Normal', warmup: 'Warmup', dropset: 'Dropset', failure: 'Failure' }
 const FEEDBACK_OPTIONS = [
   { value: 'leicht', label: 'leicht' },
   { value: 'passt', label: 'passt' },
@@ -84,6 +82,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
 
   const plan = fitness.plans.find(p => p.id === planId)
   const coachMode = plan?.modus === 'coach'
+  const rirMode = fitness.settings.feedbackMode !== 'chips' // Default & alles ≠ chips → RIR
   const incOf = (ex) => (fitness.settings.increments?.[ex?.equipment]) ?? DEFAULT_INCREMENTS[ex?.equipment] ?? 2.5
 
   const [recommendations, setRecommendations] = useState(() => {
@@ -130,7 +129,8 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
   const [summary, setSummary] = useState(null)
-  const [rest, setRest] = useState(null)
+  const [rest, setRest] = useState(null)      // { endAt } | null — Zielzeitpunkt, friert im Hintergrund nicht ein
+  const [restLeft, setRestLeft] = useState(0) // abgeleitete Restsekunden (nur Anzeige)
 
   useEffect(() => {
     const startedAt = new Date(draft.startedAt).getTime()
@@ -140,18 +140,19 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     return () => clearInterval(id)
   }, [draft.startedAt])
 
-  const restActive = rest !== null
+  // Pause aus dem Zielzeitpunkt ableiten: gedrosselte/pausierte Intervalle im
+  // Hintergrund driften nicht, beim Zurückkommen stimmt die Restzeit (oder ist 0).
   useEffect(() => {
-    if (!restActive) return
-    const id = setInterval(() => {
-      setRest(r => {
-        if (r === null) return r
-        if (r.secondsLeft <= 1) return null
-        return { secondsLeft: r.secondsLeft - 1 }
-      })
-    }, 1000)
+    if (rest === null) return
+    const tick = () => {
+      const left = Math.max(0, Math.round((rest.endAt - Date.now()) / 1000))
+      setRestLeft(left)
+      if (left <= 0) setRest(null)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
     return () => clearInterval(id)
-  }, [restActive])
+  }, [rest])
 
   const updateSet = (exIdx, setIdx, patch) => {
     setDraft(d => ({
@@ -218,20 +219,6 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     setSwapPicker(null)
   }
 
-  const cycleSetType = (exIdx, setIdx) => {
-    setDraft(d => ({
-      ...d,
-      exercises: d.exercises.map((ex, i) => i !== exIdx ? ex : {
-        ...ex,
-        saetze: ex.saetze.map((set, j) => {
-          if (j !== setIdx) return set
-          const idx = SET_TYPES.indexOf(set.satzTyp)
-          return { ...set, satzTyp: SET_TYPES[(idx + 1) % SET_TYPES.length] }
-        }),
-      }),
-    }))
-  }
-
   const toggleFeedback = (exIdx, setIdx, value) => {
     setDraft(d => ({
       ...d,
@@ -242,13 +229,23 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     }))
   }
 
+  const moveExercise = (exIdx, dir) => {
+    setDraft(d => {
+      const target = exIdx + dir
+      if (target < 0 || target >= d.exercises.length) return d
+      const exercises = [...d.exercises]
+      ;[exercises[exIdx], exercises[target]] = [exercises[target], exercises[exIdx]]
+      return { ...d, exercises }
+    })
+  }
+
   const toggleDone = (exIdx, setIdx) => {
     // turnedOn aus dem aktuellen draft ableiten — NICHT im Updater setzen
     // (der läuft erst beim Re-Render, das if() unten liefe sonst auf dem alten Wert).
     const set = draft.exercises[exIdx].saetze[setIdx]
     const turnedOn = !set.done
     const exerciseId = draft.exercises[exIdx].exerciseId
-    const de = dayExercises[exIdx]
+    const de = dayExercises.find(dx => dx.exerciseId === exerciseId) // per ID, da Reihenfolge verschiebbar
     const exObj = exerciseMap.get(exerciseId)
     const currentRec = recommendations[exerciseId]
 
@@ -262,7 +259,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
 
     if (turnedOn && coachMode && currentRec && de) {
       const zielWdh = de.zielWdh || [8, 12]
-      const newRec = adjustRemaining(currentRec, { wdh: set.wdh != null ? parseFloat(set.wdh) : null, feedback: set.feedback }, zielWdh, incOf(exObj))
+      const newRec = adjustRemaining(currentRec, { wdh: set.wdh != null ? parseFloat(set.wdh) : null, feedback: set.feedback, rir: set.rir }, zielWdh, incOf(exObj), de.zielRir || ZIEL_RIR)
       setRecommendations(r => ({ ...r, [exerciseId]: newRec }))
       setDraft(d => ({
         ...d,
@@ -274,7 +271,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
     }
 
     if (turnedOn && restEnabled) {
-      setRest({ secondsLeft: restSecForExercise(exObj, restSec) })
+      setRest({ endAt: Date.now() + restSecForExercise(exObj, restSec) * 1000 })
     }
   }
 
@@ -375,13 +372,17 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
           return (
             <div key={ex.exerciseId + exIdx} className={[s.card, exActive ? s.cardActive : '', exDone ? s.cardDone : ''].join(' ')}>
               <div className={s.cardHead}>
+                <div className={s.reorder}>
+                  <button className={s.reorderBtn} onClick={() => moveExercise(exIdx, -1)} disabled={exIdx === 0} aria-label="Übung nach oben"><ChevronIcon open /></button>
+                  <button className={s.reorderBtn} onClick={() => moveExercise(exIdx, 1)} disabled={exIdx === draft.exercises.length - 1} aria-label="Übung nach unten"><ChevronIcon /></button>
+                </div>
                 <div className={s.exNameRow}>
                   <button className={s.exName} onClick={() => setOpenNotiz(o => o === exIdx ? null : exIdx)}>
                     {exercise?.name ?? '—'}
                   </button>
                   {exDone && <span className={s.doneMark}><CheckIcon /></span>}
                 </div>
-                <div className={s.exNameRow}>
+                <div className={s.exMetaRow}>
                   {exActive && <span className={s.activeBadge}>aktiv</span>}
                   <button
                     className={s.swapBtn}
@@ -449,9 +450,22 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
                       value={set.wdh ?? ''}
                       onChange={e => updateSet(exIdx, setIdx, { wdh: e.target.value })}
                     />
-                    <button className={s.typeBtn} onClick={() => cycleSetType(exIdx, setIdx)}>
-                      {SET_TYPE_LABELS[set.satzTyp]}
-                    </button>
+                    {coachMode && rirMode && !isWarmup && (
+                      <>
+                        <span className={s.rirTag}>RIR</span>
+                        <input
+                          className={s.rirInput}
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputMode="numeric"
+                          placeholder="0"
+                          title="Reps in Reserve — leer/0 = bis Versagen"
+                          value={set.rir ?? ''}
+                          onChange={e => updateSet(exIdx, setIdx, { rir: e.target.value === '' ? null : Number(e.target.value) })}
+                        />
+                      </>
+                    )}
                     <button
                       className={[s.doneBtn, set.done ? s.doneBtnActive : ''].join(' ')}
                       onClick={() => toggleDone(exIdx, setIdx)}
@@ -460,7 +474,7 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
                       <CheckIcon />
                     </button>
                   </div>
-                  {coachMode && !isWarmup && (
+                  {coachMode && !rirMode && !isWarmup && (
                     <div className={s.feedbackRow}>
                       {FEEDBACK_OPTIONS.map(opt => (
                         <button
@@ -512,9 +526,9 @@ export default function SessionRunner({ planId, dayId, dayExercises, onClose }) 
 
       {rest && (
         <div className={s.restBar}>
-          <button className={s.restAdjustBtn} onClick={() => setRest(r => ({ secondsLeft: Math.max(0, r.secondsLeft - 15) }))}>−15s</button>
-          <span className={s.restTime}>{fmtDuration(rest.secondsLeft)}</span>
-          <button className={s.restAdjustBtn} onClick={() => setRest(r => ({ secondsLeft: r.secondsLeft + 15 }))}>+15s</button>
+          <button className={s.restAdjustBtn} onClick={() => setRest(r => ({ endAt: Math.max(Date.now(), r.endAt - 15000) }))}>−15s</button>
+          <span className={s.restTime}>{fmtDuration(restLeft)}</span>
+          <button className={s.restAdjustBtn} onClick={() => setRest(r => ({ endAt: r.endAt + 15000 }))}>+15s</button>
           <button className={s.restSkipBtn} onClick={() => setRest(null)} aria-label="Pause überspringen">
             <SmallCloseIcon />
           </button>

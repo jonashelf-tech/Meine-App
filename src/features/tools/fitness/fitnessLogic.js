@@ -129,10 +129,14 @@ export function nextRecommendation(lastSets, repRange, zielRir, increment) {
 }
 
 // Live-Autoregulation für die Restsätze nach einem Satz-Ergebnis.
-export function adjustRemaining(aktuelleEmpfehlung, satzErgebnis, zielWdh, increment) {
+// satzErgebnis: { wdh?, feedback? (Chips-Modus), rir? (RIR-Modus) }. zielRir nur im RIR-Modus relevant.
+// RIR null/0 (= bis Versagen, Default) löst nichts aus; nur reale Reserve über dem Ziel zählt als "zu leicht".
+export function adjustRemaining(aktuelleEmpfehlung, satzErgebnis, zielWdh, increment, zielRir) {
   const under = (satzErgebnis.wdh != null && satzErgebnis.wdh < zielWdh[0]) || satzErgebnis.feedback === 'nichtGeschafft'
   if (under) return { gewicht: roundToIncrement(aktuelleEmpfehlung.gewicht * (1 - AUTOREG_DOWN_PCT), increment), wdh: aktuelleEmpfehlung.wdh }
-  if (satzErgebnis.feedback === 'leicht') return { gewicht: roundToIncrement(aktuelleEmpfehlung.gewicht + increment, increment), wdh: aktuelleEmpfehlung.wdh }
+  const easy = satzErgebnis.feedback === 'leicht'
+    || (satzErgebnis.rir != null && zielRir != null && satzErgebnis.rir > zielRir[1])
+  if (easy) return { gewicht: roundToIncrement(aktuelleEmpfehlung.gewicht + increment, increment), wdh: aktuelleEmpfehlung.wdh }
   return aktuelleEmpfehlung
 }
 
