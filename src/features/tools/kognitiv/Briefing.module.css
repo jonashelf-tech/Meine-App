@@ -1,38 +1,63 @@
-﻿.root { display: flex; flex-direction: column; height: 100%; background: var(--bg); overflow: hidden; }
+.root { display: flex; flex-direction: column; height: 100%; background: var(--bg); overflow: hidden; }
 
-.topBar { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg); }
-.backBtn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px 5px 8px; border-radius: 20px; background: var(--border-dim); border: 1px solid var(--border); font-size: 0.75rem; color: var(--text-dim); font-family: var(--font); white-space: nowrap; cursor: pointer; }
+.topBar { display: flex; align-items: center; padding: 12px 16px; flex-shrink: 0; }
+.backBtn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px 5px 9px; border-radius: 20px; background: var(--surface-low); border: 1px solid var(--border); font-size: 0.75rem; color: var(--text-dim); font-family: var(--font); cursor: pointer; }
 .arrow { color: var(--accent); font-size: 0.9rem; }
 
-.scroll { flex: 1; overflow-y: auto; padding: 24px 18px 32px; display: flex; flex-direction: column; gap: 0; }
+.scroll { flex: 1; overflow-y: auto; padding: 6px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+.scroll > * { animation: fadeInUp .4s var(--ease-out) both; }
 
-.hero { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; margin-bottom: 22px; }
-.iconWrap { width: 56px; height: 56px; border-radius: 16px; background: color-mix(in srgb, var(--accent) 15%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); display: flex; align-items: center; justify-content: center; color: var(--accent); margin-bottom: 12px; box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 18%, transparent); }
-.domain { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
-.name { font-size: 1.5rem; font-weight: 700; color: var(--text); line-height: 1.12; margin-top: 1px; }
-.durationPill { display: inline-flex; align-items: center; gap: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px; font-size: 0.66rem; color: var(--text-dim); margin-top: 8px; }
-.desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.65; margin-top: 10px; }
-.steps { margin: 10px 0 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; counter-reset: steps; }
-.steps li { display: flex; gap: 10px; font-size: 0.75rem; color: var(--text-dim); line-height: 1.5; }
-.steps li::before { content: counter(steps); counter-increment: steps; min-width: 18px; height: 18px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 18%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); color: var(--accent); font-size: 0.6rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.hero { display: flex; flex-direction: column; align-items: flex-start; }
+.iconWrap {
+  width: 54px; height: 54px; border-radius: 15px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  display: flex; align-items: center; justify-content: center; color: var(--accent);
+  margin-bottom: 12px; box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.domain { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.name { font-family: var(--font); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text); line-height: 1.08; margin: 2px 0 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+.metaPill { display: inline-flex; align-items: center; gap: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px; font-size: 0.68rem; color: var(--text-dim); }
+.desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; margin: 12px 0 0; }
 
-.infoToggle { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; padding: 6px 0 8px; cursor: pointer; }
-.infoToggleLabel { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
-.infoChevron { font-size: 1rem; color: var(--text-dim); transition: transform 0.2s; display: inline-block; }
-.infoChevronOpen { transform: rotate(90deg); }
-.infoBlock { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; margin-bottom: 8px; }
+.detailsToggle { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; padding: 0; cursor: pointer; }
+.detailsLabel { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+.chev { font-size: 1.1rem; color: var(--text-dim); transition: transform var(--dur-fast); display: inline-block; }
+.chevOpen { transform: rotate(90deg); }
+
+.details { display: flex; flex-direction: column; gap: 10px; margin-top: -4px; }
+.steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; counter-reset: steps; }
+.steps li { display: flex; gap: 10px; font-size: 0.76rem; color: var(--text-dim); line-height: 1.5; }
+.steps li::before {
+  content: counter(steps); counter-increment: steps;
+  min-width: 19px; height: 19px; border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--accent); font-size: 0.62rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.infoBlock { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; }
 .infoLabel { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; }
 .infoLabel[data-type="measured"] { color: var(--emerald); }
 .infoLabel[data-type="not"] { color: var(--text-dim); opacity: 0.6; }
-.infoRow { display: flex; align-items: flex-start; gap: 8px; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px; line-height: 1.4; }
-.dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-.dot[data-type="measured"] { background: var(--emerald); }
-.dot[data-type="not"] { background: var(--border); }
+.infoRow { display: flex; align-items: flex-start; gap: 8px; font-size: 0.74rem; color: var(--text-dim); margin-bottom: 4px; line-height: 1.4; }
+.infoRow:last-child { margin-bottom: 0; }
+.idot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+.idot[data-type="measured"] { background: var(--emerald); }
+.idot[data-type="not"] { background: var(--border); }
 
-.diffLabel { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin: 16px 0 8px; }
-.diffRow { display: flex; gap: 8px; margin-bottom: 20px; }
-.diffBtn { flex: 1; padding: 11px; border-radius: var(--r-sm); font-family: var(--font); font-size: 0.78rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
-.diffOn { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent); }
-
-.startBtn { background: var(--accent); border: none; border-radius: var(--r); color: #0a0a12; font-family: var(--font); font-size: 0.98rem; font-weight: 700; padding: 16px; text-align: center; width: 100%; cursor: pointer; letter-spacing: 0.02em; box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 30%, transparent); }
-.startBtn:active { transform: scale(0.99); }
+.startBtn {
+  flex-shrink: 0;
+  margin: 4px 18px 18px;
+  border: none;
+  border-radius: var(--r);
+  padding: 16px;
+  font-family: var(--font); font-size: 1rem; font-weight: 800; letter-spacing: 0.01em;
+  color: var(--bg);
+  background: var(--accent);
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--accent) 32%, transparent);
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  cursor: pointer;
+}
+.startBtn:active { transform: scale(.99); }

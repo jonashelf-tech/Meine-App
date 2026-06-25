@@ -11,7 +11,7 @@ export default function DoneToday({ moduleId, onBack, onViewResult, onRepeat }) 
     : ''
 
   return (
-    <div className={s.root}>
+    <div className={s.root} style={{ '--accent': m.color }}>
       <div className={s.topBar}>
         <button className={s.backBtn} onClick={onBack}>
           <span className={s.arrow}>←</span> Zurück

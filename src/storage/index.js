@@ -71,6 +71,9 @@ export const SK = {
   reminder:         `${PREFIX}reminder_v1`,
   reminderDismissed:`${PREFIX}reminder_dismissed`,
   elvi:             `${PREFIX}elvi_v1`,
+  timerStart:       `${PREFIX}timer_startTs`,
+  timerTotal:       `${PREFIX}timer_totalSecs`,
+  timerRunning:     `${PREFIX}timer_running`,
   accentColor:    `${PREFIX}app_accent`,
   toolColors:     `${PREFIX}app_tool_colors`,
   visStart:       `${PREFIX}view_vis_start`,
@@ -91,6 +94,7 @@ export const SK = {
   kognitivSchedule: `${PREFIX}kognitiv_schedule`,
   kognitivPractice: `${PREFIX}kognitiv_practice`,
   kognitivCheckinSkip: `${PREFIX}kognitiv_checkin_skip`,
+  kognitivIntroSeen: `${PREFIX}kognitiv_intro_seen`,
   lastAutoBackup:  `${PREFIX}last_auto_backup`,
   lastOffDeviceBackup: `${PREFIX}last_offdevice_backup`,
   updateSnoozed:   `${PREFIX}update_snoozed`,
@@ -138,7 +142,7 @@ export const BACKUP_CATS = {
     SK.wachstum, SK.garten, SK.growth, SK.dailyState,
   ],
   einstellungen: [
-    SK.settings, SK.theme, SK.appBriefingSeen,
+    SK.settings, SK.theme, SK.appBriefingSeen, SK.kognitivIntroSeen,
     SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
   ],
 }

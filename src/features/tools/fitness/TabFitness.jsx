@@ -3,6 +3,7 @@ import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
+import { ensureSeeded } from './fitnessStore'
 import HeuteTab from './tabs/HeuteTab'
 import PlaeneTab from './tabs/PlaeneTab'
 import UebungenTab from './tabs/UebungenTab'
@@ -35,10 +36,10 @@ const ChevronDown = ({ className }) => (
 export default function TabFitness({ onBack }) {
   const { toolColors } = useAppStore()
   const toolColor = getToolColor('fitness', toolColors)
-  const [active, setActive] = useState('heute')
+  const [active, setActive] = useState(() => ensureSeeded().plans.length === 0 ? 'plaene' : 'heute')
   const [moreOpen, setMoreOpen] = useState(false)
   const [session, setSession] = useState(null)
-  const [autoOnboard, setAutoOnboard] = useState(false)
+  const [autoOnboard, setAutoOnboard] = useState(() => ensureSeeded().plans.length === 0)
   const Active = TABS[active]?.[1] ?? HeuteTab
   const isMoreActive = MORE.includes(active)
 

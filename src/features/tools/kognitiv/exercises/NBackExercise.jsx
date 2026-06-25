@@ -38,10 +38,9 @@ function ShapeIcon({ type, color, fill }) {
   return <svg width="110" height="110" viewBox="0 0 100 100"><polygon points="50,6 61,36 94,36 68,58 78,90 50,70 22,90 32,58 6,36 39,36" stroke={color} strokeWidth="4" fill={fill} /></svg>
 }
 
-export default function NBackExercise({ variant, onDone, onAbort }) {
-  const isHard  = variant === 'Schwer'
-  const showMs  = isHard ? 800 : 1200
-  const n       = isHard ? 2 : 1
+export default function NBackExercise({ onDone, onAbort }) {
+  const showMs  = 1200
+  const n       = 1
   const [current, setCurrent] = useState(null)
   const [done, setDone]       = useState(0)
 
@@ -64,12 +63,12 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
     const misses = tapsRef.current.filter(t => t.type === 'miss').length
     const dur    = Math.round((Date.now() - new Date(startedAt.current).getTime()) / 1000)
     onDone(createSession({
-      moduleId: 'nback', variant, startedAt: startedAt.current, duration: dur,
+      moduleId: 'nback', startedAt: startedAt.current, duration: dur,
       score: { hits, errors, misses, total },
       mainMetric: total > 0 ? Math.round((hits / total) * 100) : 0,
       taps: tapsRef.current,
     }))
-  }, [variant, onDone])
+  }, [onDone])
 
   function showNext() {
     if (finishedRef.current) return
@@ -105,8 +104,8 @@ export default function NBackExercise({ variant, onDone, onAbort }) {
     tapsRef.current.push({ index: idx, type: isMatch ? 'hit' : 'false-alarm', correct: isMatch, shape: current, prev })
   }, [current])
 
-  const color = current ? (isHard ? GREY : STROKE[current]) : GREY
-  const fill  = current ? (isHard ? 'none' : FILL[current]) : 'none'
+  const color = current ? STROKE[current] : GREY
+  const fill  = current ? FILL[current] : 'none'
 
   return (
     <ExerciseShell moduleId="nback" progress={done} total={TOTAL} onAbort={onAbort} onTap={handleTap}>

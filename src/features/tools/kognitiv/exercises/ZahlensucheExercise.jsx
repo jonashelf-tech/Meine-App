@@ -12,14 +12,12 @@ function shuffle(arr) {
   return a
 }
 
-export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
-  const isReverse = variant === 'Rückwärts'
-  const isHard    = variant === 'Schwer'
-  const total     = isHard ? 30 : 25
-  const cols      = isHard ? 6 : 5
+export default function ZahlensucheExercise({ onDone, onAbort }) {
+  const total = 25
+  const cols  = 5
 
   const numbers  = Array.from({ length: total }, (_, i) => i + 1)
-  const sequence = isReverse ? [...numbers].reverse() : numbers
+  const sequence = numbers
   const [cells]  = useState(() => shuffle(numbers))
 
   const [nextIdx,  setNextIdx]  = useState(0)
@@ -60,7 +58,6 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
         const errors    = tapsRef.current.filter(t => !t.correct).length
         const session   = createSession({
           moduleId: 'zahlensuche',
-          variant,
           startedAt: startedAt.current,
           duration: totalTime,
           score: { correct: total, errors, total },
@@ -74,7 +71,7 @@ export default function ZahlensucheExercise({ variant, onDone, onAbort }) {
       setTimeout(() => setFeedback(null), 350)
       flashCell(num, 'err')
     }
-  }, [nextIdx, sequence, total, variant, onDone, flashCell])
+  }, [nextIdx, sequence, total, onDone, flashCell])
 
   const fmt = (n) => String(n).padStart(2, '0')
   const nextTarget = sequence[nextIdx]

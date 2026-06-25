@@ -41,11 +41,10 @@ export function saveSession(session) {
   sv(SK.kognitiv, [...sessions, session])
 }
 
-export function createSession({ moduleId, variant, startedAt, duration, score, mainMetric, taps }) {
+export function createSession({ moduleId, startedAt, duration, score, mainMetric, taps }) {
   return {
     id:        genId(),
     moduleId,
-    variant,
     date:      dateKey(new Date(startedAt)),
     startedAt,
     duration,

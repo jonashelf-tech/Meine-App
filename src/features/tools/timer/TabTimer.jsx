@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
+import { sv, lv, SK } from '../../../storage'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import s from './TabTimer.module.css'
 
@@ -8,11 +9,6 @@ import s from './TabTimer.module.css'
 const NORMAL_PRESETS = [5, 10, 15, 20, 30, 45, 60]
 const POM_WORK       = [5, 10, 15, 30, 45, 60]
 const POM_BREAK      = [5, 10, 15, 20]
-
-// ─── localStorage keys ─────────────────────────────────────
-const LS_START   = 'adhs_timer_startTs'
-const LS_TOTAL   = 'adhs_timer_totalSecs'
-const LS_RUNNING = 'adhs_timer_running'
 
 // ─── Audio helpers ─────────────────────────────────────────
 const playDone = () => {
@@ -129,9 +125,7 @@ export default function TabTimer({ onBack }) {
 
     if (rem === 0) {
       setIsRunning(false)
-      localStorage.removeItem(LS_RUNNING)
-      localStorage.removeItem(LS_START)
-      localStorage.removeItem(LS_TOTAL)
+      sv(SK.timerRunning, false)
 
       if (timerModeRef.current === 'pomodoro') {
         const wasWork = phaseRef.current === 'work'
@@ -143,9 +137,9 @@ export default function TabTimer({ onBack }) {
           const now         = Date.now()
           startTsRef.current  = now
           totalSecsRef.current = bSecs
-          localStorage.setItem(LS_START,   String(now))
-          localStorage.setItem(LS_TOTAL,   String(bSecs))
-          localStorage.setItem(LS_RUNNING, '1')
+          sv(SK.timerStart,   now)
+          sv(SK.timerTotal,   bSecs)
+          sv(SK.timerRunning, true)
           setRemaining(bSecs)
           setDone(false)
           setIsRunning(true)
@@ -171,13 +165,13 @@ export default function TabTimer({ onBack }) {
 
   // ─── Restore from localStorage on mount ──────────────────
   useEffect(() => {
-    const savedStart   = localStorage.getItem(LS_START)
-    const savedTotal   = localStorage.getItem(LS_TOTAL)
-    const savedRunning = localStorage.getItem(LS_RUNNING)
+    const savedStart   = lv(SK.timerStart, null)
+    const savedTotal   = lv(SK.timerTotal, null)
+    const savedRunning = lv(SK.timerRunning, false)
 
-    if (savedStart && savedTotal && savedRunning === '1') {
-      const start = parseInt(savedStart, 10)
-      const total = parseInt(savedTotal, 10)
+    if (savedStart && savedTotal && savedRunning) {
+      const start = savedStart
+      const total = savedTotal
       const elapsed = Math.floor((Date.now() - start) / 1000)
       const rem     = Math.max(0, total - elapsed)
 
@@ -193,9 +187,7 @@ export default function TabTimer({ onBack }) {
         // Finished while tab was gone
         setDone(true)
         playDone()
-        localStorage.removeItem(LS_RUNNING)
-        localStorage.removeItem(LS_START)
-        localStorage.removeItem(LS_TOTAL)
+        sv(SK.timerRunning, false)
       }
     }
 
@@ -216,9 +208,9 @@ export default function TabTimer({ onBack }) {
     setDone(false)
     setIsRunning(true)
     setShowTodoPicker(false)
-    localStorage.setItem(LS_START,   String(now))
-    localStorage.setItem(LS_TOTAL,   String(secs))
-    localStorage.setItem(LS_RUNNING, '1')
+    sv(SK.timerStart,   now)
+    sv(SK.timerTotal,   secs)
+    sv(SK.timerRunning, true)
     rafRef.current = setTimeout(tick, 500)
   }
 
@@ -263,9 +255,7 @@ export default function TabTimer({ onBack }) {
     setIsRunning(false)
     setDone(true)
     playDone()
-    localStorage.removeItem(LS_RUNNING)
-    localStorage.removeItem(LS_START)
-    localStorage.removeItem(LS_TOTAL)
+    sv(SK.timerRunning, false)
   }
 
   const stop = () => {
@@ -289,9 +279,7 @@ export default function TabTimer({ onBack }) {
     setPomPhase('work')
     setPomCycles(0)
     setConfirmStop(false)
-    localStorage.removeItem(LS_RUNNING)
-    localStorage.removeItem(LS_START)
-    localStorage.removeItem(LS_TOTAL)
+    sv(SK.timerRunning, false)
   }
 
   const resume = () => {
@@ -326,9 +314,7 @@ export default function TabTimer({ onBack }) {
     cyclesRef.current = 0
     setPomPhase('work')
     setPomCycles(0)
-    localStorage.removeItem(LS_RUNNING)
-    localStorage.removeItem(LS_START)
-    localStorage.removeItem(LS_TOTAL)
+    sv(SK.timerRunning, false)
   }
 
   // When timer finishes and a task is set, show mark-done dialog.

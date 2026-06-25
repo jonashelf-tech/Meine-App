@@ -170,7 +170,7 @@ export default function Onboarding({ onDone, onCancel }) {
       </div>
 
       <div className={s.wrap}>
-        <div className={s.track} style={{ transform: `translateX(-${(phase / LAST) * 100}%)` }}>
+        <div className={s.track} style={{ transform: `translateX(-${phase * 100}%)` }}>
 
           <section className={s.step}>
             <div className={s.intro}>

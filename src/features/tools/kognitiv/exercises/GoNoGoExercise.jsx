@@ -18,8 +18,8 @@ function buildSeq() {
   return seq
 }
 
-export default function GoNoGoExercise({ variant, onDone, onAbort }) {
-  const isiRange = variant === 'Schwer' ? [800, 2500] : [1500, 4000]
+export default function GoNoGoExercise({ onDone, onAbort }) {
+  const isiRange = [1500, 4000]
   const [stimType, setStimType] = useState(null)
   const [done, setDone]         = useState(0)
 
@@ -42,11 +42,11 @@ export default function GoNoGoExercise({ variant, onDone, onAbort }) {
     const avgMs  = hits.length > 0 ? Math.round(hits.reduce((a, b) => a + b.reactionMs, 0) / hits.length) : 0
     const dur    = Math.round((Date.now() - new Date(startedAt.current).getTime()) / 1000)
     onDone(createSession({
-      moduleId: 'gonogo', variant, startedAt: startedAt.current, duration: dur,
+      moduleId: 'gonogo', startedAt: startedAt.current, duration: dur,
       score: { correct: hits.length, errors: fa.length, misses: misses.length, total: TOTAL },
       mainMetric: avgMs, taps: tapsRef.current,
     }))
-  }, [variant, onDone])
+  }, [onDone])
 
   function showStim() {
     if (finishedRef.current) return

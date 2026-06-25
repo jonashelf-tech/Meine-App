@@ -11,8 +11,8 @@ const STIM_MS   = 1500
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min }
 function getRule(p) { return p % 2 === 1 ? 'shape' : 'color' }
 
-export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
-  const numPhases = variant === 'Schwer' ? 3 : 2
+export default function TaskSwitchingExercise({ onDone, onAbort }) {
+  const numPhases = 2
 
   const [phase,       setPhase]       = useState(1)
   const [stim,        setStim]        = useState(null)
@@ -44,11 +44,11 @@ export default function TaskSwitchingExercise({ variant, onDone, onAbort }) {
     const errors  = tapsRef.current.filter(t => t.type !== 'hit').length
     const dur     = Math.round((Date.now() - new Date(startedAt.current).getTime()) / 1000)
     onDone(createSession({
-      moduleId: 'taskswitching', variant, startedAt: startedAt.current, duration: dur,
+      moduleId: 'taskswitching', startedAt: startedAt.current, duration: dur,
       score: { correct, errors, switchErrors: tapsRef.current.filter(t => t.phase === 2 && t.type !== 'hit').length, total: PER_PHASE * numPhases },
       mainMetric: cost, taps: tapsRef.current,
     }))
-  }, [variant, onDone, numPhases])
+  }, [onDone, numPhases])
 
   function doSwitchCountdown(nextPhase, cb) {
     setIsSwitching(true)

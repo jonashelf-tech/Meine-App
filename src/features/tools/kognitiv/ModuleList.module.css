@@ -1,52 +1,65 @@
-﻿.list { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
+.list { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
+.list > * { animation: fadeInUp .4s var(--ease-out) both; }
+
+.secLabel {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-faint); margin: 2px 2px -2px;
+}
+.secLabelGap { margin-top: 8px; }
 
 .card {
   position: relative;
   width: 100%;
-  background: var(--surface);
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+    var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 14px 14px 14px 20px;
+  padding: 14px;
   display: flex;
   align-items: center;
   gap: 13px;
   cursor: pointer;
   text-align: left;
   overflow: hidden;
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  transition: background var(--dur-fast), border-color var(--dur-fast), transform var(--dur-fast);
 }
-.card:active { transform: scale(0.985); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
+.card:active { transform: scale(0.985); }
 
-.accentBar {
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-  background: var(--accent);
-  border-radius: 0 3px 3px 0;
+.cardDue {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent),
+    0 10px 26px rgba(0, 0, 0, 0.22);
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
+    var(--surface);
 }
 
 .iconWrap {
-  width: 42px; height: 42px;
-  border-radius: 12px;
+  width: 46px; height: 46px;
+  border-radius: 13px;
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   color: var(--accent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .info { flex: 1; min-width: 0; }
 .domain {
-  font-size: 0.55rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  font-size: 0.56rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--accent);
 }
-.name { font-size: 0.98rem; font-weight: 600; color: var(--text); margin-top: 1px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.desc { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.name { font-size: 1.02rem; font-weight: 700; color: var(--text); margin-top: 2px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desc { font-size: 0.73rem; color: var(--text-dim); margin-top: 3px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
-.donePill { font-size: 0.62rem; font-weight: 700; color: var(--emerald); background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); border-radius: 20px; padding: 3px 9px; }
+.right { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; flex-shrink: 0; }
+.donePill { font-size: 0.62rem; font-weight: 700; color: var(--emerald); background: color-mix(in srgb, var(--emerald) 13%, transparent); border: 1px solid color-mix(in srgb, var(--emerald) 26%, transparent); border-radius: 20px; padding: 3px 9px; }
+.timePill { font-family: var(--font-num); font-size: 0.72rem; font-weight: 700; color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 20px; padding: 3px 9px; }
 .newPill { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); background: var(--surface-low); border: 1px solid var(--border); border-radius: 20px; padding: 3px 9px; }
-.lastVal { font-family: var(--font-num); font-size: 0.92rem; font-weight: 700; color: var(--text); }
+.lastVal { font-family: var(--font-num); font-size: 0.95rem; font-weight: 700; color: var(--text); }
 .unit { font-size: 0.62rem; font-weight: 600; color: var(--text-dim); margin-left: 1px; }
 
 .miniChart { display: flex; align-items: flex-end; gap: 2px; height: 20px; }

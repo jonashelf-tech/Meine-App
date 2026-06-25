@@ -21,7 +21,7 @@ export default function SessionDetail({ session, onBack }) {
       <div className={s.scroll}>
       <div className={s.hdInfo}>
         <div className={s.ey}>{m.name} · Tiefenanalyse</div>
-        <div className={s.tt}>{fmtDate(session.startedAt)} · {session.variant}</div>
+        <div className={s.tt}>{fmtDate(session.startedAt)}</div>
       </div>
 
       <div className={s.hero}>

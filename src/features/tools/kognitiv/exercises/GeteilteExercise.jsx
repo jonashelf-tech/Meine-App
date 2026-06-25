@@ -7,7 +7,6 @@ const NUM_CIRCLES  = 5
 const DURATION_MS  = 180_000
 const TAP_WINDOW   = 600
 const BEAT_NORMAL  = 1200
-const BEAT_SCHWER  = 800
 const FREQ_HIGH    = 880
 const FREQ_LOW     = 330
 const CLOSED_PROB  = 0.25
@@ -34,8 +33,8 @@ function playTone(ctx, freq) {
   } catch {}
 }
 
-export default function GeteilteExercise({ variant, onDone, onAbort }) {
-  const beatMs = variant === 'Schwer' ? BEAT_SCHWER : BEAT_NORMAL
+export default function GeteilteExercise({ onDone, onAbort }) {
+  const beatMs = BEAT_NORMAL
 
   const [closedIdx, setClosedIdx] = useState(-1)
   const [rotation,  setRotation]  = useState(0)
@@ -72,12 +71,12 @@ export default function GeteilteExercise({ variant, onDone, onAbort }) {
     const allHits = vHits + aHits
     const dur     = Math.round((Date.now() - new Date(startedAt.current).getTime()) / 1000)
     onDone(createSession({
-      moduleId: 'geteilt', variant, startedAt: startedAt.current, duration: dur,
+      moduleId: 'geteilt', startedAt: startedAt.current, duration: dur,
       score: { visualHits: vHits, audioHits: aHits, errors, misses, total },
       mainMetric: total > 0 ? Math.round((allHits / total) * 100) : 0,
       taps: tapsRef.current,
     }))
-  }, [variant, onDone])
+  }, [onDone])
 
   const tick = useCallback(() => {
     if (finishedRef.current) return

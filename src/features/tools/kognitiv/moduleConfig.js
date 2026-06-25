@@ -11,8 +11,6 @@ export const MODULE_CONFIG = {
     mainMetricLabel: 'Ø Reaktionszeit',
     mainMetricUnit: 'ms',
     higherIsBetter: false,
-    variants: ['Ohne Ton', 'Mit Warnton'],
-    defaultVariant: 'Ohne Ton',
   },
   zahlensuche: {
     id: 'zahlensuche',
@@ -26,8 +24,6 @@ export const MODULE_CONFIG = {
     mainMetricLabel: 'Gesamtzeit',
     mainMetricUnit: 's',
     higherIsBetter: false,
-    variants: ['Normal', 'Schwer', 'Rückwärts'],
-    defaultVariant: 'Normal',
   },
   gedaechtnis: {
     id: 'gedaechtnis',
@@ -41,8 +37,6 @@ export const MODULE_CONFIG = {
     mainMetricLabel: 'Max. Sequenzlänge',
     mainMetricUnit: '',
     higherIsBetter: true,
-    variants: ['Normal', 'Schwer'],
-    defaultVariant: 'Normal',
   },
   gonogo: {
     id: 'gonogo',
@@ -56,23 +50,19 @@ export const MODULE_CONFIG = {
     mainMetricLabel: 'Ø Reaktionszeit',
     mainMetricUnit: 'ms',
     higherIsBetter: false,
-    variants: ['Normal', 'Schwer'],
-    defaultVariant: 'Normal',
   },
   nback: {
     id: 'nback',
     name: 'N-Back',
     color: '#818CF8',
     domain: 'Arbeitsgedächtnis',
-    desc: 'Tippe wenn das Symbol mit dem vorherigen übereinstimmt. Schwer: mit dem vor­vorherigen (2 zurück).',
+    desc: 'Tippe wenn das Symbol mit dem vorherigen übereinstimmt.',
     duration: 'ca. 4 Minuten',
     measured: ['Treffer', 'Fehler', 'Auslasser'],
     notMeasured: ['Reaktionsgeschwindigkeit', 'Sprachkenntnisse'],
     mainMetricLabel: 'Treffer-Rate',
     mainMetricUnit: '%',
     higherIsBetter: true,
-    variants: ['Normal', 'Schwer'],
-    defaultVariant: 'Normal',
   },
   taskswitching: {
     id: 'taskswitching',
@@ -86,8 +76,6 @@ export const MODULE_CONFIG = {
     mainMetricLabel: 'Switch Cost',
     mainMetricUnit: 'ms',
     higherIsBetter: false,
-    variants: ['Normal', 'Schwer'],
-    defaultVariant: 'Normal',
   },
   geteilt: {
     id: 'geteilt',
@@ -108,8 +96,6 @@ export const MODULE_CONFIG = {
     mainMetricLabel: 'Gesamt-Treffer',
     mainMetricUnit: '%',
     higherIsBetter: true,
-    variants: ['Normal', 'Schwer'],
-    defaultVariant: 'Normal',
   },
 }
 

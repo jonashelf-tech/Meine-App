@@ -1080,25 +1080,6 @@
   color: rgba(255,255,255,0.7);
 }
 
-.weekSlotDone::after {
-  content: '✓';
-  position: absolute;
-  right: 3px;
-  top: 3px;
-  width: 12px;
-  height: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: #10B981;
-  font-size: 0.5rem;
-  color: #fff;
-  font-weight: 700;
-  line-height: 1;
-  pointer-events: none;
-}
-
 /* ─── Wochenansicht: Click-Ripple ─────────────────────────── */
 @keyframes weekRipple {
   from { transform: translate(-50%, -50%) scale(0); opacity: 0.45; }
