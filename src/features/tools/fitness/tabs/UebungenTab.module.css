@@ -302,25 +302,73 @@
   color: var(--text);
 }
 
-.allocInput {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text);
-  font-family: var(--font-num);
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 7px 8px;
-  outline: none;
-  width: 56px;
-  text-align: center;
+.allocSlider {
+  flex: 1;
+  min-width: 0;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
-.allocInput:focus { border-color: var(--tool-color, var(--primary)); }
+.allocSlider:focus { outline: none; }
 
-.allocPct {
-  font-family: var(--font);
-  font-size: 0.78rem;
-  color: var(--text-dim);
+/* WebKit: Track mit gefülltem Anteil (--alloc-fill) + runder Thumb */
+.allocSlider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--tool-color, var(--primary)) var(--alloc-fill, 0%),
+    var(--border) var(--alloc-fill, 0%)
+  );
+}
+.allocSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--tool-color, var(--primary));
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s;
+}
+.allocSlider:active::-webkit-slider-thumb { transform: scale(1.15); }
+.allocSlider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tool-color, var(--primary)) 25%, transparent);
+}
+
+/* Firefox */
+.allocSlider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+}
+.allocSlider::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--tool-color, var(--primary));
+}
+.allocSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--tool-color, var(--primary));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.allocValue {
+  flex-shrink: 0;
+  width: 40px;
+  text-align: right;
+  font-family: var(--font-num);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .allocRemove {

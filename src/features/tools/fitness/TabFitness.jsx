@@ -15,7 +15,7 @@ import SessionRunner from './session/SessionRunner'
 import s from './TabFitness.module.css'
 
 const TABS = {
-  heute: ['Heute', HeuteTab],
+  heute: ['Training', HeuteTab],
   plaene: ['Pläne', PlaeneTab],
   uebungen: ['Übungen', UebungenTab],
   dashboards: ['Auswertung', DashboardsTab],
@@ -23,9 +23,9 @@ const TABS = {
   koerpergewicht: ['Körpergewicht', KoerpergewichtTab],
   einstellungen: ['Einstellungen', EinstellungenTab],
 }
-// Häufig genutzt → immer sichtbar. Selten → hinter „Mehr".
-const PRIMARY = ['heute', 'plaene', 'uebungen', 'dashboards']
-const MORE = ['archiv', 'koerpergewicht', 'einstellungen']
+// Täglich gebraucht → immer sichtbar. Setup/Selten → hinter „Mehr".
+const PRIMARY = ['heute', 'dashboards', 'koerpergewicht']
+const MORE = ['plaene', 'uebungen', 'archiv', 'einstellungen']
 
 const ChevronDown = ({ className }) => (
   <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

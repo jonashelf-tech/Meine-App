@@ -73,7 +73,7 @@ export default function GrowthFlow({ data, persist, date, today, onFinished, onS
       return (
         <StepAnkommen key="ankommen" date={date} settings={data.settings} opener={openerForDate(date)}
           onStateTouched={() => persist(markStateTouched(data, date))}
-          onWeiter={() => go(idx + 1)} onSkip={skip} />
+          onWeiter={() => go(idx + 1)} />
       )
     }
     if (stepName === 'karte') {

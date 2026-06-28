@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ensureSeeded, saveExercise, deleteExercise } from '../fitnessStore'
-import { MUSCLES, MUSCLE_LABELS, EQUIPMENT, EQUIPMENT_LABELS, createExercise, RATING_AXES, RATING_LABELS, EXERCISE_PATTERNS, PATTERN_LABELS } from '../fitnessModel'
+import { MUSCLES, MUSCLE_LABELS, MUSCLE_PICKER_GROUPS, EQUIPMENT, EQUIPMENT_LABELS, createExercise, RATING_AXES, RATING_LABELS, EXERCISE_PATTERNS, PATTERN_LABELS } from '../fitnessModel'
 import s from './UebungenTab.module.css'
 
 // ─── SVG Icons ────────────────────────────────────────────
@@ -119,8 +119,12 @@ export default function UebungenTab() {
           aria-label="Muskel-Filter"
         >
           <option value="">Alle Muskeln</option>
-          {MUSCLES.map(m => (
-            <option key={m} value={m}>{MUSCLE_LABELS[m]}</option>
+          {MUSCLE_PICKER_GROUPS.map(([label, ids]) => (
+            <optgroup key={label} label={label}>
+              {ids.map(m => (
+                <option key={m} value={m}>{MUSCLE_LABELS[m]}</option>
+              ))}
+            </optgroup>
           ))}
         </select>
       </div>
@@ -315,14 +319,17 @@ function DetailView({ exercise, onBack, onSave, onDelete }) {
             <div key={muscle} className={s.allocRow}>
               <span className={s.allocLabel}>{MUSCLE_LABELS[muscle]}</span>
               <input
-                className={s.allocInput}
-                type="number"
+                className={s.allocSlider}
+                type="range"
                 min="0"
                 max="100"
-                value={pct ?? ''}
-                onChange={e => updateAllocation(muscle, e.target.value === '' ? null : Number(e.target.value))}
+                step="5"
+                value={pct ?? 0}
+                onChange={e => updateAllocation(muscle, Number(e.target.value))}
+                style={{ '--alloc-fill': `${pct ?? 0}%` }}
+                aria-label={`Anteil ${MUSCLE_LABELS[muscle]}`}
               />
-              <span className={s.allocPct}>%</span>
+              <span className={s.allocValue}>{pct ?? 0}%</span>
               <button className={s.allocRemove} onClick={() => removeAllocation(muscle)} aria-label="Entfernen">
                 <TrashIcon />
               </button>
@@ -337,9 +344,17 @@ function DetailView({ exercise, onBack, onSave, onDelete }) {
             onChange={e => addAllocation(e.target.value)}
           >
             <option value="">+ Muskel hinzufügen…</option>
-            {availableMuscles.map(m => (
-              <option key={m} value={m}>{MUSCLE_LABELS[m]}</option>
-            ))}
+            {MUSCLE_PICKER_GROUPS.map(([label, ids]) => {
+              const avail = ids.filter(m => availableMuscles.includes(m))
+              if (!avail.length) return null
+              return (
+                <optgroup key={label} label={label}>
+                  {avail.map(m => (
+                    <option key={m} value={m}>{MUSCLE_LABELS[m]}</option>
+                  ))}
+                </optgroup>
+              )
+            })}
           </select>
         )}
 

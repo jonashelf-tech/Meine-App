@@ -1,38 +1,50 @@
 .page { padding: 0 0 24px; }
 
+/* Segmentierte Leiste — eine Fläche, gleichwertige Reiter (wie .segmented im Tool) */
 .tabs {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 3px;
-  padding: 4px 0 10px;
+  align-items: stretch;
+  gap: 2px;
+  padding: 3px;
+  margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
 }
 
 .tab {
-  padding: 9px 4px;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
+  flex: 1 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 9px 6px;
+  border: none;
+  background: none;
+  border-radius: calc(var(--r) - 3px);
   color: var(--text-dim);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   font-family: var(--font);
   cursor: pointer;
   white-space: nowrap;
-  transition: border-color .15s, background .15s, color .15s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background .15s, color .15s;
 }
-.tab:hover { border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 40%, var(--border)); }
+.tab:hover { color: var(--text); }
 
-.tabActive {
+.tabActive,
+.tabActive:hover {
   color: var(--tool-color, var(--primary));
-  border-color: var(--tool-color, var(--primary));
-  background: color-mix(in srgb, var(--tool-color, var(--primary)) 14%, transparent);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 16%, transparent);
 }
 
-/* „Mehr" rechts abgesetzt → trennt Sekundär- von Primär-Tabs */
-.moreWrap { position: relative; margin-left: auto; }
+/* „Mehr" ist ein gleichwertiges Segment, öffnet aber ein Menü */
+.moreWrap { position: relative; flex: 1 1 auto; min-width: 0; display: flex; }
 
-.moreBtn { display: inline-flex; align-items: center; gap: 3px; }
+.moreBtn { width: 100%; }
 .chev { transition: transform .15s; }
 .chevOpen { transform: rotate(180deg); }
 

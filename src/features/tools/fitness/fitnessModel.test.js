@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   MUSCLES, MUSCLE_LABELS, EQUIPMENT, VOLUME_REF, DEFAULT_INCREMENTS,
-  MUSCLE_GROUPS, MUSCLE_GROUP_LABELS,
+  MUSCLE_GROUPS, MUSCLE_GROUP_LABELS, MUSCLE_PICKER_GROUPS,
   genId, createExercise, createPlan, createPlanDay, createSession, createSet,
 } from './fitnessModel'
 
@@ -29,6 +29,14 @@ describe('MUSCLE_GROUPS', () => {
     const fromGroups = new Set(Object.values(MUSCLE_GROUPS).flat())
     const fromVolumeRef = new Set(Object.keys(VOLUME_REF))
     expect(fromGroups).toEqual(fromVolumeRef)
+  })
+})
+
+describe('MUSCLE_PICKER_GROUPS', () => {
+  it('partitioniert ALLE MUSCLES genau einmal (kein Muskel fehlt/doppelt)', () => {
+    const picked = MUSCLE_PICKER_GROUPS.flatMap(([, ids]) => ids)
+    expect(new Set(picked).size).toBe(picked.length) // keine Duplikate
+    expect([...picked].sort()).toEqual([...MUSCLES].sort())
   })
 })
 

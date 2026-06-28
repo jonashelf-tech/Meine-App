@@ -63,6 +63,22 @@ export function taskSegments(task) {
   return { filled, total, color, overdue, neu: false }
 }
 
+// Human-readable Fälligkeits-Label für eine Task-Zeile.
+// Nutzt daysSince/freqToDays (kein zweites, driftendes Frequenz-Mapping).
+export function taskDueLabel(task) {
+  if (!task.lastDone) return 'neu'
+  const days = daysSince(task.lastDone)
+  if (days === 0) return 'heute erledigt'
+  if (days === 1) return 'gestern erledigt'
+  const left = freqToDays(task) - days
+  if (left <= 0) {
+    const n = Math.abs(left)
+    return `${n} ${n === 1 ? 'Tag' : 'Tage'} überfällig`
+  }
+  if (left === 1) return 'morgen fällig'
+  return `in ${left} Tagen`
+}
+
 // Ring score: % of tasks that are not yet overdue.
 export function calcRingScore(rooms) {
   const all = rooms.flatMap(r => r.tasks)

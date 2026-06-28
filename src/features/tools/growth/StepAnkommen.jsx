@@ -5,10 +5,9 @@ import BreathingCircle from './BreathingCircle'
 import DailyStateRow from './DailyStateRow'
 import s from './StepAnkommen.module.css'
 
-export default function StepAnkommen({ date, settings, opener, onStateTouched, onWeiter, onSkip }) {
+export default function StepAnkommen({ date, settings, opener, onStateTouched, onWeiter }) {
   return (
     <div className={s.step}>
-      <button className={s.skip} onClick={onSkip}>Überspringen</button>
       <div className={s.top}>
         {settings.openerAn && <BreathingCircle aktiv dauerSek={120} />}
         <div className={s.eyebrow}>Ankommen</div>

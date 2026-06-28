@@ -38,7 +38,7 @@ src/
       Zeitplan/
         MissedReviewModal.jsx   — Modal für TimeEvents (abgelaufene/verpasste Slots)
         SlotBlock.jsx           — Einzelner Slot im Zeitplan (inkl. Play→Fokus-Timer via onPlay)
-        SlotSheet.jsx           — Bottom-Sheet beim Tap auf leeren Slot: + Neu / Pool-Todo platzieren
+        SlotSheet.jsx           — Zentriertes Modal beim Tap auf leeren Slot: + Neu / Pool-Todo platzieren
         bandLogic.js            — rein+getestet: computeBands() — Sichtfenster + "frei"-Bänder außerhalb
         Zeitplan.jsx + .module.css
 
@@ -208,7 +208,7 @@ Globale Variablen nur in `styles/vars.css`.
 - **`center`** mittig (Keyframe `overlayIn`), **`sheet`** unten angedockt (Keyframe `slideInBottom`) — beide `--dur`/`--ease-out`.
 - **Schließt** bei Backdrop-Tap (nur wenn der Backdrop selbst getroffen wird) **und Escape**. Bewusst nicht-schließbare Dialoge (MissedReview, CheckinModal, UpdatePrompt) übergeben einfach kein `onClose`.
 - `role="dialog"` + `aria-modal`. `style` wird auf den Backdrop durchgereicht (z.B. Keyboard-Offset).
-- **Genutzt von:** TodoModal · KlaerenModal · MissedReviewModal · Zeitplan-RemoveDialog · UpdatePrompt · Konfigurator-SaveDialog (center) — SlotSheet · BirthdaySheet · CheckinModal · BlockerModal · RepeatDeleteSheet (sheet).
+- **Genutzt von:** TodoModal · KlaerenModal · MissedReviewModal · Zeitplan-RemoveDialog · UpdatePrompt · Konfigurator-SaveDialog · SlotSheet (center) — BirthdaySheet · CheckinModal · BlockerModal · RepeatDeleteSheet (sheet).
 - **Nicht** für Vollbild-Modi (FokusView, Kognitiv-Übungen, Fitness-Session, Briefings) — anderer Archetyp.
 - **Guard:** `src/components/Overlay/overlay.test.js` erzwingt, dass migrierte Dialog-CSS keinen eigenen Backdrop bzw. `scaleIn`/`slideUp`-Keyframe mehr definieren.
 

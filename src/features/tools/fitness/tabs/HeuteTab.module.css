@@ -269,30 +269,6 @@
   box-shadow: 0 0 8px color-mix(in srgb, var(--tool-color) 40%, transparent);
 }
 
-/* ─── Quick-Actions ─────────────────────────────────────── */
-.quick {
-  display: flex;
-  gap: 9px;
-}
-
-.qbtn {
-  flex: 1;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  background: var(--surface-low);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  cursor: pointer;
-}
-.qbtn svg { color: var(--text-dim); }
-
 /* ─── Leerzustand ───────────────────────────────────────── */
 .emptyCard {
   text-align: center;

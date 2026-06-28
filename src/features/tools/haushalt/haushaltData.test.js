@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { taskUrgency, taskSegments, roomStatus } from './haushaltData'
+import { taskUrgency, taskSegments, roomStatus, taskDueLabel } from './haushaltData'
 
 const task = (over = {}) => ({
   id: 't1', text: 'Test', duration: 10, freq: 'weekly', customDays: null,
@@ -41,6 +41,39 @@ describe('taskSegments — neutraler "neu"-Zustand', () => {
     const seg = taskSegments(task({ lastDone: daysAgo(1) }))
     expect(seg.color).toBe('var(--emerald)')
     expect(seg.overdue).toBe(false)
+  })
+})
+
+describe('taskDueLabel — nutzt freqToDays, kein zweites Frequenz-Mapping', () => {
+  it('nie erledigt → "neu"', () => {
+    expect(taskDueLabel(task())).toBe('neu')
+  })
+
+  it('heute erledigt → "heute erledigt"', () => {
+    expect(taskDueLabel(task({ lastDone: daysAgo(0) }))).toBe('heute erledigt')
+  })
+
+  it('gestern erledigt → "gestern erledigt"', () => {
+    expect(taskDueLabel(task({ lastDone: daysAgo(1) }))).toBe('gestern erledigt')
+  })
+
+  it('innerhalb des Intervalls → "in N Tagen"', () => {
+    // weekly = 7 Tage, vor 3 Tagen erledigt → noch 4 Tage
+    expect(taskDueLabel(task({ lastDone: daysAgo(3) }))).toBe('in 4 Tagen')
+  })
+
+  it('genau morgen fällig → "morgen fällig"', () => {
+    expect(taskDueLabel(task({ lastDone: daysAgo(6) }))).toBe('morgen fällig')
+  })
+
+  it('überfällig → singular/plural korrekt', () => {
+    expect(taskDueLabel(task({ lastDone: daysAgo(8) }))).toBe('1 Tag überfällig')
+    expect(taskDueLabel(task({ lastDone: daysAgo(10) }))).toBe('3 Tage überfällig')
+  })
+
+  it('custom-Frequenz nutzt customDays', () => {
+    const t = task({ freq: 'custom', customDays: 14, lastDone: daysAgo(10) })
+    expect(taskDueLabel(t)).toBe('in 4 Tagen')
   })
 })
 

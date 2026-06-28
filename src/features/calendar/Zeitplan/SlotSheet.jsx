@@ -5,7 +5,7 @@ import PrioBadge from '../../../components/PrioBadge/PrioBadge'
 import Overlay from '../../../components/Overlay/Overlay'
 import s from './SlotSheet.module.css'
 
-// Bottom-Sheet beim Tap auf einen leeren Slot: neues Todo direkt im Slot
+// Zentriertes Modal beim Tap auf einen leeren Slot: neues Todo direkt im Slot
 // erstellen oder ein Pool-Todo per Tap platzieren (Alternative zum Drag).
 // dateLabel (optional): Wochenansicht zeigt zusätzlich den Zieltag.
 export default function SlotSheet({ slotKey, dateLabel = null, todos, todaySlots, onPlace, onCreateNew, onClose }) {
@@ -23,12 +23,14 @@ export default function SlotSheet({ slotKey, dateLabel = null, todos, todaySlots
   }
 
   return (
-    <Overlay variant="sheet" onClose={onClose}>
+    <Overlay variant="center" onClose={onClose}>
       <div className={s.sheet}>
 
         <div className={s.header}>
-          <span className={s.time}>{dateLabel ? `${dateLabel} · ` : ''}{skLabel(slotKey)}</span>
-          <span className={s.title}>Was planst du?</span>
+          <div className={s.headerText}>
+            <span className={s.title}>Was planst du?</span>
+            <span className={s.time}>{dateLabel ? `${dateLabel} · ` : ''}{skLabel(slotKey)}</span>
+          </div>
           <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>

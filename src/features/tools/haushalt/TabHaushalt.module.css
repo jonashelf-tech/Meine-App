@@ -1,104 +1,184 @@
 .page {
   display: flex;
   flex-direction: column;
+  gap: 13px;
   padding-bottom: 40px;
 }
+.page > * { animation: fadeInUp 0.4s var(--ease-out) both; }
 
-/* ── Energie strip ── */
-.energieStrip {
+/* ── Section label ── */
+.sectionLabel {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 2px 2px 8px;
+}
+
+/* ── Score hero ── */
+.hero {
+  position: relative;
+  border-radius: var(--r-lg);
+  border: 1px solid color-mix(in srgb, var(--tool-color, var(--primary)) 26%, var(--border));
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--tool-color, var(--primary)) 11%, transparent) 0%, transparent 60%),
+    var(--surface);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--tool-color, var(--primary)) 9%, transparent),
+    0 12px 30px rgba(0, 0, 0, 0.22);
+  padding: 16px;
   display: flex;
-  gap: 8px;
-  padding: 12px 16px 0;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.heroMain {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.ringsvg { flex-shrink: 0; }
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.heroLabel {
+  font-family: var(--font);
+  font-size: 1.12rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.heroSub {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* ── Energie segmented control (inside hero) ── */
+.energieSeg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
 }
 
 .energieBtn {
   flex: 1;
-  padding: 10px 12px;
-  min-height: 44px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  min-height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
   font-family: var(--font);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-dim);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background 0.15s, color 0.15s;
   -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
 }
 
 .energieBtnActive {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: var(--primary);
-  color: var(--primary);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 18%, transparent);
+  color: var(--tool-color, var(--primary));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tool-color, var(--primary)) 32%, transparent);
 }
 
-/* ── Ring score ── */
-.scoreRow {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 16px 8px;
+/* ── Stat tiles ── */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
 }
 
-.ringsvg {
-  flex-shrink: 0;
-}
-
-.scoreText {
+.tile {
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 13px 11px;
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-height: 86px;
 }
 
-.scoreLabel {
-  font-family: var(--font);
-  font-size: 0.95rem;
-  font-weight: 700;
+.tileHighlight {
+  border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 30%, var(--border));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--tool-color, var(--primary)) 12%, transparent), var(--surface));
 }
 
-.scoreSub {
+.tileIcon {
+  color: var(--tool-color, var(--primary));
+  margin-bottom: 3px;
+}
+
+.tileNum {
+  font-family: var(--font-num);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.tileHighlight .tileNum { color: var(--tool-color, var(--primary)); }
+
+.tileNum small {
   font-family: var(--font);
-  font-size: 0.78rem;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-left: 1px;
+}
+
+.tileLabel {
+  font-family: var(--font);
+  font-size: 0.64rem;
   color: var(--text-dim);
 }
 
 /* ── Jetzt dran ── */
-.urgentBox {
-  margin: 8px 16px 0;
-  padding: 10px 12px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
+.urgentCard {
   border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 6px 12px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-}
-
-.urgentTitle {
-  font-family: var(--font);
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-dim);
 }
 
 .urgentRow {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 11px;
+  padding: 8px 0;
 }
+.urgentRow + .urgentRow { border-top: 1px solid var(--border-dim); }
 
 .urgentIcon {
-  color: var(--primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  justify-content: center;
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color, var(--primary)) 24%, transparent);
 }
 
 .urgentMain {
@@ -106,18 +186,19 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
 
 .urgentText {
   font-family: var(--font);
-  font-size: 0.83rem;
+  font-size: 0.86rem;
   color: var(--text);
   line-height: 1.25;
 }
 
 .urgentRoomName {
   font-family: var(--font);
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   color: var(--text-dim);
 }
 
@@ -126,20 +207,25 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 8px 16px 0;
 }
 
 .roomCard {
-  background: var(--bg2);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.roomCardOpen {
+  border-color: color-mix(in srgb, var(--tool-color, var(--primary)) 24%, var(--border));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
 
 .roomHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   padding: 11px 12px;
   cursor: pointer;
   user-select: none;
@@ -147,16 +233,21 @@
 }
 
 .roomIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--primary);
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 11%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color, var(--primary)) 20%, transparent);
 }
 
 .roomName {
   font-family: var(--font);
-  font-size: 0.87rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
   flex: 1;
@@ -166,9 +257,9 @@
   flex: 1;
   background: transparent;
   border: none;
-  border-bottom: 1.5px solid var(--primary);
+  border-bottom: 1.5px solid var(--tool-color, var(--primary));
   font-family: var(--font);
-  font-size: 0.87rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
   outline: none;
@@ -176,11 +267,23 @@
   min-width: 0;
 }
 
+.roomDueDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rose);
+  box-shadow: 0 0 6px var(--rose);
+  flex-shrink: 0;
+}
+
 .statusBadge {
   font-family: var(--font);
-  font-size: 0.68rem;
-  font-weight: 600;
+  font-size: 0.64rem;
+  font-weight: 700;
   flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
 }
 
 .editBtn {
@@ -188,26 +291,24 @@
   border: none;
   color: var(--text-dim);
   cursor: pointer;
-  padding: 5px;
+  padding: 6px;
   display: flex;
   align-items: center;
-  border-radius: 6px;
+  border-radius: 7px;
   transition: color 0.15s, background 0.15s;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
-.editBtn:hover {
-  color: var(--primary);
-}
+.editBtn:hover { color: var(--tool-color, var(--primary)); }
 
 .editBtnOn {
-  color: var(--primary);
-  background: rgba(139, 92, 246, 0.12);
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 13%, transparent);
 }
 
 .chevron {
-  color: var(--text-dim);
+  color: var(--text-faint);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -230,9 +331,10 @@
 }
 
 .setLabel {
-  font-size: 0.66rem;
+  font-family: var(--font);
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-dim);
   width: 64px;
@@ -242,93 +344,84 @@
 
 .prioBtnGroup {
   display: flex;
-  gap: 3px;
+  gap: 4px;
 }
 
 .prioBtn {
-  padding: 3px 6px;
-  border-radius: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-faint);
   font-family: var(--font);
-  font-size: 0.65rem;
+  font-size: 0.66rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.12s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .prioBtnActive {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: var(--primary);
-  color: var(--primary);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 20%, transparent);
+  border-color: var(--tool-color, var(--primary));
+  color: var(--tool-color, var(--primary));
 }
 
 /* ── Room body ── */
 .roomBody {
   border-top: 1px solid var(--border);
-  padding: 10px 12px;
+  padding: 8px 12px 10px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.roomBodyAfterSettings {
-  border-top: none;
-}
+.roomBodyAfterSettings { border-top: none; }
 
 .emptyRoom {
   font-family: var(--font);
   font-size: 0.78rem;
   color: var(--text-dim);
   font-style: italic;
-  padding: 4px 0;
+  padding: 6px 2px;
 }
 
 /* ── Task row ── */
-.taskRow {
-  transition: opacity 0.2s;
-}
+.taskRow { transition: opacity 0.2s; }
 
 .taskRowDimmed {
-  opacity: 0.3;
+  opacity: 0.32;
   pointer-events: none;
 }
 
-/* Always-visible task view */
 .taskView {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px 6px;
+  gap: 7px;
+  padding: 9px 8px;
   cursor: pointer;
   border-radius: var(--r-sm);
   transition: background 0.15s;
 }
 
-.taskView:hover {
-  background: var(--surface-low);
-}
+.taskView:hover { background: var(--surface-low); }
 
 .taskViewEditing {
   background: var(--surface-low);
   border-radius: var(--r-sm) var(--r-sm) 0 0;
   cursor: default;
 }
-
-.taskViewEditing:hover {
-  background: var(--surface-low);
-}
+.taskViewEditing:hover { background: var(--surface-low); }
 
 .taskTop {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 
 .taskText {
   font-family: var(--font);
-  font-size: 0.83rem;
+  font-size: 0.85rem;
   color: var(--text);
   flex: 1;
   line-height: 1.3;
@@ -337,14 +430,13 @@
   gap: 6px;
 }
 
-/* Inline name input — same visual weight as the text */
 .taskNameInput {
   flex: 1;
   background: transparent;
   border: none;
-  border-bottom: 1.5px solid var(--primary);
+  border-bottom: 1.5px solid var(--tool-color, var(--primary));
   font-family: var(--font);
-  font-size: 0.83rem;
+  font-size: 0.85rem;
   color: var(--text);
   outline: none;
   padding: 1px 2px;
@@ -355,13 +447,13 @@
   display: inline-flex;
   align-items: center;
   vertical-align: middle;
-  color: var(--text-dim);
+  color: var(--text-faint);
 }
 
 .taskDue {
   font-family: var(--font);
   font-size: 0.68rem;
-  font-weight: 600;
+  font-weight: 700;
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -375,33 +467,30 @@
   transition: opacity 0.15s;
 }
 
-.taskView:hover .editHintIcon {
-  opacity: 1;
-}
+.taskView:hover .editHintIcon { opacity: 1; }
 
 .editHintIconOn {
   opacity: 1;
-  color: var(--primary);
+  color: var(--tool-color, var(--primary));
 }
 
 .doneBtn {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 6px;
+  background: color-mix(in srgb, var(--emerald) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--emerald) 30%, transparent);
+  border-radius: 8px;
   color: var(--emerald);
   cursor: pointer;
-  padding: 8px 10px;
+  padding: 8px 11px;
   min-height: 36px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.doneBtn:hover {
-  background: rgba(16, 185, 129, 0.25);
-}
+.doneBtn:hover { background: color-mix(in srgb, var(--emerald) 24%, transparent); }
+.doneBtn:active { transform: scale(0.92); }
 
 /* ── Segment bar ── */
 .segBar {
@@ -414,7 +503,7 @@
   min-width: 0;
   height: 6px;
   border-radius: 2px;
-  background: var(--surface);
+  background: var(--surface-low);
   transition: background 0.3s;
 }
 
@@ -425,21 +514,19 @@
   transition: grid-template-rows 0.22s ease;
 }
 
-.taskEditDrawerOpen {
-  grid-template-rows: 1fr;
-}
+.taskEditDrawerOpen { grid-template-rows: 1fr; }
 
 .taskEditInner {
   overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 9px;
-  padding: 0 6px;
+  padding: 0 8px;
 }
 
 .editDivider {
   height: 1px;
-  background: rgba(139, 92, 246, 0.3);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 28%, transparent);
 }
 
 .fieldLabel {
@@ -449,7 +536,6 @@
   color: var(--text-dim);
 }
 
-/* Frequency chips */
 .freqChips {
   display: flex;
   flex-wrap: wrap;
@@ -460,8 +546,8 @@
   font-family: var(--font);
   font-size: 0.72rem;
   font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 20px;
+  padding: 6px 11px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-dim);
@@ -470,17 +556,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.freqChip:hover {
-  color: var(--text);
-}
+.freqChip:hover { color: var(--text); }
 
 .freqChipOn {
-  background: rgba(139, 92, 246, 0.18);
-  border-color: var(--primary);
-  color: var(--primary);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 18%, transparent);
+  border-color: var(--tool-color, var(--primary));
+  color: var(--tool-color, var(--primary));
 }
 
-/* Custom days input */
 .customDaysRow {
   display: flex;
   align-items: center;
@@ -492,19 +575,16 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 5px 8px;
-  font-family: var(--font);
-  font-size: 0.78rem;
+  padding: 6px 8px;
+  font-family: var(--font-num);
+  font-size: 0.8rem;
   color: var(--text);
   outline: none;
   text-align: center;
 }
 
-.customDaysInput:focus {
-  border-color: var(--primary);
-}
+.customDaysInput:focus { border-color: var(--tool-color, var(--primary)); }
 
-/* Effort toggle */
 .effortRow {
   display: flex;
   gap: 6px;
@@ -516,8 +596,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 7px 10px;
-  border-radius: 20px;
+  padding: 8px 10px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-dim);
@@ -529,21 +609,19 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.effortBtn:hover {
-  color: var(--text);
-}
+.effortBtn:hover { color: var(--text); }
 
 .effortBtnOn {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: var(--primary);
-  color: var(--primary);
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 16%, transparent);
+  border-color: var(--tool-color, var(--primary));
+  color: var(--tool-color, var(--primary));
 }
 
-/* Drawer footer */
 .editFoot {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-bottom: 2px;
 }
 
 .linkBtn {
@@ -553,33 +631,30 @@
   font-family: var(--font);
   font-size: 0.74rem;
   cursor: pointer;
-  padding: 4px 2px;
+  padding: 5px 2px;
   display: flex;
   align-items: center;
   gap: 4px;
   -webkit-tap-highlight-color: transparent;
 }
 
-.linkBtn:hover {
-  color: var(--text);
-}
-
-.linkBtnDanger:hover {
-  color: var(--rose);
-}
+.linkBtn:hover { color: var(--text); }
+.linkBtnDanger:hover { color: var(--rose); }
 
 .doneEditBtn {
-  background: var(--primary);
+  background: var(--tool-color, var(--primary));
   border: none;
-  border-radius: 7px;
-  color: #fff;
+  border-radius: 8px;
+  color: var(--bg);
   font-family: var(--font);
   font-size: 0.77rem;
   font-weight: 700;
-  padding: 7px 16px;
+  padding: 8px 16px;
   cursor: pointer;
+  transition: transform 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
+.doneEditBtn:active { transform: scale(0.96); }
 
 /* ── Hidden tasks hint ── */
 .hiddenHint {
@@ -587,15 +662,15 @@
   font-size: 0.68rem;
   color: var(--text-dim);
   opacity: 0.6;
-  padding: 2px 6px;
+  padding: 2px 8px;
 }
 
-/* ── Add task row (only shown when room editing) ── */
+/* ── Add task row ── */
 .addTaskRow {
   display: flex;
   gap: 6px;
   margin-top: 4px;
-  padding-top: 8px;
+  padding-top: 9px;
   border-top: 1px dashed var(--border);
 }
 
@@ -603,66 +678,66 @@
   flex: 1;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 7px 10px;
+  border-radius: 7px;
+  padding: 8px 10px;
   font-family: var(--font);
   font-size: 0.82rem;
   color: var(--text);
   outline: none;
 }
 
-.addTaskInput:focus {
-  border-color: var(--primary);
-}
+.addTaskInput:focus { border-color: var(--tool-color, var(--primary)); }
 
 .addTaskBtn {
-  background: var(--primary);
+  background: var(--tool-color, var(--primary));
   border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 1rem;
+  border-radius: 7px;
+  color: var(--bg);
+  font-size: 1.1rem;
   font-weight: 700;
-  width: 34px;
+  width: 36px;
   cursor: pointer;
   flex-shrink: 0;
+  transition: transform 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
+.addTaskBtn:active { transform: scale(0.94); }
 
 .deleteRoomBtn {
   background: none;
-  border: 1px solid rgba(251, 113, 133, 0.3);
-  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--rose) 30%, transparent);
+  border-radius: 7px;
   color: var(--rose);
   font-family: var(--font);
   font-size: 0.78rem;
-  padding: 7px 12px;
+  padding: 8px 12px;
   cursor: pointer;
   align-self: flex-start;
   transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.deleteRoomBtn:hover {
-  background: rgba(251, 113, 133, 0.08);
-}
+.deleteRoomBtn:hover { background: color-mix(in srgb, var(--rose) 9%, transparent); }
 
 /* ── Add room + setup ── */
 .addRoomBtn {
-  background: var(--surface);
+  background: var(--surface-low);
   border: 1px dashed var(--border);
   border-radius: var(--r);
   color: var(--text-dim);
   font-family: var(--font);
   font-size: 0.85rem;
-  padding: 12px;
+  font-weight: 600;
+  padding: 13px;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .addRoomBtn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--tool-color, var(--primary));
+  color: var(--tool-color, var(--primary));
+  background: color-mix(in srgb, var(--tool-color, var(--primary)) 7%, transparent);
 }
 
 .setupLink {
@@ -672,12 +747,10 @@
   font-family: var(--font);
   font-size: 0.75rem;
   cursor: pointer;
-  padding: 20px 16px 0;
+  padding: 8px 16px 0;
   text-align: center;
   opacity: 0.5;
   transition: opacity 0.15s;
 }
 
-.setupLink:hover {
-  opacity: 1;
-}
+.setupLink:hover { opacity: 1; }

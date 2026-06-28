@@ -29,6 +29,18 @@ export const MUSCLE_GROUP_LABELS = {
   schultern: 'Schultern', arme: 'Arme', bauch: 'Bauch',
 }
 
+// ─── Muskel-Auswahl-Gruppen (Picker/Filter) ───────────────
+// Vollständige Partition ALLER MUSCLES — anders als MUSCLE_GROUPS (nur Volumen-
+// Muskeln). Reihenfolge = Anzeige im Dropdown. Guard-Test in fitnessModel.test.js.
+export const MUSCLE_PICKER_GROUPS = [
+  ['Rücken', ['ruecken', 'untererRuecken', 'trapez']],
+  ['Brust', ['brust']],
+  ['Schultern', ['schulterVorne', 'schulterSeitlich', 'schulterHinten']],
+  ['Arme', ['bizeps', 'trizeps', 'unterarme']],
+  ['Unterkörper', ['quadrizeps', 'hamstrings', 'gluteus', 'waden']],
+  ['Bauch', ['bauch']],
+]
+
 // ─── Equipment + Inkremente (kg) ──────────────────────────
 export const EQUIPMENT = ['maschine', 'langhantel', 'kurzhantel', 'kabel', 'koerpergewicht']
 

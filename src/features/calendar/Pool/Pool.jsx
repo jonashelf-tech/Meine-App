@@ -36,7 +36,7 @@ const ChevronIcon = ({ collapsed }) => (
 )
 
 // ─── PoolChip ─────────────────────────────────────────────
-function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPlaced, onKlaeren }) {
+function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, onDelete, startDrag, isPlaced, onKlaeren }) {
   const color = todo.color || '#8B5CF6'
   const [doneFlash, setDoneFlash] = useState(false)
 
@@ -54,6 +54,7 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPl
     <span
       className={[s.handle, doneFlash ? s.handleDoneFlash : ''].join(' ')}
       onPointerDown={handlePointerDown}
+      data-drag-handle="true"
       aria-label="Ziehen"
       style={todo.done ? { cursor: 'not-allowed' } : undefined}
     >
@@ -66,6 +67,7 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPl
       todo={todo}
       onToggleDone={onToggleDone}
       onEdit={onEdit}
+      onDelete={onDelete}
       todos={todos}
       saveTodos={setTodos}
       dragHandle={handle}
@@ -175,6 +177,7 @@ export default function Pool({
       setTodos={setTodos}
       onToggleDone={() => handleToggle(t.id)}
       onEdit={() => onEdit?.(t.id)}
+      onDelete={() => setTodos(prev => prev.filter(x => x.id !== t.id))}
       startDrag={startDrag}
       isPlaced={isPlaced(t)}
       onKlaeren={onKlaeren}

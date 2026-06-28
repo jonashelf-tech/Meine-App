@@ -76,6 +76,7 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
     <span
       className={[s.slotHandle, slot.locked ? s.slotHandleLocked : ''].join(' ')}
       onPointerDown={handlePointerDown}
+      data-drag-handle="true"
     >
       {slot.locked ? <LockIcon locked={true} /> : DragIcon}
     </span>

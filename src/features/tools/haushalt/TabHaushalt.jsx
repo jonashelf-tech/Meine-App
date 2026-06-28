@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react'
 import { sv, lv, SK } from '../../../storage'
+import { useAppStore } from '../../../store'
+import { getToolColor, todayKey } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import HaushaltBriefing from './HaushaltBriefing'
 import {
   loadHaushalt, saveHaushalt,
-  taskSegments, calcRingScore, roomStatus, STATUS_META, FREQ_LABELS,
-  markTaskDone, resetTaskDone, getUrgentTasks,
+  taskSegments, taskDueLabel, calcRingScore, roomStatus, STATUS_META, FREQ_LABELS,
+  markTaskDone, resetTaskDone, getUrgentTasks, getDueRooms,
   addRoom, updateRoom, deleteRoom,
   addTask, updateTask, deleteTask,
 } from './haushaltData'
@@ -68,37 +70,98 @@ const ChevronIcon = ({ open }) => (
   </svg>
 )
 
-// ─── Ring Score SVG ───────────────────────────────────────
-function RingScore({ score }) {
-  const r     = 28
+const ClockIcon = () => (
+  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" />
+  </svg>
+)
+
+const CheckCircleIcon = () => (
+  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" /><path d="M8.5 12.2l2.4 2.4 4.6-4.8" />
+  </svg>
+)
+
+const ListIcon = () => (
+  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
+    <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
+  </svg>
+)
+
+// ─── Score Hero ───────────────────────────────────────────
+function ScoreHero({ score, dueCount, energie, onEnergieChange }) {
+  const r     = 30
   const circ  = 2 * Math.PI * r
   const dash  = (Math.min(score, 100) / 100) * circ
   const color = score >= 70 ? 'var(--emerald)' : score >= 40 ? 'var(--amber)' : 'var(--rose)'
-  const label = score >= 70 ? 'Wohnung im Griff' : score >= 40 ? 'Einiges liegt noch' : 'Viel offen'
+  const label = score >= 70 ? 'Wohnung im Griff' : score >= 40 ? 'Einiges liegt an' : 'Viel offen, kein Stress'
+  const sub   = dueCount === 0
+    ? 'Gerade nichts fällig'
+    : `${dueCount} ${dueCount === 1 ? 'Aufgabe' : 'Aufgaben'} fällig`
 
   return (
-    <div className={s.scoreRow}>
-      <svg width={70} height={70} viewBox="0 0 70 70" className={s.ringsvg}>
-        <circle cx={35} cy={35} r={r} fill="none" strokeWidth={5} style={{ stroke: 'var(--border)' }} />
-        <circle
-          cx={35} cy={35} r={r} fill="none"
-          stroke={color} strokeWidth={5}
-          strokeDasharray={`${dash} ${circ}`}
-          strokeLinecap="round"
-          transform="rotate(-90 35 35)"
-          style={{ transition: 'stroke-dasharray 0.4s ease' }}
-        />
-        <text x={35} y={40} textAnchor="middle" fill={color} fontSize={13} fontWeight={800} style={{ fontFamily: 'var(--font)' }}>
-          {score}%
-        </text>
-      </svg>
-      <div className={s.scoreText}>
-        <span className={s.scoreLabel} style={{ color }}>{label}</span>
-        <span className={s.scoreSub}>
-          {score < 100
-            ? `${Math.round((1 - score / 100) * 100)}% der Tasks fällig`
-            : 'Alles erledigt'}
-        </span>
+    <div className={s.hero}>
+      <div className={s.heroMain}>
+        <svg width={84} height={84} viewBox="0 0 84 84" className={s.ringsvg}>
+          <circle cx={42} cy={42} r={r} fill="none" strokeWidth={6} style={{ stroke: 'var(--border)' }} />
+          <circle
+            cx={42} cy={42} r={r} fill="none"
+            stroke={color} strokeWidth={6}
+            strokeDasharray={`${dash} ${circ}`}
+            strokeLinecap="round"
+            transform="rotate(-90 42 42)"
+            style={{ transition: 'stroke-dasharray 0.5s var(--ease-out)' }}
+          />
+          <text x={42} y={45} textAnchor="middle" fill={color} fontSize={19} fontWeight={800} style={{ fontFamily: 'var(--font-num)' }}>
+            {score}
+          </text>
+          <text x={42} y={57} textAnchor="middle" fill="var(--text-faint)" fontSize={8} fontWeight={700} style={{ fontFamily: 'var(--font)', letterSpacing: '0.08em' }}>
+            PROZENT
+          </text>
+        </svg>
+        <div className={s.heroText}>
+          <span className={s.heroLabel} style={{ color }}>{label}</span>
+          <span className={s.heroSub}>{sub}</span>
+        </div>
+      </div>
+
+      <div className={s.energieSeg}>
+        <button
+          className={[s.energieBtn, energie === 'normal' ? s.energieBtnActive : ''].join(' ')}
+          onClick={() => onEnergieChange('normal')}
+        >
+          <BoltIcon /> Normal
+        </button>
+        <button
+          className={[s.energieBtn, energie === 'low' ? s.energieBtnActive : ''].join(' ')}
+          onClick={() => onEnergieChange('low')}
+        >
+          <BatteryLowIcon /> Low Energy
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Stat-Kacheln ─────────────────────────────────────────
+function StatTiles({ dueCount, dueMin, doneToday }) {
+  return (
+    <div className={s.tiles}>
+      <div className={[s.tile, s.tileHighlight].join(' ')}>
+        <div className={s.tileIcon}><ListIcon /></div>
+        <div className={s.tileNum}>{dueCount}</div>
+        <div className={s.tileLabel}>Jetzt fällig</div>
+      </div>
+      <div className={s.tile}>
+        <div className={s.tileIcon}><CheckCircleIcon /></div>
+        <div className={s.tileNum}>{doneToday}</div>
+        <div className={s.tileLabel}>Heute geschafft</div>
+      </div>
+      <div className={s.tile}>
+        <div className={s.tileIcon}><ClockIcon /></div>
+        <div className={s.tileNum}>{dueMin}<small>min</small></div>
+        <div className={s.tileLabel}>Offen jetzt</div>
       </div>
     </div>
   )
@@ -115,7 +178,7 @@ function SegmentBar({ task }) {
           className={s.seg}
           style={{
             background: i < filled ? color : undefined,
-            boxShadow: overdue && i < filled ? `0 0 3px ${color}` : undefined,
+            boxShadow: overdue && i < filled ? `0 0 4px ${color}` : undefined,
           }}
         />
       ))}
@@ -129,17 +192,7 @@ const FREQ_OPTIONS = ['daily', 'biweekly', 'weekly', 'monthly', 'custom']
 function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdate, onDelete }) {
   const [confirmDel, setConfirmDel] = useState(false)
   const { color, overdue } = taskSegments(task)
-  const since = (() => {
-    if (!task.lastDone) return 'neu'
-    const days = Math.floor((Date.now() - new Date(task.lastDone + 'T00:00:00').getTime()) / 86_400_000)
-    if (days === 0) return 'heute erledigt'
-    if (days === 1) return 'gestern erledigt'
-    const freq = task.freq === 'custom' ? (task.customDays ?? 7) : { daily: 1, biweekly: 3, weekly: 7, monthly: 30 }[task.freq] ?? 7
-    const left = freq - days
-    if (left <= 0) return `${Math.abs(left)} ${Math.abs(left) === 1 ? 'Tag' : 'Tage'} überfällig`
-    if (left === 1) return 'morgen fällig'
-    return `in ${left} Tagen`
-  })()
+  const since = taskDueLabel(task)
 
   return (
     <div className={[s.taskRow, dimmed ? s.taskRowDimmed : ''].join(' ')}>
@@ -199,9 +252,9 @@ function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdat
               <input
                 type="number"
                 className={s.customDaysInput}
-                value={task.customDays ?? 7}
+                value={task.customDays ?? ''}
                 min={1}
-                onChange={e => onUpdate({ customDays: Number(e.target.value) })}
+                onChange={e => onUpdate({ customDays: e.target.value === '' ? null : Number(e.target.value) })}
                 onClick={e => e.stopPropagation()}
               />
               <span className={s.fieldLabel}>Tage</span>
@@ -212,9 +265,9 @@ function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdat
             <input
               type="number"
               className={s.customDaysInput}
-              value={task.duration ?? 15}
+              value={task.duration ?? ''}
               min={1}
-              onChange={e => onUpdate({ duration: Number(e.target.value) })}
+              onChange={e => onUpdate({ duration: e.target.value === '' ? null : Number(e.target.value) })}
               onClick={e => e.stopPropagation()}
             />
             <span className={s.fieldLabel}>min</span>
@@ -281,10 +334,12 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
     setEditTaskId(prev => prev === taskId ? null : taskId)
   }
 
+  const dueInRoom = room.tasks.filter(t => taskSegments(t).overdue).length
+
   return (
-    <div className={s.roomCard}>
+    <div className={[s.roomCard, open ? s.roomCardOpen : ''].join(' ')}>
       <div className={s.roomHeader} onClick={onToggle}>
-        <span className={s.roomIcon}><Glyph name={room.icon} size={20} /></span>
+        <span className={s.roomIcon}><Glyph name={room.icon} size={19} /></span>
         {editing ? (
           <input
             className={s.roomNameInput}
@@ -295,7 +350,10 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
         ) : (
           <span className={s.roomName}>{room.name}</span>
         )}
-        <span className={s.statusBadge} style={{ color: sm.color }}>{sm.label}</span>
+        {!open && !editing && dueInRoom > 0 && (
+          <span className={s.roomDueDot} title={`${dueInRoom} fällig`} />
+        )}
+        <span className={s.statusBadge} style={{ color: sm.color, background: `color-mix(in srgb, ${sm.color} 14%, transparent)` }}>{sm.label}</span>
         <button
           className={[s.editBtn, editing ? s.editBtnOn : ''].join(' ')}
           onClick={e => { e.stopPropagation(); onToggleEdit() }}
@@ -395,10 +453,13 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
 
 // ─── TabHaushalt ──────────────────────────────────────────
 export default function TabHaushalt({ onBack }) {
+  const { toolColors } = useAppStore()
   const [config,    setConfig]    = useState(() => loadHaushalt())
   const [energie,   setEnergie]   = useState(() => lv(SK.haushaltEnergie, 'normal'))
   const [openRooms, setOpenRooms] = useState({})
   const [editRooms, setEditRooms] = useState({})
+
+  const toolColor = getToolColor('haushalt', toolColors)
 
   // next kann ein Wert ODER eine Updater-Funktion (prev => next) sein.
   // Funktionale Form verhindert Stale-Closure-Races bei schnell aufeinander
@@ -437,80 +498,77 @@ export default function TabHaushalt({ onBack }) {
   }
 
   const score  = calcRingScore(config.rooms)
+  const today  = todayKey()
+  const dueTasks  = getDueRooms(config, energie).flatMap(e => e.dueTasks)
+  const dueCount  = dueTasks.length
+  const dueMin    = dueTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0)
+  const doneToday = config.rooms.flatMap(r => r.tasks).filter(t => t.lastDone === today).length
   const urgent = getUrgentTasks(config, 99)
     .filter(({ task }) => energie !== 'low' || task.lowEnergy)
     .slice(0, 3)
 
   return (
-    <div className={s.page}>
+    <div className={s.page} style={{ '--tool-color': toolColor }}>
       <ToolHeader onBack={onBack} icon={<HausIcon />} eyebrow="Tool" title="Haushalt" />
 
-      <div className={s.energieStrip}>
-        <button
-          className={[s.energieBtn, energie === 'normal' ? s.energieBtnActive : ''].join(' ')}
-          onClick={() => handleEnergieChange('normal')}
-        >
-          <BoltIcon /> Normal
-        </button>
-        <button
-          className={[s.energieBtn, energie === 'low' ? s.energieBtnActive : ''].join(' ')}
-          onClick={() => handleEnergieChange('low')}
-        >
-          <BatteryLowIcon /> Low Energy
-        </button>
-      </div>
+      <ScoreHero score={score} dueCount={dueCount} energie={energie} onEnergieChange={handleEnergieChange} />
 
-      <RingScore score={score} />
+      <StatTiles dueCount={dueCount} dueMin={dueMin} doneToday={doneToday} />
 
       {urgent.length > 0 && (
-        <div className={s.urgentBox}>
-          <span className={s.urgentTitle}>Jetzt dran</span>
-          {urgent.map(({ task, room }) => (
-            <div key={task.id} className={s.urgentRow}>
-              <span className={s.urgentIcon}><Glyph name={room.icon} size={15} /></span>
-              <div className={s.urgentMain}>
-                <span className={s.urgentText}>{task.text}</span>
-                <span className={s.urgentRoomName}>{room.name}</span>
+        <div className={s.urgentBlock}>
+          <div className={s.sectionLabel}>Jetzt dran</div>
+          <div className={s.urgentCard}>
+            {urgent.map(({ task, room }) => (
+              <div key={task.id} className={s.urgentRow}>
+                <span className={s.urgentIcon}><Glyph name={room.icon} size={16} /></span>
+                <div className={s.urgentMain}>
+                  <span className={s.urgentText}>{task.text}</span>
+                  <span className={s.urgentRoomName}>{room.name} · {taskDueLabel(task)}</span>
+                </div>
+                <button
+                  className={s.doneBtn}
+                  onClick={() => updateConfig(prev => markTaskDone(prev, task.id))}
+                  title="Erledigt"
+                >
+                  <CheckIcon />
+                </button>
               </div>
-              <button
-                className={s.doneBtn}
-                onClick={() => updateConfig(prev => markTaskDone(prev, task.id))}
-                title="Erledigt"
-              >
-                <CheckIcon />
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
-      <div className={s.rooms}>
-        {config.rooms.map(room => (
-          <RaumKarte
-            key={room.id}
-            room={room}
-            energie={energie}
-            open={!!openRooms[room.id]}
-            editing={!!editRooms[room.id]}
-            onToggle={() => toggleRoom(room.id)}
-            onToggleEdit={() => toggleEdit(room.id)}
-            onTaskDone={taskId => updateConfig(prev => markTaskDone(prev, taskId))}
-            onTaskReset={taskId => updateConfig(prev => resetTaskDone(prev, taskId))}
-            onUpdateTask={(taskId, patch) => updateConfig(prev => updateTask(prev, room.id, taskId, patch))}
-            onAddTask={task => updateConfig(prev => addTask(prev, room.id, task))}
-            onDeleteTask={taskId => updateConfig(prev => deleteTask(prev, room.id, taskId))}
-            onUpdateRoom={patch => updateConfig(prev => updateRoom(prev, room.id, patch))}
-            onDeleteRoom={() => {
-              updateConfig(prev => deleteRoom(prev, room.id))
-              setOpenRooms(p => { const n = { ...p }; delete n[room.id]; return n })
-              setEditRooms(p => { const n = { ...p }; delete n[room.id]; return n })
-            }}
-          />
-        ))}
+      <div className={s.roomsBlock}>
+        <div className={s.sectionLabel}>Räume</div>
+        <div className={s.rooms}>
+          {config.rooms.map(room => (
+            <RaumKarte
+              key={room.id}
+              room={room}
+              energie={energie}
+              open={!!openRooms[room.id]}
+              editing={!!editRooms[room.id]}
+              onToggle={() => toggleRoom(room.id)}
+              onToggleEdit={() => toggleEdit(room.id)}
+              onTaskDone={taskId => updateConfig(prev => markTaskDone(prev, taskId))}
+              onTaskReset={taskId => updateConfig(prev => resetTaskDone(prev, taskId))}
+              onUpdateTask={(taskId, patch) => updateConfig(prev => updateTask(prev, room.id, taskId, patch))}
+              onAddTask={task => updateConfig(prev => addTask(prev, room.id, task))}
+              onDeleteTask={taskId => updateConfig(prev => deleteTask(prev, room.id, taskId))}
+              onUpdateRoom={patch => updateConfig(prev => updateRoom(prev, room.id, patch))}
+              onDeleteRoom={() => {
+                updateConfig(prev => deleteRoom(prev, room.id))
+                setOpenRooms(p => { const n = { ...p }; delete n[room.id]; return n })
+                setEditRooms(p => { const n = { ...p }; delete n[room.id]; return n })
+              }}
+            />
+          ))}
 
-        <button className={s.addRoomBtn} onClick={handleAddRoom}>
-          + Raum hinzufügen
-        </button>
+          <button className={s.addRoomBtn} onClick={handleAddRoom}>
+            + Raum hinzufügen
+          </button>
+        </div>
       </div>
 
       <button
