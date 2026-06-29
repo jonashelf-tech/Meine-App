@@ -5,40 +5,38 @@ import { sv, lv, SK } from '../../../storage'
 import { ToolIcon } from '../toolRegistry'
 import { MODULE_CONFIG } from './moduleConfig'
 import { isDoneToday, saveSession } from './sessionStore'
+import { getEinheitModules } from './configStore'
 import { isCheckinHandledToday, markCheckinSkipped } from './checkinStore'
+import { EXERCISES } from './exercises/exerciseMap'
 import CheckinModal     from './CheckinModal'
 import KognitivSettings from './KognitivSettings'
-import ModuleList from './ModuleList'
-import Briefing   from './Briefing'
+import HeuteHero       from './HeuteHero'
+import ModuleList      from './ModuleList'
+import Briefing        from './Briefing'
 import KognitivBriefing from './KognitivBriefing'
-import DoneToday  from './DoneToday'
-import Results       from './Results'
-import Dashboard     from './Dashboard'
-import ModuleDetail  from './ModuleDetail'
-import SessionDetail from './SessionDetail'
-import AlertnessExercise        from './exercises/AlertnessExercise'
-import ZahlensucheExercise      from './exercises/ZahlensucheExercise'
-import GedaechtnisExercise      from './exercises/GedaechtnisExercise'
-import GoNoGoExercise           from './exercises/GoNoGoExercise'
-import NBackExercise            from './exercises/NBackExercise'
-import TaskSwitchingExercise    from './exercises/TaskSwitchingExercise'
-import GeteilteExercise         from './exercises/GeteilteExercise'
-import StroopExercise           from './exercises/StroopExercise'
-import SpeedSortExercise        from './exercises/SpeedSortExercise'
+import DoneToday       from './DoneToday'
+import Results         from './Results'
+import Dashboard       from './Dashboard'
+import ModuleDetail    from './ModuleDetail'
+import SessionDetail   from './SessionDetail'
+import EinheitRunner   from './EinheitRunner'
 import s from './TabKognitiv.module.css'
 
-// Nav screens: null = tabs visible
-// 'briefing' | 'done-today' | 'exercise' | 'results' | 'module-detail' | 'session-detail'
+const GearIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+  </svg>
+)
 
+// Nav-Screens: null = Heute-Startseite. Sonst immersiv (Vollbild, untere Nav aus).
 export default function TabKognitiv({ onBack, onExercising }) {
-  const [tab, setTab] = useState('modules')
-  const [nav, setNav] = useState(null)
-  const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null
+  const [nav, setNav]         = useState(null)
+  const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null (Einzelspiel)
   const [introSeen, setIntroSeen] = useState(() => lv(SK.kognitivIntroSeen, false))
   const pendingExerciseRef = useRef(null)
   const { kognitivAutoStart, setKognitivAutoStart, setBackInterceptor } = useAppStore()
 
-  // Sub-Screens (Erst-Briefing, Briefing, Übung, Auswertung …) sind immersiv: Vollbild + untere Nav aus.
   const isImmersive = nav !== null || countdown !== null || !introSeen
   useEffect(() => { onExercising?.(isImmersive) }, [isImmersive, onExercising])
 
@@ -47,14 +45,19 @@ export default function TabKognitiv({ onBack, onExercising }) {
     return () => setBackInterceptor(null)
   }, [nav, setBackInterceptor])
 
-  // ─── Auto-start from Tagesplaner ─────────────────────
+  const handleSelectModule = useCallback((moduleId) => {
+    if (isDoneToday(moduleId)) setNav({ screen: 'done-today', moduleId })
+    else if (!isCheckinHandledToday()) setNav({ screen: 'checkin', next: { screen: 'briefing', moduleId } })
+    else setNav({ screen: 'briefing', moduleId })
+  }, [])
+
+  // ─── Auto-start aus dem Tagesplaner ─────────────────────
   useEffect(() => {
     if (!kognitivAutoStart) return
     const id = kognitivAutoStart
     setKognitivAutoStart(null)
     handleSelectModule(id)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kognitivAutoStart])
+  }, [kognitivAutoStart, setKognitivAutoStart, handleSelectModule])
 
   const goBack = () => setNav(null)
 
@@ -75,14 +78,9 @@ export default function TabKognitiv({ onBack, onExercising }) {
     }, 1000)
   }, [])
 
-  const handleSelectModule = useCallback((moduleId) => {
-    if (isDoneToday(moduleId)) {
-      setNav({ screen: 'done-today', moduleId })
-    } else if (!isCheckinHandledToday()) {
-      setNav({ screen: 'checkin', moduleId })
-    } else {
-      setNav({ screen: 'briefing', moduleId })
-    }
+  const startEinheit = useCallback(() => {
+    if (!isCheckinHandledToday()) setNav({ screen: 'checkin', next: { screen: 'einheit' } })
+    else setNav({ screen: 'einheit' })
   }, [])
 
   if (!introSeen) {
@@ -96,8 +94,8 @@ export default function TabKognitiv({ onBack, onExercising }) {
   if (nav?.screen === 'checkin') {
     return (
       <CheckinModal
-        onSave={() => setNav({ screen: 'briefing', moduleId: nav.moduleId })}
-        onSkip={() => { markCheckinSkipped(); setNav({ screen: 'briefing', moduleId: nav.moduleId }) }}
+        onSave={() => setNav(nav.next)}
+        onSkip={() => { markCheckinSkipped(); setNav(nav.next) }}
       />
     )
   }
@@ -110,6 +108,10 @@ export default function TabKognitiv({ onBack, onExercising }) {
         <div className={s.countdownLabel}>gleich geht's los</div>
       </div>
     )
+  }
+
+  if (nav?.screen === 'einheit') {
+    return <EinheitRunner moduleIds={getEinheitModules()} onExit={goBack} />
   }
 
   if (nav?.screen === 'briefing') {
@@ -128,23 +130,12 @@ export default function TabKognitiv({ onBack, onExercising }) {
     /></div>
   }
   if (nav?.screen === 'exercise') {
-    const ExMap = {
-      alertness:      AlertnessExercise,
-      zahlensuche:    ZahlensucheExercise,
-      gedaechtnis:    GedaechtnisExercise,
-      gonogo:         GoNoGoExercise,
-      nback:          NBackExercise,
-      taskswitching:  TaskSwitchingExercise,
-      geteilt:        GeteilteExercise,
-      stroop:         StroopExercise,
-      speedsort:      SpeedSortExercise,
-    }
-    const Ex = ExMap[nav.moduleId]
+    const Ex = EXERCISES[nav.moduleId]
     if (Ex) return <Ex
       onDone={(session) => setNav({ screen: 'results', session, fromArchive: false })}
       onAbort={goBack}
     />
-    return <div className={s.placeholder}>Exercise {nav.moduleId} — noch nicht implementiert</div>
+    return <div className={s.placeholder}>Übung {nav.moduleId} — noch nicht implementiert</div>
   }
   if (nav?.screen === 'results') {
     if (!nav.fromArchive && !nav.saved) {
@@ -156,6 +147,39 @@ export default function TabKognitiv({ onBack, onExercising }) {
       fromArchive={nav.fromArchive}
       onBack={goBack}
     /></div>
+  }
+  if (nav?.screen === 'allmodules') {
+    return (
+      <div className={s.overlay}>
+        <div className={s.subHead}>
+          <button className={s.subBack} onClick={goBack}>← Zurück</button>
+          <span className={s.subTitle}>Alle Module</span>
+        </div>
+        <div className={s.subBody}><ModuleList onSelectModule={handleSelectModule} /></div>
+      </div>
+    )
+  }
+  if (nav?.screen === 'auswertung') {
+    return (
+      <div className={s.overlay}>
+        <div className={s.subHead}>
+          <button className={s.subBack} onClick={goBack}>← Zurück</button>
+          <span className={s.subTitle}>Auswertung</span>
+        </div>
+        <div className={s.subBody}><Dashboard onSelectModule={(id) => setNav({ screen: 'module-detail', moduleId: id })} /></div>
+      </div>
+    )
+  }
+  if (nav?.screen === 'settings') {
+    return (
+      <div className={s.overlay}>
+        <div className={s.subHead}>
+          <button className={s.subBack} onClick={goBack}>← Zurück</button>
+          <span className={s.subTitle}>Einstellungen</span>
+        </div>
+        <div className={s.subBody}><KognitivSettings /></div>
+      </div>
+    )
   }
   if (nav?.screen === 'module-detail') {
     return <div className={s.overlay}><ModuleDetail
@@ -170,19 +194,19 @@ export default function TabKognitiv({ onBack, onExercising }) {
 
   return (
     <div className={s.root} style={{ '--tool-color': 'var(--primary)' }}>
-      <ToolHeader onBack={onBack} icon={<ToolIcon id="kognitiv" size={20} />} eyebrow="Tool" title="Kognitiv" />
-      <div className={s.tabBar}>
-        <button className={[s.tabBtn, tab === 'modules'   ? s.tabOn : ''].join(' ')} onClick={() => setTab('modules')}>Module</button>
-        <button className={[s.tabBtn, tab === 'dashboard' ? s.tabOn : ''].join(' ')} onClick={() => setTab('dashboard')}>Statistik</button>
-        <button className={[s.tabBtn, tab === 'settings'  ? s.tabOn : ''].join(' ')} onClick={() => setTab('settings')}>Einstellungen</button>
-      </div>
+      <ToolHeader
+        onBack={onBack}
+        icon={<ToolIcon id="kognitiv" size={20} />}
+        eyebrow="Tool"
+        title="Kognitiv"
+        actions={<button className={s.gear} onClick={() => setNav({ screen: 'settings' })} aria-label="Einstellungen"><GearIcon /></button>}
+      />
       <div className={s.content}>
-        {tab === 'modules'
-          ? <ModuleList onSelectModule={handleSelectModule} />
-          : tab === 'dashboard'
-          ? <Dashboard onSelectModule={(id) => setNav({ screen: 'module-detail', moduleId: id })} />
-          : <KognitivSettings />
-        }
+        <HeuteHero
+          onStartEinheit={startEinheit}
+          onOpenAllModules={() => setNav({ screen: 'allmodules' })}
+          onOpenAuswertung={() => setNav({ screen: 'auswertung' })}
+        />
       </div>
     </div>
   )

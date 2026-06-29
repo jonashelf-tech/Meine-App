@@ -14,8 +14,14 @@
 }
 .countdownLabel { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.14em; }
 @keyframes cdPop { from { transform: scale(0.55); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.tabBar { display: flex; gap: 4px; margin: 12px 14px 2px; padding: 4px; background: var(--surface-low); border: 1px solid var(--border); border-radius: 12px; flex-shrink: 0; }
-.tabBtn { flex: 1; background: none; border: none; border-radius: 9px; color: var(--text-dim); font-family: var(--font); font-size: 0.8rem; font-weight: 600; padding: 9px 0; cursor: pointer; transition: color var(--dur-fast), background var(--dur-fast); }
-.tabOn { color: var(--tool-color, var(--primary)); background: color-mix(in srgb, var(--tool-color, var(--primary)) 16%, transparent); }
 .content { flex: 1; overflow-y: auto; }
+
+/* Sub-Screens (Alle Module · Auswertung · Einstellungen) — Header + scrollbarer Body */
+.subHead { display: flex; align-items: center; gap: 12px; padding: 14px 16px 8px; flex-shrink: 0; }
+.subBack { background: none; border: none; color: var(--text-dim); font-family: var(--font); font-size: 0.85rem; cursor: pointer; padding: 0; }
+.subBack:active { color: var(--text); }
+.subTitle { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.subBody { flex: 1; overflow-y: auto; }
+.gear { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; }
+.gear:active { color: var(--text); }
 .placeholder { padding: 24px; color: var(--text-dim); font-size: 0.8rem; }
