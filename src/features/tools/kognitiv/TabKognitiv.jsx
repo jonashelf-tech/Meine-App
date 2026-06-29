@@ -15,7 +15,7 @@ import Briefing        from './Briefing'
 import Onboarding      from './Onboarding'
 import DoneToday       from './DoneToday'
 import Results         from './Results'
-import Dashboard       from './Dashboard'
+import Auswertung      from './Auswertung'
 import ModuleDetail    from './ModuleDetail'
 import SessionDetail   from './SessionDetail'
 import EinheitRunner   from './EinheitRunner'
@@ -161,7 +161,10 @@ export default function TabKognitiv({ onBack, onExercising }) {
           <button className={s.subBack} onClick={goBack}>← Zurück</button>
           <span className={s.subTitle}>Auswertung</span>
         </div>
-        <div className={s.subBody}><Dashboard onSelectModule={(id) => setNav({ screen: 'module-detail', moduleId: id })} /></div>
+        <div className={s.subBody}><Auswertung
+          onSelectModule={(id) => setNav({ screen: 'module-detail', moduleId: id })}
+          onSelectSession={(session) => setNav({ screen: 'session-detail', session })}
+        /></div>
       </div>
     )
   }
