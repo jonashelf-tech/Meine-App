@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
 import ExerciseShell from './ExerciseShell'
-import ModuleIcon from '../ModuleIcon'
+import ShapeIcon, { SHAPE_KEYS } from './ShapeIcon'
 import s from './SpeedSortExercise.module.css'
 
 const DURATION_MS  = 90000
 const SWITCH_EVERY = 10
-const SYMBOLS = ['alertness', 'zahlensuche', 'gonogo', 'nback', 'taskswitching', 'gedaechtnis']
+const SYMBOLS = SHAPE_KEYS
 
 function pick(arr, not) {
   const pool = not ? arr.filter(x => x !== not) : arr
@@ -89,13 +89,13 @@ export default function SpeedSortExercise({ onDone, onAbort }) {
         <div className={s.targetWrap}>
           <div className={s.targetLabel}>Ziel</div>
           <div className={s.targetBadge}>
-            <ModuleIcon id={target} size={34} />
+            <ShapeIcon type={target} size={36} />
             <span className={s.count}>{remaining}</span>
           </div>
         </div>
 
         <div className={[s.stage, flash === 'ok' ? s.ok : '', flash === 'no' ? s.no : ''].join(' ')}>
-          {current && <div key={totalRef.current} className={s.symbol}><ModuleIcon id={current} size={104} /></div>}
+          {current && <div key={totalRef.current} className={s.symbol}><ShapeIcon type={current} size={104} /></div>}
         </div>
 
         <div className={s.pad}>

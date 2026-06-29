@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createSession } from '../sessionStore'
 import ExerciseShell from './ExerciseShell'
+import ShapeIcon, { SHAPE_KEYS as SHAPES, SHAPE_STROKE as STROKE, SHAPE_FILL as FILL } from './ShapeIcon'
 import s from './NBackExercise.module.css'
 
-const SHAPES = ['circle', 'triangle', 'square', 'star']
-const STROKE = { circle: '#8B5CF6', triangle: '#14B8A6', square: '#10B981', star: '#FB7185' }
-const FILL   = { circle: 'rgba(139,92,246,0.15)', triangle: 'rgba(20,184,166,0.15)', square: 'rgba(16,185,129,0.15)', star: 'rgba(251,113,133,0.15)' }
-const GREY   = 'rgba(255,255,255,0.45)'
+const GREY = 'rgba(255,255,255,0.45)'
 const TOTAL  = 44
 const GAP_MS = 400
 
@@ -26,16 +24,6 @@ function buildSeq(n) {
     }
   }
   return seq
-}
-
-function ShapeIcon({ type, color, fill }) {
-  if (type === 'circle')
-    return <svg width="110" height="110" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" stroke={color} strokeWidth="4" fill={fill} /></svg>
-  if (type === 'triangle')
-    return <svg width="110" height="110" viewBox="0 0 100 100"><polygon points="50,6 94,90 6,90" stroke={color} strokeWidth="4" fill={fill} /></svg>
-  if (type === 'square')
-    return <svg width="110" height="110" viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="8" stroke={color} strokeWidth="4" fill={fill} /></svg>
-  return <svg width="110" height="110" viewBox="0 0 100 100"><polygon points="50,6 61,36 94,36 68,58 78,90 50,70 22,90 32,58 6,36 39,36" stroke={color} strokeWidth="4" fill={fill} /></svg>
 }
 
 export default function NBackExercise({ onDone, onAbort }) {
