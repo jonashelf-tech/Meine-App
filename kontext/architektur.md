@@ -128,6 +128,19 @@ src/
         MealprepSection.jsx     — Tagesplaner-Karte: Korb-Inhalt + „Koch-Todo"-Action
       timer/          TabTimer.jsx
       wasjetzt/       TabWasJetzt.jsx
+      kognitiv/
+        TabKognitiv.jsx         — Router: Heute-first (HeuteHero) + Nav-Screens (einheit·briefing·exercise·results·allmodules·auswertung·settings·module/session-detail). Onboarding-Gating via configStore. Gear→Einstellungen
+        moduleConfig.js         — MODULE_CONFIG (8 aktiv + archiviert `geteilt`), MODULE_ORDER, PROFILE_DOMAINS (5 Domänen→Module, für Profil-Balken)
+        configStore.js          — SK.kognitivConfig: tägliche Einheit (modules + Reihenfolge), reminders (flex|fixed), checkinOn, onboardingDone (+Migration aus altem introSeen)
+        sessionStore.js         — SK.kognitiv (Läufe) + pure Helfer: bestMetric/computeDelta/barFraction · formScore/moduleForm/domainForm · isPersonalBest · einheitenInRange/einheitStreak; sessionGroupId/einheitComplete = Einheit-Gruppierung. Guard: sessionStore.test.js
+        checkinStore.js         — SK.kognitivCheckin (Schlaf/Energie vor der Einheit) + Skip-Flag
+        HeuteHero.jsx           — Startseite: Hero (Einheit-Chips, Ring n/total, Gradient-CTA, Akzent B), 3 Kacheln (Streak/Woche/Ø Dauer), Profil-Balken, Auswertung/Alle-Module
+        EinheitRunner.jsx       — spielt Module am Stück (Countdown→Übung→…), speichert je Lauf mit gemeinsamer sessionGroupId; EinheitResult.jsx = kombiniertes Ergebnis + Bestwerte
+        Onboarding.jsx          — Konfigurator (Erstöffnung): Intro→Auswahl&Reihenfolge→Wann→Finish; EinheitPicker.jsx = geteilte Modul-Auswahl/Reihenfolge (auch in Einstellungen)
+        Auswertung.jsx          — Tabs Überblick/Module/Profil; Modul-Sparklines mit antippbaren Punkten → SessionDetail. ModuleDetail/SessionDetail = Tiefenanalyse
+        ModuleList.jsx          — „Alle Module" (Einzelspiel) · Briefing.jsx + ModuleDemo.jsx (CSS-Loop-Demos) vor der Übung
+        exercises/              — ExerciseShell + 8 Übungen · ShapeIcon.jsx (Kreis/Dreieck/Rechteck/Stern, von N-Back + Speed-Sort geteilt) · exerciseMap.js (moduleId→Übung, Single Source)
+        KognitivSection.jsx     — Tagesplaner-Widget (heutige Einheit offen)
 
   hooks/
     useDragDrop.js
@@ -268,6 +281,20 @@ Standard-Header für alle Tools:
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 <ToolHeader onBack={onBack} icon={<MyIcon />} eyebrow="Tool" title="Toolname" />
 ```
+
+---
+
+## Tool-Design-Sprache (Patterns)
+
+Aus dem Fitness-Look abgeleitet — gilt für „hochwertige" Tool-Screens (Kognitiv, Fitness …):
+- **Hero-Karte**: Kicker mit farbigem Punkt · großer Titel · Meta-Zeile · Fortschritts-Ring · Chips · großer Gradient-CTA.
+- **Kacheln**: 3er-Grid, Orbitron-Zahlen (`var(--font-num)`), eine hervorgehoben (Akzent-Rand).
+- **Section-Labels**: Caps + letter-spacing, `--text-dim`.
+- **Balance-/Profil-Balken**: Label + Track + Fill in Domänen-/Akzentfarbe.
+- **Tab-Switcher** (segmented) + **Wochen-Navigator** + **Sparkline-Karten** mit antippbaren Punkten — Granularität bleibt: Punkt = Session → Detail.
+- **Akzentlinie-Regel**: kein einseitiger Rand/keine Linie auf runder Ecke (wirkt „abgehackt"). Entweder weicher Schimmer ODER Linie mit transparenten Enden (`linear-gradient(90deg, transparent, …, transparent)`).
+- **Gradient-CTA**: `linear-gradient(135deg, color-mix(in srgb, var(--primary) 70%, white), var(--primary))`, Text weiß; Glow via `color-mix(var(--primary) …)`.
+- Modul-/Domänen-**Farben sind Daten** (moduleConfig / PROFILE_DOMAINS, Hex in JS) — nicht in CSS-Dateien hardcoden.
 
 ---
 

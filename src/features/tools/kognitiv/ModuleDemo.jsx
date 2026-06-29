@@ -11,6 +11,8 @@ const CAPTIONS = {
   nback:         'Gleich wie das vorige Symbol? → tippen',
   taskswitching: 'Regel wechselt — mal Form, mal Farbe matchen',
   geteilt:       'Auf Bild und Ton achten → bei Signal tippen',
+  stroop:        'Farbe des Wortes tippen — nicht das Wort',
+  speedsort:     'Passt das Symbol zum Ziel? ✓ ja · ✗ nein',
 }
 
 const POS6 = [
@@ -97,6 +99,34 @@ function Demo({ moduleId }) {
           <div className={s.gtTone}>
             <span className={s.gtHigh}>HOCH</span>
             <span className={s.gtLow}>TIEF</span>
+          </div>
+        </div>
+      )
+
+    case 'stroop':
+      return (
+        <div className={s.stWrap}>
+          <span className={s.stWord} style={{ color: '#3B82F6' }}>ROT</span>
+          <div className={s.stPad}>
+            {['#EF4444', '#3B82F6', '#22C55E', '#EAB308'].map((c, i) => (
+              <span key={i} className={[s.stSw, i === 1 ? s.stPick : ''].join(' ')} style={{ background: c }} />
+            ))}
+          </div>
+        </div>
+      )
+
+    case 'speedsort':
+      return (
+        <div className={s.ssWrap}>
+          <span className={s.ssLbl}>Ziel</span>
+          <span className={[s.ssShape, s.ssCirc].join(' ')} />
+          <div className={s.ssStream}>
+            <span className={[s.ssShape, s.ssCirc, s.ssA].join(' ')} />
+            <span className={[s.ssShape, s.ssSq, s.ssB].join(' ')} />
+          </div>
+          <div className={s.ssBtns}>
+            <span className={[s.ssBtn, s.ssYes, s.ssA].join(' ')}>✓</span>
+            <span className={[s.ssBtn, s.ssNo, s.ssB].join(' ')}>✗</span>
           </div>
         </div>
       )

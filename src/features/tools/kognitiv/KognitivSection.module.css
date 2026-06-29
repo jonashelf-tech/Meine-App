@@ -1,12 +1,11 @@
-.body { padding: 12px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
-
-.pending { display: flex; flex-direction: column; gap: 5px; }
-.pendingRow { display: flex; align-items: center; gap: 8px; }
-.pendingName { font-size: 0.75rem; color: var(--text); flex: 1; }
-.pendingTime { font-family: var(--font-num); font-size: 0.62rem; color: var(--text-dim); }
-.pendingStart {
-  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
-  background: rgba(139,92,246,0.18); border: 1px solid rgba(139,92,246,0.3);
-  color: var(--primary); font-size: 0.65rem; cursor: pointer;
+.body { padding: 12px 14px 10px; }
+.row { display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
+.name { font-size: 0.8rem; font-weight: 600; color: var(--text); flex: 1; }
+.meta { font-size: 0.68rem; color: var(--text-dim); }
+.start {
+  width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  color: var(--accent);
 }
