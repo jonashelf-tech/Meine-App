@@ -1,44 +1,17 @@
-.root { padding: 14px 14px 28px; display: flex; flex-direction: column; gap: 10px; }
-.root > * { animation: fadeInUp .4s var(--ease-out) both; }
-
-.intro { font-size: 0.76rem; color: var(--text-dim); line-height: 1.55; margin: 2px 2px 4px; }
-
-.card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 12px;
-}
-.name { font-size: 0.92rem; font-weight: 700; color: var(--text); }
-
-.modeToggle {
-  display: flex; gap: 3px; padding: 3px;
-  background: var(--surface-low); border: 1px solid var(--border); border-radius: 10px;
-}
-.modeBtn {
-  flex: 1; background: none; border: none; border-radius: 7px;
-  color: var(--text-dim); font-family: var(--font); font-size: 0.72rem; font-weight: 600;
-  padding: 7px 4px; cursor: pointer; white-space: nowrap;
-  transition: color var(--dur-fast), background var(--dur-fast);
-}
-.modeBtnOn { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
-
-.scheduleConfig { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-.timeRow { display: flex; align-items: center; gap: 10px; }
-.timeLabel { font-size: 0.72rem; color: var(--text-dim); }
-.timeInput {
-  background: var(--surface-low); border: 1px solid var(--border); border-radius: 8px;
-  color: var(--text); font-family: var(--font-num); font-size: 0.9rem; padding: 7px 10px; outline: none; width: 110px;
-}
-.timeInput:focus { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-
-.dayChips { display: flex; gap: 6px; flex-wrap: wrap; }
-.dayChip {
-  background: var(--surface-low); border: 1px solid var(--border); border-radius: 20px;
-  color: var(--text-dim); font-size: 0.7rem; font-weight: 600; font-family: var(--font);
-  padding: 5px 11px; cursor: pointer;
-  transition: color var(--dur-fast), background var(--dur-fast), border-color var(--dur-fast);
-}
-.dayChipOn {
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-  color: var(--accent);
-}
+.root { padding: 8px 16px 28px; }
+.secLabel { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); font-weight: 600; margin: 22px 2px 8px; }
+.seg { display: flex; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 5px; }
+.segBtn { flex: 1; padding: 10px 0; border: none; background: none; border-radius: 9px; color: var(--text-dim); font-family: var(--font); font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+.segOn { background: color-mix(in srgb, var(--primary) 18%, transparent); color: var(--primary); }
+.wdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 12px 0; }
+.wday { aspect-ratio: 1; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); font-family: var(--font); font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+.wdayOn { border-color: color-mix(in srgb, var(--primary) 50%, transparent); background: color-mix(in srgb, var(--primary) 16%, transparent); color: var(--primary); }
+.timeRow { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.timeLbl { font-size: 0.9rem; color: var(--text); }
+.timeInput { background: var(--surface-low, rgba(255, 255, 255, 0.06)); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: var(--font-num); font-size: 0.95rem; padding: 8px 10px; outline: none; }
+.toggleRow { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; cursor: pointer; }
+.toggleTxt { font-size: 0.92rem; color: var(--text); font-weight: 600; }
+.switch { width: 44px; height: 26px; border-radius: 14px; background: var(--surface-low, rgba(255, 255, 255, 0.12)); border: 1px solid var(--border); position: relative; transition: background var(--dur-fast); flex: none; }
+.switchOn { background: var(--primary); border-color: var(--primary); }
+.knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: white; transition: transform var(--dur-fast); }
+.switchOn .knob { transform: translateX(18px); }

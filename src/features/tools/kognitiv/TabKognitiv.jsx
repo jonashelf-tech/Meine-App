@@ -1,11 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { useAppStore } from '../../../store'
-import { sv, lv, SK } from '../../../storage'
 import { ToolIcon } from '../toolRegistry'
 import { MODULE_CONFIG } from './moduleConfig'
 import { isDoneToday, saveSession } from './sessionStore'
-import { getEinheitModules } from './configStore'
+import { getEinheitModules, isOnboardingDone } from './configStore'
 import { isCheckinHandledToday, markCheckinSkipped } from './checkinStore'
 import { EXERCISES } from './exercises/exerciseMap'
 import CheckinModal     from './CheckinModal'
@@ -13,7 +12,7 @@ import KognitivSettings from './KognitivSettings'
 import HeuteHero       from './HeuteHero'
 import ModuleList      from './ModuleList'
 import Briefing        from './Briefing'
-import KognitivBriefing from './KognitivBriefing'
+import Onboarding      from './Onboarding'
 import DoneToday       from './DoneToday'
 import Results         from './Results'
 import Dashboard       from './Dashboard'
@@ -33,11 +32,11 @@ const GearIcon = () => (
 export default function TabKognitiv({ onBack, onExercising }) {
   const [nav, setNav]         = useState(null)
   const [countdown, setCountdown] = useState(null) // 3 | 2 | 1 | null (Einzelspiel)
-  const [introSeen, setIntroSeen] = useState(() => lv(SK.kognitivIntroSeen, false))
+  const [onboarded, setOnboarded] = useState(() => isOnboardingDone())
   const pendingExerciseRef = useRef(null)
   const { kognitivAutoStart, setKognitivAutoStart, setBackInterceptor } = useAppStore()
 
-  const isImmersive = nav !== null || countdown !== null || !introSeen
+  const isImmersive = nav !== null || countdown !== null || !onboarded
   useEffect(() => { onExercising?.(isImmersive) }, [isImmersive, onExercising])
 
   useEffect(() => {
@@ -83,12 +82,8 @@ export default function TabKognitiv({ onBack, onExercising }) {
     else setNav({ screen: 'einheit' })
   }, [])
 
-  if (!introSeen) {
-    return (
-      <div className={s.overlay}>
-        <KognitivBriefing onComplete={() => { sv(SK.kognitivIntroSeen, true); setIntroSeen(true) }} />
-      </div>
-    )
+  if (!onboarded) {
+    return <Onboarding onComplete={(startNow) => { setOnboarded(true); if (startNow) startEinheit() }} />
   }
 
   if (nav?.screen === 'checkin') {

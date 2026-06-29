@@ -1,0 +1,18 @@
+.wrap { display: flex; flex-direction: column; }
+.secLabel { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); font-weight: 600; margin: 14px 2px 8px; }
+.list { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); width: 100%; box-sizing: border-box; text-align: left; }
+.addRow { cursor: pointer; color: var(--text); font-family: var(--font); }
+.addRow:active { background: var(--surface-low, rgba(255, 255, 255, 0.06)); }
+.num { width: 20px; height: 20px; flex: none; border-radius: 50%; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); font-family: var(--font-num); font-weight: 700; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; }
+.icon { color: var(--accent); display: inline-flex; flex: none; }
+.name { flex: 1; font-size: 0.9rem; font-weight: 600; color: var(--text); min-width: 0; }
+.dom { font-size: 0.72rem; color: var(--text-dim); }
+.ord { display: flex; gap: 2px; flex: none; }
+.ordBtn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--surface-low, rgba(255, 255, 255, 0.05)); border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; }
+.ordBtn:disabled { opacity: 0.3; cursor: default; }
+.ordBtn:not(:disabled):active { color: var(--text); }
+.rm { width: 30px; height: 30px; flex: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: none; border: none; color: var(--text-dim); cursor: pointer; }
+.rm:active { color: var(--rose); }
+.add { color: var(--accent); display: inline-flex; flex: none; }
+.empty { font-size: 0.82rem; color: var(--text-dim); padding: 14px 12px; text-align: center; background: var(--surface); border: 1px dashed var(--border); border-radius: 14px; }

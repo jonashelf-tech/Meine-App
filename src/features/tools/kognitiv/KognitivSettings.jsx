@@ -1,93 +1,53 @@
 import { useState } from 'react'
-import { sv, lv, SK } from '../../../storage'
-import { MODULE_CONFIG, MODULE_ORDER } from './moduleConfig'
+import { loadConfig, saveConfig } from './configStore'
+import EinheitPicker from './EinheitPicker'
 import s from './KognitivSettings.module.css'
 
-const DAY_LABELS   = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
-const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0] // Mo … Sa … So
+const WEEKDAYS = [
+  { iso: 1, label: 'Mo' }, { iso: 2, label: 'Di' }, { iso: 3, label: 'Mi' }, { iso: 4, label: 'Do' },
+  { iso: 5, label: 'Fr' }, { iso: 6, label: 'Sa' }, { iso: 7, label: 'So' },
+]
 
 export default function KognitivSettings() {
-  const [schedule, setSchedule] = useState(() => lv(SK.kognitivSchedule, {}))
+  const [cfg, setCfg] = useState(() => loadConfig())
+  const patch = p => setCfg(saveConfig(p))
 
-  const update = (moduleId, patch) => {
-    const current = schedule[moduleId] ?? { mode: 'free' }
-    const next    = { ...schedule, [moduleId]: { ...current, ...patch } }
-    setSchedule(next)
-    sv(SK.kognitivSchedule, next)
+  const reminders = cfg.reminders ?? { mode: 'flex', days: [1, 2, 3, 4, 5], time: '09:00' }
+  const setReminders = r => patch({ reminders: { ...reminders, ...r } })
+  const toggleDay = iso => {
+    const days = reminders.days ?? []
+    setReminders({ days: days.includes(iso) ? days.filter(x => x !== iso) : [...days, iso].sort((a, b) => a - b) })
   }
+  const checkinOn = cfg.checkinOn !== false
 
   return (
     <div className={s.root}>
-      <div className={s.intro}>Lege je Modul fest, ob du frei trainierst, erinnert wirst oder einen festen Termin hast. Terminierte Module erscheinen oben unter „Heute dran".</div>
+      <EinheitPicker selected={cfg.modules ?? []} onChange={modules => patch({ modules })} />
 
-      {MODULE_ORDER.map(id => {
-        const m   = MODULE_CONFIG[id]
-        const cfg = schedule[id] ?? { mode: 'free' }
-
-        return (
-          <div key={id} className={s.card} style={{ '--accent': m.color }}>
-            <div className={s.name}>{m.name}</div>
-            <div className={s.modeToggle}>
-              <button
-                className={[s.modeBtn, cfg.mode === 'free' ? s.modeBtnOn : ''].join(' ')}
-                onClick={() => update(id, { mode: 'free' })}
-              >
-                Frei
-              </button>
-              <button
-                className={[s.modeBtn, cfg.mode === 'reminder' ? s.modeBtnOn : ''].join(' ')}
-                onClick={() => update(id, { mode: 'reminder' })}
-              >
-                Erinnerung
-              </button>
-              <button
-                className={[s.modeBtn, cfg.mode === 'scheduled' ? s.modeBtnOn : ''].join(' ')}
-                onClick={() => update(id, {
-                  mode: 'scheduled',
-                  time: cfg.time ?? '09:00',
-                  days: cfg.days ?? [1, 2, 3, 4, 5],
-                })}
-              >
-                Termin
-              </button>
-            </div>
-
-            {cfg.mode === 'scheduled' && (
-              <div className={s.scheduleConfig}>
-                <div className={s.timeRow}>
-                  <span className={s.timeLabel}>Uhrzeit</span>
-                  <input
-                    type="time"
-                    className={s.timeInput}
-                    value={cfg.time ?? '09:00'}
-                    onChange={e => update(id, { time: e.target.value })}
-                  />
-                </div>
-                <div className={s.dayChips}>
-                  {DISPLAY_ORDER.map(idx => {
-                    const days = cfg.days ?? []
-                    const on   = days.includes(idx)
-                    return (
-                      <button
-                        key={idx}
-                        className={[s.dayChip, on ? s.dayChipOn : ''].join(' ')}
-                        onClick={() => {
-                          const next = on
-                            ? days.filter(d => d !== idx)
-                            : [...days, idx].sort((a, b) => a - b)
-                          update(id, { days: next })
-                        }}
-                      >
-                        {DAY_LABELS[idx]}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
+      <div className={s.secLabel}>Erinnerungen</div>
+      <div className={s.seg}>
+        <button className={[s.segBtn, reminders.mode === 'flex' ? s.segOn : ''].join(' ')} onClick={() => setReminders({ mode: 'flex' })}>Flexibel</button>
+        <button className={[s.segBtn, reminders.mode === 'fixed' ? s.segOn : ''].join(' ')} onClick={() => setReminders({ mode: 'fixed' })}>Feste Tage</button>
+      </div>
+      {reminders.mode === 'fixed' && (
+        <>
+          <div className={s.wdays}>
+            {WEEKDAYS.map(w => (
+              <button key={w.iso} className={[s.wday, (reminders.days ?? []).includes(w.iso) ? s.wdayOn : ''].join(' ')} onClick={() => toggleDay(w.iso)}>{w.label}</button>
+            ))}
           </div>
-        )
-      })}
+          <div className={s.timeRow}>
+            <span className={s.timeLbl}>Uhrzeit</span>
+            <input type="time" className={s.timeInput} value={reminders.time ?? '09:00'} onChange={e => setReminders({ time: e.target.value })} />
+          </div>
+        </>
+      )}
+
+      <div className={s.secLabel}>Check-in</div>
+      <button className={s.toggleRow} onClick={() => patch({ checkinOn: !checkinOn })}>
+        <span className={s.toggleTxt}>Check-in vor der Einheit</span>
+        <span className={[s.switch, checkinOn ? s.switchOn : ''].join(' ')}><span className={s.knob} /></span>
+      </button>
     </div>
   )
 }
