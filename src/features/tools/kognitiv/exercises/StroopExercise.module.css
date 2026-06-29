@@ -1,0 +1,51 @@
+.arena {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px 40px;
+  box-sizing: border-box;
+}
+.wordWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+.word {
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: clamp(48px, 16vw, 84px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: stroopIn 0.14s ease-out;
+}
+@keyframes stroopIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+.pad {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+.swatch {
+  aspect-ratio: 1 / 1;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.swatch:active { transform: scale(0.96); }
+.swatchInner {
+  width: 58%;
+  height: 58%;
+  border-radius: 14px;
+  box-shadow: 0 0 26px color-mix(in srgb, var(--c) 55%, transparent);
+}

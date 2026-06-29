@@ -1,0 +1,81 @@
+.arena {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 40px;
+  box-sizing: border-box;
+}
+.targetWrap { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.targetLabel {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+.targetBadge {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+}
+.count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 11px;
+  background: var(--accent);
+  color: #04121a;
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.stage {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  margin: 14px 0;
+  border-radius: 24px;
+  transition: background 0.14s ease;
+}
+.stage.ok { background: rgba(16, 185, 129, 0.12); }
+.stage.no { background: rgba(251, 113, 133, 0.12); }
+.symbol { color: var(--accent); animation: ssDrop 0.18s ease-out; }
+@keyframes ssDrop { from { transform: translateY(-26px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.pad {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+}
+.btn {
+  height: 78px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.btn:active { transform: scale(0.97); }
+.yes { background: rgba(16, 185, 129, 0.14); border-color: var(--emerald); color: var(--emerald); }
+.no2 { background: rgba(251, 113, 133, 0.12); border-color: var(--rose); color: var(--rose); }

@@ -23,6 +23,8 @@ import GoNoGoExercise           from './exercises/GoNoGoExercise'
 import NBackExercise            from './exercises/NBackExercise'
 import TaskSwitchingExercise    from './exercises/TaskSwitchingExercise'
 import GeteilteExercise         from './exercises/GeteilteExercise'
+import StroopExercise           from './exercises/StroopExercise'
+import SpeedSortExercise        from './exercises/SpeedSortExercise'
 import s from './TabKognitiv.module.css'
 
 // Nav screens: null = tabs visible
@@ -134,6 +136,8 @@ export default function TabKognitiv({ onBack, onExercising }) {
       nback:          NBackExercise,
       taskswitching:  TaskSwitchingExercise,
       geteilt:        GeteilteExercise,
+      stroop:         StroopExercise,
+      speedsort:      SpeedSortExercise,
     }
     const Ex = ExMap[nav.moduleId]
     if (Ex) return <Ex
