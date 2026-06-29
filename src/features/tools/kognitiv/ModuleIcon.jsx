@@ -47,6 +47,20 @@ const PATHS = {
       <path d="M12 4v16" />
     </>
   ),
+  // Selektive Aufmerksamkeit — Tintentropfen (Farbe ≠ Wort)
+  stroop: (
+    <>
+      <path d="M12 3c3.2 4 5 6.4 5 8.8a5 5 0 0 1-10 0C7 9.4 8.8 7 12 3Z" />
+      <path d="M9.5 12.2a2.5 2.5 0 0 0 2.5 2.3" />
+    </>
+  ),
+  // Tempo & Dauerfokus — Häkchen + Kreuz (richtig/falsch sortieren)
+  speedsort: (
+    <>
+      <path d="M3 12.5l2.5 2.5L10 9" />
+      <path d="M15 9l5 5M20 9l-5 5" />
+    </>
+  ),
 }
 
 export default function ModuleIcon({ id, size = 20, className }) {

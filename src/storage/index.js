@@ -105,6 +105,7 @@ export const SK = {
   garten:          `${PREFIX}garten_v1`,
   fitness:         `${PREFIX}fitness_v1`,
   fitnessSessions: `${PREFIX}fitness_sessions`,
+  kognitivConfig:  `${PREFIX}kognitiv_config`,
 }
 
 export const exportData = () => {
@@ -138,7 +139,7 @@ export const BACKUP_CATS = {
     SK.birthdays, SK.birthdaySort, SK.haushalt, SK.haushaltEnergie,
     SK.reminder, SK.reminderDismissed, SK.elvi,
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
-    SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule,
+    SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule, SK.kognitivConfig,
     SK.wachstum, SK.garten, SK.growth, SK.dailyState,
   ],
   einstellungen: [

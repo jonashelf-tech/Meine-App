@@ -16,7 +16,7 @@ export const MODULE_CONFIG = {
     id: 'zahlensuche',
     name: 'Zahlensuche',
     color: '#38BDF8',
-    domain: 'Tempo',
+    domain: 'Visuelle Suche',
     desc: '25 Felder mit Zahlen 01–25. Tippe sie in Reihenfolge so schnell wie möglich.',
     duration: 'ca. 2–4 Minuten',
     measured: ['Gesamtzeit (s)', 'Fehler', 'Zeit pro Zahl'],
@@ -27,7 +27,7 @@ export const MODULE_CONFIG = {
   },
   gedaechtnis: {
     id: 'gedaechtnis',
-    name: 'Arbeitsgedächtnis',
+    name: 'Merkspanne',
     color: '#A78BFA',
     domain: 'Gedächtnis',
     desc: 'Kreise leuchten nacheinander auf — merke dir die Sequenz. Sie wird jede Runde länger.',
@@ -77,11 +77,40 @@ export const MODULE_CONFIG = {
     mainMetricUnit: 'ms',
     higherIsBetter: false,
   },
+  stroop: {
+    id: 'stroop',
+    name: 'Stroop',
+    color: '#F472B6',
+    domain: 'Selektive Aufmerksamkeit',
+    desc: 'Tippe die FARBE, in der das Wort geschrieben ist — nicht das Wort selbst.',
+    duration: 'ca. 2,5 Minuten',
+    measured: ['Trefferquote', 'Ø Reaktionszeit', 'Interferenz (inkongruent − kongruent)'],
+    notMeasured: ['Lesegeschwindigkeit', 'Farbsehschwäche'],
+    mainMetricLabel: 'Trefferquote',
+    mainMetricUnit: '%',
+    higherIsBetter: true,
+  },
+  speedsort: {
+    id: 'speedsort',
+    name: 'Speed-Sort',
+    color: '#22D3EE',
+    domain: 'Tempo & Dauerfokus',
+    desc: 'Stimmt das Symbol mit dem Ziel oben überein? ✓ wenn ja, ✗ wenn nein — so schnell wie möglich.',
+    duration: '90 Sekunden',
+    measured: ['Richtige pro Minute', 'Genauigkeit', 'Ø Entscheidungszeit'],
+    notMeasured: ['Gedächtnis', 'Reaktion auf Einzelreize'],
+    mainMetricLabel: 'Richtige/min',
+    mainMetricUnit: '/min',
+    higherIsBetter: true,
+  },
+  // Archiviert: aus dem aktiven Roster entfernt (zu komplex), aber Config bleibt,
+  // damit historische Sessions in Auswertung/Historie korrekt rendern. Nicht startbar.
   geteilt: {
     id: 'geteilt',
     name: 'Geteilte Aufmerksamkeit',
     color: '#22D3EE',
     domain: 'Multitasking',
+    archived: true,
     desc: 'Bild und Ton gleichzeitig im Blick behalten — tippe sobald eines der Signale auftritt.',
     steps: [
       'Jede Runde: 5 Kreise erscheinen, dazu ein Ton (HOCH oder TIEF).',
@@ -100,6 +129,17 @@ export const MODULE_CONFIG = {
 }
 
 export const MODULE_ORDER = [
-  'alertness', 'zahlensuche', 'gedaechtnis',
-  'gonogo', 'nback', 'taskswitching', 'geteilt',
+  'alertness', 'zahlensuche', 'gedaechtnis', 'gonogo',
+  'nback', 'taskswitching', 'stroop', 'speedsort',
 ]
+
+// Profil-Domänen für die „Form pro Domäne"-Ansicht — gruppiert die Module.
+export const PROFILE_DOMAINS = {
+  aufmerksamkeit:  { label: 'Aufmerksamkeit',  color: '#2DD4BF', modules: ['alertness', 'stroop'] },
+  gedaechtnis:     { label: 'Gedächtnis',      color: '#A78BFA', modules: ['gedaechtnis', 'nback'] },
+  tempo:           { label: 'Tempo',           color: '#38BDF8', modules: ['zahlensuche', 'speedsort'] },
+  impulskontrolle: { label: 'Impulskontrolle', color: '#34D399', modules: ['gonogo'] },
+  flexibilitaet:   { label: 'Flexibilität',    color: '#FBBF24', modules: ['taskswitching'] },
+}
+
+export const PROFILE_DOMAIN_ORDER = ['aufmerksamkeit', 'gedaechtnis', 'tempo', 'impulskontrolle', 'flexibilitaet']
