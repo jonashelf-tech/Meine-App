@@ -95,6 +95,15 @@ Gesamtportionen + „N × 250 g Block". kcal/Makros pro Portion + optional Batch
 Die Frisch/Einfrier-Aufteilung der Komponenten steuert, was tatsächlich gekocht/gekauft
 wird (siehe Mechanik oben). Kleiner Hinweis je Gericht: „X friert ein · Y machst du frisch".
 
+**Präzisierungen (Jonas):**
+- **Einheit = Portionen/Blöcke, nicht Batches.** Eingabe ist die Portionszahl (1 TK-Block =
+  1 Portion = 250 g). Wie oft die Basis dafür gekocht werden muss (Batches), rechnet die App
+  und zeigt es nur als **abgeleiteten Hinweis** („Tomatensoße 2× kochen"). Der alte
+  Batch-Stepper in `Grossrezepte` wird durch diese Portions-/Block-Logik ersetzt.
+- **Basen sind erstklassig.** Eine Basis (Bolognese, Pulled Chicken …) ist selbst
+  anzeigbar (eigene **Nährwerte pro Portion**) und direkt **hinzufügbar** (eigener Stepper) —
+  man friert oft die pure Basis in Blöcken ein, ohne ein abgeleitetes Endgericht.
+
 **③ Einkauf.** Bestehende Logik (`buildEinkauf`, rekursiv, nach
 `EINKAUF_KATEGORIEN` gruppiert) bleibt — rechnet jetzt mit der Frisch/TK-Aufteilung.
 2-State-Abhaken bleibt (überlebt Reload via `korb.einkaufChecked`). **Neu:** Button
