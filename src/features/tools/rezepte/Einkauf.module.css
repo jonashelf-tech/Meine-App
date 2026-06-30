@@ -7,6 +7,23 @@
 .leerenConfirm { background: var(--rose); color: #fff; border: none; border-radius: var(--r-sm); padding: 4px 10px; cursor: pointer; font-size: 0.78rem; }
 .cancelBtn { background: none; border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--r-sm); padding: 4px 10px; cursor: pointer; font-size: 0.78rem; }
 
+.exportBtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; min-height: 44px; margin-bottom: 6px;
+  padding: 11px 14px; border-radius: var(--r);
+  background: color-mix(in srgb, var(--tool-color) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 45%, transparent);
+  color: var(--tool-color);
+  font-family: var(--font); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s;
+}
+.exportBtn:active:not(:disabled) { background: color-mix(in srgb, var(--tool-color) 24%, transparent); }
+.exportOk {
+  background: color-mix(in srgb, var(--emerald) 14%, transparent);
+  border-color: color-mix(in srgb, var(--emerald) 45%, transparent);
+  color: var(--emerald);
+}
+
 .gruppe { margin-bottom: 12px; }
 .gruppeTitle { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 0; }
 .gruppeTitleIcon { display: inline-flex; align-items: center; gap: 5px; color: var(--emerald); }

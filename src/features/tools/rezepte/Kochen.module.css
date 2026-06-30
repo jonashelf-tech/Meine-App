@@ -1,6 +1,6 @@
 .wrap { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 80px; }
 
-/* Sub-Umschaltung Auswahl / Kochanleitung / Einkauf */
+/* Sub-Umschaltung Einkauf / Kochanleitung */
 .tabs {
   display: flex; gap: 4px; padding: 4px; margin-top: 2px;
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
@@ -14,21 +14,6 @@
 .tabOn { background: var(--bg2); color: var(--tool-color); }
 
 .panel { display: flex; flex-direction: column; gap: 8px; }
-
-.eintragRow {
-  display: flex; align-items: center; gap: 8px;
-  padding: 9px 0; border-bottom: 1px solid var(--border-dim);
-}
-.eintragName { flex: 1; font-size: 0.9rem; }
-.portionStepper { display: flex; align-items: center; gap: 4px; }
-.stepBtnSm {
-  width: 28px; height: 28px; border-radius: var(--r-sm);
-  border: 1px solid var(--border-dim); background: none;
-  color: var(--text); font-size: 0.95rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.portionVal { font-family: Orbitron, monospace; font-size: 0.85rem; min-width: 22px; text-align: center; }
-.removeBtn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
 
 .tagesplanerBtn {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;

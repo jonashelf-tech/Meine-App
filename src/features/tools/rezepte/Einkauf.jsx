@@ -1,15 +1,17 @@
 import { useState, useMemo } from 'react'
 import { buildEinkauf } from './einkauf'
-import { IconCheck } from './icons'
+import { IconCheck, IconClipboard } from './icons'
 import s from './Einkauf.module.css'
 
 const fmtMenge = (m) => Number.isInteger(m) ? m : m.toFixed(1)
 
 // checked/onToggle/onClear kommen aus dem persistenten Korb (Kochen.jsx) —
 // Häkchen überleben Reload und App-Kill im Supermarkt.
-export default function Einkauf({ korbGerichte, zById, rById, checked, onToggle, onClear }) {
+// onExport (optional): legt die Liste als Tagesplaner-Todo mit Unterpunkten an.
+export default function Einkauf({ korbGerichte, zById, rById, checked, onToggle, onClear, onExport }) {
   const liste = useMemo(() => buildEinkauf(korbGerichte, zById, rById), [korbGerichte])
   const [confirmLeeren, setConfirmLeeren] = useState(false)
+  const [exportiert, setExportiert] = useState(false)
 
   // 1× tippen = gekauft (rutscht runter, durchgestrichen) · nochmal = zurück
   const tapItem = (zutatId) => onToggle(zutatId)
@@ -22,6 +24,12 @@ export default function Einkauf({ korbGerichte, zById, rById, checked, onToggle,
     if (!confirmLeeren) { setConfirmLeeren(true); return }
     onClear()
     setConfirmLeeren(false)
+  }
+
+  const handleExport = () => {
+    onExport?.()
+    setExportiert(true)
+    setTimeout(() => setExportiert(false), 1600)
   }
 
   if (liste.length === 0) {
@@ -42,6 +50,16 @@ export default function Einkauf({ korbGerichte, zById, rById, checked, onToggle,
           <button className={s.leerenBtn} onClick={handleLeeren}>Leeren</button>
         )}
       </div>
+
+      {onExport && (
+        <button className={`${s.exportBtn} ${exportiert ? s.exportOk : ''}`}
+          onClick={handleExport} disabled={exportiert}>
+          {exportiert
+            ? <><IconCheck size={15} /> In Tagesplaner geladen</>
+            : <><IconClipboard size={15} /> Als Einkaufs-Todo (mit Unterpunkten)</>}
+        </button>
+      )}
+
       <div className={s.hint}>Tippen = gekauft · nochmal tippen = zurück</div>
 
       {liste.map(({ kategorie, items }) => {
