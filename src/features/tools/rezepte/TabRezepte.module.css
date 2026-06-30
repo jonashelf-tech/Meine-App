@@ -54,3 +54,40 @@
 }
 
 .content { padding-top: 6px; }
+.contentWithBar { padding-bottom: 84px; }
+
+/* ─── "Weiter zu Portionen"-Balken (Auswahl-Screens) ─────────── */
+.weiterBar {
+  position: fixed;
+  bottom: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(480px, 100%);
+  padding: 0 14px;
+  box-sizing: border-box;
+  z-index: 200;
+  pointer-events: none;
+}
+.weiterBtn {
+  pointer-events: auto;
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 13px 16px;
+  border: none; border-radius: var(--r);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tool-color) 78%, white), var(--tool-color));
+  color: #fff; font-family: var(--font); font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--tool-color) 35%, transparent), 0 2px 8px rgba(0,0,0,0.3);
+  -webkit-tap-highlight-color: transparent;
+  animation: slideInBottom var(--dur) var(--ease-out);
+  transition: transform 0.12s;
+}
+.weiterBtn:active { transform: scale(0.99); }
+.weiterLeft { display: flex; align-items: center; gap: 9px; }
+.weiterCount {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 24px; padding: 0 6px;
+  border-radius: 12px; background: rgba(255,255,255,0.25);
+  font-family: var(--font-num); font-size: 0.85rem; font-weight: 700;
+}
+.weiterRight { display: inline-flex; align-items: center; gap: 6px; }

@@ -15,7 +15,7 @@ import Zutaten from './Zutaten'
 import Kochen from './Kochen'
 import Editor from './Editor'
 import RezeptView from './RezeptView'
-import { IconArrowLeft } from './icons'
+import { IconArrowLeft, IconArrowRight } from './icons'
 import s from './TabRezepte.module.css'
 
 const SCREEN_TITLES = {
@@ -91,6 +91,9 @@ export default function TabRezepte({ onBack }) {
     korb,
   }
 
+  // Auswahl-Screens zeigen unten den "Weiter zu Portionen"-Balken, sobald etwas im Korb ist
+  const istAuswahl = screen === 'rezepte' || screen === 'ketten'
+
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
       {viewing && !editing && (
@@ -147,7 +150,7 @@ export default function TabRezepte({ onBack }) {
             </button>
             <span className={s.subTitle}>{SCREEN_TITLES[screen]}</span>
           </div>
-          <div className={s.content}>
+          <div className={`${s.content} ${istAuswahl && korb.eintraege.length > 0 ? s.contentWithBar : ''}`}>
             {screen === 'rezepte' && <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} />}
             {screen === 'ketten'  && <Grossrezepte {...sharedProps} />}
             {screen === 'konfig'  && (
@@ -159,6 +162,18 @@ export default function TabRezepte({ onBack }) {
               <Kochen korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte} toolColor={toolColor} />
             )}
           </div>
+
+          {istAuswahl && korb.eintraege.length > 0 && (
+            <div className={s.weiterBar}>
+              <button className={s.weiterBtn} onClick={() => setScreen('portionen')}>
+                <span className={s.weiterLeft}>
+                  <span className={s.weiterCount}>{korb.eintraege.length}</span>
+                  {korb.eintraege.length === 1 ? 'Gericht gewählt' : 'Gerichte gewählt'}
+                </span>
+                <span className={s.weiterRight}>Weiter <IconArrowRight size={17} /></span>
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
