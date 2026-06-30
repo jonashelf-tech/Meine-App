@@ -86,11 +86,17 @@ export function buildKochanleitung(korbGerichte, zById, rById) {
     portionen: portionenSplit(g).total,
     anleitung: g.rezept.anleitung,
   }))
-  const verpackung = korbGerichte.map(({ rezept }) => ({
-    name: rezept.name,
-    tk: rezept.aufbewahrung?.tk ?? false,
-    behaelter: rezept.aufbewahrung?.behaelter ?? [],
-  }))
+  const verpackung = korbGerichte.map((g) => {
+    const { frisch, bloecke } = portionenSplit(g)
+    return {
+      name: g.rezept.name,
+      tk: g.rezept.aufbewahrung?.tk ?? false,
+      behaelter: g.rezept.aufbewahrung?.behaelter ?? [],
+      frisch,
+      bloecke,
+      blockGramm: g.rezept.blockGramm ?? 250,
+    }
+  })
 
   return { miseEnPlace, basen, gerichte, verpackung }
 }

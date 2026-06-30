@@ -31,6 +31,13 @@ describe('buildKochanleitung', () => {
     expect(plan.verpackung.map(v => v.name)).toEqual(['Bolognese', 'Chili'])
     expect(plan.verpackung[0].behaelter).toEqual(['Box'])
   })
+  it('Verpackung trägt Frisch/TK-Blöcke + Blockgröße (Einblocken)', () => {
+    const plan = buildKochanleitung([{ rezept: bolo, frisch: 2, bloecke: 4 }], zById, rById)
+    const v = plan.verpackung[0]
+    expect(v.bloecke).toBe(4)
+    expect(v.frisch).toBe(2)
+    expect(v.blockGramm).toBe(250)   // Default, da bolo kein blockGramm hat
+  })
 
   it('Frisch/TK-Split: Beilage zählt in der Mise nur für frische Portionen', () => {
     const ZB2 = {

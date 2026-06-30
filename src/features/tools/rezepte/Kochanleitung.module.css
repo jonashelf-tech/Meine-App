@@ -41,12 +41,20 @@
 .verpackungRow { display: flex; align-items: center; gap: 8px; padding: 6px 0; flex-wrap: wrap; }
 .verpackungName { font-size: 0.88rem; font-weight: 500; flex: 1; }
 .verpackungTags { display: flex; flex-wrap: wrap; gap: 4px; }
-.tagTK, .tagB {
+.tagB {
   font-size: 0.72rem; padding: 2px 7px;
   border-radius: 12px; border: 1px solid var(--border-dim);
+  color: var(--text-dim);
 }
-.tagTK { display: inline-flex; align-items: center; gap: 4px; }
-.tagTK { border-color: var(--teal); color: var(--teal); }
-.tagB { color: var(--text-dim); }
+.tagBlock {
+  font-size: 0.72rem; padding: 2px 7px; border-radius: 12px;
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 1px solid color-mix(in srgb, #6CB6FF 50%, transparent); color: #6CB6FF;
+  font-family: var(--font-num);
+}
+.tagFrisch {
+  font-size: 0.72rem; padding: 2px 7px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--emerald) 50%, transparent); color: var(--emerald);
+}
 
 .empty { color: var(--text-dim); font-size: 0.85rem; padding: 24px 16px; text-align: center; }

@@ -96,15 +96,16 @@ export default function Kochanleitung({ korbGerichte, zById, rById, checked, onT
         </div>
       )}
 
-      {/* 4. Einfrieren & Verpackung */}
+      {/* 4. Einblocken & Verpacken */}
       {plan.verpackung.length > 0 && (
         <div className={s.section}>
-          <div className={s.sectionHead}>Einfrieren & Verpackung</div>
+          <div className={s.sectionHead}>Einblocken & Verpacken</div>
           {plan.verpackung.map((v, idx) => (
             <div key={idx} className={s.verpackungRow}>
               <span className={s.verpackungName}>{v.name}</span>
               <div className={s.verpackungTags}>
-                {v.tk && <span className={s.tagTK}><IconSnow size={12} /> TK</span>}
+                {v.bloecke > 0 && <span className={s.tagBlock}><IconSnow size={11} /> {v.bloecke} × {v.blockGramm} g</span>}
+                {v.frisch > 0 && <span className={s.tagFrisch}>{v.frisch} frisch</span>}
                 {v.behaelter.map(b => <span key={b} className={s.tagB}>{b}</span>)}
               </div>
             </div>
