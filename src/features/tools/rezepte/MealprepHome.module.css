@@ -1,0 +1,133 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 14px 24px;
+  color: var(--text);
+}
+
+/* ── Section-Label ─────────────────────────────────────────── */
+.label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 20px 4px 9px;
+}
+.label:first-child { margin-top: 6px; }
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  padding: 18px 18px 19px;
+  background:
+    radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--tool-color) 16%, transparent), transparent 60%),
+    var(--surface);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 26%, var(--border));
+}
+.accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--tool-color) 70%, transparent), transparent);
+}
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--tool-color) 80%, white);
+  margin-bottom: 8px;
+}
+.kdot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--tool-color);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tool-color) 70%, transparent);
+}
+.heroTitle {
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+}
+.heroMeta {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 6px 0 15px;
+}
+.cta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px;
+  border: none;
+  border-radius: var(--r);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tool-color) 78%, white), var(--tool-color));
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--tool-color) 30%, transparent);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, box-shadow 0.2s ease;
+}
+.cta:active { transform: scale(0.985); }
+.korbHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 11px;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+.korbHint svg { color: color-mix(in srgb, var(--tool-color) 80%, white); }
+
+/* ── Bibliothek / Mehr — Listen-Rows ───────────────────────── */
+.list { display: flex; flex-direction: column; gap: 7px; }
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.row:active { background: color-mix(in srgb, var(--tool-color) 8%, var(--surface)); }
+.rowQuiet { background: none; }
+.rowLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.rowIcon { color: var(--tool-color); display: inline-flex; }
+.rowRight { display: flex; align-items: center; gap: 9px; }
+.count {
+  font-family: var(--font-num);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.chev {
+  display: inline-flex;
+  color: var(--text-dim);
+  transform: rotate(-90deg);
+}

@@ -6,6 +6,7 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
 import { loadAll, saveZutaten, saveRezepte } from './mealprepStore'
 import { createKorb } from './mealprepModel'
+import MealprepHome from './MealprepHome'
 import Sammlung from './Sammlung'
 import Grossrezepte from './Grossrezepte'
 import Konfigurator from './Konfigurator.jsx'
@@ -13,16 +14,16 @@ import Zutaten from './Zutaten'
 import Kochen from './Kochen'
 import Editor from './Editor'
 import RezeptView from './RezeptView'
-import { IconBook, IconLayers, IconSliders, IconCarrot, IconBasket } from './icons'
+import { IconArrowLeft } from './icons'
 import s from './TabRezepte.module.css'
 
-const TABS = [
-  { id: 'rezepte', label: 'Rezepte', Icon: IconBook },
-  { id: 'ketten',  label: 'Ketten',  Icon: IconLayers },
-  { id: 'konfig',  label: 'Konfig',  Icon: IconSliders },
-  { id: 'zutaten', label: 'Zutaten', Icon: IconCarrot },
-  { id: 'kochen',  label: 'Kochen',  Icon: IconBasket },
-]
+const SCREEN_TITLES = {
+  rezepte: 'Rezepte',
+  ketten:  'Ketten',
+  konfig:  'Konfigurator',
+  zutaten: 'Zutaten',
+  kochen:  'Kochen',
+}
 
 export default function TabRezepte({ onBack }) {
   const { toolColors, setBackInterceptor } = useAppStore()
@@ -41,7 +42,7 @@ export default function TabRezepte({ onBack }) {
     })
   }, [])
 
-  const [tab, setTab] = useState('rezepte')
+  const [screen, setScreen] = useState('home')   // home | rezepte | ketten | konfig | zutaten | kochen
   const [editing, setEditing] = useState(null)
   const [viewing, setViewing] = useState(null)   // Rezept in Read-Only-Ansicht
   const [konfigLoad, setKonfigLoad] = useState(null)
@@ -49,16 +50,16 @@ export default function TabRezepte({ onBack }) {
   const setZutaten = useCallback(v => { setZutatenS(v); saveZutaten(v) }, [])
   const setRezepte = useCallback(v => { setRezepteS(v); saveRezepte(v) }, [])
 
-  // Hardware-/Gesten-Zurück: Editor schließen → Rezeptansicht schließen → zurück auf Rezepte-Tab → Tool verlassen
+  // Hardware-/Gesten-Zurück: Editor → Rezeptansicht → Unterseite → Home → Tool verlassen
   useEffect(() => {
     setBackInterceptor(
       editing !== null  ? () => setEditing(null)
       : viewing !== null ? () => setViewing(null)
-      : tab !== 'rezepte' ? () => setTab('rezepte')
+      : screen !== 'home' ? () => setScreen('home')
       : null
     )
     return () => setBackInterceptor(null)
-  }, [editing, viewing, tab, setBackInterceptor])
+  }, [editing, viewing, screen, setBackInterceptor])
 
   const zById = useCallback(id => zutaten.find(z => z.id === id), [zutaten])
   const rById = useCallback(id => rezepte.find(r => r.id === id), [rezepte])
@@ -83,8 +84,13 @@ export default function TabRezepte({ onBack }) {
 
   const ladeInKonfigurator = useCallback((rezept) => {
     setKonfigLoad(rezept)
-    setTab('konfig')
+    setScreen('konfig')
   }, [])
+
+  // Smart-CTA: leerer Korb → Rezept-Auswahl, sonst → Kochen
+  const startDurchgang = useCallback(() => {
+    setScreen(korb.eintraege.length > 0 ? 'kochen' : 'rezepte')
+  }, [korb.eintraege.length])
 
   const sharedProps = {
     zutaten, rezepte, setZutaten, setRezepte,
@@ -119,46 +125,45 @@ export default function TabRezepte({ onBack }) {
         </div>
       )}
 
-      <ToolHeader
-        onBack={onBack}
-        icon={<ToolIcon id="rezepte" size={20} />}
-        eyebrow="Tool"
-        title={<>Meal<em>prep</em></>}
-      />
-
-      <nav className={s.tabBar}>
-        {TABS.map(({ id, label, Icon }) => {
-          const on = tab === id
-          const badge = id === 'kochen' && korb.eintraege.length > 0 ? korb.eintraege.length : null
-          return (
-            <button key={id}
-              className={`${s.tab} ${on ? s.tabOn : ''}`}
-              style={on ? { '--tool-color': toolColor } : {}}
-              onClick={() => setTab(id)}>
-              <span className={s.tabIcon}>
-                <Icon size={19} />
-                {badge != null && <span className={s.tabBadge}>{badge}</span>}
-              </span>
-              <span className={s.tabLabel}>{label}</span>
+      {screen === 'home' ? (
+        <>
+          <ToolHeader
+            onBack={onBack}
+            icon={<ToolIcon id="rezepte" size={20} />}
+            eyebrow="Tool"
+            title={<>Meal<em>prep</em></>}
+          />
+          <MealprepHome
+            korb={korb} rezepte={rezepte} zutaten={zutaten} toolColor={toolColor}
+            onStartDurchgang={startDurchgang}
+            onOpenRezepte={() => setScreen('rezepte')}
+            onOpenKetten={() => setScreen('ketten')}
+            onOpenZutaten={() => setScreen('zutaten')}
+            onOpenKonfig={() => setScreen('konfig')}
+          />
+        </>
+      ) : (
+        <>
+          <div className={s.subHead}>
+            <button className={s.subBack} onClick={() => setScreen('home')} aria-label="Zurück">
+              <IconArrowLeft size={18} /> Zurück
             </button>
-          )
-        })}
-      </nav>
-
-      <div className={s.content}>
-        {tab === 'rezepte' && (
-          <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} />
-        )}
-        {tab === 'ketten' && <Grossrezepte {...sharedProps} />}
-        {tab === 'konfig' && (
-          <Konfigurator {...sharedProps} settings={settings}
-            loadRezept={konfigLoad} onLoaded={() => setKonfigLoad(null)} />
-        )}
-        {tab === 'zutaten' && <Zutaten zutaten={zutaten} toolColor={toolColor} onEdit={setEditing} />}
-        {tab === 'kochen' && (
-          <Kochen korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte} toolColor={toolColor} />
-        )}
-      </div>
+            <span className={s.subTitle}>{SCREEN_TITLES[screen]}</span>
+          </div>
+          <div className={s.content}>
+            {screen === 'rezepte' && <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} />}
+            {screen === 'ketten'  && <Grossrezepte {...sharedProps} />}
+            {screen === 'konfig'  && (
+              <Konfigurator {...sharedProps} settings={settings}
+                loadRezept={konfigLoad} onLoaded={() => setKonfigLoad(null)} />
+            )}
+            {screen === 'zutaten' && <Zutaten zutaten={zutaten} toolColor={toolColor} onEdit={setEditing} />}
+            {screen === 'kochen'  && (
+              <Kochen korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte} toolColor={toolColor} />
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }
