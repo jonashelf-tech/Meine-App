@@ -14,6 +14,20 @@ export function migrateAccent(stored) {
   return ACCENT_LEGACY[stored] ?? '#8B5CF6'
 }
 
+// Einmalige Migration: „notizen" in bestehende activeTools einreihen (2026-06).
+// Flag-gegated → wird NICHT erneut hinzugefügt, falls später bewusst entfernt.
+function loadActiveTools() {
+  let tools = lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren', 'notizen'])
+    .map(id => id === 'erfolge' ? 'garten' : id === 'wachstum' ? 'growth' : id)
+    .map(id => id === 'gewicht' ? 'fitness' : id)
+  if (!lv(SK.notizenMigrated, false)) {
+    if (!tools.includes('notizen')) tools = [...tools, 'notizen']
+    sv(SK.notizenMigrated, true)
+    sv(SK.activeTools, tools)
+  }
+  return tools
+}
+
 export const useAppStore = create((set, get) => ({
   // ─── Todos ─────────────────────────────────────────────
   todos:     lv(SK.todos, []),
@@ -104,9 +118,7 @@ export const useAppStore = create((set, get) => ({
   setTimerAutoStart: (data) => set({ timerAutoStart: data }),
 
   // ─── Active Tools ──────────────────────────────────────
-  activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren', 'notizen'])
-    .map(id => id === 'erfolge' ? 'garten' : id === 'wachstum' ? 'growth' : id)
-    .map(id => id === 'gewicht' ? 'fitness' : id),
+  activeTools: loadActiveTools(),
   setActiveTools: (tools) => { set({ activeTools: tools }); sv(SK.activeTools, tools) },
   toggleTool: (id) => {
     const current = get().activeTools

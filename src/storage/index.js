@@ -109,6 +109,7 @@ export const SK = {
   notes:           `${PREFIX}notes_v1`,
   noteDraft:       `${PREFIX}notes_draft`,     // ephemer — Capture-Entwurf, NICHT im Backup
   addMode:         `${PREFIX}view_add_mode`,   // 'aufgabe'|'notiz' — letzter Modus im +-Modal
+  notizenMigrated: `${PREFIX}notizen_migrated`,// einmalige Migration: notizen in activeTools eingereiht
 }
 
 export const exportData = () => {
@@ -149,6 +150,7 @@ export const BACKUP_CATS = {
   einstellungen: [
     SK.settings, SK.theme, SK.appBriefingSeen, SK.kognitivIntroSeen,
     SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
+    SK.notizenMigrated,
   ],
 }
 
