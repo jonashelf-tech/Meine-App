@@ -73,16 +73,6 @@ export default function TabRezepte({ onBack }) {
     setKorb(k => ({ ...k, eintraege: k.eintraege.filter(e => e.ref !== rezeptId) }))
   }, [setKorb])
 
-  // Für Ketten-Stepper: updated oder fügt ein, entfernt bei portionen=0
-  const updateKorbEintrag = useCallback((rezeptId, portionen) => {
-    setKorb(k => {
-      if (portionen === 0) return { ...k, eintraege: k.eintraege.filter(e => e.ref !== rezeptId) }
-      const exists = k.eintraege.some(e => e.ref === rezeptId)
-      if (exists) return { ...k, eintraege: k.eintraege.map(e => e.ref === rezeptId ? { ...e, portionen } : e) }
-      return { ...k, eintraege: [...k.eintraege, { ref: rezeptId, portionen }] }
-    })
-  }, [setKorb])
-
   const ladeInKonfigurator = useCallback((rezept) => {
     setKonfigLoad(rezept)
     setScreen('konfig')
@@ -97,7 +87,7 @@ export default function TabRezepte({ onBack }) {
     zutaten, rezepte, setZutaten, setRezepte,
     zById, rById, toolColor,
     onEdit: setEditing, onView: setViewing,
-    addToKorb, removeFromKorb, updateKorbEintrag,
+    addToKorb, removeFromKorb,
     korb,
   }
 

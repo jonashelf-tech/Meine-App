@@ -24,18 +24,6 @@
 .cardHeaderRight { display: flex; align-items: center; gap: 8px; }
 .cardTitle  { font-weight: 600; font-size: 0.92rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .langBadge  { display: inline-flex; align-items: center; color: var(--text-dim); flex-shrink: 0; }
-.dim        { font-size: 0.72rem; color: var(--text-dim); }
-.ablCount   { font-family: var(--font-num); font-size: 0.74rem; color: var(--text-dim); min-width: 14px; text-align: center; }
-
-.bedarfBadge {
-  font-family: var(--font-num);
-  font-size: 0.72rem; font-weight: 600;
-  color: var(--tool-color);
-  background: color-mix(in srgb, var(--tool-color) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--tool-color) 45%, transparent);
-  border-radius: 20px; padding: 3px 9px;
-  white-space: nowrap;
-}
 
 .editBtn {
   background: none; border: none; color: var(--text-dim); cursor: pointer;
@@ -64,47 +52,40 @@
 }
 .branchTitle { font-weight: 600; font-size: 0.85rem; color: var(--tool-color); }
 
-/* ── Body ──────────────────────────────────────────────────────────────── */
+/* ── Body / Auswahl-Zeile ──────────────────────────────────────────────── */
 .cardBody { border-top: 1px solid var(--border); }
 
 .row {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 12px;
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--border);
-  transition: background 0.15s, opacity 0.15s; opacity: 0.5;
+  transition: background 0.12s;
 }
 .row:last-child { border-bottom: none; }
-.rowActive { opacity: 1; background: color-mix(in srgb, var(--tool-color) 7%, transparent); }
+.rowActive { background: color-mix(in srgb, var(--tool-color) 9%, transparent); }
 
-/* ── Stepper ───────────────────────────────────────────────────────────── */
-.stepper {
-  display: flex; align-items: center; gap: 0;
-  border: 1px solid var(--border); border-radius: var(--r-sm);
-  overflow: hidden; flex-shrink: 0;
-}
-.stepBtn {
-  background: none; border: none; color: var(--text-dim);
-  width: 28px; height: 28px; font-size: 1rem; cursor: pointer;
+.selectBtn {
+  width: 26px; min-width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: none;
+  color: var(--tool-color);
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+  transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.stepBtn:active { background: color-mix(in srgb, var(--text) 8%, transparent); color: var(--text); }
-.stepVal {
-  width: 24px; text-align: center; font-size: 0.85rem; color: var(--text-dim);
-  font-family: var(--font-num);
-}
-.stepValActive { color: var(--tool-color); font-weight: 600; }
+.selectBtnOn { color: #fff; border-color: var(--tool-color); background: var(--tool-color); }
 
-/* ── Row content ───────────────────────────────────────────────────────── */
-.rowMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+.rowMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
 .rowTop { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .rowName { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.portionenHint {
-  font-family: var(--font-num);
-  font-size: 0.72rem; color: var(--tool-color); font-weight: 600;
-  background: color-mix(in srgb, var(--tool-color) 12%, transparent); border-radius: 10px; padding: 1px 7px;
-  flex-shrink: 0;
+.basisTag {
+  font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--tool-color) 85%, white);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 40%, transparent);
+  border-radius: 5px; padding: 1px 5px; flex-shrink: 0;
 }
 .tag { display: inline-flex; align-items: center; color: var(--tool-color); opacity: 0.9; flex-shrink: 0; }
 
@@ -121,9 +102,5 @@
 }
 .addAbleitungBtn:active { color: var(--text); }
 
-.bedarfRow { padding: 4px 12px; }
-.bedarfText { font-size: 0.72rem; color: var(--text-dim); }
-
 /* ── Empty ─────────────────────────────────────────────────────────────── */
-.emptyInner { padding: 12px; color: var(--text-dim); font-size: 0.82rem; }
 .empty { padding: 16px; color: var(--text-dim); font-size: 0.82rem; text-align: center; }
