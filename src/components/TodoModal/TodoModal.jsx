@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useAppStore } from '../../store'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
-import { createNote } from '../../features/notes/Note'
+import { createNote, noteTitle, formatNoteTime } from '../../features/notes/Note'
 import { parseTodoText } from '../../features/todos/parseTodoText'
+import { TOOL_TAB } from '../../features/tools/toolTabs'
 import { parseHHMM, minutesToSk, NEON } from '../../utils'
 import { lv, sv, SK } from '../../storage'
 import RepeatPicker from '../RepeatPicker/RepeatPicker'
@@ -44,7 +45,7 @@ function formatSummaryDate(dateStr) {
 
 export default function TodoModal({ onClose, existingTodo = null, prefill = null }) {
   const keyboardOffset = useKeyboardOffset()
-  const { setTodos, setDays, setNotes, cats, setCats, accentColor } = useAppStore()
+  const { setTodos, setDays, setNotes, notes, cats, setCats, accentColor, setCurrentTab } = useAppStore()
 
   const isEdit = existingTodo !== null
 
@@ -84,6 +85,11 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     sv(SK.noteDraft, '')
     onClose()
   }
+  // Entwurf bleibt in SK.noteDraft erhalten — Sprung ins Tool verliert nichts.
+  const recentNotes = [...notes]
+    .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''))
+    .slice(0, 2)
+  const openNotizen = () => { setCurrentTab(TOOL_TAB.notizen); onClose() }
 
   // Auto-Parser als Toggle (persistiert): an = Live-Erkennung + Übernahme
   // beim Hinzufügen. Manuell gesetzte Felder gewinnen immer. Nur beim
@@ -319,6 +325,29 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
             >
               Als Notiz speichern
             </button>
+
+            {recentNotes.length > 0 && (
+              <div className={s.recentWrap}>
+                <div className={s.recentHead}>
+                  <span className={s.recentLabel}>Letzte Notizen</span>
+                  <button className={s.recentAll} onClick={openNotizen}>Alle Notizen →</button>
+                </div>
+                <div className={s.recentList}>
+                  {recentNotes.map(n => (
+                    <button
+                      key={n.id}
+                      className={s.recentCard}
+                      style={{ '--nc': n.color }}
+                      onClick={openNotizen}
+                    >
+                      <span className={s.recentDot} />
+                      <span className={s.recentTitle}>{noteTitle(n)}</span>
+                      <span className={s.recentTime}>{formatNoteTime(n.updatedAt)}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
         <>

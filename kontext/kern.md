@@ -53,13 +53,15 @@ persistiert (`SK.autoParse`), an = Live-Chips („erkannt: …") + Übernahme be
 
 Eigener Store (`notes` / `SK.notes`), **bewusst nicht** in `todos[]` — Notizen haben keinen
 done/Termin/Kalender-Lebenszyklus und sollen nicht im Pool/Kalender/Missed-Review auftauchen.
-`noteTitle(n)` / `notePreview(n)` (Note.js) liefern Titel + Vorschau.
+`noteTitle(n)` / `notePreview(n)` / `formatNoteTime(n)` (Note.js) liefern Titel, Vorschau + relative Zeit.
 
 **Zwei Einstiege:** (1) Tool „Notizen" (Tab 19) — Karten-Übersicht (angepinnt + alle, Suche,
 Farbe, Pin) via `NoteEditor`. (2) Globaler „+" → Umschalter `Aufgabe | Notiz` (`SK.addMode`,
 letzter Modus gemerkt). Notiz-Modus = persistentes Feld (`SK.noteDraft`, **ephemer**): Text
 bleibt bis „Speichern", Schließen ohne Speichern lässt ihn stehen. Umschalter nur beim reinen
-Erfassen — nicht bei Bearbeiten/Slot-Anlegen (prefill mit Datum/Zeit).
+Erfassen — nicht bei Bearbeiten/Slot-Anlegen (prefill mit Datum/Zeit). Unter dem Speichern-Button
+zeigt der Notiz-Modus die **letzten 2 Notizen** (Vorschau) + „Alle Notizen" — Tippen springt ins
+Notizen-Tool (`setCurrentTab(TOOL_TAB.notizen)`, Entwurf bleibt via `SK.noteDraft` erhalten).
 
 ---
 

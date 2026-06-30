@@ -781,3 +781,92 @@
   margin-top: -3px;
 }
 .noteHintIcon { display: flex; }
+
+/* ─── Notiz-Modus: letzte Notizen + Tool-Zugang ──────────────── */
+.recentWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border-top: 1px solid var(--border-dim);
+  padding-top: 11px;
+  margin-top: 1px;
+}
+
+.recentHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentLabel {
+  font-family: var(--font);
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.recentAll {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--primary);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.recentAll:hover { text-decoration: underline; }
+
+.recentList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.recentCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.recentCard:hover {
+  background: var(--surface-low);
+  border-color: color-mix(in srgb, var(--nc, var(--primary)) 45%, var(--border));
+}
+
+.recentDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--nc, var(--primary));
+  flex-shrink: 0;
+}
+
+.recentTitle {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recentTime {
+  flex-shrink: 0;
+  font-family: var(--font);
+  font-size: 0.66rem;
+  color: var(--text-faint);
+}

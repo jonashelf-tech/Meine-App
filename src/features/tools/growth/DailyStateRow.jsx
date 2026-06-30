@@ -1,6 +1,7 @@
 // Schlaf / Energie / Stimmung — zentraler Daily-State, geteilt mit Kognitiv.
-// Bereits erfasste Werte werden nur angezeigt (antippbar zum Korrigieren),
-// fehlende per 1 Tap erfasst. Alles optional — kein Zwang, kein Gate.
+// Pro Feld eine Segment-Leiste (1–5) über die volle Breite: große Tap-Ziele,
+// kumulative Füllung wie ein Pegel. Nicht erfasst = alle Segmente leer.
+// Alles optional — kein Zwang, kein Gate.
 import { useState, useEffect } from 'react'
 import { getDayState, setDayState } from '../../daily/dailyState'
 import s from './DailyStateRow.module.css'
@@ -26,23 +27,27 @@ export default function DailyStateRow({ date, editable, onTouched }) {
   }
 
   return (
-    <div className={s.row}>
-      {FELDER.map(({ key, label }) => (
-        <div key={key} className={s.feld}>
-          <span className={s.label}>{label}</span>
-          <div className={s.dots}>
-            {[1, 2, 3, 4, 5].map(n => (
-              <button
-                key={n}
-                className={[s.dot, (state?.[key] ?? 0) >= n ? s.dotOn : '', popped === `${key}-${n}` ? s.pop : ''].join(' ')}
-                onClick={() => setField(key, n)}
-                disabled={!editable}
-                aria-label={`${label} ${n} von 5`}
-              />
-            ))}
+    <div className={s.wrap}>
+      {FELDER.map(({ key, label }) => {
+        const val = state?.[key] ?? 0
+        return (
+          <div key={key} className={s.feld}>
+            <span className={s.label}>{label}</span>
+            <div className={s.bar} role="group" aria-label={label}>
+              {[1, 2, 3, 4, 5].map(n => (
+                <button
+                  key={n}
+                  className={[s.seg, val >= n ? s.segOn : '', popped === `${key}-${n}` ? s.pop : ''].join(' ')}
+                  onClick={() => setField(key, n)}
+                  disabled={!editable}
+                  aria-label={`${label} ${n} von 5`}
+                  aria-pressed={val === n}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

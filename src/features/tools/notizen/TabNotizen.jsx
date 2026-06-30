@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 import { useAppStore } from '../../../store'
-import { getToolColor, fmtDateShort } from '../../../utils'
+import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
-import { noteTitle, notePreview } from '../../notes/Note'
+import { noteTitle, notePreview, formatNoteTime } from '../../notes/Note'
 import NoteEditor from './NoteEditor'
 import s from './TabNotizen.module.css'
 
@@ -18,19 +18,6 @@ const SearchIcon = () => (
     <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
   </svg>
 )
-
-// Relativ: heute → „Heute · 14:20", gestern, diese Woche → Wochentag, sonst „12. Jun".
-function formatNoteTime(iso) {
-  if (!iso) return ''
-  const d = new Date(iso)
-  const startOfDay = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime()
-  const diffDays = Math.round((startOfDay(new Date()) - startOfDay(d)) / 86400000)
-  const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-  if (diffDays === 0) return `Heute · ${hhmm}`
-  if (diffDays === 1) return 'Gestern'
-  if (diffDays < 7) return ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][d.getDay()]
-  return fmtDateShort(d)
-}
 
 export default function TabNotizen({ onBack }) {
   const { notes, toolColors } = useAppStore()
