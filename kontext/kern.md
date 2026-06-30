@@ -40,6 +40,29 @@ persistiert (`SK.autoParse`), an = Live-Chips („erkannt: …") + Übernahme be
 
 ---
 
+## Notiz (eigener Capture-Typ)
+
+```js
+// createNote(partial?) in src/features/notes/Note.js
+{
+  id, text, color,           // text mehrzeilig — erste nicht-leere Zeile = Titel
+  pinned: false,
+  createdAt, updatedAt,
+}
+```
+
+Eigener Store (`notes` / `SK.notes`), **bewusst nicht** in `todos[]` — Notizen haben keinen
+done/Termin/Kalender-Lebenszyklus und sollen nicht im Pool/Kalender/Missed-Review auftauchen.
+`noteTitle(n)` / `notePreview(n)` (Note.js) liefern Titel + Vorschau.
+
+**Zwei Einstiege:** (1) Tool „Notizen" (Tab 19) — Karten-Übersicht (angepinnt + alle, Suche,
+Farbe, Pin) via `NoteEditor`. (2) Globaler „+" → Umschalter `Aufgabe | Notiz` (`SK.addMode`,
+letzter Modus gemerkt). Notiz-Modus = persistentes Feld (`SK.noteDraft`, **ephemer**): Text
+bleibt bis „Speichern", Schließen ohne Speichern lässt ihn stehen. Umschalter nur beim reinen
+Erfassen — nicht bei Bearbeiten/Slot-Anlegen (prefill mit Datum/Zeit).
+
+---
+
 ## Blocker (Zeitplan-Blocker)
 
 ```js
@@ -80,6 +103,7 @@ persistiert (`SK.autoParse`), an = Live-Chips („erkannt: …") + Übernahme be
 todos,        setTodos
 todoOrder,    setTodoOrder
 cats,         setCats
+notes,        setNotes
 
 // Kalender
 days,         setDays       // { "2024-01-15": { "8": SlotEntry, "8.5": SlotEntry } }
@@ -184,6 +208,9 @@ SK.todos          → 'adhs_todos_list'
 SK.routines       → 'adhs_todos_routines'
 SK.todoOrder      → 'adhs_todos_order'
 SK.cats           → 'adhs_todos_cats'
+SK.notes          → 'adhs_notes_v1'           // eigener Notiz-Store (in BACKUP_CATS.tools)
+SK.noteDraft      → 'adhs_notes_draft'        // ephemer — +-Modal Notiz-Entwurf
+SK.addMode        → 'adhs_view_add_mode'      // 'aufgabe'|'notiz' — letzter +-Modus
 
 // Kalender
 SK.days           → 'adhs_calendar_days'

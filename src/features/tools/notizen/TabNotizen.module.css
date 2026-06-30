@@ -1,0 +1,213 @@
+.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+.page > * { animation: fadeInUp .4s var(--ease-out) both; }
+
+/* ─── Header-Action „+ Notiz" ───────────────────────────── */
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: color-mix(in srgb, var(--tool-color) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 45%, transparent);
+  border-radius: 999px;
+  color: var(--tool-color);
+  font-family: var(--font);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.addBtn:hover { background: color-mix(in srgb, var(--tool-color) 22%, transparent); }
+.addPlus { font-size: 1rem; line-height: 1; margin-top: -1px; }
+
+/* ─── Suche ─────────────────────────────────────────────── */
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0 13px;
+}
+.searchIcon { color: var(--text-faint); display: flex; flex-shrink: 0; }
+.search {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.86rem;
+  padding: 11px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.search::placeholder { color: var(--text-faint); }
+
+/* ─── Section-Label (Eyebrow) ───────────────────────────── */
+.sectionLabel {
+  font-family: var(--font);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 4px 2px -2px;
+}
+
+/* ─── Listen ────────────────────────────────────────────── */
+.pinnedList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.masonry {
+  column-count: 2;
+  column-gap: 10px;
+}
+
+/* ─── Karte ─────────────────────────────────────────────── */
+.card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 13px;
+  cursor: pointer;
+  box-shadow: var(--elev-1);
+  transition: border-color 0.15s, transform 0.12s;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font);
+}
+.card:active { transform: scale(0.985); }
+.card:hover { border-color: color-mix(in srgb, var(--nc) 45%, var(--border)); }
+
+.masonry .card {
+  break-inside: avoid;
+  margin-bottom: 10px;
+}
+
+/* Angepinnte Karten: dezenter Farbschimmer in Notizfarbe */
+.pinnedList .card {
+  border-color: color-mix(in srgb, var(--nc) 32%, var(--border));
+  background: linear-gradient(155deg, color-mix(in srgb, var(--nc) 9%, transparent) 0%, transparent 60%), var(--surface);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--nc);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--nc) 60%, transparent);
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardPin {
+  color: var(--nc);
+  display: flex;
+  flex-shrink: 0;
+}
+
+.cardPreview {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+  margin-top: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.cardTime {
+  font-size: 0.66rem;
+  color: var(--text-faint);
+  margin-top: 8px;
+}
+
+/* ─── Leerzustand ───────────────────────────────────────── */
+.emptyCard {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 36px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.emptyIcon {
+  color: var(--tool-color);
+  margin-bottom: 4px;
+}
+
+.emptyTitle {
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.emptyText {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  max-width: 290px;
+}
+
+.emptyCta {
+  margin-top: 14px;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 13px 26px;
+  font-family: var(--font);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--bg);
+  background: linear-gradient(120deg, var(--tool-color), var(--teal));
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--tool-color) 28%, transparent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.emptyCta:active { transform: scale(.98); }
+
+.noResults {
+  text-align: center;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  padding: 28px 16px;
+}

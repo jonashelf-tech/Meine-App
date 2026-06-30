@@ -1,0 +1,169 @@
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nc) 14%, transparent),
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pinBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 7px 10px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.pinBtn:hover { color: var(--text); }
+
+.pinBtnOn {
+  color: var(--nc);
+  background: color-mix(in srgb, var(--nc) 12%, transparent);
+  border-color: color-mix(in srgb, var(--nc) 40%, transparent);
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 7px 10px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.deleteBtn:hover {
+  color: var(--rose);
+  background: color-mix(in srgb, var(--rose) 8%, transparent);
+}
+.deleteBtnConfirm {
+  color: var(--rose);
+  background: color-mix(in srgb, var(--rose) 12%, transparent);
+  border-color: color-mix(in srgb, var(--rose) 40%, transparent);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  padding: 8px 10px;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.closeBtn:hover { color: var(--text); }
+
+.area {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding: 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.area:focus {
+  border-color: var(--nc);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--nc) 18%, transparent);
+}
+
+.colorRow {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.colorCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.colorCircle:hover { transform: scale(1.15); }
+.colorCircleActive { border-color: #fff; transform: scale(1.15); }
+
+.saveBtn {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--nc) 22%, transparent) 0%,
+    color-mix(in srgb, var(--nc) 11%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--nc) 55%, transparent);
+  border-radius: var(--r-sm);
+  color: var(--nc);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 13px 16px;
+  width: 100%;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 16px color-mix(in srgb, var(--nc) 14%, transparent);
+  -webkit-tap-highlight-color: transparent;
+}
+.saveBtn:hover:not(:disabled) {
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--nc) 26%, transparent);
+}
+.saveBtn:disabled { opacity: 0.3; cursor: default; }

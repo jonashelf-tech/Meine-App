@@ -711,3 +711,73 @@
   box-shadow: 0 4px 24px color-mix(in srgb, var(--tc, var(--primary)) 26%, transparent);
 }
 .submitBtn:disabled { opacity: 0.3; cursor: default; }
+
+/* ─── Aufgabe|Notiz — Modus-Umschalter ───────────────────── */
+.modeToggle {
+  display: flex;
+  gap: 5px;
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  padding: 4px;
+}
+
+.modeBtn {
+  flex: 1;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 9px 0;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.modeBtn:hover { color: var(--text); }
+
+.modeBtnOn {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+  color: var(--primary);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+/* ─── Notiz-Modus ────────────────────────────────────────── */
+.noteWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.noteArea {
+  width: 100%;
+  min-height: 168px;
+  resize: vertical;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  padding: 12px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.noteArea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+}
+
+.noteHint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  margin-top: -3px;
+}
+.noteHintIcon { display: flex; }

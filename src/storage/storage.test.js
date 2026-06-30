@@ -105,6 +105,7 @@ describe('Backup-Abdeckung — Anti-Drift', () => {
     SK.timerStart,
     SK.timerTotal,
     SK.timerRunning,
+    SK.noteDraft,
   ])
   const backedUp = new Set([
     ...BACKUP_CATS.kalender, ...BACKUP_CATS.tools, ...BACKUP_CATS.einstellungen,
@@ -125,5 +126,9 @@ describe('Backup-Abdeckung — Anti-Drift', () => {
   it('Fitness-Keys sind in BACKUP_CATS.tools', () => {
     ;[SK.fitness, SK.fitnessSessions].forEach(k =>
       expect(BACKUP_CATS.tools).toContain(k))
+  })
+
+  it('Notizen-Key ist in BACKUP_CATS.tools', () => {
+    expect(BACKUP_CATS.tools).toContain(SK.notes)
   })
 })

@@ -106,6 +106,9 @@ export const SK = {
   fitness:         `${PREFIX}fitness_v1`,
   fitnessSessions: `${PREFIX}fitness_sessions`,
   kognitivConfig:  `${PREFIX}kognitiv_config`,
+  notes:           `${PREFIX}notes_v1`,
+  noteDraft:       `${PREFIX}notes_draft`,     // ephemer — Capture-Entwurf, NICHT im Backup
+  addMode:         `${PREFIX}view_add_mode`,   // 'aufgabe'|'notiz' — letzter Modus im +-Modal
 }
 
 export const exportData = () => {
@@ -129,7 +132,7 @@ export const BACKUP_CATS = {
     SK.todos, SK.routines, SK.todoOrder, SK.cats, SK.projects,
     SK.days, SK.doneCounters, SK.templates, SK.blockers,
     SK.lastPoolReturn, SK.poolSort, SK.autoParse, SK.visStart, SK.visEnd,
-    SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus,
+    SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus, SK.addMode,
   ],
   tools: [
     SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv,
@@ -141,6 +144,7 @@ export const BACKUP_CATS = {
     SK.erfolge, SK.erfolgeTracking, SK.klaerenSettings,
     SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule, SK.kognitivConfig,
     SK.wachstum, SK.garten, SK.growth, SK.dailyState,
+    SK.notes,
   ],
   einstellungen: [
     SK.settings, SK.theme, SK.appBriefingSeen, SK.kognitivIntroSeen,

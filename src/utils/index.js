@@ -102,6 +102,7 @@ export function getToolColor(toolId, toolColors) {
     haushalt:     '#10B981',
     klaeren:      '#34D399',
     growth:       '#4ADE80',
+    notizen:      '#EAB308',
   }
   return DEFAULTS[toolId] ?? '#8B5CF6'
 }

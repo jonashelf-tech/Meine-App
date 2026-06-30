@@ -34,6 +34,14 @@ export const useAppStore = create((set, get) => ({
     sv(SK.projects, next)
   },
 
+  // ─── Notes ─────────────────────────────────────────────
+  notes: lv(SK.notes, []),
+  setNotes: (notes) => {
+    const next = typeof notes === 'function' ? notes(get().notes) : notes
+    set({ notes: next })
+    sv(SK.notes, next)
+  },
+
   // ─── Blockers ──────────────────────────────────────────
   blockers: lv(SK.blockers, []),
   setBlockers: (blockers) => {
@@ -96,7 +104,7 @@ export const useAppStore = create((set, get) => ({
   setTimerAutoStart: (data) => set({ timerAutoStart: data }),
 
   // ─── Active Tools ──────────────────────────────────────
-  activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren'])
+  activeTools: lv(SK.activeTools, ['geburtstage', 'kognitiv', 'haushalt', 'klaeren', 'notizen'])
     .map(id => id === 'erfolge' ? 'garten' : id === 'wachstum' ? 'growth' : id)
     .map(id => id === 'gewicht' ? 'fitness' : id),
   setActiveTools: (tools) => { set({ activeTools: tools }); sv(SK.activeTools, tools) },

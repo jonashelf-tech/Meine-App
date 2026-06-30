@@ -17,6 +17,7 @@ const ICONS = {
   kognitiv:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12"/><circle cx="12" cy="12" r="3"/><path d="M12 9V5M15 12h4"/></svg> },
   projekte:     { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="12" y1="11" x2="12" y2="17"/></svg> },
   growth:       { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V12"/><path d="M12 12C12 8 9 6 4 6c0 4 3 6 8 6z"/><path d="M12 11c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z"/></svg> },
+  notizen:      { el: (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg> },
 }
 
 export function ToolIcon({ id, size = 20 }) {
@@ -160,6 +161,15 @@ export const TOOL_REGISTRY = [
     standalone: true,
     integrated: true,
     component: lazy(() => import('./growth/TabGrowth')),
+  },
+  {
+    id: 'notizen',
+    tabId: 19,
+    name: 'Notizen',    color: '#EAB308',
+    description: 'Schnelle Notizen festhalten und wiederfinden',
+    standalone: true,
+    integrated: false,
+    component: lazy(() => import('./notizen/TabNotizen')),
   },
 ]
 

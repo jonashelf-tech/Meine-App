@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '../../store'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
+import { createNote } from '../../features/notes/Note'
 import { parseTodoText } from '../../features/todos/parseTodoText'
 import { parseHHMM, minutesToSk, NEON } from '../../utils'
 import { lv, sv, SK } from '../../storage'
@@ -43,7 +44,7 @@ function formatSummaryDate(dateStr) {
 
 export default function TodoModal({ onClose, existingTodo = null, prefill = null }) {
   const keyboardOffset = useKeyboardOffset()
-  const { setTodos, setDays, cats, setCats, accentColor } = useAppStore()
+  const { setTodos, setDays, setNotes, cats, setCats, accentColor } = useAppStore()
 
   const isEdit = existingTodo !== null
 
@@ -67,6 +68,22 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category)
   )
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  // Notiz-Modus: nur beim reinen Erfassen (globaler „+"), nicht beim Bearbeiten
+  // oder Slot-Anlegen (prefill mit Datum/Uhrzeit). Entwurf bleibt erhalten bis
+  // „Speichern" — Schließen ohne Speichern lässt den Text stehen.
+  const showModeToggle = !isEdit && !prefill?.date && !prefill?.time
+  const [mode, setMode] = useState(() => showModeToggle ? lv(SK.addMode, 'aufgabe') : 'aufgabe')
+  const switchMode = (m) => { setMode(m); sv(SK.addMode, m) }
+  const [noteText, setNoteText] = useState(() => lv(SK.noteDraft, ''))
+  const updateNote = (v) => { setNoteText(v); sv(SK.noteDraft, v) }
+  const saveNote = () => {
+    const t = noteText.trim()
+    if (!t) return
+    setNotes(prev => [createNote({ text: t, color: accentColor ?? '#8B5CF6' }), ...prev])
+    sv(SK.noteDraft, '')
+    onClose()
+  }
 
   // Auto-Parser als Toggle (persistiert): an = Live-Erkennung + Übernahme
   // beim Hinzufügen. Manuell gesetzte Felder gewinnen immer. Nur beim
@@ -266,6 +283,45 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           </div>
         </div>
 
+        {showModeToggle && (
+          <div className={s.modeToggle}>
+            <button
+              className={[s.modeBtn, mode === 'aufgabe' ? s.modeBtnOn : ''].join(' ')}
+              onClick={() => switchMode('aufgabe')}
+            >Aufgabe</button>
+            <button
+              className={[s.modeBtn, mode === 'notiz' ? s.modeBtnOn : ''].join(' ')}
+              onClick={() => switchMode('notiz')}
+            >Notiz</button>
+          </div>
+        )}
+
+        {mode === 'notiz' ? (
+          <div className={s.noteWrap}>
+            <textarea
+              className={s.noteArea}
+              autoFocus
+              value={noteText}
+              onChange={e => updateNote(e.target.value)}
+              placeholder="Schreib alles rein, was raus muss…"
+            />
+            <div className={s.noteHint}>
+              <span className={s.noteHintIcon}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              </span>
+              Bleibt erhalten, bis du speicherst
+            </div>
+            <button
+              className={s.submitBtn}
+              style={{ '--tc': 'var(--primary)' }}
+              onClick={saveNote}
+              disabled={!noteText.trim()}
+            >
+              Als Notiz speichern
+            </button>
+          </div>
+        ) : (
+        <>
         {/* Text + Auto */}
         <div className={s.textRow}>
           <input
@@ -484,6 +540,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         >
           {isEdit ? 'Speichern' : (isTermin ? 'Termin eintragen' : 'Hinzufügen')}
         </button>
+        </>
+        )}
 
       </div>
     </Overlay>

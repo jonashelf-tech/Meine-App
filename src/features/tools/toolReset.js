@@ -18,6 +18,7 @@ export const TOOL_RESETS = {
   // SK.dailyState gehört bewusst NICHT hierher (geteilt mit Kognitiv).
   // SK.wachstum (Legacy) bleibt erhalten — Garten zählt eingefrorene Habit-Checks daraus.
   growth:      { keys: [SK.growth] },
+  notizen:     { keys: [SK.notes, SK.noteDraft] },
 }
 
 // Löscht alle Daten eines Tools und lädt die App neu (Tools rebauen Defaults).

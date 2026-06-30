@@ -18,7 +18,8 @@ Tab 15 — Klar+Sehen   (klaeren)
 Tab 16 — Kognitiv      (kognitiv)
 Tab 17 — Projekte      (projekte)
 Tab 18 — Growth        (growth)   ← ersetzt Wachstum (Journaling-Tool)
-Tab 19 → nächstes Tool
+Tab 19 — Notizen       (notizen)
+Tab 20 → nächstes Tool
 ```
 
 ---
