@@ -7,6 +7,7 @@ import { ToolIcon } from '../toolRegistry'
 import { loadAll, saveZutaten, saveRezepte } from './mealprepStore'
 import { createKorb } from './mealprepModel'
 import MealprepHome from './MealprepHome'
+import PortionenStep from './PortionenStep'
 import Sammlung from './Sammlung'
 import Grossrezepte from './Grossrezepte'
 import Konfigurator from './Konfigurator.jsx'
@@ -87,9 +88,9 @@ export default function TabRezepte({ onBack }) {
     setScreen('konfig')
   }, [])
 
-  // Smart-CTA: leerer Korb → Rezept-Auswahl, sonst → Kochen
+  // Smart-CTA: leerer Korb → Rezept-Auswahl, sonst → Portionen-Schritt
   const startDurchgang = useCallback(() => {
-    setScreen(korb.eintraege.length > 0 ? 'kochen' : 'rezepte')
+    setScreen(korb.eintraege.length > 0 ? 'portionen' : 'rezepte')
   }, [korb.eintraege.length])
 
   const sharedProps = {
@@ -142,6 +143,12 @@ export default function TabRezepte({ onBack }) {
             onOpenKonfig={() => setScreen('konfig')}
           />
         </>
+      ) : screen === 'portionen' ? (
+        <PortionenStep
+          korb={korb} setKorb={setKorb} zById={zById} rById={rById} toolColor={toolColor}
+          onBack={() => setScreen('home')}
+          onWeiter={() => setScreen('kochen')}
+        />
       ) : (
         <>
           <div className={s.subHead}>
