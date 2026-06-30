@@ -1,3 +1,5 @@
+import { portionenSplit, istFrisch } from './mealprepModel'
+
 // Accumulates direct (non-recursive) raw ingredient amounts for Mise-en-Place
 function directRoh(rezept, skala, acc) {
   for (const { zutatId, menge } of rezept.zutaten ?? []) {
@@ -5,7 +7,7 @@ function directRoh(rezept, skala, acc) {
   }
 }
 
-// Sammelt Basen-Bedarf rekursiv über beliebig viele Ketten-Ebenen.
+// Sammelt Basen-Bedarf rekursiv über beliebig viele Ketten-Ebenen (uniform — kein Split).
 // Eine Basis kann selbst Komponenten (tiefere Basen) haben → mehrstufige Ketten.
 function sammleBasen(rezept, skala, rById, basenBedarf, miseAcc, seen) {
   directRoh(rezept, skala, miseAcc)
@@ -33,9 +35,26 @@ export function buildKochanleitung(korbGerichte, zById, rById) {
   const basenBedarf = {}      // basisId → summierte menge (über alle Ebenen)
   const miseAcc = {}          // zutatId → total roh menge (alle Ebenen)
 
-  for (const { rezept, portionen } of korbGerichte) {
-    const skala = portionen / (rezept.basisPortionen || 1)
-    sammleBasen(rezept, skala, rById, basenBedarf, miseAcc, new Set())
+  // Oberste Ebene splittet frisch/TK: Frisch-Teile (Beilage) nur für frische Portionen,
+  // Einfrier-Teile für alle. Die Rekursion in eine Basis bleibt uniform (Basis friert ein).
+  for (const g of korbGerichte) {
+    const { frisch, total } = portionenSplit(g)
+    const rezept = g.rezept
+    const bp = rezept.basisPortionen || 1
+    for (const line of rezept.zutaten ?? []) {
+      const count = istFrisch(line, zById) ? frisch : total
+      miseAcc[line.zutatId] = (miseAcc[line.zutatId] ?? 0) + line.menge * (count / bp)
+    }
+    for (const line of rezept.komponenten ?? []) {
+      const basis = rById(line.rezeptId)
+      if (!basis) continue
+      const count = istFrisch(line, zById) ? frisch : total
+      const mengeAbs = line.menge * (count / bp)
+      basenBedarf[line.rezeptId] = (basenBedarf[line.rezeptId] ?? 0) + mengeAbs
+      if (basis.ergibtMenge) {
+        sammleBasen(basis, mengeAbs / basis.ergibtMenge, rById, basenBedarf, miseAcc, new Set([line.rezeptId]))
+      }
+    }
   }
 
   const basen = Object.entries(basenBedarf).map(([id, menge]) => {
@@ -61,11 +80,11 @@ export function buildKochanleitung(korbGerichte, zById, rById) {
     })
     .sort((a, b) => a.name.localeCompare(b.name))
 
-  const gerichte = korbGerichte.map(({ rezept, portionen }) => ({
-    id: rezept.id,
-    name: rezept.name,
-    portionen,
-    anleitung: rezept.anleitung,
+  const gerichte = korbGerichte.map((g) => ({
+    id: g.rezept.id,
+    name: g.rezept.name,
+    portionen: portionenSplit(g).total,
+    anleitung: g.rezept.anleitung,
   }))
   const verpackung = korbGerichte.map(({ rezept }) => ({
     name: rezept.name,

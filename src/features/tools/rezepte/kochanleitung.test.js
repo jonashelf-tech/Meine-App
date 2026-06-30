@@ -32,6 +32,23 @@ describe('buildKochanleitung', () => {
     expect(plan.verpackung[0].behaelter).toEqual(['Box'])
   })
 
+  it('Frisch/TK-Split: Beilage zählt in der Mise nur für frische Portionen', () => {
+    const ZB2 = {
+      nudeln: { id: 'nudeln', name: 'Nudeln', einheit: 'g', bausteinTyp: 'kh' },
+      hack:   { id: 'hack',   name: 'Hack',   einheit: 'g', bausteinTyp: 'protein' },
+    }
+    const zb = (id) => ZB2[id]
+    const gericht = { id: 'g', name: 'Nudeln Bolo', basisPortionen: 4,
+      zutaten: [{ zutatId: 'hack', menge: 400 }, { zutatId: 'nudeln', menge: 500 }],
+      komponenten: [], anleitung: '', aufbewahrung: { tk: true, behaelter: ['Box'] } }
+    // 2 frisch + 4 TK = total 6
+    const plan = buildKochanleitung([{ rezept: gericht, frisch: 2, bloecke: 4 }], zb, () => null)
+    const nudeln = plan.miseEnPlace.find(m => m.name === 'Nudeln')
+    const hack   = plan.miseEnPlace.find(m => m.name === 'Hack')
+    expect(nudeln.menge).toBe(250)   // 500 * (2/4) — nur frische, wie im Einkauf
+    expect(hack.menge).toBe(600)     // 400 * (6/4) — friert ein, alle 6
+  })
+
   it('mehrstufige Kette: tiefere Basis erscheint und wird zuerst gekocht', () => {
     // Lasagne → Bolognese (Zwischen-Basis) → Tomatensosse
     const boloBasis = { id: 'bolobasis', name: 'Bolognese', basisPortionen: 5, ergibtMenge: 1000, langlaeufer: true,
