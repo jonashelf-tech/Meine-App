@@ -50,3 +50,11 @@ export const createKorb = (o = {}) => ({
 })
 
 export const istBasis = (r) => r?.ergibtMenge != null
+
+// Frisch = wird nur für frische Portionen gekocht, nie eingefroren.
+// Reihenfolge: explizites Flag > Beilage-Heuristik (Zutat bausteinTyp 'kh') > einfrieren.
+export function istFrisch(komponente, zutatById) {
+  if (komponente?.frisch != null) return komponente.frisch
+  if (komponente?.zutatId) return zutatById?.(komponente.zutatId)?.bausteinTyp === 'kh'
+  return false
+}

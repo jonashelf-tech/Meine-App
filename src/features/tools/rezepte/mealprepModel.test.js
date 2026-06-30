@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   SLOTS, EINKAUF_KATEGORIEN,
   createZutat, createRezept, createKorb, istBasis,
+  istFrisch,
 } from './mealprepModel'
 
 describe('Konstanten', () => {
@@ -46,5 +47,26 @@ describe('createKorb', () => {
     const k = createKorb()
     expect(k.eintraege).toEqual([])
     expect(k.gespeichert).toBe(false)
+  })
+})
+
+describe('istFrisch — Frisch-vs-Einfrieren-Heuristik', () => {
+  const zById = (id) => ({
+    nudeln: { id: 'nudeln', bausteinTyp: 'kh' },
+    hack:   { id: 'hack',   bausteinTyp: 'protein' },
+  }[id])
+
+  it('explizites frisch-Flag schlägt alles', () => {
+    expect(istFrisch({ zutatId: 'hack', frisch: true }, zById)).toBe(true)
+    expect(istFrisch({ zutatId: 'nudeln', frisch: false }, zById)).toBe(false)
+  })
+  it('ohne Flag: Zutat mit bausteinTyp "kh" ist Beilage → frisch', () => {
+    expect(istFrisch({ zutatId: 'nudeln' }, zById)).toBe(true)
+  })
+  it('ohne Flag: andere Zutaten frieren ein', () => {
+    expect(istFrisch({ zutatId: 'hack' }, zById)).toBe(false)
+  })
+  it('Komponente (Basis-Referenz) friert per Default ein', () => {
+    expect(istFrisch({ rezeptId: 'sosse' }, zById)).toBe(false)
   })
 })
