@@ -40,3 +40,28 @@ describe('buildEinkauf — konsolidieren, Gewuerze raus, gruppieren', () => {
     expect(liste.some(g => g.kategorie === 'Gewürze')).toBe(false)
   })
 })
+
+describe('buildEinkauf — Frisch/TK-Split: Beilage nur für frische Portionen', () => {
+  const Z = {
+    hack:   { id: 'hack',   name: 'Hack',   bausteinTyp: 'protein', einheit: 'g', einkaufKategorie: 'Fleisch & Fisch' },
+    nudeln: { id: 'nudeln', name: 'Nudeln', bausteinTyp: 'kh',      einheit: 'g', einkaufKategorie: 'Brot & Getreide' },
+  }
+  const zb = (id) => Z[id]
+
+  it('Einfrier-Teil zählt alle Portionen, Beilage nur die frischen', () => {
+    const gericht = {
+      basisPortionen: 4,
+      zutaten: [
+        { zutatId: 'hack',   menge: 400 },   // protein → friert ein
+        { zutatId: 'nudeln', menge: 500 },   // kh → Beilage, frisch
+      ],
+      komponenten: [],
+    }
+    // 2 frische Portionen + 4 TK-Blöcke → total 6
+    const liste = buildEinkauf([{ rezept: gericht, frisch: 2, bloecke: 4 }], zb, () => null)
+    const hack   = liste.find(g => g.kategorie === 'Fleisch & Fisch').items[0]
+    const nudeln = liste.find(g => g.kategorie === 'Brot & Getreide').items[0]
+    expect(hack.menge).toBe(600)    // 400 * (6/4) — alle 6 Portionen
+    expect(nudeln.menge).toBe(250)  // 500 * (2/4) — nur 2 frische
+  })
+})
