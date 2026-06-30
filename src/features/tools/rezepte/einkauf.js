@@ -1,7 +1,7 @@
-import { EINKAUF_KATEGORIEN } from './mealprepModel'
+import { EINKAUF_KATEGORIEN, istFrisch, portionenSplit } from './mealprepModel'
 
-// Accumulates raw ingredient amounts (zutatId → menge) recursively via Komponenten.
-// skala: portions multiplier. seen: cycle protection.
+// Akkumuliert Roh-Zutaten (zutatId → menge) rekursiv über Komponenten.
+// skala: Portionsfaktor. seen: Zyklenschutz. Uniform — kein Frisch/TK-Split.
 export function sammleZutaten(rezept, skala, rezeptById, acc, seen = new Set()) {
   for (const { zutatId, menge } of rezept.zutaten ?? []) {
     acc[zutatId] = (acc[zutatId] ?? 0) + menge * skala
@@ -14,12 +14,31 @@ export function sammleZutaten(rezept, skala, rezeptById, acc, seen = new Set()) 
   }
 }
 
-// korbGerichte: [{ rezept, portionen }]
-// Returns: [{ kategorie, items:[{zutatId,name,menge,einheit}] }] — without Gewürze, sorted by EINKAUF_KATEGORIEN order
+// Wie sammleZutaten, aber je Top-Level-Komponente entschieden:
+// Frisch-Teile zählen nur für frische Portionen (frischP),
+// Einfrier-Teile für alle (totalP). Die Rekursion in eine Basis bleibt uniform.
+export function sammleZutatenGesplittet(rezept, frischP, totalP, zutatById, rezeptById, acc) {
+  const bp = rezept.basisPortionen || 1
+  for (const line of rezept.zutaten ?? []) {
+    const count = istFrisch(line, zutatById) ? frischP : totalP
+    acc[line.zutatId] = (acc[line.zutatId] ?? 0) + line.menge * (count / bp)
+  }
+  for (const line of rezept.komponenten ?? []) {
+    const basis = rezeptById(line.rezeptId)
+    if (!basis || !basis.ergibtMenge) continue
+    const count = istFrisch(line, zutatById) ? frischP : totalP
+    const basisSkala = (line.menge * (count / bp)) / basis.ergibtMenge
+    sammleZutaten(basis, basisSkala, rezeptById, acc, new Set([basis.id]))
+  }
+}
+
+// korbGerichte: [{ rezept, frisch, bloecke }] (oder Alt-Format { rezept, portionen }).
+// Returns: [{ kategorie, items:[{zutatId,name,menge,einheit}] }] — ohne Gewürze, sortiert nach EINKAUF_KATEGORIEN.
 export function buildEinkauf(korbGerichte, zutatById, rezeptById) {
   const acc = {}
-  for (const { rezept, portionen } of korbGerichte) {
-    sammleZutaten(rezept, portionen / (rezept.basisPortionen || 1), rezeptById, acc)
+  for (const g of korbGerichte) {
+    const { frisch, total } = portionenSplit(g)
+    sammleZutatenGesplittet(g.rezept, frisch, total, zutatById, rezeptById, acc)
   }
   const byKat = {}
   for (const [zutatId, menge] of Object.entries(acc)) {

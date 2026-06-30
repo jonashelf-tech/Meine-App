@@ -1,13 +1,20 @@
-.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
+.wrap { display: flex; flex-direction: column; gap: 9px; padding: 2px 14px 24px; }
 
+/* ── Suche ─────────────────────────────────────────────────── */
 .search {
+  width: 100%;
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-sm); color: var(--text);
-  padding: 9px 12px; font-size: 0.88rem; min-height: 42px;
-  box-sizing: border-box; margin-top: 2px;
+  border-radius: var(--r); color: var(--text);
+  padding: 11px 14px; font-size: 0.9rem; min-height: 44px;
+  box-sizing: border-box;
+  font-family: var(--font);
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
+.search::placeholder { color: var(--text-dim); }
+.search:focus { outline: none; border-color: color-mix(in srgb, var(--tool-color) 45%, var(--border)); }
 
-.topBar { display: flex; justify-content: flex-end; padding: 0 0 4px; }
+.topBar { display: flex; justify-content: flex-end; }
 
 .newKatBtn {
   background: none;
@@ -16,61 +23,64 @@
   padding: 8px 14px;
   min-height: 36px;
   border-radius: var(--r-sm);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.newKatBtn:hover { color: var(--text); border-color: var(--text-dim); }
+.newKatBtn:active { color: var(--text); border-color: var(--text-dim); }
 
+/* ── Kategorie-Karte ───────────────────────────────────────── */
 .card {
   border: 1px solid var(--border);
   border-radius: var(--r);
-  background: var(--bg2);
+  background: var(--surface);
   overflow: hidden;
 }
-
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 11px 14px;
+  padding: 12px 14px;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  min-height: 44px;
+  min-height: 46px;
 }
-
-.cardTitle { font-weight: 600; font-size: 0.9rem; }
-.cardHeaderRight { display: flex; align-items: center; gap: 8px; }
-.count { font-size: 0.75rem; color: var(--text-dim); }
+.cardTitle { font-weight: 600; font-size: 0.92rem; color: var(--text); }
+.cardHeaderRight { display: flex; align-items: center; gap: 10px; }
+.count { font-family: var(--font-num); font-size: 0.78rem; color: var(--text-dim); min-width: 14px; text-align: right; }
 
 .addInCardBtn {
   background: none;
-  border: 1px solid var(--border-dim);
-  color: var(--text-dim);
-  width: 24px; height: 24px;
-  border-radius: 6px;
-  font-size: 1rem;
-  line-height: 1;
+  border: 1px solid var(--border);
+  color: var(--tool-color);
+  width: 26px; height: 26px;
+  border-radius: 7px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
+.addInCardBtn:active { background: color-mix(in srgb, var(--tool-color) 14%, transparent); }
 
 .chevron { color: var(--text-dim); display: inline-flex; transition: transform 0.18s; }
 .chevronClosed { transform: rotate(-90deg); }
-.cardBody { border-top: 1px solid var(--border-dim); }
+.cardBody { border-top: 1px solid var(--border); }
 
+/* ── Rezept-Zeile ──────────────────────────────────────────── */
 .row {
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border-dim);
-  transition: background 0.1s;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
 }
 .row:last-child { border-bottom: none; }
-.rowSelected { background: color-mix(in srgb, var(--tool-color) 9%, transparent); }
+.rowSelected { background: color-mix(in srgb, var(--tool-color) 10%, transparent); }
 
 .selectBtn {
   width: 26px; min-width: 26px; height: 26px;
@@ -93,18 +103,19 @@
 .rowMain {
   flex: 1; min-width: 0;
   display: flex; flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   cursor: pointer;
 }
 .rowTop { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .rowName {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 500;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.tag { display: inline-flex; align-items: center; color: var(--primary); opacity: 0.85; flex-shrink: 0; }
+.tag { display: inline-flex; align-items: center; color: var(--tool-color); opacity: 0.9; flex-shrink: 0; }
 
 .konfBtn, .editBtn {
   background: none;
@@ -122,10 +133,11 @@
   transition: color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-.konfBtn:hover, .editBtn:hover { color: var(--text); }
+.konfBtn:active, .editBtn:active { color: var(--text); }
 
 .empty { padding: 16px; color: var(--text-dim); font-size: 0.82rem; text-align: center; }
 
+/* ── Neue Kategorie ────────────────────────────────────────── */
 .newKatRow { display: flex; gap: 6px; align-items: center; width: 100%; }
 .newKatInput {
   flex: 1;
@@ -133,11 +145,14 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  padding: 6px 10px;
+  padding: 8px 10px;
   font-size: 0.85rem;
+  min-height: 38px;
+  box-sizing: border-box;
 }
 .newKatOk, .newKatCancel {
-  padding: 6px 10px;
+  padding: 8px 12px;
+  min-height: 38px;
   border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: none;
@@ -149,3 +164,4 @@
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
 }
+.newKatOk { border-color: color-mix(in srgb, var(--tool-color) 40%, var(--border)); color: var(--tool-color); }

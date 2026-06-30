@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   SLOTS, EINKAUF_KATEGORIEN,
   createZutat, createRezept, createKorb, istBasis,
+  istFrisch, portionenSplit,
 } from './mealprepModel'
 
 describe('Konstanten', () => {
@@ -46,5 +47,41 @@ describe('createKorb', () => {
     const k = createKorb()
     expect(k.eintraege).toEqual([])
     expect(k.gespeichert).toBe(false)
+  })
+})
+
+describe('istFrisch — Frisch-vs-Einfrieren-Heuristik', () => {
+  const zById = (id) => ({
+    nudeln: { id: 'nudeln', bausteinTyp: 'kh' },
+    hack:   { id: 'hack',   bausteinTyp: 'protein' },
+  }[id])
+
+  it('explizites frisch-Flag schlägt alles', () => {
+    expect(istFrisch({ zutatId: 'hack', frisch: true }, zById)).toBe(true)
+    expect(istFrisch({ zutatId: 'nudeln', frisch: false }, zById)).toBe(false)
+  })
+  it('ohne Flag: Zutat mit bausteinTyp "kh" ist Beilage → frisch', () => {
+    expect(istFrisch({ zutatId: 'nudeln' }, zById)).toBe(true)
+  })
+  it('ohne Flag: andere Zutaten frieren ein', () => {
+    expect(istFrisch({ zutatId: 'hack' }, zById)).toBe(false)
+  })
+  it('Komponente (Basis-Referenz) friert per Default ein', () => {
+    expect(istFrisch({ rezeptId: 'sosse' }, zById)).toBe(false)
+  })
+})
+
+describe('portionenSplit — Frisch/TK-Aufteilung, Alt-Format tolerant', () => {
+  it('neues Format {frisch,bloecke} → total = frisch+bloecke', () => {
+    expect(portionenSplit({ frisch: 2, bloecke: 4 })).toEqual({ frisch: 2, bloecke: 4, total: 6 })
+  })
+  it('nur frisch gesetzt → bloecke 0', () => {
+    expect(portionenSplit({ frisch: 3 })).toEqual({ frisch: 3, bloecke: 0, total: 3 })
+  })
+  it('Alt-Format {portionen} → alles frisch, keine Blöcke', () => {
+    expect(portionenSplit({ portionen: 5 })).toEqual({ frisch: 5, bloecke: 0, total: 5 })
+  })
+  it('leeres Objekt → alles 0', () => {
+    expect(portionenSplit({})).toEqual({ frisch: 0, bloecke: 0, total: 0 })
   })
 })
