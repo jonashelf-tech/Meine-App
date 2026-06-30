@@ -1,117 +1,125 @@
-.wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
+.wrap { display: flex; flex-direction: column; gap: 9px; padding: 2px 14px 24px; }
 
-.intro { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; padding: 2px 0; }
+.intro { font-size: 0.8rem; color: var(--text-dim); line-height: 1.45; padding: 2px 2px 0; }
 
-.topBar { display: flex; justify-content: flex-end; padding: 4px 0 8px; }
+.topBar { display: flex; justify-content: flex-end; }
 
 .addBtn {
   background: none; border: 1px solid var(--border); color: var(--text-dim);
-  padding: 6px 12px; border-radius: var(--r-sm); font-size: 0.82rem; cursor: pointer;
+  padding: 8px 14px; min-height: 36px; border-radius: var(--r-sm); font-size: 0.8rem; font-weight: 500; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s, border-color 0.15s;
 }
+.addBtn:active { color: var(--text); border-color: var(--text-dim); }
 
 /* ── Card ──────────────────────────────────────────────────────────────── */
-.card { border: 1px solid var(--border); border-radius: var(--r); background: var(--bg2); overflow: hidden; }
+.card { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
 
 .cardHeader {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 11px 14px; cursor: pointer; user-select: none;
-  -webkit-tap-highlight-color: transparent; min-height: 44px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent; min-height: 46px;
 }
-.cardHeaderLeft  { display: flex; align-items: center; gap: 6px; }
-.cardHeaderRight { display: flex; align-items: center; gap: 6px; }
-.cardTitle  { font-weight: 600; font-size: 0.9rem; }
-.langBadge  { display: inline-flex; align-items: center; color: var(--text-dim); }
+.cardHeaderLeft  { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.cardHeaderRight { display: flex; align-items: center; gap: 8px; }
+.cardTitle  { font-weight: 600; font-size: 0.92rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.langBadge  { display: inline-flex; align-items: center; color: var(--text-dim); flex-shrink: 0; }
 .dim        { font-size: 0.72rem; color: var(--text-dim); }
-.ablCount   { font-size: 0.72rem; color: var(--text-dim); min-width: 14px; text-align: center; }
+.ablCount   { font-family: var(--font-num); font-size: 0.74rem; color: var(--text-dim); min-width: 14px; text-align: center; }
 
 .bedarfBadge {
+  font-family: var(--font-num);
   font-size: 0.72rem; font-weight: 600;
-  color: var(--tool-color); opacity: 0.9;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--tool-color);
-  border-radius: 20px; padding: 2px 7px;
+  color: var(--tool-color);
+  background: color-mix(in srgb, var(--tool-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 45%, transparent);
+  border-radius: 20px; padding: 3px 9px;
+  white-space: nowrap;
 }
 
 .editBtn {
   background: none; border: none; color: var(--text-dim); cursor: pointer;
-  padding: 4px 5px; border-radius: var(--r-sm); transition: color 0.15s;
+  padding: 5px 6px; border-radius: var(--r-sm); transition: color 0.15s;
   display: inline-flex; align-items: center; justify-content: center;
   -webkit-tap-highlight-color: transparent;
 }
-.editBtn:hover { color: var(--text); }
+.editBtn:active { color: var(--text); }
 .chevron { color: var(--text-dim); display: inline-flex; transition: transform 0.18s; }
 .chevronClosed { transform: rotate(-90deg); }
 
 /* ── Abzweig (verschachtelte Zwischen-Basis, z.B. Bolognese) ─────────────── */
 .branch {
   margin: 6px 10px 8px 10px;
-  border: 1px solid var(--border-dim);
+  border: 1px solid var(--border);
   border-left: 3px solid color-mix(in srgb, var(--tool-color) 55%, transparent);
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--text) 2%, transparent);
   overflow: hidden;
 }
 .branchHeader {
   display: flex; justify-content: space-between; align-items: center;
   padding: 9px 12px; cursor: pointer; user-select: none;
   -webkit-tap-highlight-color: transparent; min-height: 40px;
-  background: color-mix(in srgb, var(--tool-color) 7%, transparent);
+  background: color-mix(in srgb, var(--tool-color) 8%, transparent);
 }
 .branchTitle { font-weight: 600; font-size: 0.85rem; color: var(--tool-color); }
 
 /* ── Body ──────────────────────────────────────────────────────────────── */
-.cardBody { border-top: 1px solid var(--border-dim); }
+.cardBody { border-top: 1px solid var(--border); }
 
 .row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--border-dim);
-  transition: background 0.15s; opacity: 0.55;
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s, opacity 0.15s; opacity: 0.5;
 }
 .row:last-child { border-bottom: none; }
-.rowActive { opacity: 1; background: rgba(255,255,255,0.03); }
+.rowActive { opacity: 1; background: color-mix(in srgb, var(--tool-color) 7%, transparent); }
 
 /* ── Stepper ───────────────────────────────────────────────────────────── */
 .stepper {
   display: flex; align-items: center; gap: 0;
-  border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
   overflow: hidden; flex-shrink: 0;
 }
 .stepBtn {
   background: none; border: none; color: var(--text-dim);
-  width: 26px; height: 26px; font-size: 0.9rem; cursor: pointer;
+  width: 28px; height: 28px; font-size: 1rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.12s;
+  transition: background 0.12s, color 0.12s;
+  -webkit-tap-highlight-color: transparent;
 }
-.stepBtn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.stepBtn:active { background: color-mix(in srgb, var(--text) 8%, transparent); color: var(--text); }
 .stepVal {
-  width: 22px; text-align: center; font-size: 0.82rem; color: var(--text-dim);
-  font-variant-numeric: tabular-nums;
+  width: 24px; text-align: center; font-size: 0.85rem; color: var(--text-dim);
+  font-family: var(--font-num);
 }
 .stepValActive { color: var(--tool-color); font-weight: 600; }
 
 /* ── Row content ───────────────────────────────────────────────────────── */
 .rowMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
 .rowTop { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.rowName { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowName { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .portionenHint {
+  font-family: var(--font-num);
   font-size: 0.72rem; color: var(--tool-color); font-weight: 600;
-  background: rgba(255,255,255,0.05); border-radius: 10px; padding: 1px 6px;
+  background: color-mix(in srgb, var(--tool-color) 12%, transparent); border-radius: 10px; padding: 1px 7px;
   flex-shrink: 0;
 }
-.tag { display: inline-flex; align-items: center; color: var(--primary); opacity: 0.85; flex-shrink: 0; }
+.tag { display: inline-flex; align-items: center; color: var(--tool-color); opacity: 0.9; flex-shrink: 0; }
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
 .cardFooter {
-  border-top: 1px solid var(--border-dim);
+  border-top: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
 }
 .addAbleitungBtn {
-  padding: 8px 12px; background: none; border: none;
-  color: var(--text-dim); font-size: 0.82rem; cursor: pointer;
+  padding: 9px 13px; background: none; border: none;
+  color: var(--tool-color); font-size: 0.82rem; font-weight: 500; cursor: pointer;
   transition: color 0.15s; text-align: left;
+  -webkit-tap-highlight-color: transparent;
 }
-.addAbleitungBtn:hover { color: var(--text); }
+.addAbleitungBtn:active { color: var(--text); }
 
 .bedarfRow { padding: 4px 12px; }
 .bedarfText { font-size: 0.72rem; color: var(--text-dim); }
