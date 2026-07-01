@@ -1,14 +1,27 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { taskUrgency, taskSegments, roomStatus, taskDueLabel } from './haushaltData'
+
+// Fester Zeitpunkt (lokale Mittagszeit) — sonst kippen die Datums-Labels über
+// Mitternacht: daysAgo() müsste sonst mit der Wall-Clock rechnen, und die
+// UTC/Lokal-Grenze (toISOString ist UTC, daysSince rechnet lokal) erzeugt einen
+// Off-by-one. Fixe Uhr + lokales daysAgo => deterministisch in jeder Zeitzone.
+beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date(2026, 5, 15, 12, 0, 0)) })
+afterEach(() => { vi.useRealTimers() })
 
 const task = (over = {}) => ({
   id: 't1', text: 'Test', duration: 10, freq: 'weekly', customDays: null,
   lowEnergy: false, lastDone: null, subItems: [], ...over,
 })
 
+// Lokales Datum n Tage zurück — konsistent mit daysSince() (das lokale
+// Mitternacht parst). setDate() rechnet über DST/Monatsgrenzen korrekt.
 const daysAgo = (n) => {
-  const d = new Date(Date.now() - n * 86_400_000)
-  return d.toISOString().slice(0, 10)
+  const d = new Date()
+  d.setDate(d.getDate() - n)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 describe('taskUrgency — nie erledigt ist fällig, aber nicht überfällig', () => {
