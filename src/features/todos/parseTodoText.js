@@ -34,7 +34,7 @@ export function parseTodoText(raw) {
   else if (priority === 3 && /\b(sollte|bald|soon)\b/i.test(text)) priority = 2
   text = text.replace(/\b(dringend|wichtig|asap|sofort|urgent|sollte|bald|soon)\b/gi, '')
 
-  const tr = text.match(/\b(\d{1,2})(?::(\d{2}))?-(\d{1,2})(?::(\d{2}))?(?:uhr)?(?=\s|$)/i)
+  const tr = text.match(/\b(\d{1,2})(?::(\d{2}))?-(\d{1,2})(?::(\d{2}))?(?:\s*uhr)?(?=\s|$)/i)
   if (tr) {
     const h1 = parseInt(tr[1]), m1 = tr[2] ? parseInt(tr[2]) : 0
     const h2 = parseInt(tr[3]), m2 = tr[4] ? parseInt(tr[4]) : 0

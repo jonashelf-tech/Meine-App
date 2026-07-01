@@ -298,6 +298,26 @@
 }
 .fieldInputSm:focus { border-color: var(--primary); }
 
+/* ─── Zeitspanne (Start – Ende) ──────────────────────────── */
+.timeRangeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.timeRangeInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.timeRangeSep {
+  color: var(--text-faint);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
 /* ─── Dauer-Buttons ──────────────────────────────────────── */
 .durBtnRow {
   display: flex;

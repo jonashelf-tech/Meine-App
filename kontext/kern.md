@@ -37,6 +37,12 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 (`!`-Prio, `#Kategorie`, Zeiten/Zeitspannen, Datum, Dauer). Genutzt vom „Auto"-Toggle im TodoModal:
 persistiert (`SK.autoParse`), an = Live-Chips („erkannt: …") + Übernahme beim Hinzufügen,
 **manuell gesetzte Felder gewinnen immer**. Nur beim Erstellen aktiv, nicht beim Bearbeiten.
+Zeitspanne (`10-12` / `10:00-12:00`, optional „uhr" mit beliebigem Leerzeichen davor) → `time` + `duration`.
+
+**Zeitspanne im TodoModal (Details → Uhrzeit):** zweites `type="time"`-Feld „Ende" neben dem
+Start — kein eigener State, reine Ableitung aus `time`+`duration` (`minsToHHMM(parseHHMM(time)+duration)`).
+Eintippen von Ende schreibt direkt auf `duration` (Ende−Start, nur wenn > 0). Datenmodell unverändert —
+Block speichert weiterhin nur `duration` in Minuten, kein `endTime`-Feld.
 
 ---
 
@@ -303,7 +309,8 @@ dateKey(date)        // Date → "2024-01-15"
 todayKey()           // heute als dateKey
 sk(h, half?)         // Slot-Key: sk(8) = "8", sk(8, true) = "8.5"
 skLabel(key)         // "8" → "08:00", "8.5" → "08:30"
-parseHHMM(str)       // "08:30" → 8.5
+parseHHMM(str)       // "08:30" → 510 (Minuten seit Mitternacht, NICHT Dezimalstunde)
+minsToHHMM(mins)     // 510 → "08:30"
 ALL_SLOT_KEYS        // alle gültigen Slot-Keys 0–23.5
 ```
 

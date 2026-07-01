@@ -14,6 +14,13 @@ describe('parseTodoText — konsolidierter Parser', () => {
     expect(p.text).toBe('Zahnarzt')
   })
 
+  it('erkennt Zeitspanne mit "Uhr" (Leerzeichen davor) sauber, ohne Rest-"Uhr" im Text', () => {
+    const p = parseTodoText('Termin 10-12 Uhr')
+    expect(p.time).toBe('10:00')
+    expect(p.duration).toBe(120)
+    expect(p.text).toBe('Termin')
+  })
+
   it('erkennt !-Präfix als Prio 1 (aus QuickAdd übernommen)', () => {
     const p = parseTodoText('!Steuer abgeben')
     expect(p.priority).toBe(1)

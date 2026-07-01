@@ -5,7 +5,7 @@ import { createBlock } from '../../features/todos/Block'
 import { createNote, noteTitle, formatNoteTime } from '../../features/notes/Note'
 import { parseTodoText } from '../../features/todos/parseTodoText'
 import { TOOL_TAB } from '../../features/tools/toolTabs'
-import { parseHHMM, minutesToSk, NEON } from '../../utils'
+import { parseHHMM, minsToHHMM, minutesToSk, NEON } from '../../utils'
 import { lv, sv, SK } from '../../storage'
 import RepeatPicker from '../RepeatPicker/RepeatPicker'
 import Overlay from '../Overlay/Overlay'
@@ -136,6 +136,17 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
 
   const handleDurPreset = (val) => setDuration(prev => prev === val ? null : val)
   const handleDurFree   = (e)   => setDuration(e.target.value ? parseInt(e.target.value) : null)
+
+  // Ende-Zeit ist reine Ableitung aus time+duration (kein eigener State) —
+  // Eintippen schreibt direkt auf duration, damit Dauer-Presets & Ende-Feld
+  // immer konsistent bleiben. Endzeit ≤ Start wird ignoriert (kein Downstream-Fix nötig).
+  const endTime = time && duration != null ? minsToHHMM(parseHHMM(time) + duration) : ''
+  const handleEndTime = (e) => {
+    const val = e.target.value
+    if (!val || !time) return
+    const diff = parseHHMM(val) - parseHHMM(time)
+    if (diff > 0) setDuration(diff)
+  }
 
   const triggerBlink = (field) => {
     if (field === 'date') { setBlinkDate(true); setTimeout(() => setBlinkDate(false), 1200) }
@@ -451,7 +462,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           {!detailsOpen && (date || time || category) && (
             <span className={s.detailsSummary}>
               {date && <span className={s.summaryChip}>{formatSummaryDate(date)}</span>}
-              {time && <span className={s.summaryChip}>{time}</span>}
+              {time && <span className={s.summaryChip}>{endTime ? `${time}–${endTime}` : time}</span>}
               {category && <span className={s.summaryChip}>{category}</span>}
             </span>
           )}
@@ -478,12 +489,23 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
             {/* Uhrzeit */}
             <div className={s.row}>
               <span className={s.rowLabel}>Uhrzeit</span>
-              <input
-                type="time"
-                className={[s.fieldInputSm, blinkTime ? s.blinkField : ''].join(' ')}
-                value={time}
-                onChange={e => setTime(e.target.value)}
-              />
+              <div className={s.timeRangeRow}>
+                <input
+                  type="time"
+                  className={[s.fieldInputSm, s.timeRangeInput, blinkTime ? s.blinkField : ''].join(' ')}
+                  value={time}
+                  onChange={e => setTime(e.target.value)}
+                />
+                <span className={s.timeRangeSep}>–</span>
+                <input
+                  type="time"
+                  className={[s.fieldInputSm, s.timeRangeInput].join(' ')}
+                  value={endTime}
+                  onChange={handleEndTime}
+                  placeholder="Ende"
+                  aria-label="Ende"
+                />
+              </div>
               {isTermin && (
                 <span style={{ fontSize: '0.68rem', color: 'rgba(251,113,133,0.8)' }}>→ Kalendereintrag</span>
               )}
