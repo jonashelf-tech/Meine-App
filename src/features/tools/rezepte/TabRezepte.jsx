@@ -44,6 +44,9 @@ export default function TabRezepte({ onBack }) {
   }, [])
 
   const [screen, setScreen] = useState('home')   // home | rezepte | ketten | konfig | zutaten | kochen
+  const [briefing, setBriefing] = useState(() => !lv(SK.rezepteIntroSeen, false))  // Erst-Briefing
+  const closeBriefing = useCallback(() => { sv(SK.rezepteIntroSeen, true); setBriefing(false) }, [])
+  const openBriefing  = useCallback(() => setBriefing(true), [])
   const [editing, setEditing] = useState(null)
   const [viewing, setViewing] = useState(null)   // Rezept in Read-Only-Ansicht
   const [konfigLoad, setKonfigLoad] = useState(null)
@@ -158,6 +161,7 @@ export default function TabRezepte({ onBack }) {
           <MealprepHome
             korb={korb} rezepte={rezepte} zutaten={zutaten} toolColor={toolColor}
             froster={froster} onAdjustFroster={adjustFroster}
+            briefing={briefing} onCloseBriefing={closeBriefing} onOpenBriefing={openBriefing}
             onStartDurchgang={startDurchgang}
             onOpenRezepte={() => setScreen('rezepte')}
             onOpenKetten={() => setScreen('ketten')}

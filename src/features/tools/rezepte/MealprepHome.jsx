@@ -1,10 +1,11 @@
 import { istBasis } from './mealprepModel'
-import { IconBook, IconLayers, IconCarrot, IconSliders, IconBasket, IconChevron, IconArrowRight, IconSnow, IconPlus, IconMinus } from './icons'
+import { IconBook, IconLayers, IconCarrot, IconSliders, IconBasket, IconChevron, IconArrowRight, IconSnow, IconPlus, IconMinus, IconClose } from './icons'
 import s from './MealprepHome.module.css'
 
-// Startseite des Mealprep-Tools (Home-first). Hero-CTA + Froster-Stand + Bibliothek + Mehr.
+// Startseite des Mealprep-Tools (Home-first). Erst-Briefing + Hero-CTA + Froster-Stand + Bibliothek + Mehr.
 export default function MealprepHome({
   korb, rezepte, zutaten, toolColor, froster, onAdjustFroster,
+  briefing, onCloseBriefing, onOpenBriefing,
   onStartDurchgang, onOpenRezepte, onOpenKetten, onOpenZutaten, onOpenKonfig,
 }) {
   const korbCount   = korb?.eintraege?.length ?? 0
@@ -26,6 +27,20 @@ export default function MealprepHome({
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
+      {briefing && (
+        <div className={s.briefing}>
+          <button className={s.briefClose} onClick={onCloseBriefing} aria-label="schließen"><IconClose size={15} /></button>
+          <div className={s.briefKicker}><span className={s.kdot} /> So läuft ein Durchgang</div>
+          <div className={s.briefTitle}>Einmal planen, wochenlang essen</div>
+          <ul className={s.briefList}>
+            <li><b>Portionen statt Rezepte:</b> sag pro Gericht, wie viele du frisch isst und wie viele als 250-g-Blöcke in den Froster wandern.</li>
+            <li><b>Frisches bleibt frisch:</b> Beilagen wie Nudeln werden nur für die frischen Portionen gekocht — die TK-Blöcke kommen ohne.</li>
+            <li><b>Geführt in 4 Schritten:</b> Auswählen → Portionen → Einkauf → Kochen &amp; Einblocken.</li>
+          </ul>
+          <button className={s.briefCta} onClick={onCloseBriefing}>Los geht’s <IconArrowRight size={16} /></button>
+        </div>
+      )}
+
       <div className={s.hero}>
         <div className={s.accent} />
         <div className={s.kicker}><span className={s.kdot} /> Mealprep-Durchgang</div>
@@ -83,12 +98,20 @@ export default function MealprepHome({
       </div>
 
       <div className={s.label}>Mehr</div>
-      <button className={[s.row, s.rowQuiet].join(' ')} onClick={onOpenKonfig}>
-        <span className={s.rowLeft}>
-          <span className={s.rowIcon}><IconSliders size={17} /></span>Konfigurator
-        </span>
-        <span className={s.chev}><IconChevron size={15} /></span>
-      </button>
+      <div className={s.list}>
+        <button className={[s.row, s.rowQuiet].join(' ')} onClick={onOpenKonfig}>
+          <span className={s.rowLeft}>
+            <span className={s.rowIcon}><IconSliders size={17} /></span>Konfigurator
+          </span>
+          <span className={s.chev}><IconChevron size={15} /></span>
+        </button>
+        <button className={[s.row, s.rowQuiet].join(' ')} onClick={onOpenBriefing}>
+          <span className={s.rowLeft}>
+            <span className={s.rowIcon}><IconBook size={17} /></span>So funktioniert’s
+          </span>
+          <span className={s.chev}><IconChevron size={15} /></span>
+        </button>
+      </div>
     </div>
   )
 }
