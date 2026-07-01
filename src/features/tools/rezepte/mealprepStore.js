@@ -8,6 +8,11 @@ export const saveZutaten  = (list) => sv(SK.rezepteZutaten, list)
 export const saveRezepte  = (list) => sv(SK.recipes, list)
 export const saveSettings = (obj)  => sv(SK.rezepteSettings, obj)
 
+// Froster-Bestand: { [rezeptId]: anzahlBloecke }. Wird beim Kochen befüllt
+// ("In Froster übernehmen") und auf der Startseite manuell angepasst (essen = −1).
+export const loadFroster = ()    => lv(SK.rezepteFroster, {})
+export const saveFroster = (map) => sv(SK.rezepteFroster, map)
+
 // Wo wird eine Zutat ODER ein Rezept (id) verwendet? Für Lösch-Warnung.
 export function findUsages(id, rezepte, koerbe = []) {
   const usedInRezepte = rezepte.filter(r =>

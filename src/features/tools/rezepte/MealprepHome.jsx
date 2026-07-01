@@ -1,16 +1,22 @@
 import { istBasis } from './mealprepModel'
-import { IconBook, IconLayers, IconCarrot, IconSliders, IconBasket, IconChevron, IconArrowRight } from './icons'
+import { IconBook, IconLayers, IconCarrot, IconSliders, IconBasket, IconChevron, IconArrowRight, IconSnow, IconPlus, IconMinus } from './icons'
 import s from './MealprepHome.module.css'
 
-// Startseite des Mealprep-Tools (Home-first). Hero-CTA + Bibliothek-Liste + Mehr.
+// Startseite des Mealprep-Tools (Home-first). Hero-CTA + Froster-Stand + Bibliothek + Mehr.
 export default function MealprepHome({
-  korb, rezepte, zutaten, toolColor,
+  korb, rezepte, zutaten, toolColor, froster, onAdjustFroster,
   onStartDurchgang, onOpenRezepte, onOpenKetten, onOpenZutaten, onOpenKonfig,
 }) {
   const korbCount   = korb?.eintraege?.length ?? 0
   const rezeptCount = rezepte?.length ?? 0
   const kettenCount = rezepte?.filter(istBasis).length ?? 0
   const zutatCount  = zutaten?.length ?? 0
+
+  const frosterList = Object.entries(froster ?? {})
+    .map(([id, count]) => ({ id, count, name: rezepte?.find(r => r.id === id)?.name ?? id }))
+    .filter(x => x.count > 0)
+    .sort((a, b) => a.name.localeCompare(b.name))
+  const frosterBloecke = frosterList.reduce((a, x) => a + x.count, 0)
 
   const biblio = [
     { key: 'rezepte', label: 'Rezepte', Icon: IconBook,   count: rezeptCount, onClick: onOpenRezepte },
@@ -35,6 +41,31 @@ export default function MealprepHome({
           </div>
         )}
       </div>
+
+      {frosterList.length > 0 && (
+        <>
+          <div className={`${s.label} ${s.labelRow}`}>
+            <span className={s.frostLbl}><IconSnow size={13} /> Im Froster</span>
+            <span className={s.frostTotal}>{frosterBloecke} {frosterBloecke === 1 ? 'Block' : 'Blöcke'}</span>
+          </div>
+          <div className={s.list}>
+            {frosterList.map(({ id, name, count }) => (
+              <div key={id} className={s.frostRow}>
+                <span className={s.frostName}>{name}</span>
+                <span className={s.stepper}>
+                  <button className={s.stepBtn} onClick={() => onAdjustFroster(id, -1)} aria-label="einen essen">
+                    <IconMinus size={13} />
+                  </button>
+                  <span className={s.frostCount}>{count}</span>
+                  <button className={s.stepBtn} onClick={() => onAdjustFroster(id, +1)} aria-label="einen dazu">
+                    <IconPlus size={13} />
+                  </button>
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       <div className={s.label}>Bibliothek</div>
       <div className={s.list}>

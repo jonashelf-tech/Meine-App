@@ -60,6 +60,7 @@ export const SK = {
   rezepteSettings:`${PREFIX}recipes_settings`,
   recipesVersion: `${PREFIX}recipes_list__v`,
   rezepteKorbAktiv:`${PREFIX}recipes_active_basket`,
+  rezepteFroster: `${PREFIX}recipes_freezer`,
   weight:         `${PREFIX}health_weight`,
   weightDash:     `${PREFIX}wdash`,
   activeTools:    `${PREFIX}app_active_tools`,
@@ -137,6 +138,7 @@ export const BACKUP_CATS = {
   ],
   tools: [
     SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv,
+    SK.rezepteFroster,
     SK.shopping, SK.shoppingStates, SK.selectedDishes,
     SK.weight, SK.weightDash,
     SK.fitness, SK.fitnessSessions,

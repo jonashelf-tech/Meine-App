@@ -4,13 +4,14 @@ import { portionenSplit } from './mealprepModel'
 import { buildKochTodoBlock, buildEinkaufTodoBlock } from './kochTodo'
 import Einkauf from './Einkauf.jsx'
 import Kochanleitung from './Kochanleitung.jsx'
-import { IconCalendar, IconCheck, IconBasket } from './icons'
+import { IconCalendar, IconCheck, IconBasket, IconSnow } from './icons'
 import s from './Kochen.module.css'
 
-export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor }) {
+export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor, onUebernehmen }) {
   const [view, setView] = useState('einkauf')   // 'einkauf' | 'anleitung'
   const [confirmLeeren, setConfirmLeeren] = useState(false)
   const [kochGeladen, setKochGeladen] = useState(false)
+  const [uebernommen, setUebernommen] = useState(false)
   const { setTodos } = useAppStore()
 
   const resolveRezept = (ref) => typeof ref === 'string' ? rById(ref) : ref
@@ -30,6 +31,17 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
     () => korbGerichte.reduce((sum, g) => sum + (g.rezept.kochdauer || 0), 0),
     [korbGerichte]
   )
+  const totalBloecke = useMemo(
+    () => korbGerichte.reduce((sum, g) => sum + (g.bloecke || 0), 0),
+    [korbGerichte]
+  )
+
+  // TK-Blöcke dieses Durchgangs in den Froster buchen (1 Tipp, kein Doppel-Buchen)
+  const handleUebernehmen = () => {
+    if (uebernommen) return
+    onUebernehmen?.(korbGerichte)
+    setUebernommen(true)
+  }
 
   const handleKochTodo = () => {
     const block = buildKochTodoBlock(korbGerichte, zById, rById, toolColor)
@@ -103,6 +115,14 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
               ? <><IconCheck size={16} /> In Tagesplaner geladen</>
               : <><IconCalendar size={16} /> Kochen einplanen{kochzeit > 0 ? ` · ${kochzeit} min` : ''}</>}
           </button>
+          {totalBloecke > 0 && (
+            <button className={`${s.frosterBtn} ${uebernommen ? s.frosterOk : ''}`}
+              onClick={handleUebernehmen} disabled={uebernommen}>
+              {uebernommen
+                ? <><IconCheck size={16} /> {totalBloecke} {totalBloecke === 1 ? 'Block' : 'Blöcke'} im Froster</>
+                : <><IconSnow size={16} /> {totalBloecke} {totalBloecke === 1 ? 'Block' : 'Blöcke'} in Froster übernehmen</>}
+            </button>
+          )}
         </div>
       )}
 

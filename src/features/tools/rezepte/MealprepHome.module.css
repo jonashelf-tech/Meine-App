@@ -92,6 +92,36 @@
 }
 .korbHint svg { color: color-mix(in srgb, var(--tool-color) 80%, white); }
 
+/* ── Froster-Stand ─────────────────────────────────────────── */
+.labelRow { display: flex; align-items: center; justify-content: space-between; }
+.frostLbl { display: inline-flex; align-items: center; gap: 6px; color: #6CB6FF; }
+.frostTotal {
+  font-family: var(--font-num); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0; text-transform: none; color: color-mix(in srgb, #6CB6FF 85%, white);
+}
+.frostRow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface);
+}
+.frostName { font-size: 0.92rem; font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.frostCount {
+  font-family: var(--font-num); font-size: 1rem; font-weight: 600;
+  color: var(--text); min-width: 20px; text-align: center;
+}
+
+/* ── Stepper (Froster) ─────────────────────────────────────── */
+.stepper { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.stepBtn {
+  width: 27px; height: 27px; border-radius: 50%;
+  border: 1px solid var(--border); background: none; color: var(--text-dim);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent; transition: background 0.12s;
+}
+.stepBtn:active { background: color-mix(in srgb, var(--text) 8%, transparent); }
+
 /* ── Bibliothek / Mehr — Listen-Rows ───────────────────────── */
 .list { display: flex; flex-direction: column; gap: 7px; }
 .row {

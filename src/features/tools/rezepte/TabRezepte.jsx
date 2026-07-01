@@ -4,7 +4,7 @@ import { sv, lv, SK } from '../../../storage'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
-import { loadAll, saveZutaten, saveRezepte } from './mealprepStore'
+import { loadAll, saveZutaten, saveRezepte, loadFroster, saveFroster } from './mealprepStore'
 import { createKorb } from './mealprepModel'
 import MealprepHome from './MealprepHome'
 import PortionenStep from './PortionenStep'
@@ -50,6 +50,34 @@ export default function TabRezepte({ onBack }) {
 
   const setZutaten = useCallback(v => { setZutatenS(v); saveZutaten(v) }, [])
   const setRezepte = useCallback(v => { setRezepteS(v); saveRezepte(v) }, [])
+
+  // Froster-Bestand { rezeptId: bloecke } — 0 fällt raus (kein Karteileichen-Rest)
+  const [froster, setFrosterS] = useState(() => loadFroster())
+  const setFroster = useCallback((v) => {
+    setFrosterS(prev => {
+      const next = typeof v === 'function' ? v(prev) : v
+      saveFroster(next)
+      return next
+    })
+  }, [])
+  const adjustFroster = useCallback((rezeptId, delta) => {
+    setFroster(f => {
+      const n = Math.max(0, (f[rezeptId] ?? 0) + delta)
+      const next = { ...f }
+      if (n === 0) delete next[rezeptId]; else next[rezeptId] = n
+      return next
+    })
+  }, [setFroster])
+  // Nach dem Kochen: TK-Blöcke des Durchgangs in den Froster buchen (explizit, 1 Tipp)
+  const uebernehmenInFroster = useCallback((korbGerichte) => {
+    setFroster(f => {
+      const next = { ...f }
+      for (const g of korbGerichte) {
+        if (g.bloecke > 0) next[g.rezept.id] = (next[g.rezept.id] ?? 0) + g.bloecke
+      }
+      return next
+    })
+  }, [setFroster])
 
   // Hardware-/Gesten-Zurück: Editor → Rezeptansicht → Unterseite → Home → Tool verlassen
   useEffect(() => {
@@ -129,6 +157,7 @@ export default function TabRezepte({ onBack }) {
           />
           <MealprepHome
             korb={korb} rezepte={rezepte} zutaten={zutaten} toolColor={toolColor}
+            froster={froster} onAdjustFroster={adjustFroster}
             onStartDurchgang={startDurchgang}
             onOpenRezepte={() => setScreen('rezepte')}
             onOpenKetten={() => setScreen('ketten')}
@@ -159,7 +188,8 @@ export default function TabRezepte({ onBack }) {
             )}
             {screen === 'zutaten' && <Zutaten zutaten={zutaten} toolColor={toolColor} onEdit={setEditing} />}
             {screen === 'kochen'  && (
-              <Kochen korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte} toolColor={toolColor} />
+              <Kochen korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte} toolColor={toolColor}
+                onUebernehmen={uebernehmenInFroster} />
             )}
           </div>
 
