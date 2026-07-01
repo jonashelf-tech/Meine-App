@@ -100,3 +100,16 @@ export function buildKochanleitung(korbGerichte, zById, rById) {
 
   return { miseEnPlace, basen, gerichte, verpackung }
 }
+
+// Wie oft muss jede Ketten-Basis gekocht werden? Gesamtbedarf / Ausbeute pro
+// Kochgang (ergibtMenge). Für den „Tomatensoße 3× kochen"-Hinweis im
+// Portionen-Schritt. Reihenfolge = Kochreihenfolge (tiefste Basis zuerst).
+export function basenBatches(korbGerichte, zById, rById) {
+  return buildKochanleitung(korbGerichte, zById, rById).basen
+    .map(b => {
+      const ausbeute = rById(b.id)?.ergibtMenge
+      if (!ausbeute) return null
+      return { id: b.id, name: b.name, batches: Math.max(1, Math.ceil(b.menge / ausbeute)) }
+    })
+    .filter(Boolean)
+}

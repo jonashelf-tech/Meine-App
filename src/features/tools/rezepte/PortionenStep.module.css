@@ -80,6 +80,25 @@
   border-top: 1px solid color-mix(in srgb, var(--text) 6%, transparent);
 }
 
+/* ── Basen vorkochen ──────────────────────────────────────── */
+.vorkochen { margin-top: 14px; }
+.vorkochenLbl {
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--text-dim); display: block; margin: 0 2px 7px;
+}
+.vorkochenChips { display: flex; flex-wrap: wrap; gap: 6px; }
+.vorkochenChip {
+  font-size: 0.78rem; color: var(--text-dim);
+  padding: 5px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--tool-color) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--tool-color) 22%, transparent);
+}
+.vorkochenChip b {
+  font-family: var(--font-num); font-weight: 700;
+  color: color-mix(in srgb, var(--tool-color) 80%, white);
+  margin-left: 2px;
+}
+
 /* ── Summe ─────────────────────────────────────────────────── */
 .summary {
   margin-top: 14px;

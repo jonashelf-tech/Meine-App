@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { portionenSplit, istFrisch } from './mealprepModel'
+import { basenBatches } from './kochanleitung'
 import { rezeptProPortion } from './naehrwerte'
 import Naehrwert from './Naehrwert'
 import { IconArrowLeft, IconArrowRight, IconPlus, IconMinus, IconSnow, IconClose } from './icons'
@@ -31,6 +32,12 @@ export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, 
 
   const totalPortionen = items.reduce((a, it) => a + it.split.total, 0)
   const totalBloecke   = items.reduce((a, it) => a + it.split.bloecke, 0)
+
+  // Ketten-Basen: wie oft muss z. B. die Tomatensoße gekocht werden?
+  const vorkochen = useMemo(
+    () => basenBatches(items.map(it => ({ rezept: it.r, frisch: it.split.frisch, bloecke: it.split.bloecke })), zById, rById),
+    [items] // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
   const setSplit = (idx, frisch, bloecke) => {
     setKorb(k => ({
@@ -103,6 +110,17 @@ export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, 
               </div>
             )
           })}
+        </div>
+      )}
+
+      {vorkochen.length > 0 && (
+        <div className={s.vorkochen}>
+          <span className={s.vorkochenLbl}>Basen vorkochen</span>
+          <div className={s.vorkochenChips}>
+            {vorkochen.map(b => (
+              <span key={b.id} className={s.vorkochenChip}>{b.name} <b>{b.batches}×</b></span>
+            ))}
+          </div>
         </div>
       )}
 

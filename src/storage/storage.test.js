@@ -119,7 +119,7 @@ describe('Backup-Abdeckung — Anti-Drift', () => {
   })
 
   it('Nutzdaten-Keys der neueren Tools sind im Backup', () => {
-    ;[SK.reminder, SK.reminderDismissed, SK.elvi, SK.recipesVersion, SK.weightDash]
+    ;[SK.reminder, SK.reminderDismissed, SK.elvi, SK.recipesVersion, SK.weightDash, SK.rezepteFroster]
       .forEach(k => expect(BACKUP_CATS.tools).toContain(k))
   })
 
