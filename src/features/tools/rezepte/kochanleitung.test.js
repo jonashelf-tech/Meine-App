@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildKochanleitung } from './kochanleitung'
+import { buildKochanleitung, basenBatches } from './kochanleitung'
 
 const SOSSE = { id: 'sosse', name: 'Tomatensosse', basisPortionen: 8, ergibtMenge: 1000, langlaeufer: true,
                 zutaten: [{ zutatId: 'tomate', menge: 1000 }], komponenten: [], anleitung: 'koecheln' }
@@ -54,6 +54,21 @@ describe('buildKochanleitung', () => {
     const hack   = plan.miseEnPlace.find(m => m.name === 'Hack')
     expect(nudeln.menge).toBe(250)   // 500 * (2/4) — nur frische, wie im Einkauf
     expect(hack.menge).toBe(600)     // 400 * (6/4) — friert ein, alle 6
+  })
+
+  it('basenBatches: Gesamtbedarf / Ausbeute = Anzahl Kochgänge', () => {
+    // SOSSE ergibt 1000 pro Kochgang. bolo braucht 500 Sosse / 4 Portionen.
+    // bolo 8 + chili 8 Portionen → je 500*(8/4)=1000 → total 2000 → 2× kochen.
+    const batches = basenBatches(
+      [{ rezept: bolo, frisch: 0, bloecke: 8 }, { rezept: chili, frisch: 0, bloecke: 8 }],
+      zById, rById)
+    const sosse = batches.find(b => b.id === 'sosse')
+    expect(sosse.batches).toBe(2)
+  })
+  it('basenBatches: nur echte Basen (mit ergibtMenge), aufgerundet', () => {
+    // bolo 4 Portionen → 500 Sosse → 1× (aufgerundet, < 1000).
+    const batches = basenBatches([{ rezept: bolo, frisch: 0, bloecke: 4 }], zById, rById)
+    expect(batches).toEqual([{ id: 'sosse', name: 'Tomatensosse', batches: 1 }])
   })
 
   it('mehrstufige Kette: tiefere Basis erscheint und wird zuerst gekocht', () => {
