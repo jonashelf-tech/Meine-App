@@ -29,12 +29,6 @@ const ProkrastinationIcon = () => (
   </svg>
 )
 
-const TrashIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-  </svg>
-)
-
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
@@ -58,8 +52,7 @@ export default function TodoChip({
   todo,
   onToggleDone,       // fn() — toggle done
   onEdit,             // fn() — open edit modal
-  onRemove,           // fn() — delete (zeigt ✕-Button nur ohne onEdit; dient sonst als Swipe-Fallback)
-  onDelete,           // fn() — swipe-to-delete; falls nicht gesetzt, fällt auf onRemove zurück
+  onRemove,           // fn() — delete (zeigt ✕-Button nur ohne onEdit; fakeTodo-Chips ohne Edit-Modal)
   todos,              // full todos array — for sub-item save
   saveTodos,          // setTodos fn — for sub-item save
   saveItem,           // fn(upd) — alternative save when no todo (e.g. slot)
@@ -92,35 +85,6 @@ export default function TodoChip({
 
   const handleDouble = useCallback(() => onEdit?.(), [onEdit])
   const tapHandler   = useDoubleTap(handleSingle, handleDouble)
-
-  // ── Swipe-to-delete ──────────────────────────────────────
-  const swipeDelete = onDelete || onRemove
-  const [swipeX, setSwipeX] = useState(0)
-  const [swiped, setSwiped] = useState(false)
-  const swipeStartXRef = useRef(null)
-
-  const handleSwipeDown = useCallback((e) => {
-    if (!swipeDelete || e.target.closest('[data-drag-handle]')) return
-    swipeStartXRef.current = e.clientX
-    setSwiped(false)
-  }, [swipeDelete])
-
-  const handleSwipeMove = useCallback((e) => {
-    if (swipeStartXRef.current === null) return
-    const dx = e.clientX - swipeStartXRef.current
-    if (dx < 0) setSwipeX(Math.max(dx, -72))
-  }, [])
-
-  const handleSwipeUp = useCallback(() => {
-    if (swipeStartXRef.current === null) return
-    if (swipeX < -40) { setSwipeX(-72); setSwiped(true) } else { setSwipeX(0) }
-    swipeStartXRef.current = null
-  }, [swipeX])
-
-  const handleBodyClick = useCallback((e) => {
-    if (swiped) { e.stopPropagation(); setSwipeX(0); setSwiped(false); return }
-    tapHandler(e)
-  }, [swiped, tapHandler])
 
   // ── Sub-item mutations ──────────────────────────────────
   const updateTodo = useCallback((upd) => {
@@ -221,12 +185,6 @@ export default function TodoChip({
       >
 
       {/* ── Chip ──────────────────────────────────── */}
-      <div className={s.swipeFrame}>
-      {swipeDelete && swipeX < 0 && (
-        <div className={s.deleteReveal} onClick={() => swipeDelete()}>
-          <span className={s.deleteRevealIcon}><TrashIcon /></span>
-        </div>
-      )}
       <div
         data-todochip="true"
         className={[
@@ -239,13 +197,8 @@ export default function TodoChip({
         style={{
           '--chip-color': todo.done ? 'rgba(0,255,148,0.15)' : color,
           '--age-color': ageColor,
-          transform: swipeX ? `translateX(${swipeX}px)` : undefined,
           ...(chipStyle || {}),
         }}
-        onPointerDown={handleSwipeDown}
-        onPointerMove={handleSwipeMove}
-        onPointerUp={handleSwipeUp}
-        onPointerLeave={handleSwipeUp}
       >
         <span className={s.stripe} />
 
@@ -263,7 +216,7 @@ export default function TodoChip({
         )}
 
         {/* Body — single/double tap (abhaken / bearbeiten) */}
-        <div className={s.body} onClick={handleBodyClick}>
+        <div className={s.body} onClick={tapHandler}>
           <div className={s.titleBlock}>
             <div className={s.titleRow}>
               <span className={s.text}>
@@ -342,7 +295,6 @@ export default function TodoChip({
 
         {/* Drag handle — passed in as JSX */}
         {dragHandle}
-      </div>
       </div>
 
       {/* ── Sub-items (sibling, outside chip) ─────── */}

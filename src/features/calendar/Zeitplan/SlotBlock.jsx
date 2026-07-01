@@ -25,7 +25,7 @@ function LockIcon({ locked }) {
   )
 }
 
-export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit, onRemove, onDragStart, onToggleLock, onSaveSlot, onPlay }) {
+export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit, onDragStart, onToggleLock, onSaveSlot, onPlay }) {
   const displayTodo = {
     ...(todo ?? {
       id: null,
@@ -93,7 +93,6 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
       saveItem={!todo ? (upd) => onSaveSlot?.(slotKey, { ...slot, subItems: upd.subItems }) : undefined}
       onToggleDone={onToggleDone}
       onEdit={onEdit}
-      onRemove={onRemove}
       onPlay={onPlay}
       dragHandle={handle}
     />

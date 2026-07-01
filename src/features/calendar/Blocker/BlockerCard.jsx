@@ -11,7 +11,6 @@ export default function BlockerCard({
   consumedKeys,
   onToggleSlotDone,
   onEditTodo,
-  onRemoveSlot,
   onToggleLock,
   onToggleLocked,
   onSetSlot,
@@ -96,7 +95,6 @@ export default function BlockerCard({
                         const lt = todos.find(t => t.id === topSlot.todoId)
                         lt ? onEditTodo?.(lt.id) : onEditTodo?.(topKey)
                       }}
-                      onRemove={() => onRemoveSlot?.(topKey, topSlot.text)}
                       onDragStart={startSlotDrag && !topSlot.locked ? (e) => startSlotDrag(topKey, e) : undefined}
                       onToggleLock={blocker.locked ? undefined : () => onToggleLock?.(topKey)}
                       onSaveSlot={onSetSlot}
@@ -131,7 +129,6 @@ export default function BlockerCard({
                         const lt = todos.find(t => t.id === botSlot.todoId)
                         lt ? onEditTodo?.(lt.id) : onEditTodo?.(botKey)
                       }}
-                      onRemove={() => onRemoveSlot?.(botKey, botSlot.text)}
                       onDragStart={startSlotDrag && !botSlot.locked ? (e) => startSlotDrag(botKey, e) : undefined}
                       onToggleLock={blocker.locked ? undefined : () => onToggleLock?.(botKey)}
                       onSaveSlot={onSetSlot}

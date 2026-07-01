@@ -41,7 +41,7 @@ export default function TabHeute() {
   const [slotSheet,         setSlotSheet]          = useState(null)  // slotKey | null
   const [createSlot,        setCreateSlot]         = useState(null)  // slotKey | null → TodoModal mit Datum+Zeit
 
-  const { registerHalf, startDrag } = useDragDrop()
+  const { registerHalf, startDrag, draggingRef } = useDragDrop()
 
   useKognitivScheduleSlots(viewDate, setDays)
 
@@ -77,7 +77,7 @@ export default function TabHeute() {
       date.setDate(date.getDate() + 1)
       setViewDate(dateKey(date))
     },
-    disabled: editingTodo !== null || blockerModal !== null || klaerenTodo !== null || teOpen || slotSheet !== null || createSlot !== null,
+    disabled: () => editingTodo !== null || blockerModal !== null || klaerenTodo !== null || teOpen || slotSheet !== null || createSlot !== null || draggingRef.current,
   })
 
   // ─── Consume dayplanDate on mount ─────────────────────
@@ -197,7 +197,6 @@ export default function TabHeute() {
           onSetSlot={handleSetSlot}
           onToggleSlotDone={handleToggleSlotDone}
           onEditTodo={handleEdit}
-          onRemoveSlot={handleRemoveSlot}
           onTapExpand={handleBandExpand}
           onTapShrink={handleBandShrink}
           onShiftAll={handleShiftAll}

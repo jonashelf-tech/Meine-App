@@ -1,32 +1,11 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import { computeBands } from './bandLogic'
-import Overlay from '../../../components/Overlay/Overlay'
 import s from './Zeitplan.module.css'
 import SlotBlock from './SlotBlock'
 import BlockerCard from '../Blocker/BlockerCard'
 import { getBlockersForDate, getBlockerForHour } from '../Blocker/blockerUtils'
-
-// ─── RemoveDialog ─────────────────────────────────────────
-function RemoveDialog({ slotText, onBack, onDelete, onClose }) {
-  return (
-    <Overlay variant="center" onClose={onClose}>
-      <div className={s.dialog}>
-        <p className={s.dialogTitle}>"{slotText}"</p>
-        <button className={s.dialogBtn} onClick={onBack}>
-          ↩ Zurück auf Liste
-        </button>
-        <button className={[s.dialogBtn, s.dialogBtnDelete].join(' ')} onClick={onDelete}>
-          Löschen
-        </button>
-        <button className={s.dialogBtnCancel} onClick={onClose}>
-          Abbrechen
-        </button>
-      </div>
-    </Overlay>
-  )
-}
 
 // ─── FreeBand — "frei"-Band statt PillStrip-Pillen ─────────
 function FreeBand({ band, dir, onTapExpand, onTapShrink, registerHalf }) {
@@ -73,7 +52,6 @@ export default function Zeitplan({
   onSetSlot,
   onToggleSlotDone,
   onEditTodo,
-  onRemoveSlot,
   onShiftAll,
   onTapExpand,
   onTapShrink,
@@ -90,11 +68,6 @@ export default function Zeitplan({
   birthdayPills = [],
   birthdayPillsDate = null,
 }) {
-  const [removeDialog, setRemoveDialog] = useState(null)
-
-  const openRemove  = useCallback((slotKey, slotText) => setRemoveDialog({ slotKey, slotText }), [])
-  const closeRemove = useCallback(() => setRemoveDialog(null), [])
-
   const isNow = dateLabel === todayKey()
 
   // Minutengenaue "Jetzt"-Linie: tickt jede Minute, nur am heutigen Tag
@@ -204,7 +177,6 @@ export default function Zeitplan({
                   const lt = todos.find(t => t.id === topSlot.todoId)
                   lt ? onEditTodo?.(lt.id) : onEditTodo?.(topKey)
                 }}
-                onRemove={() => openRemove(topKey, topSlot.text)}
                 onDragStart={startSlotDrag && !topSlot.locked
                   ? (e) => startSlotDrag(topKey, e)
                   : undefined
@@ -242,7 +214,6 @@ export default function Zeitplan({
                   const lt = todos.find(t => t.id === botSlot.todoId)
                   lt ? onEditTodo?.(lt.id) : onEditTodo?.(botKey)
                 }}
-                onRemove={() => openRemove(botKey, botSlot.text)}
                 onDragStart={startSlotDrag && !botSlot.locked
                   ? (e) => startSlotDrag(botKey, e)
                   : undefined
@@ -340,7 +311,6 @@ export default function Zeitplan({
                 consumedKeys={consumedKeys}
                 onToggleSlotDone={onToggleSlotDone}
                 onEditTodo={onEditTodo}
-                onRemoveSlot={(key, text) => openRemove(key, text)}
                 onToggleLock={onToggleLock}
                 onToggleLocked={() => onToggleBlockerLocked?.(sec.blocker.id)}
                 onSetSlot={onSetSlot}
@@ -354,17 +324,6 @@ export default function Zeitplan({
           <FreeBand band={bottomBand} dir="bottom" onTapExpand={onTapExpand} onTapShrink={onTapShrink} registerHalf={registerHalf} />
         )}
       </div>
-
-      {/* Remove dialog */}
-      {removeDialog && (
-        <RemoveDialog
-          slotKey={removeDialog.slotKey}
-          slotText={removeDialog.slotText}
-          onBack={() => { onRemoveSlot?.(removeDialog.slotKey, 'back'); closeRemove() }}
-          onDelete={() => { onRemoveSlot?.(removeDialog.slotKey, 'delete'); closeRemove() }}
-          onClose={closeRemove}
-        />
-      )}
     </div>
   )
 }

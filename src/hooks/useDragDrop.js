@@ -4,6 +4,9 @@ import { useRef } from 'react'
 //       'locked' → roter Glow + kein Drop (visuelles Blockieren)
 export function useDragDrop() {
   const halfRefs = useRef({}) // key → { el, type }
+  // Während eines Drags gesetzt — Parent kann damit z.B. Page-Swipe deaktivieren
+  // (gleiches Muster wie WocheView/weekDraggingRef in TabKalender.jsx).
+  const draggingRef = useRef(false)
 
   const registerHalf = (key, el, type) => {
     if (el && type) halfRefs.current[key] = { el, type }
@@ -12,6 +15,7 @@ export function useDragDrop() {
 
   const startDrag = (text, color, onDrop, e, canDrop, duration = 30) => {
     e.preventDefault()
+    draggingRef.current = true
 
     const SCROLL_ZONE = 80
     const MAX_SPEED   = 10
@@ -131,6 +135,7 @@ export function useDragDrop() {
 
     const up = ev => {
       stopScroll()
+      draggingRef.current = false
       const cx = ev.changedTouches ? ev.changedTouches[0].clientX : ev.clientX
       const cy = ev.changedTouches ? ev.changedTouches[0].clientY : ev.clientY
       document.removeEventListener('pointermove', mv)
@@ -154,5 +159,5 @@ export function useDragDrop() {
     document.addEventListener('pointerup', up)
   }
 
-  return { registerHalf, startDrag }
+  return { registerHalf, startDrag, draggingRef }
 }
