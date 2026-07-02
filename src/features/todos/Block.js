@@ -25,6 +25,8 @@ export const createBlock = (partial = {}) => ({
   subItems:              [],
   category:              null,
   notes:                 null,
+  paused:                false,  // pausiert = raus aus dem präsenten Vordergrund, ans Pool-Ende
+  pauseReason:           null,   // optionaler Grund („woran hängt's"), als Marker am Chip
   showFromDate:          null,   // "2026-06-15" — Todo erst ab diesem Datum im Pool sichtbar
   createdAt:             new Date().toISOString(),
   toolId:                null,

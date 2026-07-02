@@ -64,6 +64,41 @@
   text-decoration: line-through;
 }
 
+/* Paused state — gedimmt + gestrichelter Rand, aber sichtbar (raus aus dem Vordergrund) */
+.chipPaused {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.chipPaused:hover {
+  opacity: 0.85;
+}
+
+/* Pause-Grund-Marker (oben im Body, wenn pausiert mit Grund) */
+.pauseMarker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-style: italic;
+  margin-bottom: 3px;
+  min-width: 0;
+}
+
+.pauseMarker svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.pauseMarkerText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
 /* Flash on done */
 .doneFlash {
   animation: doneFlash 0.65s var(--ease);
@@ -177,6 +212,20 @@
 
 .expandBtnOpen svg {
   transform: rotate(0deg);
+}
+
+/* Fortsetzen-Button (ersetzt Chevron bei pausiert) — Play, keine Rotation */
+.resumeBtn {
+  color: var(--emerald);
+}
+
+.resumeBtn:hover {
+  color: var(--emerald);
+  background: color-mix(in srgb, var(--emerald) 12%, transparent);
+}
+
+.resumeBtn svg {
+  transform: none;
 }
 
 /* ── Fortschrittsbalken (unten im Body) ────────────────────────── */
@@ -496,4 +545,21 @@
 .itemAddBtn:hover {
   color: var(--primary);
   opacity: 0.75;
+}
+
+/* Pause-Button in der Add-Row (links, gegenüber dem +) */
+.pauseBtn {
+  background: none;
+  border: none;
+  color: var(--amber);
+  cursor: pointer;
+  padding: 6px 10px 6px 0;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pauseBtn:hover {
+  opacity: 0.7;
 }

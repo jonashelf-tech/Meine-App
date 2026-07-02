@@ -29,6 +29,19 @@ const ProkrastinationIcon = () => (
   </svg>
 )
 
+const PauseGlyph = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+    <rect x="6" y="5" width="4" height="14" rx="1"/>
+    <rect x="14" y="5" width="4" height="14" rx="1"/>
+  </svg>
+)
+
+const PlayGlyph = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+    <polygon points="7 4 20 12 7 20"/>
+  </svg>
+)
+
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
@@ -65,6 +78,7 @@ export default function TodoChip({
   showAge,            // true = show age in meta (Pool only)
   onKlaeren,          // fn(todo) — opens Klären dialog for this todo (Pool only)
   onPlay,             // fn() — startet Fokus-Timer mit diesem Task (Zeitplan only)
+  pausable,           // true = Pause-Steuerung anzeigen (Pool only)
 }) {
   const [expanded, setExpanded]   = useState(false)
   const [itemInput, setItemInput] = useState('')
@@ -106,6 +120,21 @@ export default function TodoChip({
     updateTodo({ ...todo, subItems: [...allItems, { id: crypto.randomUUID(), text: txt, done: false }] })
     setItemInput(''); itemRef.current?.focus()
   }, [todo, allItems, itemInput, updateTodo])
+
+  // ── Pause / Resume ──────────────────────────────────────
+  // Feldtext (falls vorhanden) wird zum Grund; leer = ohne Grund.
+  const pauseTodo = useCallback(() => {
+    updateTodo({ ...todo, paused: true, pauseReason: itemInput.trim() || null })
+    setItemInput('')
+    setExpanded(false)
+    onExpandedChange?.(false, 0)
+  }, [todo, itemInput, updateTodo, onExpandedChange])
+
+  const resumeTodo = useCallback(() => {
+    updateTodo({ ...todo, paused: false, pauseReason: null })
+  }, [todo, updateTodo])
+
+  const showPause = pausable && !todo.done
 
   // ── Sub-item drag-to-reorder ────────────────────────────
   const startSubDrag = useCallback((fromIdx, e) => {
@@ -191,6 +220,7 @@ export default function TodoChip({
           s.chip,
           flashing  ? s.doneFlash : '',
           todo.done ? s.chipDone  : '',
+          todo.paused && !todo.done ? s.chipPaused : '',
           !todo.done && isOld ? s.chipOld : '',
           className || ''
         ].join(' ').trim()}
@@ -205,19 +235,35 @@ export default function TodoChip({
         {/* Aufklapp-Button — volle Chip-Höhe, links: großes Tap-Ziel, getrennt
             vom Body, damit Abhaken (Body) und Aufklappen sich nicht überlappen. */}
         {!disableExpand && (
-          <button
-            className={[s.expandBtn, expanded ? s.expandBtnOpen : ''].join(' ')}
-            onClick={e => { e.stopPropagation(); toggleExpanded() }}
-            aria-label={allItems.length > 0 ? 'Unterpunkte anzeigen' : 'Unterpunkt hinzufügen'}
-            aria-expanded={expanded}
-          >
-            <ProgressChevronIcon />
-          </button>
+          showPause && todo.paused ? (
+            <button
+              className={[s.expandBtn, s.resumeBtn].join(' ')}
+              onClick={e => { e.stopPropagation(); resumeTodo() }}
+              aria-label="Fortsetzen"
+            >
+              <PlayGlyph />
+            </button>
+          ) : (
+            <button
+              className={[s.expandBtn, expanded ? s.expandBtnOpen : ''].join(' ')}
+              onClick={e => { e.stopPropagation(); toggleExpanded() }}
+              aria-label={allItems.length > 0 ? 'Unterpunkte anzeigen' : 'Unterpunkt hinzufügen'}
+              aria-expanded={expanded}
+            >
+              <ProgressChevronIcon />
+            </button>
+          )
         )}
 
         {/* Body — single/double tap (abhaken / bearbeiten) */}
         <div className={s.body} onClick={tapHandler}>
           <div className={s.titleBlock}>
+            {todo.paused && !todo.done && todo.pauseReason && (
+              <div className={s.pauseMarker}>
+                <PauseGlyph />
+                <span className={s.pauseMarkerText}>{todo.pauseReason}</span>
+              </div>
+            )}
             <div className={s.titleRow}>
               <span className={s.text}>
                 {todo.text || <span className={s.emptyText}>Kein Text</span>}
@@ -377,8 +423,18 @@ export default function TodoChip({
             </div>
           )}
 
-          {/* Add row */}
+          {/* Add row — links Pause (Feldtext = Grund), rechts + (Subtodo) */}
           <div className={s.itemAddRow}>
+            {showPause && (
+              <button
+                className={s.pauseBtn}
+                onClick={e => { e.stopPropagation(); pauseTodo() }}
+                aria-label="Pausieren"
+                title="Pausieren — Text im Feld wird zum Grund"
+              >
+                <PauseGlyph />
+              </button>
+            )}
             <input
               ref={itemRef}
               className={s.itemInput}

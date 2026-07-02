@@ -16,6 +16,37 @@ describe('sortTodos — standard', () => {
   })
 })
 
+describe('sortTodos — pausierte ans Ende', () => {
+  it('pausierte landen hinter offenen, unabhängig von Prio', () => {
+    const list = [
+      { id: 'p1', priority: 1, paused: true, createdAt: '2020-01-01' },
+      { id: 'a',  priority: 3, createdAt: '2020-01-01' },
+      { id: 'b',  priority: 1, createdAt: '2020-01-01' },
+    ]
+    const out = sortTodos(list, 'standard').map(t => t.id)
+    expect(out).toEqual(['b', 'a', 'p1'])
+  })
+
+  it('erhält die normale Sortierung innerhalb der pausierten Gruppe', () => {
+    const list = [
+      { id: 'p2', priority: 3, paused: true, createdAt: '2020-01-01' },
+      { id: 'p1', priority: 1, paused: true, createdAt: '2020-01-01' },
+      { id: 'a',  priority: 2, createdAt: '2020-01-01' },
+    ]
+    const out = sortTodos(list, 'standard').map(t => t.id)
+    expect(out).toEqual(['a', 'p1', 'p2'])
+  })
+
+  it('gilt auch für sort=alter und sort=kategorie', () => {
+    const list = [
+      { id: 'p', priority: 1, paused: true, createdAt: '2020-01-01', category: 'A' },
+      { id: 'x', priority: 1, createdAt: '2020-02-01', category: 'B' },
+    ]
+    expect(sortTodos(list, 'alter').map(t => t.id)).toEqual(['x', 'p'])
+    expect(sortTodos(list, 'kategorie').map(t => t.id)).toEqual(['x', 'p'])
+  })
+})
+
 describe('getActiveTodos', () => {
   it('filtert erledigte, Termine und verplante Todos raus', () => {
     const heute = todayKey()

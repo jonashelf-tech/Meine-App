@@ -2,27 +2,32 @@ import { isFaelligkeit, isTermin } from '../todos/Block'
 import { todayKey } from '../../utils'
 
 // Sortierung wie im Pool: standard (fällig → prio → alter), kategorie, alter.
+// Pausierte Todos landen — unabhängig vom Sort — stabil ans Ende (raus aus dem
+// präsenten Vordergrund, aber sichtbar). Innerhalb beider Gruppen bleibt die
+// gewählte Sortierung erhalten.
 export function sortTodos(list, sort) {
+  let sorted
   if (sort === 'alter') {
-    return [...list].sort((a, b) =>
+    sorted = [...list].sort((a, b) =>
       new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
     )
-  }
-  if (sort === 'kategorie') {
-    return [...list].sort((a, b) => {
+  } else if (sort === 'kategorie') {
+    sorted = [...list].sort((a, b) => {
       const ca = a.category || '￿'
       const cb = b.category || '￿'
       return ca.localeCompare(cb) || (a.priority - b.priority)
     })
+  } else {
+    const today = todayKey()
+    sorted = [...list].sort((a, b) => {
+      const fa = isFaelligkeit(a) && a.date <= today ? 0 : 1
+      const fb = isFaelligkeit(b) && b.date <= today ? 0 : 1
+      if (fa !== fb) return fa - fb
+      if (a.priority !== b.priority) return a.priority - b.priority
+      return new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+    })
   }
-  const today = todayKey()
-  return [...list].sort((a, b) => {
-    const fa = isFaelligkeit(a) && a.date <= today ? 0 : 1
-    const fb = isFaelligkeit(b) && b.date <= today ? 0 : 1
-    if (fa !== fb) return fa - fb
-    if (a.priority !== b.priority) return a.priority - b.priority
-    return new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
-  })
+  return [...sorted.filter(t => !t.paused), ...sorted.filter(t => t.paused)]
 }
 
 // Offene, nicht-terminierte, noch nicht verplante Todos (ungeordnet).

@@ -72,6 +72,7 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPl
       dragHandle={handle}
       showAge
       onKlaeren={onKlaeren}
+      pausable
     />
   )
 }
