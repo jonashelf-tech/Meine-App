@@ -3,6 +3,7 @@ import { useAppStore } from './store'
 import { hexToGlow } from './utils'
 import { TOOL_TAB, TOOL_REGISTRY } from './features/tools/toolRegistry.jsx'
 import { markToolUsed, seedToolUsage } from './features/tools/toolUsage'
+import { PENDING_TAB_KEY } from './features/tools/toolReset'
 import { saveAutoBackup, lv, sv, SK } from './storage'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
@@ -90,6 +91,15 @@ export default function App() {
     const entry = TOOL_REGISTRY.find(t => t.tabId === currentTab)
     if (entry) markToolUsed(entry.id)
   }, [currentTab])
+
+  // Tool-Reset: nach dem Reset-Reload zurück ins Tool statt auf den Tagesplaner
+  useEffect(() => {
+    const pending = sessionStorage.getItem(PENDING_TAB_KEY)
+    if (pending != null) {
+      sessionStorage.removeItem(PENDING_TAB_KEY)
+      setCurrentTab(Number(pending))
+    }
+  }, [setCurrentTab])
 
   // First-Run: Briefing einmalig beim ersten Start zeigen
   useEffect(() => {

@@ -1,5 +1,8 @@
 import { SK } from '../../storage'
 
+// sessionStorage-Key: Tab, auf den App.jsx nach dem Reset-Reload zurücknavigiert
+export const PENDING_TAB_KEY = 'adhs_pending_tab'
+
 // ─── Tool-Reset-Registry ──────────────────────────────────
 // Single Source of Truth: welche localStorage-Keys gehören welchem Tool.
 // Reset = Keys löschen → Tool baut sich beim Reload aus seinen Defaults neu auf.
@@ -22,7 +25,7 @@ export const TOOL_RESETS = {
 }
 
 // Löscht alle Daten eines Tools und lädt die App neu (Tools rebauen Defaults).
-export function resetTool(id) {
+export function resetTool(id, returnTab) {
   const entry = TOOL_RESETS[id]
   if (!entry) return
   entry.keys?.forEach(k => localStorage.removeItem(k))
@@ -31,5 +34,6 @@ export function resetTool(id) {
       .filter(k => entry.prefixes.some(p => k.startsWith(p)))
       .forEach(k => localStorage.removeItem(k))
   }
+  if (returnTab != null) sessionStorage.setItem(PENDING_TAB_KEY, String(returnTab))
   window.location.reload()
 }

@@ -29,7 +29,7 @@ function ToolResetButton({ toolId }) {
   const handle = (e) => {
     e.stopPropagation()
     if (!confirm) { setConfirm(true); return }
-    resetTool(toolId)
+    resetTool(toolId, TOOL_TAB[toolId])
   }
   return (
     <button
