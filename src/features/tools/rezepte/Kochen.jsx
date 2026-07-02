@@ -7,8 +7,11 @@ import Kochanleitung from './Kochanleitung.jsx'
 import { IconCalendar, IconCheck, IconBasket, IconSnow } from './icons'
 import s from './Kochen.module.css'
 
-export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor, onUebernehmen }) {
+// forcedView: von außen gesteuert (Wizard-Modus). hideTabBar: Tab-Switcher verstecken.
+// onLeeren: Callback nach "Durchgang leeren" (z.B. zurück zu home).
+export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor, onUebernehmen, forcedView, hideTabBar, onLeeren }) {
   const [view, setView] = useState('einkauf')   // 'einkauf' | 'anleitung'
+  const activeView = forcedView ?? view
   const [confirmLeeren, setConfirmLeeren] = useState(false)
   const [kochGeladen, setKochGeladen] = useState(false)
   const [uebernommen, setUebernommen] = useState(false)
@@ -59,6 +62,7 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
     if (!confirmLeeren) { setConfirmLeeren(true); return }
     setKorb(k => ({ ...k, eintraege: [], einkaufChecked: {}, kochChecked: {} }))
     setConfirmLeeren(false)
+    onLeeren?.()
   }
 
   // Abhak-Zustände leben im persistenten Korb — überleben Reload/App-Kill
@@ -85,18 +89,20 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
 
   return (
     <div className={s.wrap}>
-      <div className={s.tabs}>
-        {[['einkauf', 'Einkauf'], ['anleitung', 'Kochanleitung']].map(([v, label]) => (
-          <button key={v}
-            className={`${s.tab} ${view === v ? s.tabOn : ''}`}
-            style={view === v ? { '--tool-color': toolColor } : {}}
-            onClick={() => setView(v)}>
-            {label}
-          </button>
-        ))}
-      </div>
+      {!hideTabBar && (
+        <div className={s.tabs}>
+          {[['einkauf', 'Einkauf'], ['anleitung', 'Kochanleitung']].map(([v, label]) => (
+            <button key={v}
+              className={`${s.tab} ${activeView === v ? s.tabOn : ''}`}
+              style={activeView === v ? { '--tool-color': toolColor } : {}}
+              onClick={() => setView(v)}>
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {view === 'einkauf' && (
+      {activeView === 'einkauf' && (
         <div className={s.panel}>
           <Einkauf korbGerichte={korbGerichte} zById={zById} rById={rById}
             checked={korb.einkaufChecked ?? {}} onToggle={toggleEinkauf} onClear={clearEinkauf}
@@ -104,7 +110,7 @@ export default function Kochen({ korb, setKorb, zById, rById, rezepte, toolColor
         </div>
       )}
 
-      {view === 'anleitung' && (
+      {activeView === 'anleitung' && (
         <div className={s.panel}>
           <Kochanleitung korbGerichte={korbGerichte} zById={zById} rById={rById}
             checked={korb.kochChecked ?? {}} onToggle={toggleKoch} />

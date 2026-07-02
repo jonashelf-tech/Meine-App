@@ -20,7 +20,8 @@ function Stepper({ value, onDec, onInc }) {
 }
 
 // ② Portionen: pro Korb-Gericht frisch + TK-Blöcke (in Portionen). Schreibt {ref, frisch, bloecke}.
-export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, onBack, onWeiter }) {
+// hideChrome=true: überspringt eigene Kopfzeile + Fortschrittsbalken (Wizard-Chrome übernimmt).
+export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, onBack, onWeiter, hideChrome }) {
   const resolveRezept = (ref) => typeof ref === 'string' ? rById(ref) : ref
 
   const items = useMemo(() =>
@@ -57,20 +58,23 @@ export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, 
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
-      <div className={s.head}>
-        <button className={s.back} onClick={onBack} aria-label="Zurück"><IconArrowLeft size={18} /></button>
-        <span className={s.headTitle}>Durchgang</span>
-        <span className={s.headStep}>2 / 4</span>
-      </div>
-
-      <div className={s.steps}>
-        {STEPS.map((lbl, i) => (
-          <div key={lbl} className={s.step}>
-            <div className={`${s.stepBar} ${i === 1 ? s.stepBarOn : i < 1 ? s.stepBarDone : ''}`} />
-            <div className={`${s.stepLbl} ${i === 1 ? s.stepLblOn : ''}`}>{lbl}</div>
-          </div>
-        ))}
-      </div>
+      {!hideChrome && (
+        <div className={s.head}>
+          <button className={s.back} onClick={onBack} aria-label="Zurück"><IconArrowLeft size={18} /></button>
+          <span className={s.headTitle}>Durchgang</span>
+          <span className={s.headStep}>2 / 4</span>
+        </div>
+      )}
+      {!hideChrome && (
+        <div className={s.steps}>
+          {STEPS.map((lbl, i) => (
+            <div key={lbl} className={s.step}>
+              <div className={`${s.stepBar} ${i === 1 ? s.stepBarOn : i < 1 ? s.stepBarDone : ''}`} />
+              <div className={`${s.stepLbl} ${i === 1 ? s.stepLblOn : ''}`}>{lbl}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className={s.title}>Wie viel kochst du?</div>
 
@@ -129,9 +133,11 @@ export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, 
           <div className={s.sumNum}>{totalPortionen} {totalPortionen === 1 ? 'Portion' : 'Portionen'}</div>
           <div className={s.sumSub}>{totalBloecke} × {BLOCK_G} g Block</div>
         </div>
-        <button className={s.weiter} onClick={onWeiter} disabled={totalPortionen === 0}>
-          Weiter <IconArrowRight size={16} />
-        </button>
+        {!hideChrome && (
+          <button className={s.weiter} onClick={onWeiter} disabled={totalPortionen === 0}>
+            Weiter <IconArrowRight size={16} />
+          </button>
+        )}
       </div>
     </div>
   )

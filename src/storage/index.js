@@ -62,6 +62,7 @@ export const SK = {
   rezepteKorbAktiv:`${PREFIX}recipes_active_basket`,
   rezepteFroster: `${PREFIX}recipes_freezer`,
   rezepteIntroSeen:`${PREFIX}recipes_intro_seen`,
+  rezepteScreen:  `${PREFIX}recipes_screen`,    // ephemer — letzter Mealprep-Screen
   weight:         `${PREFIX}health_weight`,
   weightDash:     `${PREFIX}wdash`,
   activeTools:    `${PREFIX}app_active_tools`,

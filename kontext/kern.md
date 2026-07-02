@@ -253,6 +253,9 @@ SK.rezepteKoerbe   → 'adhs_recipes_baskets'        // gespeicherte Menüs
 SK.rezepteSettings → 'adhs_recipes_settings'
 SK.recipesVersion  → 'adhs_recipes_list__v'        // Schema-Marker (seed/migrate) — MUSS im Backup sein!
 SK.rezepteKorbAktiv→ 'adhs_recipes_active_basket'  // persistenter Arbeits-Korb inkl. einkaufChecked/kochChecked (Abhak-Stände überleben Reload)
+SK.rezepteFroster  → 'adhs_recipes_freezer'        // { rezeptId: bloecke } — TK-Blockbestand (BACKUP_CATS.tools)
+SK.rezepteIntroSeen→ 'adhs_recipes_intro_seen'     // bool — Erst-Briefing gesehen (BACKUP_CATS.einstellungen)
+SK.rezepteScreen   → 'adhs_recipes_screen'         // ephemer — letzter Mealprep-Screen (Reload kehrt dorthin zurück)
 SK.shopping/.shoppingStates/.selectedDishes         // LEGACY (altes Rezepte-Tool, nur Backup-Kompat)
 
 // Tools — sonstige

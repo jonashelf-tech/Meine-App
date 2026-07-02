@@ -105,7 +105,8 @@ src/
         ReminderSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
         TabReminder.jsx
       rezepte/
-        TabRezepte.jsx          — Container, 5 Tabs (Rezepte·Ketten·Konfig·Zutaten·Kochen), Overlay-Routing (View/Editor)
+        TabRezepte.jsx          — Home-first-Router: home | Bibliothek (rezepte·ketten·konfig·zutaten) | Durchgang-Wizard (d-gerichte→d-portionen→d-einkauf→d-kochen, gemeinsame Step-Chrome); Screen persistiert via SK.rezepteScreen (ephemer); Overlay-Routing (View/Editor)
+        MealprepHome.jsx        — Startseite: Erst-Briefing, Smart-CTA, Froster-Bestand, Bibliothek-Links
         mealprepModel.js        — genId, Konstanten, Factories (createZutat/createRezept/createKorb), istBasis
         mealprepStore.js        — loadAll (Schema-Guard), save*, findUsages, korbSpeichern, korbDuplizieren
         naehrwerte.js           — zutatNaehrwert, rezeptNaehrwertGesamt (rekursiv), rezeptProPortion, formatNaehrwert
@@ -121,7 +122,8 @@ src/
         Konfigurator.jsx        — Slot-Baukasten, Portionsverteilung, Als-Rezept-speichern
         Zutaten.jsx             — Zutaten-Katalog (klappbare Kategorien, Suche)
         AddPicker.jsx           — Eigenes Dropdown (ersetzt native <select> im Editor)
-        Kochen.jsx              — Kochen-Tab: Auswahl + Unteransichten Kochanleitung/Einkauf
+        PortionenStep.jsx       — ② Portionen: Frisch/TK-Block-Stepper pro Korb-Gericht (hideChrome: Wizard übernimmt Kopf/Steps/Weiter)
+        Kochen.jsx              — Einkauf + Kochanleitung (inkl. Einblocken, Froster-Übernahme); im Wizard via forcedView/hideTabBar gesteuert
         Einkauf.jsx             — Einkaufsliste mit 2-State-Tap (gekauft/zurück)
         Kochanleitung.jsx       — Mise-en-Place, Basen, Gerichte, Verpackung — Zeilen abhakbar (Tap)
         kochTodo.js             — buildKochTodoBlock (Korb → Tagesplaner-Todo); Nutzer: Kochen + MealprepSection
@@ -129,12 +131,13 @@ src/
       timer/          TabTimer.jsx
       wasjetzt/       TabWasJetzt.jsx
       kognitiv/
-        TabKognitiv.jsx         — Router: Heute-first (HeuteHero) + Nav-Screens (einheit·briefing·exercise·results·allmodules·auswertung·settings·module/session-detail). Onboarding-Gating via configStore. Gear→Einstellungen
+        TabKognitiv.jsx         — Router: Heute-first (HeuteHero) + Nav-Screens (einheit-briefing·einheit·briefing·exercise·results·allmodules·auswertung·settings·module/session-detail). Onboarding-Gating via configStore. Gear→Einstellungen
         moduleConfig.js         — MODULE_CONFIG (8 aktiv + archiviert `geteilt`), MODULE_ORDER, PROFILE_DOMAINS (5 Domänen→Module, für Profil-Balken)
         configStore.js          — SK.kognitivConfig: tägliche Einheit (modules + Reihenfolge), reminders (flex|fixed), checkinOn, onboardingDone (+Migration aus altem introSeen)
         sessionStore.js         — SK.kognitiv (Läufe) + pure Helfer: bestMetric/computeDelta/barFraction · formScore/moduleForm/domainForm · isPersonalBest · einheitenInRange/einheitStreak; sessionGroupId/einheitComplete = Einheit-Gruppierung. Guard: sessionStore.test.js
         checkinStore.js         — SK.kognitivCheckin (Schlaf/Energie vor der Einheit) + Skip-Flag
         HeuteHero.jsx           — Startseite: Hero (Einheit-Chips, Ring n/total, Gradient-CTA, Akzent B), 3 Kacheln (Streak/Woche/Ø Dauer), Profil-Balken, Auswertung/Alle-Module
+        EinheitBriefing.jsx     — Vorbildschirm der Einheit (Modul-Liste + Dauer) zwischen Check-in und EinheitRunner
         EinheitRunner.jsx       — spielt Module am Stück (Countdown→Übung→…), speichert je Lauf mit gemeinsamer sessionGroupId; EinheitResult.jsx = kombiniertes Ergebnis + Bestwerte
         Onboarding.jsx          — Konfigurator (Erstöffnung): Intro→Auswahl&Reihenfolge→Wann→Finish; EinheitPicker.jsx = geteilte Modul-Auswahl/Reihenfolge (auch in Einstellungen)
         Auswertung.jsx          — Tabs Überblick/Module/Profil; Modul-Sparklines mit antippbaren Punkten → SessionDetail. ModuleDetail/SessionDetail = Tiefenanalyse

@@ -106,6 +106,7 @@ describe('Backup-Abdeckung — Anti-Drift', () => {
     SK.timerTotal,
     SK.timerRunning,
     SK.noteDraft,
+    SK.rezepteScreen,
   ])
   const backedUp = new Set([
     ...BACKUP_CATS.kalender, ...BACKUP_CATS.tools, ...BACKUP_CATS.einstellungen,

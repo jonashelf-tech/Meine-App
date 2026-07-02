@@ -5,7 +5,7 @@ import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
 import { loadAll, saveZutaten, saveRezepte, loadFroster, saveFroster } from './mealprepStore'
-import { createKorb } from './mealprepModel'
+import { createKorb, portionenSplit } from './mealprepModel'
 import MealprepHome from './MealprepHome'
 import PortionenStep from './PortionenStep'
 import Sammlung from './Sammlung'
@@ -15,15 +15,17 @@ import Zutaten from './Zutaten'
 import Kochen from './Kochen'
 import Editor from './Editor'
 import RezeptView from './RezeptView'
-import { IconArrowLeft, IconArrowRight } from './icons'
+import { IconArrowLeft, IconArrowRight, IconCheck } from './icons'
 import s from './TabRezepte.module.css'
+
+const DURCHGANG_SCREENS = ['d-gerichte', 'd-portionen', 'd-einkauf', 'd-kochen']
+const STEP_LABELS = ['Gerichte', 'Portionen', 'Einkauf', 'Kochen']
 
 const SCREEN_TITLES = {
   rezepte: 'Rezepte',
   ketten:  'Ketten',
   konfig:  'Konfigurator',
   zutaten: 'Zutaten',
-  kochen:  'Kochen',
 }
 
 export default function TabRezepte({ onBack }) {
@@ -43,18 +45,30 @@ export default function TabRezepte({ onBack }) {
     })
   }, [])
 
-  const [screen, setScreen] = useState('home')   // home | rezepte | ketten | konfig | zutaten | kochen
-  const [briefing, setBriefing] = useState(() => !lv(SK.rezepteIntroSeen, false))  // Erst-Briefing
+  const [screen, setScreenS] = useState(() => {
+    const saved = lv(SK.rezepteScreen, 'home')
+    // Migriere alte Screen-Namen
+    if (saved === 'portionen') return 'd-portionen'
+    if (saved === 'kochen')    return 'd-einkauf'
+    // Durchgang-Screens ohne Korb-Inhalt → home
+    const savedKorb = lv(SK.rezepteKorbAktiv, null)
+    const korbEmpty = !savedKorb?.eintraege?.length
+    if (korbEmpty && ['d-portionen', 'd-einkauf', 'd-kochen'].includes(saved)) return 'home'
+    return saved
+  })
+  const setScreen = useCallback(scr => { setScreenS(scr); sv(SK.rezepteScreen, scr) }, [])
+
+  const [gerichteTab, setGerichteTab] = useState('rezepte')
+  const [briefing, setBriefing] = useState(() => !lv(SK.rezepteIntroSeen, false))
   const closeBriefing = useCallback(() => { sv(SK.rezepteIntroSeen, true); setBriefing(false) }, [])
   const openBriefing  = useCallback(() => setBriefing(true), [])
   const [editing, setEditing] = useState(null)
-  const [viewing, setViewing] = useState(null)   // Rezept in Read-Only-Ansicht
+  const [viewing, setViewing] = useState(null)
   const [konfigLoad, setKonfigLoad] = useState(null)
 
   const setZutaten = useCallback(v => { setZutatenS(v); saveZutaten(v) }, [])
   const setRezepte = useCallback(v => { setRezepteS(v); saveRezepte(v) }, [])
 
-  // Froster-Bestand { rezeptId: bloecke } — 0 fällt raus (kein Karteileichen-Rest)
   const [froster, setFrosterS] = useState(() => loadFroster())
   const setFroster = useCallback((v) => {
     setFrosterS(prev => {
@@ -71,7 +85,6 @@ export default function TabRezepte({ onBack }) {
       return next
     })
   }, [setFroster])
-  // Nach dem Kochen: TK-Blöcke des Durchgangs in den Froster buchen (explizit, 1 Tipp)
   const uebernehmenInFroster = useCallback((korbGerichte) => {
     setFroster(f => {
       const next = { ...f }
@@ -82,16 +95,44 @@ export default function TabRezepte({ onBack }) {
     })
   }, [setFroster])
 
-  // Hardware-/Gesten-Zurück: Editor → Rezeptansicht → Unterseite → Home → Tool verlassen
+  // ── Durchgang-Wizard ──────────────────────────────────────
+  const durchgangIdx = DURCHGANG_SCREENS.indexOf(screen)
+  const isDurchgang  = durchgangIdx >= 0
+
+  const totalPortionenForWeiter = useMemo(
+    () => korb.eintraege.reduce((sum, e) => sum + portionenSplit(e).total, 0),
+    [korb.eintraege]
+  )
+
+  const weiterEnabled = useMemo(() => {
+    if (screen === 'd-gerichte')  return korb.eintraege.length > 0
+    if (screen === 'd-portionen') return totalPortionenForWeiter > 0
+    return true
+  }, [screen, korb.eintraege.length, totalPortionenForWeiter])
+
+  const startDurchgang = useCallback(() => {
+    setScreen(korb.eintraege.length > 0 ? 'd-portionen' : 'd-gerichte')
+  }, [korb.eintraege.length, setScreen])
+
+  const handleDurchgangWeiter = useCallback(() => {
+    const next = { 'd-gerichte': 'd-portionen', 'd-portionen': 'd-einkauf', 'd-einkauf': 'd-kochen' }
+    if (next[screen]) setScreen(next[screen])
+  }, [screen, setScreen])
+
+  const handleDurchgangBack = useCallback(() => {
+    const prev = { 'd-gerichte': 'home', 'd-portionen': 'd-gerichte', 'd-einkauf': 'd-portionen', 'd-kochen': 'd-einkauf' }
+    setScreen(prev[screen] ?? 'home')
+  }, [screen, setScreen])
+
+  // Hardware-/Gesten-Zurück
   useEffect(() => {
-    setBackInterceptor(
-      editing !== null  ? () => setEditing(null)
-      : viewing !== null ? () => setViewing(null)
-      : screen !== 'home' ? () => setScreen('home')
-      : null
-    )
+    let backFn = null
+    if (editing !== null)       backFn = () => setEditing(null)
+    else if (viewing !== null)  backFn = () => setViewing(null)
+    else if (screen !== 'home') backFn = isDurchgang ? handleDurchgangBack : () => setScreen('home')
+    setBackInterceptor(backFn)
     return () => setBackInterceptor(null)
-  }, [editing, viewing, screen, setBackInterceptor])
+  }, [editing, viewing, screen, isDurchgang, handleDurchgangBack, setBackInterceptor, setScreen])
 
   const zById = useCallback(id => zutaten.find(z => z.id === id), [zutaten])
   const rById = useCallback(id => rezepte.find(r => r.id === id), [rezepte])
@@ -107,12 +148,7 @@ export default function TabRezepte({ onBack }) {
   const ladeInKonfigurator = useCallback((rezept) => {
     setKonfigLoad(rezept)
     setScreen('konfig')
-  }, [])
-
-  // Smart-CTA: leerer Korb → Rezept-Auswahl, sonst → Portionen-Schritt
-  const startDurchgang = useCallback(() => {
-    setScreen(korb.eintraege.length > 0 ? 'portionen' : 'rezepte')
-  }, [korb.eintraege.length])
+  }, [setScreen])
 
   const sharedProps = {
     zutaten, rezepte, setZutaten, setRezepte,
@@ -122,11 +158,10 @@ export default function TabRezepte({ onBack }) {
     korb,
   }
 
-  // Auswahl-Screens zeigen unten den "Weiter zu Portionen"-Balken, sobald etwas im Korb ist
   const istAuswahl = screen === 'rezepte' || screen === 'ketten'
 
   return (
-    <div className={s.page} style={{ '--tool-color': toolColor }}>
+    <div className={`${s.page} ${isDurchgang ? s.pageWizard : ''}`} style={{ '--tool-color': toolColor }}>
       {viewing && !editing && (
         <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) setViewing(null) }}>
           <RezeptView
@@ -169,12 +204,78 @@ export default function TabRezepte({ onBack }) {
             onOpenKonfig={() => setScreen('konfig')}
           />
         </>
-      ) : screen === 'portionen' ? (
-        <PortionenStep
-          korb={korb} setKorb={setKorb} zById={zById} rById={rById} toolColor={toolColor}
-          onBack={() => setScreen('home')}
-          onWeiter={() => setScreen('kochen')}
-        />
+      ) : isDurchgang ? (
+        <>
+          {/* ── Sticky Wizard-Header ──────────────────────── */}
+          <div className={s.wizHead}>
+            <button className={s.wizBack} onClick={handleDurchgangBack} aria-label="Zurück">
+              <IconArrowLeft size={18} />
+            </button>
+            <div className={s.wizSteps}>
+              {STEP_LABELS.map((lbl, i) => (
+                <div key={lbl} className={s.wizStep}>
+                  <div className={`${s.wizBar} ${i === durchgangIdx ? s.wizBarOn : i < durchgangIdx ? s.wizBarDone : ''}`} />
+                  <div className={`${s.wizLbl} ${i === durchgangIdx ? s.wizLblOn : ''}`}>{lbl}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Step-Inhalt ───────────────────────────────── */}
+          {screen === 'd-gerichte' && (
+            <>
+              <div className={s.gerichteTabs}>
+                {[['rezepte', 'Rezepte'], ['ketten', 'Ketten']].map(([tab, label]) => (
+                  <button
+                    key={tab}
+                    className={`${s.gerichteTab} ${gerichteTab === tab ? s.gerichteTabOn : ''}`}
+                    onClick={() => setGerichteTab(tab)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {gerichteTab === 'rezepte' && <Sammlung {...sharedProps} ladeInKonfigurator={ladeInKonfigurator} />}
+              {gerichteTab === 'ketten'  && <Grossrezepte {...sharedProps} />}
+            </>
+          )}
+
+          {screen === 'd-portionen' && (
+            <PortionenStep
+              korb={korb} setKorb={setKorb} zById={zById} rById={rById} toolColor={toolColor}
+              hideChrome={true}
+              onBack={handleDurchgangBack}
+              onWeiter={handleDurchgangWeiter}
+            />
+          )}
+
+          {(screen === 'd-einkauf' || screen === 'd-kochen') && (
+            <Kochen
+              korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte}
+              toolColor={toolColor} onUebernehmen={uebernehmenInFroster}
+              forcedView={screen === 'd-einkauf' ? 'einkauf' : 'anleitung'}
+              hideTabBar={true}
+              onLeeren={() => setScreen('home')}
+            />
+          )}
+
+          {/* ── Fixed Wizard-Footer ───────────────────────── */}
+          <div className={s.wizFooter}>
+            {screen === 'd-kochen' ? (
+              <button className={s.fertigBtn} onClick={() => setScreen('home')}>
+                Fertig <IconCheck size={16} />
+              </button>
+            ) : (
+              <button
+                className={s.weiterWizBtn}
+                onClick={handleDurchgangWeiter}
+                disabled={!weiterEnabled}
+              >
+                Weiter <IconArrowRight size={16} />
+              </button>
+            )}
+          </div>
+        </>
       ) : (
         <>
           <div className={s.subHead}>
@@ -191,15 +292,11 @@ export default function TabRezepte({ onBack }) {
                 loadRezept={konfigLoad} onLoaded={() => setKonfigLoad(null)} />
             )}
             {screen === 'zutaten' && <Zutaten zutaten={zutaten} toolColor={toolColor} onEdit={setEditing} />}
-            {screen === 'kochen'  && (
-              <Kochen korb={korb} setKorb={setKorb} zById={zById} rById={rById} rezepte={rezepte} toolColor={toolColor}
-                onUebernehmen={uebernehmenInFroster} />
-            )}
           </div>
 
           {istAuswahl && korb.eintraege.length > 0 && (
             <div className={s.weiterBar}>
-              <button className={s.weiterBtn} onClick={() => setScreen('portionen')}>
+              <button className={s.weiterBtn} onClick={() => setScreen('d-portionen')}>
                 <span className={s.weiterLeft}>
                   <span className={s.weiterCount}>{korb.eintraege.length}</span>
                   {korb.eintraege.length === 1 ? 'Gericht gewählt' : 'Gerichte gewählt'}
