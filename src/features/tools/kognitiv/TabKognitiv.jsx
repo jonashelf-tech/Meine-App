@@ -19,6 +19,7 @@ import Auswertung      from './Auswertung'
 import ModuleDetail    from './ModuleDetail'
 import SessionDetail   from './SessionDetail'
 import EinheitRunner   from './EinheitRunner'
+import EinheitBriefing from './EinheitBriefing'
 import s from './TabKognitiv.module.css'
 
 const GearIcon = () => (
@@ -78,8 +79,8 @@ export default function TabKognitiv({ onBack, onExercising }) {
   }, [])
 
   const startEinheit = useCallback(() => {
-    if (!isCheckinHandledToday()) setNav({ screen: 'checkin', next: { screen: 'einheit' } })
-    else setNav({ screen: 'einheit' })
+    if (!isCheckinHandledToday()) setNav({ screen: 'checkin', next: { screen: 'einheit-briefing' } })
+    else setNav({ screen: 'einheit-briefing' })
   }, [])
 
   if (!onboarded) {
@@ -103,6 +104,10 @@ export default function TabKognitiv({ onBack, onExercising }) {
         <div className={s.countdownLabel}>gleich geht's los</div>
       </div>
     )
+  }
+
+  if (nav?.screen === 'einheit-briefing') {
+    return <EinheitBriefing onBack={goBack} onStart={() => setNav({ screen: 'einheit' })} />
   }
 
   if (nav?.screen === 'einheit') {
