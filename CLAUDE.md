@@ -49,6 +49,8 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 
 **Modellwahl:** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen, Audits → Opus.
 
+**Delegieren statt selbst machen:** Läuft die Session auf einem großen Modell (Opus/Fable), gehen klar umrissene Routine-Aufgaben (Template-Bau, mechanische Migrationen, Suche über viele Dateien) an Sonnet-Subagenten (Agent-Tool, `model: "sonnet"`). Das große Modell orchestriert, reviewt und entscheidet. Nicht delegieren: Aufgaben, deren Kontext-Übergabe teurer wäre als das Selbermachen.
+
 **Kontext aktuell halten:** Ändere ich einen Bereich, aktualisiere ich die zugehörige `kontext/`-Datei in derselben Änderung. Kein Queue-Ritual.
 
 **Session-Ende — kein Müll liegen lassen:** Jede Arbeitssession endet mit sauberem Working Tree: fertige Arbeit committen mit sprechender Message (was + warum — keine Rätsel-Messages wie „2HI4U"), Unfertiges explizit benennen („X bleibt als WIP liegen, weil …"). Kontext-Dateien sind zu dem Zeitpunkt schon nachgezogen.
