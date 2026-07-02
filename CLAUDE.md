@@ -51,6 +51,8 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 
 **Kontext aktuell halten:** Ändere ich einen Bereich, aktualisiere ich die zugehörige `kontext/`-Datei in derselben Änderung. Kein Queue-Ritual.
 
+**Session-Ende — kein Müll liegen lassen:** Jede Arbeitssession endet mit sauberem Working Tree: fertige Arbeit committen mit sprechender Message (was + warum — keine Rätsel-Messages wie „2HI4U"), Unfertiges explizit benennen („X bleibt als WIP liegen, weil …"). Kontext-Dateien sind zu dem Zeitpunkt schon nachgezogen.
+
 ---
 
 ## Briefing
