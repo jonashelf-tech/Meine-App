@@ -83,7 +83,7 @@
   font-family: var(--font);
   font-size: 0.68rem;
   font-style: italic;
-  margin-bottom: 3px;
+  margin-top: 3px;
   min-width: 0;
 }
 
@@ -216,12 +216,12 @@
 
 /* Fortsetzen-Button (ersetzt Chevron bei pausiert) — Play, keine Rotation */
 .resumeBtn {
-  color: var(--emerald);
+  color: var(--primary);
 }
 
 .resumeBtn:hover {
-  color: var(--emerald);
-  background: color-mix(in srgb, var(--emerald) 12%, transparent);
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .resumeBtn svg {

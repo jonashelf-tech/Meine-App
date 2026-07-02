@@ -258,12 +258,6 @@ export default function TodoChip({
         {/* Body — single/double tap (abhaken / bearbeiten) */}
         <div className={s.body} onClick={tapHandler}>
           <div className={s.titleBlock}>
-            {todo.paused && !todo.done && todo.pauseReason && (
-              <div className={s.pauseMarker}>
-                <PauseGlyph />
-                <span className={s.pauseMarkerText}>{todo.pauseReason}</span>
-              </div>
-            )}
             <div className={s.titleRow}>
               <span className={s.text}>
                 {todo.text || <span className={s.emptyText}>Kein Text</span>}
@@ -274,6 +268,13 @@ export default function TodoChip({
               {todo.category && <span className={s.categoryTag}>{todo.category}</span>}
               {timeLabel && <span className={s.timeLabel}>{timeLabel}</span>}
             </div>
+
+            {todo.paused && !todo.done && todo.pauseReason && (
+              <div className={s.pauseMarker}>
+                <PauseGlyph />
+                <span className={s.pauseMarkerText}>{todo.pauseReason}</span>
+              </div>
+            )}
 
             {(metaParts.length > 0 || ageLabel) && (
               <span className={s.meta}>
