@@ -49,8 +49,12 @@
 
 **Files:**
 - Modify: `src/storage/index.js:52` (SK), `:154-158` (BACKUP_CATS.einstellungen)
-- Modify: `src/store/index.js:102-103`
 - Test: `src/storage.test.js` (bestehend — muss grün bleiben)
+
+> **Reihenfolge-Hinweis:** Die Store-Umbenennung `briefingOpen`→`onboardingOpen` passiert
+> bewusst **nicht hier**, sondern atomar mit ihren Nutzern (`App.jsx`, `TabSettings`) in **Task 9**.
+> Sonst wäre die App zwischen den Tasks gebrochen: der First-Run-`useEffect` ruft `setBriefingOpen`
+> auf — ein umbenanntes Feld wäre `undefined` → Crash beim Mount. Task 1 fasst den Store nicht an.
 
 - [ ] **Step 1: Neue SK-Keys ergänzen**
 
@@ -75,25 +79,16 @@ In `BACKUP_CATS.einstellungen` (Zeile 154-158) die erste Zeile ergänzen:
   ],
 ```
 
-- [ ] **Step 3: Store-Feld umbenennen**
-
-In `src/store/index.js` (Zeile 102-103) ersetzen:
-
-```js
-  onboardingOpen: false,
-  setOnboardingOpen: (v) => set({ onboardingOpen: v }),
-```
-
-- [ ] **Step 4: storage-Guard grün prüfen**
+- [ ] **Step 3: storage-Guard grün prüfen**
 
 Run: `npx vitest run src/storage.test.js`
 Expected: PASS (die zwei neuen Keys sind gesichert; kein Key ohne Kategorie).
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add src/storage/index.js src/store/index.js
-git commit -m "feat(onboarding): SK.onboardingSeen + missedHintSeen, Store-Feld umbenannt"
+git add src/storage/index.js
+git commit -m "feat(onboarding): SK.onboardingSeen + missedHintSeen registriert"
 ```
 
 ---
@@ -803,11 +798,21 @@ git commit -m "feat(onboarding): AppOnboarding-Controller (Phasen, Praedikat-Adv
 - Modify: `src/App.jsx` (Import, Gate, Render, Wait-for-MissedReview)
 - Modify: `src/features/settings/TabSettings/TabSettings.jsx:64,276`
 
-- [ ] **Step 1: App.jsx — Import + Store-Feld tauschen**
+- [ ] **Step 1: Store-Feld umbenennen + App.jsx Import/Feld tauschen** (atomar, ein Commit)
+
+In `src/store/index.js` (Zeile 102-103) ersetzen:
+
+```js
+  onboardingOpen: false,
+  setOnboardingOpen: (v) => set({ onboardingOpen: v }),
+```
 
 In `src/App.jsx`:
 - Zeile 17: `import AppBriefing from './components/AppBriefing/AppBriefing'` → `import AppOnboarding from './components/AppOnboarding/AppOnboarding'`
 - Zeile 69: `briefingOpen, setBriefingOpen` → `onboardingOpen, setOnboardingOpen`
+
+> Store-Umbenennung, App.jsx und TabSettings (Step 4) gehören in **denselben Commit** —
+> kein Zwischenzustand darf `briefingOpen` und `onboardingOpen` gemischt haben.
 
 - [ ] **Step 2: Gate umstellen**
 
