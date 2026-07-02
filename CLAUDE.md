@@ -49,6 +49,8 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 
 **Modellwahl:** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen → Opus. Fable sparsam und gezielt: Audits, Reviews von schwer revidierbaren Entscheidungen (Sync-Datenmodell, Security, Migrationen), festgefahrene Bugs — Faustregel: Fable prüft, Opus baut, Sonnet setzt um.
 
+**Modell-Check (jede Session, erste Antwort):** Passt das laufende Modell nicht zur Aufgabe — z. B. Fable für ein Routine-Feature oder Sonnet für eine Datenmodell-Entscheidung — sage ich das sofort und empfehle das passende Modell (Wechsel: Modell-Auswahl in der UI oder neuer Chat). Danach arbeite ich normal weiter, falls Jonas nicht wechselt; delegierbare Teile gehen ohnehin an Sonnet-Subagenten.
+
 **Delegieren statt selbst machen:** Läuft die Session auf einem großen Modell (Opus/Fable), gehen klar umrissene Routine-Aufgaben (Template-Bau, mechanische Migrationen, Suche über viele Dateien) an Sonnet-Subagenten (Agent-Tool, `model: "sonnet"`). Das große Modell orchestriert, reviewt und entscheidet. Nicht delegieren: Aufgaben, deren Kontext-Übergabe teurer wäre als das Selbermachen.
 
 **Kontext aktuell halten:** Ändere ich einen Bereich, aktualisiere ich die zugehörige `kontext/`-Datei in derselben Änderung. Kein Queue-Ritual.
