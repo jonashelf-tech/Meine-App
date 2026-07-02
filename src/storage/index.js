@@ -49,7 +49,9 @@ export const SK = {
   doneCounters:   `${PREFIX}calendar_done`,
   settings:       `${PREFIX}app_settings`,
   theme:          `${PREFIX}app_theme`,
-  appBriefingSeen:`${PREFIX}app_briefing_seen`,
+  appBriefingSeen:`${PREFIX}app_briefing_seen`,   // LEGACY — nur Backup-Kompat, wird nicht mehr gelesen
+  onboardingSeen: `${PREFIX}onboarding_seen`,      // Gate: neues Onboarding gelaufen/übersprungen
+  missedHintSeen: `${PREFIX}missed_hint_seen`,     // Einmal-Erklärkopf der ersten echten Zeitablauf-Abfrage
   templates:      `${PREFIX}calendar_templates`,
   recipes:        `${PREFIX}recipes_list`,
   shopping:       `${PREFIX}recipes_shopping`,
@@ -152,7 +154,8 @@ export const BACKUP_CATS = {
     SK.notes,
   ],
   einstellungen: [
-    SK.settings, SK.theme, SK.appBriefingSeen, SK.kognitivIntroSeen, SK.rezepteIntroSeen,
+    SK.settings, SK.theme, SK.appBriefingSeen, SK.onboardingSeen, SK.missedHintSeen,
+    SK.kognitivIntroSeen, SK.rezepteIntroSeen,
     SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
     SK.notizenMigrated,
   ],
