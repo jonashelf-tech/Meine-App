@@ -186,7 +186,10 @@ export default function TabHeute() {
           onShowFull={() => setHeuteModus('voll')}
         />
       ) : (
-        <div ref={swipeRef} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {/* Nur der Zeitplan swipt beim Tageswechsel — Pool + Dashboards sind
+            datumsunabhängig und bleiben stehen (sonst wandert Unverändertes mit). */}
+        <div ref={swipeRef}>
         <Zeitplan
           slots={todaySlots}
           todos={todos}
@@ -213,6 +216,7 @@ export default function TabHeute() {
           birthdayPills={birthdays}
           birthdayPillsDate={viewDate}
         />
+        </div>
         <Pool
           todos={todos}
           setTodos={setTodos}
