@@ -47,7 +47,7 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 
 **Bevor ich "totes" Zeug lösche/ersetze:** erst prüfen ob es wirklich tot ist. Im Zweifel melden statt löschen.
 
-**Modellwahl:** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen, Audits → Opus.
+**Modellwahl:** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen → Opus. Fable sparsam und gezielt: Audits, Reviews von schwer revidierbaren Entscheidungen (Sync-Datenmodell, Security, Migrationen), festgefahrene Bugs — Faustregel: Fable prüft, Opus baut, Sonnet setzt um.
 
 **Delegieren statt selbst machen:** Läuft die Session auf einem großen Modell (Opus/Fable), gehen klar umrissene Routine-Aufgaben (Template-Bau, mechanische Migrationen, Suche über viele Dateien) an Sonnet-Subagenten (Agent-Tool, `model: "sonnet"`). Das große Modell orchestriert, reviewt und entscheidet. Nicht delegieren: Aufgaben, deren Kontext-Übergabe teurer wäre als das Selbermachen.
 
