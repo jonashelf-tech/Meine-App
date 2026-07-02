@@ -61,6 +61,7 @@
   --elev-1:    var(--shadow-sm), var(--edge-hi);
   --elev-drag: 0 12px 30px rgba(139,92,246,0.30), var(--edge-hi);
   --z-overlay: 400;
+  --z-coach: 500;
 }
 
 /* ─── Reset ────────────────────────────────────────────── */

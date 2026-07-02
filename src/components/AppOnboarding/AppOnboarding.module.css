@@ -1,0 +1,5 @@
+.overlayRoot { position: fixed; inset: 0; z-index: var(--z-coach); pointer-events: none; }
+.blocker { position: fixed; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); pointer-events: auto; transition: all var(--dur-fast) var(--ease); }
+.hole { position: fixed; border-radius: var(--r-sm); box-shadow: 0 0 0 2px var(--primary), var(--glow-primary); pointer-events: none; transition: all var(--dur-fast) var(--ease); }
+.pulse { position: fixed; border-radius: 50%; border: 2px solid var(--primary); pointer-events: none; animation: pulse 1.4s var(--ease) infinite; }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
