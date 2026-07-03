@@ -321,6 +321,8 @@ Aus dem Fitness-Look abgeleitet — gilt für „hochwertige" Tool-Screens (Kogn
 
 ## Langfrist-Leitplanke: Cloud-Sync (Zukunft)
 
+**Architektur entschieden (Fable-Review 2026-07-03):** `Dateien/output/sync-architektur.md` — Sync-Policy pro Storage-Key (lww/by-id/by-subkey/device-local/ephemeral), Merge auf dem Client, Server = dummer versionierter Blob-Store (Cloudflare Workers + D1), E2E-verschlüsselt, geteilter Kalender als eigener Store `SK.sharedEvents`. Bau = Roadmap-Projekt 2.
+
 Geplant ist irgendwann ein optionaler Sync (z. B. geteilter Kalender für 2 Personen) + App-Store-Build.
 Der Umbau soll **eine Schicht hinter `storage/index.js`** werden — kein App-Umbau. Damit das so bleibt:
 - Nutzdaten nie an `sv/lv` vorbei schreiben (gilt schon, bleibt kritisch)
