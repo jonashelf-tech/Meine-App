@@ -11,19 +11,18 @@ export const STEPS = [
   // ── Phase 1 — Hands-on-Kern (echter Tagesplaner) ──
   {
     id: 'add', phase: 1, tab: 0, target: 'add-fab', dock: 'top',
-    title: 'Hast du etwas zu erledigen?',
-    text: (<>Unten sammelst du im <strong>Pool</strong> alles, was ansteht. Tipp auf das <strong>+</strong>,
-      um deine erste Aufgabe anzulegen.</>),
+    title: 'Hast du etwas zu tun?',
+    text: (<>Trag es einfach ein — im <strong>Pool</strong> sammelst du alles, was ansteht.
+      Tipp auf das <strong>+</strong>.</>),
     advance: 'modalOpen',
   },
   {
-    id: 'auto', phase: 1, tab: 0, target: 'todo-auto', dock: 'bottom',
-    title: 'Einfach drauflosschreiben',
-    text: (<>Schalte <strong>Auto</strong> ein und schreib z.B. „Einkaufen 30min wichtig" — Dauer und
-      Priorität werden automatisch erkannt. Unterpunkte gehst du später über <strong>Schritte</strong> an.
-      Sichern legt die Aufgabe in den Pool.</>),
+    id: 'auto', phase: 1, tab: 0, target: 'todo-auto', dock: 'bottom', freeMove: true,
+    title: 'Die App liest mit',
+    text: (<>Mit <strong>Auto</strong> erkennt sie Dauer, Priorität &amp; Co. von selbst —
+      schau, was aus „Einkaufen 30 min wichtig" wird. Tipp dann unten auf <strong>Hinzufügen</strong>.</>),
     advance: 'poolTodo',
-    fallbackExample: true, // Controller zeigt „Beispiel nehmen"-Button
+    autoDemo: true, // Controller füllt Auto + Beispieltext vor
   },
   {
     id: 'drag', phase: 1, tab: 0, target: 'pool', dock: 'top',

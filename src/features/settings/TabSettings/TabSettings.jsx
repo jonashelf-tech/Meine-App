@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import {
-  lv, SK,
+  lv, SK, rmKey, storageKeys,
   exportDataByCategories, importDataByCategories,
   saveAutoBackup, loadAutoBackup, exportDataReadable,
   markOffDeviceBackup,
@@ -146,9 +146,9 @@ export default function TabSettings() {
 
   const handleReset = () => {
     if (!confirmReset) { setConfirmReset(true); return }
-    Object.keys(localStorage)
+    storageKeys()
       .filter(k => k.startsWith('adhs_'))
-      .forEach(k => localStorage.removeItem(k))
+      .forEach(rmKey)
     window.location.reload()
   }
 

@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useAppStore } from '../../store'
 import { todayKey } from '../../utils'
-import { createBlock } from '../../features/todos/Block'
 import { TOOL_REGISTRY, ToolIcon } from '../../features/tools/toolRegistry.jsx'
 import { STEPS, PHASES } from './onboardingSteps.jsx'
 import { hasPoolTodo, hasSlotToday } from './onboardingLogic'
@@ -12,7 +11,7 @@ import s from './AppOnboarding.module.css'
 export default function AppOnboarding({ onClose }) {
   const [i, setI] = useState(0)
   const [askedTools, setAskedTools] = useState(false) // toolQuestion beantwortet?
-  const { todos, days, setTodos, setCurrentTab, activeTools, toggleTool } = useAppStore()
+  const { todos, days, setCurrentTab, activeTools, toggleTool } = useAppStore()
   const step = STEPS[i]
 
   // Zieltab beim Schritt-Eintritt setzen
@@ -34,6 +33,24 @@ export default function AppOnboarding({ onClose }) {
     return () => clearInterval(id)
   }, [step.advance])
 
+  // Auto-Demo: beim 'auto'-Schritt Auto aktivieren + Beispieltext vorfüllen,
+  // damit der Nutzer die Live-Erkennung sieht und nur noch auf Sichern tippt.
+  useEffect(() => {
+    if (!step.autoDemo) return
+    const t = setTimeout(() => {
+      const autoBtn = document.querySelector('[data-onboarding="todo-auto"]')
+      if (!autoBtn) return
+      if (!autoBtn.className.includes('autoBtnOn')) autoBtn.click()
+      const input = autoBtn.closest('[class*="textRow"]')?.querySelector('input')
+      if (input && !input.value) {
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+        setter.call(input, 'Einkaufen 30 min wichtig')
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+    }, 500)
+    return () => clearTimeout(t)
+  }, [step.autoDemo])
+
   // Auto-Weiterschaltung, sobald das Prädikat erfüllt ist (mit kleiner Verzögerung fürs Auge)
   const satisfied = step.advance === 'modalOpen' ? modalOpen : advanced
   useEffect(() => {
@@ -45,13 +62,6 @@ export default function AppOnboarding({ onClose }) {
   const finishAll = () => { onClose() }
   const next = () => (i >= STEPS.length - 1 ? finishAll() : setI(v => v + 1))
   const back = () => setI(v => Math.max(0, v - 1))
-
-  const addExample = () => {
-    setTodos(prev => [...prev, createBlock({ text: 'Einkaufen', priority: 2, duration: 30 })])
-    // Falls das TodoModal noch offen ist (Fallback statt selbst speichern):
-    // über seinen echten Schließen-Button zumachen, sonst verdeckt es den Pool.
-    document.querySelector('[aria-label="Schließen"]')?.click()
-  }
 
   // „Weiter"-Button zeigen, wenn kein Prädikat ODER Prädikat schon erfüllt (Re-Run/Reload)
   const showNext = !step.advance || satisfied
@@ -114,9 +124,7 @@ export default function AppOnboarding({ onClose }) {
                     )
                   })}
                 </div>
-              : step.fallbackExample
-                ? <button className={s.ghost} onClick={addExample}>Beispiel nehmen</button>
-                : null
+              : null
         }
       >
         {step.text}

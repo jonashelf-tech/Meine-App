@@ -1,8 +1,12 @@
 .overlayRoot { position: fixed; inset: 0; z-index: var(--z-coach); pointer-events: none; }
 .blocker { position: fixed; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); pointer-events: auto; transition: all var(--dur-fast) var(--ease); }
-.hole { position: fixed; border-radius: var(--r-sm); box-shadow: 0 0 0 2px var(--primary), var(--glow-primary); pointer-events: none; transition: all var(--dur-fast) var(--ease); }
+.hole { position: fixed; border-radius: var(--r-sm); pointer-events: none; transition: top var(--dur-fast) var(--ease), left var(--dur-fast) var(--ease), width var(--dur-fast) var(--ease), height var(--dur-fast) var(--ease); animation: holeGlow 1.6s var(--ease) infinite; }
+@keyframes holeGlow {
+  0%, 100% { box-shadow: 0 0 0 2px var(--primary), 0 0 16px 3px color-mix(in srgb, var(--primary) 45%, transparent); }
+  50%      { box-shadow: 0 0 0 3px var(--primary), 0 0 30px 9px color-mix(in srgb, var(--primary) 68%, transparent); }
+}
 .pulse { position: fixed; border-radius: 50%; border: 2px solid var(--primary); pointer-events: none; animation: pulse 1.4s var(--ease) infinite; }
-@media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; } .hole { animation: none; box-shadow: 0 0 0 2px var(--primary), var(--glow-primary); } }
 
 .bannerRoot { position: fixed; left: 0; right: 0; z-index: calc(var(--z-coach) + 1); display: flex; justify-content: center; padding: 12px; pointer-events: none; }
 .bannerBottom { bottom: 0; } .bannerTop { top: 0; }

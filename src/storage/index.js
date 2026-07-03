@@ -39,6 +39,16 @@ export const lv = (key, fallback) => {
   }
 }
 
+// Key komplett entfernen (Tool-Reset, App-Reset). Einziger legaler Löschpfad —
+// rohes localStorage außerhalb dieses Layers verbietet der Guard rawStorage.test.js.
+export const rmKey = (key) => {
+  try { localStorage.removeItem(key) } catch { /* Löschen scheitert nie kritisch */ }
+}
+
+export const storageKeys = () => {
+  try { return Object.keys(localStorage) } catch { return [] }
+}
+
 // ─── Storage keys ────────────────────────────────────────
 export const SK = {
   todos:          `${PREFIX}todos_list`,
@@ -118,6 +128,106 @@ export const SK = {
   cloudCreds:      `${PREFIX}cloud_creds`,     // Cloud-Backup: serverUrl + token + key (E2E — Schlüssel bleibt clientseitig)
   cloudMeta:       `${PREFIX}cloud_meta`,      // ephemer — letzter Cloud-Push/Fehler, gerätelokal
 }
+
+// ─── Sync-Policy pro Key (Sync-Etappe 3, sync-architektur.md §3) ──
+// Bestimmt, wie ein Key über Geräte gemerged wird. Guard: syncPolicy.test.js (G1).
+//   ephemeral    — nie Server, nie Backup (Laufzeit-Zustand)
+//   device-local — im Backup, aber nicht gesynct (View-State, Geräte-Zugang)
+//   lww          — ganzer Key, neuere Änderung gewinnt
+//   byId         — Array von {id,…}: Merge pro Datensatz · byId:date = Datensatz-Key ist `date`
+//   bySubkey     — Objekt-Map: Merge pro Unterschlüssel · bySubkey2 = zwei Ebenen (days: datum/slot)
+export const SYNC_POLICY = {
+  // Kalender-Kern
+  [SK.todos]:        'byId',
+  [SK.days]:         'bySubkey2',
+  [SK.doneCounters]: 'bySubkey',
+  [SK.blockers]:     'byId',
+  [SK.projects]:     'byId',
+  [SK.notes]:        'byId',
+  [SK.todoOrder]:    'lww',        // Array von IDs (Reihenfolge) — kein Datensatz-Merge
+  [SK.cats]:         'lww',        // Array von Strings
+  [SK.routines]:     'lww',        // LEGACY
+  [SK.templates]:    'lww',
+
+  // App-Config (synct: gleiche Einstellungen überall)
+  [SK.settings]:        'lww',
+  [SK.theme]:           'lww',
+  [SK.accentColor]:     'lww',
+  [SK.toolColors]:      'lww',
+  [SK.activeTools]:     'lww',
+  [SK.appBriefingSeen]: 'lww',
+  [SK.onboardingSeen]:  'lww',
+  [SK.missedHintSeen]:  'lww',
+  [SK.notizenMigrated]: 'lww',     // synct mit, damit Zweitgerät nicht erneut migriert
+  [SK.autoParse]:       'lww',
+
+  // View-State — bewusst pro Gerät (Jonas-Entscheid 2026-07-03)
+  [SK.visStart]:       'device-local',
+  [SK.visEnd]:         'device-local',
+  [SK.weekVisStart]:   'device-local',
+  [SK.weekVisEnd]:     'device-local',
+  [SK.calView]:        'device-local',
+  [SK.heuteModus]:     'device-local',
+  [SK.poolSort]:       'device-local',
+  [SK.addMode]:        'device-local',
+  [SK.lastPoolReturn]: 'device-local',  // Missed-Review-Gate läuft pro Gerät; Slot-Flags syncen via days
+  [SK.toolUsage]:      'device-local',  // Dachboden-Regel: Nutzung ist gerätespezifisch
+  [SK.birthdaySort]:   'device-local',
+  [SK.cloudCreds]:     'device-local',  // Zugang + Schlüssel syncen sich nicht selbst
+
+  // Tools
+  [SK.birthdays]:         'byId',
+  [SK.recipes]:           'byId',
+  [SK.rezepteZutaten]:    'byId',
+  [SK.rezepteKoerbe]:     'byId',
+  [SK.rezepteSettings]:   'lww',
+  [SK.rezepteKorbAktiv]:  'lww',
+  [SK.rezepteFroster]:    'lww',
+  [SK.rezepteIntroSeen]:  'lww',
+  [SK.recipesVersion]:    'lww',
+  [SK.shopping]:          'lww',   // LEGACY
+  [SK.shoppingStates]:    'lww',   // LEGACY
+  [SK.selectedDishes]:    'lww',   // LEGACY
+  [SK.weight]:            'byId:date',
+  [SK.weightDash]:        'lww',
+  [SK.fitness]:           'lww',
+  [SK.fitnessSessions]:   'byId',
+  [SK.haushalt]:          'lww',
+  [SK.haushaltEnergie]:   'device-local', // lokaler UI-State (Normal/Low Energy)
+  [SK.reminder]:          'lww',
+  [SK.reminderDismissed]: 'lww',
+  [SK.elvi]:              'lww',
+  [SK.klaerenSettings]:   'lww',
+  [SK.kognitiv]:          'byId',
+  [SK.kognitivCheckin]:   'bySubkey',
+  [SK.kognitivSchedule]:  'lww',
+  [SK.kognitivConfig]:    'lww',
+  [SK.kognitivIntroSeen]: 'lww',
+  [SK.growth]:            'lww',   // Tages-Doc; bei Bedarf später auf bySubkey hochstufen
+  [SK.dailyState]:        'bySubkey',
+  [SK.garten]:            'lww',
+  [SK.wachstum]:          'lww',   // LEGACY
+  [SK.erfolge]:           'lww',   // LEGACY
+  [SK.erfolgeTracking]:   'lww',   // Tages-Einträge idempotent — lww-Verlust heilt sich selbst
+
+  // Laufzeit-Zustand — nie Server, nie Backup
+  [SK.lastAutoBackup]:      'ephemeral',
+  [SK.lastOffDeviceBackup]: 'ephemeral',
+  [SK.kognitivPractice]:    'ephemeral',
+  [SK.kognitivCheckinSkip]: 'ephemeral',
+  [SK.updateSnoozed]:       'ephemeral',
+  [SK.timerStart]:          'ephemeral',
+  [SK.timerTotal]:          'ephemeral',
+  [SK.timerRunning]:        'ephemeral',
+  [SK.noteDraft]:           'ephemeral',
+  [SK.rezepteScreen]:       'ephemeral',
+  [SK.cloudMeta]:           'ephemeral',
+}
+
+// Abgeleitet — einzige Quelle ist SYNC_POLICY (Guard erzwingt Deckung mit BACKUP_CATS)
+export const EPHEMERAL = new Set(
+  Object.entries(SYNC_POLICY).filter(([, p]) => p === 'ephemeral').map(([k]) => k)
+)
 
 export const exportData = () => {
   const data = {}

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useCallback } from 'react'
+import { useLayoutEffect, useEffect, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import TapPulse from './TapPulse'
 import s from './AppOnboarding.module.css'
@@ -28,6 +28,23 @@ export default function CoachOverlay({ targetSelector, allowInteraction = true, 
     window.addEventListener('scroll', measure, true)
     return () => { clearInterval(id); window.removeEventListener('resize', measure); window.removeEventListener('scroll', measure, true) }
   }, [measure])
+
+  // Beim Ziel-Wechsel das Ziel ins Sichtfeld holen — ohne das weiß man nie,
+  // wohin man schauen soll. Retry, falls das Ziel nach Tab-Wechsel erst
+  // verzögert im DOM ist. (fixed-Elemente wie der FAB sind No-Op — schon sichtbar.)
+  useEffect(() => {
+    if (!targetSelector) return
+    let tries = 0
+    const scroll = () => {
+      const el = document.querySelector(`[data-onboarding="${targetSelector}"]`)
+      if (!el) return false
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return true
+    }
+    if (scroll()) return
+    const id = setInterval(() => { if (scroll() || ++tries > 10) clearInterval(id) }, 120)
+    return () => clearInterval(id)
+  }, [targetSelector])
 
   // Kein Ziel gefunden → Vollsperre (defensive Schiene; Controller zeigt dann „Weiter"-Button)
   const hole = allowInteraction ? rect : null

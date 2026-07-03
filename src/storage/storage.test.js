@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
-  sv, lv, SK, BACKUP_CATS,
+  sv, lv, SK, BACKUP_CATS, EPHEMERAL,
   importData, exportData,
   exportDataByCategories, importDataByCategories,
 } from './index'
@@ -95,20 +95,8 @@ describe('Mealprep-Keys', () => {
 })
 
 describe('Backup-Abdeckung — Anti-Drift', () => {
-  // Bewusst NICHT gesichert: Backup-Metadaten + wöchentlich neu setzende States.
-  const EPHEMERAL = new Set([
-    SK.lastAutoBackup,
-    SK.lastOffDeviceBackup,
-    SK.kognitivPractice,
-    SK.kognitivCheckinSkip,
-    SK.updateSnoozed,
-    SK.timerStart,
-    SK.timerTotal,
-    SK.timerRunning,
-    SK.noteDraft,
-    SK.rezepteScreen,
-    SK.cloudMeta,
-  ])
+  // EPHEMERAL kommt jetzt aus storage/index.js (abgeleitet aus SYNC_POLICY) —
+  // eine Quelle der Wahrheit, Deckung erzwingt syncPolicy.test.js (G1).
   const backedUp = new Set([
     ...BACKUP_CATS.kalender, ...BACKUP_CATS.tools, ...BACKUP_CATS.einstellungen,
   ])

@@ -1,4 +1,4 @@
-import { SK } from '../../storage'
+import { SK, rmKey, storageKeys } from '../../storage'
 
 // sessionStorage-Key: Tab, auf den App.jsx nach dem Reset-Reload zurücknavigiert
 export const PENDING_TAB_KEY = 'adhs_pending_tab'
@@ -28,11 +28,11 @@ export const TOOL_RESETS = {
 export function resetTool(id, returnTab) {
   const entry = TOOL_RESETS[id]
   if (!entry) return
-  entry.keys?.forEach(k => localStorage.removeItem(k))
+  entry.keys?.forEach(rmKey)
   if (entry.prefixes?.length) {
-    Object.keys(localStorage)
+    storageKeys()
       .filter(k => entry.prefixes.some(p => k.startsWith(p)))
-      .forEach(k => localStorage.removeItem(k))
+      .forEach(rmKey)
   }
   if (returnTab != null) sessionStorage.setItem(PENDING_TAB_KEY, String(returnTab))
   window.location.reload()
