@@ -283,6 +283,10 @@ SK.dailyState        → 'adhs_daily_state_v1'      // { "YYYY-MM-DD": { sleep, 
 SK.garten            → 'adhs_garten_v1'           // { xpFloor, seenMilestones } — Garten-Begleiter (Monotonie-Ratchet)
 SK.erfolgeTracking   → 'adhs_erfolge_tracking_v1' // Tagesplaner-Tage; schreibt TabHeute, liest Garten (historischer Name)
 SK.erfolge           → LEGACY (altes Erfolge-Tool, nur Backup-Kompat)
+
+// Cloud-Backup (src/sync/ — Sync-Etappe 2, siehe Dateien/output/sync-architektur.md)
+SK.cloudCreds        → 'adhs_cloud_creds'       // { serverUrl, token, key, activatedAt } — E2E-Schlüssel bleibt clientseitig (BACKUP_CATS.einstellungen)
+SK.cloudMeta         → 'adhs_cloud_meta'        // { lastPushAt, lastPushBytes, lastError } — gerätelokal, EPHEMERAL
 ```
 
 Lesen/Schreiben:

@@ -5,6 +5,7 @@ import { TOOL_TAB, TOOL_REGISTRY } from './features/tools/toolRegistry.jsx'
 import { markToolUsed, seedToolUsage } from './features/tools/toolUsage'
 import { PENDING_TAB_KEY } from './features/tools/toolReset'
 import { saveAutoBackup, lv, sv, SK } from './storage'
+import { maybeAutoPush } from './sync/cloudBackup'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
 import TabKalender     from './features/calendar/TabKalender/TabKalender'
@@ -83,7 +84,7 @@ export default function App() {
     history.replaceState(null, '', window.location.pathname)
   }, [])
 
-  useEffect(() => { saveAutoBackup() }, [])
+  useEffect(() => { saveAutoBackup(); maybeAutoPush() }, [])
 
   // Dachboden-Regel: letztes Öffnen pro Tool tracken
   useEffect(() => { seedToolUsage(useAppStore.getState().activeTools) }, [])
@@ -110,7 +111,7 @@ export default function App() {
   const closeOnboarding = () => { sv(SK.onboardingSeen, true); setOnboardingOpen(false) }
 
   useEffect(() => {
-    const onVisible = () => { if (document.visibilityState === 'visible') saveAutoBackup() }
+    const onVisible = () => { if (document.visibilityState === 'visible') { saveAutoBackup(); maybeAutoPush() } }
     document.addEventListener('visibilitychange', onVisible)
     return () => document.removeEventListener('visibilitychange', onVisible)
   }, [])

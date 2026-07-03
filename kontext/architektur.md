@@ -152,6 +152,7 @@ src/
 
   store/            index.js    — Zustand Store
   storage/          index.js    — sv / lv / SK / exportData / importData
+  sync/             crypto.js (AES-GCM, Recovery-Code, getestet) · cloudBackup.js (Cloud-Voll-Backup, getestet) — Server-Code liegt in server/ (Cloudflare Worker + D1)
   styles/           vars.css    — Globale CSS-Variablen + Keyframes
   utils/            index.js    — sk, dateKey, todayKey, parseHHMM, ALL_SLOT_KEYS …
 ```
@@ -336,10 +337,11 @@ Der Umbau soll **eine Schicht hinter `storage/index.js`** werden — kein App-Um
 
 **ErrorBoundary** (`components/ErrorBoundary/`): wraps den Tab-Content in `App.jsx` mit `key={currentTab}`. Ein Render-Crash in einem Tool zeigt einen ruhigen Fallback (kein Whitescreen) — Tab-Wechsel mountet neu und resettet den Fehler.
 
-**Backup-Schichten** (alles in `storage/index.js`):
+**Backup-Schichten**:
 - `localStorage` — primärer Speicher, jeder `sv()` schreibt sofort.
 - OPFS-Auto-Backup (`saveAutoBackup`, throttle 30 Min) — Spiegel same-origin. Rettet bei Reload/Crash, **stirbt** mit localStorage bei "Browserdaten löschen".
-- **Off-Device-Download** — der einzige Pfad, der eine Browser-Löschung überlebt (Datei landet außerhalb des Browsers).
+- **Off-Device-Download** — Datei landet außerhalb des Browsers, überlebt Browser-Löschung.
+- **Cloud-Backup** (`src/sync/cloudBackup.js`, Sync-Etappe 2) — E2E-verschlüsseltes Voll-Backup (`exportData()` → AES-GCM → eigener Cloudflare Worker, `server/`). Auto-Push stündlich gedrosselt, Trigger in App.jsx neben `saveAutoBackup` (Mount + visibilitychange); `BackupNudge` rechnet Cloud-Alter als Off-Device-Sicherung mit ein. Einrichtung/Restore: Einstellungen → Cloud-Sicherung (`CloudBackupSection.jsx`), Recovery-Code = Schlüssel, Server sieht nur Ciphertext. Neue Keys: `SK.cloudCreds` (Backup: einstellungen) + `SK.cloudMeta` (ephemer). Architektur: `Dateien/output/sync-architektur.md`, Plan: `sync-plan.md`.
 
 **Helfer für Off-Device:**
 - `downloadFullBackup()` — exportiert alle Kategorien als JSON-Download + `markOffDeviceBackup()`.

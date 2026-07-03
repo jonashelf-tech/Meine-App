@@ -1,0 +1,13 @@
+name = "adhs-sync"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+
+# database_id kommt aus `npm run db:create` (Ausgabe hier eintragen!)
+[[d1_databases]]
+binding = "DB"
+database_name = "adhs-sync"
+database_id = "HIER-EINTRAGEN-NACH-db-create"
+
+[vars]
+# Wer darf aus dem Browser zugreifen (kommagetrennt). Bei neuer App-Domain erweitern.
+ALLOWED_ORIGINS = "https://meine-app-pi.vercel.app,http://localhost:5173,http://localhost:4173"

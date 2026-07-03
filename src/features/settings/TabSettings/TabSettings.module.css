@@ -424,3 +424,28 @@
   border-color: var(--rose);
   color: var(--rose);
 }
+
+/* ─── Cloud-Sicherung ────────────────────────────────────── */
+.codeBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg3);
+  border: 1px dashed var(--primary);
+  border-radius: var(--r-sm);
+  padding: 12px;
+}
+
+.codeText {
+  font-family: var(--font-num);
+  font-size: 0.88rem;
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+  color: var(--text);
+  word-break: break-all;
+  user-select: all;
+}
+
+.cloudActions {
+  margin-top: 12px;
+}

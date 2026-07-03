@@ -7,6 +7,7 @@ import {
   markOffDeviceBackup,
 } from '../../../storage'
 import { useToast } from '../../../components/Toast/Toast'
+import CloudBackupSection from './CloudBackupSection'
 import s from './TabSettings.module.css'
 
 const THEMES = [
@@ -255,6 +256,8 @@ export default function TabSettings() {
           </button>
         </div>
       </section>
+
+      <CloudBackupSection />
 
       <section className={s.card}>
         <h3 className={s.cardTitle}>Wartung</h3>

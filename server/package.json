@@ -1,0 +1,16 @@
+{
+  "name": "adhs-sync-server",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "db:create": "wrangler d1 create adhs-sync --location weur",
+    "db:schema": "wrangler d1 execute adhs-sync --remote --file schema.sql",
+    "secret": "wrangler secret put SETUP_SECRET",
+    "deploy": "wrangler deploy",
+    "logs": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

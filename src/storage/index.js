@@ -115,6 +115,8 @@ export const SK = {
   noteDraft:       `${PREFIX}notes_draft`,     // ephemer — Capture-Entwurf, NICHT im Backup
   addMode:         `${PREFIX}view_add_mode`,   // 'aufgabe'|'notiz' — letzter Modus im +-Modal
   notizenMigrated: `${PREFIX}notizen_migrated`,// einmalige Migration: notizen in activeTools eingereiht
+  cloudCreds:      `${PREFIX}cloud_creds`,     // Cloud-Backup: serverUrl + token + key (E2E — Schlüssel bleibt clientseitig)
+  cloudMeta:       `${PREFIX}cloud_meta`,      // ephemer — letzter Cloud-Push/Fehler, gerätelokal
 }
 
 export const exportData = () => {
@@ -157,7 +159,7 @@ export const BACKUP_CATS = {
     SK.settings, SK.theme, SK.appBriefingSeen, SK.onboardingSeen, SK.missedHintSeen,
     SK.kognitivIntroSeen, SK.rezepteIntroSeen,
     SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
-    SK.notizenMigrated,
+    SK.notizenMigrated, SK.cloudCreds,
   ],
 }
 
