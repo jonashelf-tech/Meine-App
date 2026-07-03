@@ -378,6 +378,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
               className={[s.autoBtn, autoOn ? s.autoBtnOn : ''].join(' ')}
               onClick={toggleAuto}
               title={autoOn ? 'Auto-Erkennung aus' : 'Auto-Erkennung an'}
+              data-onboarding="todo-auto"
             >
               Auto
             </button>

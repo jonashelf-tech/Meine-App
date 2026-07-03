@@ -170,6 +170,7 @@ export default function App() {
           className={styles.fab}
           onClick={() => setAddOpen(true)}
           aria-label="Todo hinzufügen"
+          data-onboarding="add-fab"
         >
           +
         </button>

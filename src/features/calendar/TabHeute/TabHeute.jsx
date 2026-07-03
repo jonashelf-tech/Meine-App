@@ -236,9 +236,12 @@ export default function TabHeute() {
             reminder:    { onStartDrag: startReminderDrag },
             geburtstage: { onStartDrag: startBirthdayDrag },
           }
-          return activeTools
+          const secs = activeTools
             .filter(id => SECTIONS[id])
             .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
+          return secs.length > 0
+            ? <div data-onboarding="tool-section" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{secs}</div>
+            : null
         })()}
         </div>
       )}
