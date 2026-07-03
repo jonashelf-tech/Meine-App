@@ -31,6 +31,7 @@ export const STEPS = [
     text: (<>Halte den <strong>Griff</strong> deiner Aufgabe und zieh sie nach oben auf eine Uhrzeit —
       schon ist sie verplant. Zurück in den Pool geht genauso, nichts geht verloren.</>),
     advance: 'slotToday',
+    freeMove: true,        // Zieh-Geste Pool → Zeitplan: nur Highlight, keine Sperre
     fallbackTapHint: true, // nach ~10s: „Oder tipp auf eine freie Zeit"
   },
   {

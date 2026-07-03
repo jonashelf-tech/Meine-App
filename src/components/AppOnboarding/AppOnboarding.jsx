@@ -48,6 +48,9 @@ export default function AppOnboarding({ onClose }) {
 
   const addExample = () => {
     setTodos(prev => [...prev, createBlock({ text: 'Einkaufen', priority: 2, duration: 30 })])
+    // Falls das TodoModal noch offen ist (Fallback statt selbst speichern):
+    // über seinen echten Schließen-Button zumachen, sonst verdeckt es den Pool.
+    document.querySelector('[aria-label="Schließen"]')?.click()
   }
 
   // „Weiter"-Button zeigen, wenn kein Prädikat ODER Prädikat schon erfüllt (Re-Run/Reload)
@@ -81,7 +84,7 @@ export default function AppOnboarding({ onClose }) {
 
   return (
     <>
-      <CoachOverlay targetSelector={step.target} />
+      <CoachOverlay targetSelector={step.target} lock={!step.freeMove} />
       <CoachBanner
         phase={step.phase} phaseCount={phaseCount}
         title={step.title} dock={dock}
