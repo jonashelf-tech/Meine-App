@@ -14,7 +14,7 @@ import TodoModal       from './components/TodoModal/TodoModal'
 import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
 import BackupNudge     from './components/BackupNudge/BackupNudge'
 import UpdatePrompt     from './components/UpdatePrompt/UpdatePrompt'
-import AppBriefing      from './components/AppBriefing/AppBriefing'
+import AppOnboarding    from './components/AppOnboarding/AppOnboarding'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
 const IconTagesplaner = () => (
@@ -66,7 +66,7 @@ const TABS = [
 const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 
 export default function App() {
-  const { currentTab, previousTab, setCurrentTab, accentColor, theme, briefingOpen, setBriefingOpen } = useAppStore()
+  const { currentTab, previousTab, setCurrentTab, accentColor, theme, onboardingOpen, setOnboardingOpen } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
   const [sharePrefill, setSharePrefill] = useState(null)
   const [exercising, setExercising] = useState(false)
@@ -101,12 +101,13 @@ export default function App() {
     }
   }, [setCurrentTab])
 
-  // First-Run: Briefing einmalig beim ersten Start zeigen
+  // First-Run: neues Onboarding einmalig zeigen (auch auf Bestandsgeräten,
+  // die nur das alte Briefing kannten — bewusst per neuem Key onboardingSeen).
   useEffect(() => {
-    if (!lv(SK.appBriefingSeen, false)) setBriefingOpen(true)
-  }, [setBriefingOpen])
+    if (!lv(SK.onboardingSeen, false)) setOnboardingOpen(true)
+  }, [setOnboardingOpen])
 
-  const closeBriefing = () => { sv(SK.appBriefingSeen, true); setBriefingOpen(false) }
+  const closeOnboarding = () => { sv(SK.onboardingSeen, true); setOnboardingOpen(false) }
 
   useEffect(() => {
     const onVisible = () => { if (document.visibilityState === 'visible') saveAutoBackup() }
@@ -185,7 +186,7 @@ export default function App() {
 
       <UpdatePrompt />
 
-      {briefingOpen && <AppBriefing onClose={closeBriefing} />}
+      {onboardingOpen && <AppOnboarding onClose={closeOnboarding} />}
 
       {!exercising && <nav className={styles.tabBar}>
         {TABS.map(({ id, label, Icon }) => {

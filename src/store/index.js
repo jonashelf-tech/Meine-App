@@ -99,8 +99,8 @@ export const useAppStore = create((set, get) => ({
   setHeuteModus: (modus) => { set({ heuteModus: modus }); sv(SK.heuteModus, modus) },
   dayplanDate: null,
   setDayplanDate: (dk) => set({ dayplanDate: dk }),
-  briefingOpen: false,
-  setBriefingOpen: (v) => set({ briefingOpen: v }),
+  onboardingOpen: false,
+  setOnboardingOpen: (v) => set({ onboardingOpen: v }),
   calendarDate: null,
   setCalendarDate: (dk) => set({ calendarDate: dk }),
 
