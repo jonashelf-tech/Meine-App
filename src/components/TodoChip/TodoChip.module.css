@@ -551,7 +551,7 @@
 .pauseBtn {
   background: none;
   border: none;
-  color: var(--amber);
+  color: var(--primary);
   cursor: pointer;
   padding: 6px 10px 6px 0;
   display: flex;
