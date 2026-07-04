@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import PrioBadge from '../PrioBadge/PrioBadge'
 import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
@@ -86,6 +86,7 @@ export default function TodoChip({
   const [subDragOver, setSubDragOver] = useState(null)
   const itemRef    = useRef(null)
   const itemsWrapRef = useRef(null)
+  const rowWrapRef = useRef(null)
   const subDragRef = useRef({ from: null, over: null })
 
   const allItems = useMemo(() => todo.subItems || [], [todo.subItems])
@@ -181,6 +182,30 @@ export default function TodoChip({
     })
   }, [allItems.length, onExpandedChange])
 
+  const closeExpand = useCallback(() => {
+    setExpanded(false)
+    onExpandedChange?.(false, 0)
+  }, [onExpandedChange])
+
+  // Schwebendes Unterpunkte-Panel (floatExpand = Zeitplan): Tippen außerhalb
+  // schließt es. Früher lag hier ein `position:fixed; inset:0` Vollbild-Backdrop
+  // als Klick-Fänger — der deckte aber den einzigen Scroll-Container (.content)
+  // ab und schluckte damit jeden Touch-Scroll: bei offenem Unterpunkt ließ sich
+  // die Seite nicht mehr hoch/runter scrollen (ein horizontaler Swipe „löste"
+  // es nur kurz, weil der Transform am Swipe-Wrapper den fixed-Backdrop kurz auf
+  // dessen Box schrumpfte). Kein physisches Overlay mehr → Scroll läuft
+  // ungehindert durch; Außen-Tipp wird per Document-Listener erkannt.
+  // WICHTIG: hier NICHT wieder ein Vollbild-Overlay einführen — .content (nicht
+  // body) ist der Scroller, ein fixed Overlay darüber blockiert den Scroll.
+  useEffect(() => {
+    if (!floatExpand || !expanded || disableExpand) return
+    const onOutsideClick = (e) => {
+      if (!rowWrapRef.current?.contains(e.target)) closeExpand()
+    }
+    document.addEventListener('click', onOutsideClick, true)
+    return () => document.removeEventListener('click', onOutsideClick, true)
+  }, [floatExpand, expanded, disableExpand, closeExpand])
+
   const { klaerenSettings } = useAppStore()
   const threshold = klaerenSettings?.threshold ?? 7
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
@@ -202,13 +227,8 @@ export default function TodoChip({
 
   return (
     <>
-      {floatExpand && expanded && !disableExpand && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 49 }}
-          onClick={() => { setExpanded(false); onExpandedChange?.(false, 0) }}
-        />
-      )}
       <div
+        ref={rowWrapRef}
         className={s.rowWrap}
         style={floatExpand ? { position: 'relative', zIndex: expanded ? 51 : undefined } : {}}
       >

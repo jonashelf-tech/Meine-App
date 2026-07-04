@@ -3,11 +3,7 @@
   background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  /* clip statt hidden: schneidet fuer die runden Ecken visuell identisch ab,
-     erzeugt aber KEINEN Scroll-Container — sonst faengt der Pool auf Touch-
-     Geraeten den Seiten-Scroll ein (v.a. wenn ein Subtodo aufgeklappt ist und
-     die Flaeche unter den sichtbaren Bereich ragt). */
-  overflow: clip;
+  overflow: hidden;
 }
 
 /* ─── Header ─────────────────────────────────────────── */
