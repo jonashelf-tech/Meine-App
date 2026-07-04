@@ -1,7 +1,7 @@
 // ─── Cloud-Backup (Etappe 2, sync-architektur.md §8) ──────
 // Verschlüsseltes Voll-Backup zum eigenen Cloudflare Worker. Rein additiv:
 // localStorage bleibt primär, OPFS-Spiegel + JSON-Download bleiben bestehen.
-import { sv, lv, SK, exportData, importData } from '../storage'
+import { sv, lv, SK, exportData, importData, EPHEMERAL, rmKey } from '../storage'
 import {
   generateCreds, buildRecoveryCode, parseRecoveryCode,
   encryptPayload, decryptPayload, sha256Hex,
@@ -39,6 +39,10 @@ const request = (serverUrl, path, { method = 'GET', token, setupSecret, body } =
 
 // ─── Lebenszyklus ─────────────────────────────────────────
 
+// Neue Sync-Identität = alte Sync-Spuren weg (Review R3): Versionen, Cursor
+// und Tombstone-Stempel eines anderen Kontos dürfen nie mitmergen.
+const resetSyncMeta = () => rmKey(SK.syncMeta)
+
 // Ersteinrichtung: Creds erzeugen, Token-Hash registrieren (Server sieht den
 // Token selbst nie im Klartext gespeichert), Recovery-Code fürs Sichern liefern.
 export const activateCloud = async ({ serverUrl, setupSecret }) => {
@@ -50,6 +54,7 @@ export const activateCloud = async ({ serverUrl, setupSecret }) => {
   if (r.status === 401 || r.status === 403) throw new Error('Setup-Code falsch')
   if (!r.ok) throw new Error(`Registrierung fehlgeschlagen (${r.status})`)
   sv(SK.cloudCreds, { serverUrl: url, token: creds.token, key: creds.key, activatedAt: Date.now() })
+  resetSyncMeta()
   return { recoveryCode: await buildRecoveryCode(creds) }
 }
 
@@ -57,11 +62,25 @@ export const activateCloud = async ({ serverUrl, setupSecret }) => {
 export const connectWithRecoveryCode = async ({ serverUrl, code }) => {
   const { token, key } = await parseRecoveryCode(code)
   sv(SK.cloudCreds, { serverUrl: normalizeUrl(serverUrl), token, key, activatedAt: Date.now() })
+  resetSyncMeta()
 }
 
 export const deactivateCloud = () => {
   sv(SK.cloudCreds, null)
   sv(SK.cloudMeta, {})
+  resetSyncMeta()
+}
+
+// Sync anhalten, ohne die Cloud-Verbindung zu trennen (Review R2b): nach jedem
+// Restore ist der lokale Stand eine bewusste Zeitreise — er darf nicht mit
+// Jetzt-Stempeln den Server-Stand überschreiben. Wieder-Einschalten läuft
+// über die Erst-Kopplung (Server gewinnt). Liefert true, wenn Sync an war.
+export const pauseSync = () => {
+  const creds = loadCloudCreds()
+  const wasOn = creds?.syncOn === true
+  if (wasOn) sv(SK.cloudCreds, { ...creds, syncOn: false })
+  resetSyncMeta()
+  return wasOn
 }
 
 // ─── Backup ───────────────────────────────────────────────
@@ -72,7 +91,12 @@ export const pushCloudBackup = async ({ force = false } = {}) => {
     return { skipped: 'frisch' }
   const { serverUrl, token, key } = loadCloudCreds()
   try {
-    const env = await encryptPayload(key, { ...exportData(), _savedAt: Date.now() })
+    // Ephemere Keys (syncMeta, Timer-Laufzustand, …) gehören nicht ins Backup —
+    // ein Restore würde sie sonst auf fremde Geräte verschleppen (Review R2a).
+    const data = Object.fromEntries(
+      Object.entries(exportData()).filter(([k]) => !EPHEMERAL.has(k))
+    )
+    const env = await encryptPayload(key, { ...data, _savedAt: Date.now() })
     const r = await request(serverUrl, '/backup', { method: 'PUT', token, body: env })
     if (!r.ok) throw new Error(`Upload fehlgeschlagen (${r.status})`)
     const bytes = JSON.stringify(env).length
@@ -100,5 +124,6 @@ export const restoreCloudBackup = async (id = 'latest') => {
   const keys = Object.keys(data).filter(k => k.startsWith('adhs_'))
   if (!keys.length) throw new Error('Kein gültiges ADHS-Backup')
   importData(data)
-  return { savedAt: data._savedAt ?? null, keyCount: keys.length }
+  const syncPaused = pauseSync()   // Review R2b — Restore darf nie still zurück-syncen
+  return { savedAt: data._savedAt ?? null, keyCount: keys.length, syncPaused }
 }

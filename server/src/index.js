@@ -105,8 +105,12 @@ export default {
         const current = row?.version ?? 0
         if (current !== ifMatch) return json({ version: current }, 409, cors)
 
-        const { next } = await env.DB.prepare(
-          'SELECT COALESCE(MAX(version), 0) + 1 AS next FROM kv WHERE user_ns = ?'
+        // Atomare Versionsvergabe (Review R4): ein einzelnes UPDATE…RETURNING
+        // kann nie zwei gleiche Versionen vergeben — Cursor-Pulls bleiben lückenlos.
+        await env.DB.prepare('INSERT OR IGNORE INTO ns_version (user_ns, n) VALUES (?, 0)')
+          .bind(ns).run()
+        const { n: next } = await env.DB.prepare(
+          'UPDATE ns_version SET n = n + 1 WHERE user_ns = ? RETURNING n'
         ).bind(ns).first()
         await env.DB.prepare(`
           INSERT INTO kv (user_ns, key_id, version, ciphertext, client_changed_at, server_at)

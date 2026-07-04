@@ -16,7 +16,15 @@ CREATE TABLE IF NOT EXISTS backups (
 
 CREATE INDEX IF NOT EXISTS idx_backups_user ON backups (user_id, created_at DESC);
 
--- Etappe 3 (Sync) — schon angelegt, noch ohne Endpoints:
+-- Sync-Versionen: atomarer Zähler pro Namespace (Review R4 — MAX+1 über zwei
+-- Statements könnte bei gleichzeitigen PUTs doppelte Versionen vergeben,
+-- und ein Cursor dazwischen würde eine Row dauerhaft überspringen).
+CREATE TABLE IF NOT EXISTS ns_version (
+  user_ns TEXT PRIMARY KEY,
+  n       INTEGER NOT NULL
+);
+
+-- Etappe 3 (Sync):
 CREATE TABLE IF NOT EXISTS kv (
   user_ns           TEXT NOT NULL,   -- 'u:<id>' oder 'p:<pairId>' (geteilter Kalender)
   key_id            TEXT NOT NULL,   -- HMAC-pseudonymisierter Storage-Key

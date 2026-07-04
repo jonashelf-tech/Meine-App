@@ -7,6 +7,7 @@
 // bekannte Server-Version und ohne lokale dirty-Spur übernehmen den
 // Server-Stand 1:1; nur echte Live-Edits werden gemerged.
 import { sv, lv, SK, SYNC_POLICY, setWriteListener, storageKeys } from '../storage'
+import { useAppStore, migrateAccent } from '../store'
 import { loadCloudCreds } from './cloudBackup'
 import { encryptPayload, decryptPayload, hmacKeyId } from './crypto'
 import { updateChangeMap } from './diff'
@@ -20,6 +21,7 @@ const RELOAD_MIN_GAP_MS = 60_000
 
 let listenerOn = false
 let applying = false      // Remote-Apply läuft → Listener stempelt nicht
+let busy = false          // Review R5: nie zwei Pull/Push-Zyklen parallel
 let pushTimer = null
 let keyIds = null         // { byName, byId } — HMAC-Pseudonyme, pro Schlüssel gecacht
 let keyIdsFor = null
@@ -67,9 +69,36 @@ const buildPayload = (key, entry) => {
   return { payload, h: hashValue(value) }
 }
 
+// Review R1: Store-verwaltete Keys werden nach Remote-Apply direkt im
+// Zustand-Store rehydriert — sonst überschreibt die nächste Nutzer-Aktion
+// aus dem veralteten In-Memory-Stand den gemergten Wert (und der Diff würde
+// frisch gepullte Datensätze fälschlich als lokale Löschung tombstonen).
+// Defaults spiegeln die Initialisierung in store/index.js.
+const setStore = (patch) => useAppStore.setState(patch)
+const REHYDRATE = {
+  [SK.todos]:           v => setStore({ todos: v ?? [] }),
+  [SK.todoOrder]:       v => setStore({ todoOrder: v ?? [] }),
+  [SK.cats]:            v => setStore({ cats: v ?? [] }),
+  [SK.projects]:        v => setStore({ projects: v ?? [] }),
+  [SK.notes]:           v => setStore({ notes: v ?? [] }),
+  [SK.blockers]:        v => setStore({ blockers: v ?? [] }),
+  [SK.days]:            v => setStore({ days: v ?? {} }),
+  [SK.doneCounters]:    v => setStore({ doneCounters: v ?? {} }),
+  [SK.settings]:        v => setStore({ settings: v ?? { lastBackup: null } }),
+  [SK.theme]:           v => setStore({ theme: v }),
+  [SK.accentColor]:     v => setStore({ accentColor: migrateAccent(v) }),
+  [SK.toolColors]:      v => setStore({ toolColors: v ?? {} }),
+  [SK.activeTools]:     v => setStore({ activeTools: v ?? [] }),
+  [SK.birthdays]:       v => setStore({ birthdays: v ?? [] }),
+  [SK.klaerenSettings]: v => setStore({ klaerenSettings: v ?? { threshold: 30, ageColor: '#FB923C', kiZerlegen: true } }),
+}
+
 const applyValue = (key, value) => {
   applying = true
-  try { sv(key, value) } finally { applying = false }
+  try {
+    sv(key, value)
+    REHYDRATE[key]?.(value)
+  } finally { applying = false }
 }
 
 const noteError = (e) => {
@@ -113,11 +142,19 @@ const handleWrite = (key, oldRaw, newValue) => {
   schedulePush()
 }
 
+// Mutex nur an den ÄUSSEREN Einstiegen (Timer, syncTick) — pushDirtyNow ruft
+// intern pullOnce (409-Pfad) und darf sich nicht selbst aussperren.
+const runExclusive = async (fn) => {
+  if (busy) return
+  busy = true
+  try { await fn() } finally { busy = false }
+}
+
 const schedulePush = () => {
   if (pushTimer || typeof setTimeout === 'undefined') return
   pushTimer = setTimeout(() => {
     pushTimer = null
-    pushDirtyNow().catch(noteError)
+    runExclusive(() => pushDirtyNow()).catch(noteError)
   }, PUSH_DELAY_MS)
   pushTimer.unref?.()
 }
@@ -215,7 +252,9 @@ export const pullOnce = async () => {
   m3.lastSyncAt = Date.now()
   m3.lastError = null
   saveMeta(m3)
-  if (applied.length) maybeReload()
+  // Reload nur noch für Keys OHNE Rehydrator (Tool-Stores lesen bei Mount frisch;
+  // offene Tool-Screens sollen nicht auf altem Stand weiterarbeiten)
+  if (applied.some(k => !(k in REHYDRATE))) maybeReload()
   if (Object.values(loadMeta().keys).some(e => e.dirty)) schedulePush()
 }
 
@@ -299,11 +338,13 @@ export const setSyncEnabled = async (on) => {
 // App-Anlass (Start / sichtbar werden): holen, scannen, liefern — still bei Fehlern.
 export const syncTick = async () => {
   if (!isSyncOn()) return
-  try {
-    scanOnce()
-    await pullOnce()
-    await pushDirtyNow()
-  } catch (e) { noteError(e) }
+  await runExclusive(async () => {
+    try {
+      scanOnce()
+      await pullOnce()
+      await pushDirtyNow()
+    } catch (e) { noteError(e) }
+  })
 }
 
 export const getSyncStatus = () => {

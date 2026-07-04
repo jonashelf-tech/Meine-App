@@ -78,8 +78,10 @@ export default function CloudBackupSection() {
     setConfirmRestore(false)
     run(async () => {
       downloadFullBackup()   // Ritual: lokale JSON-Kopie, BEVOR etwas überschrieben wird
-      await restoreCloudBackup()
-      showToast('Wiederhergestellt — App lädt neu', 'success')
+      const { syncPaused } = await restoreCloudBackup()
+      showToast(syncPaused
+        ? 'Wiederhergestellt — Geräte-Sync wurde pausiert, App lädt neu'
+        : 'Wiederhergestellt — App lädt neu', 'success')
       setTimeout(() => window.location.reload(), 1200)
     })
   }

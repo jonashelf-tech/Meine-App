@@ -138,6 +138,42 @@ describe('Erst-Kopplung — Server gewinnt', () => {
   })
 })
 
+describe('Review-Fix R1 — Rehydrieren statt Reload', () => {
+  it('Remote-Apply auf Store-Keys aktualisiert den Zustand-Store im Speicher', async () => {
+    const { useAppStore } = await import('../store')
+    const creds = await enable()
+    const keyId = await hmacKeyId(creds.key, SK.todos)
+    const remoteEnv = await encryptPayload(creds.key, {
+      value: [{ id: 'r9', text: 'Live im Store' }], sub: { r9: Date.now() - 100 }, del: {},
+    })
+    fetchMock.mockResolvedValueOnce(res(200, {
+      rows: [{ keyId, version: 2, ciphertext: JSON.stringify(remoteEnv) }],
+      cursor: 2,
+    }))
+
+    await pullOnce()
+
+    expect(useAppStore.getState().todos).toEqual([{ id: 'r9', text: 'Live im Store' }])
+  })
+})
+
+describe('Review-Fix R5 — kein paralleler Sync-Zyklus', () => {
+  it('syncTick während eines laufenden Ticks wird übersprungen', async () => {
+    await enable()
+    let release
+    fetchMock.mockImplementationOnce(() => new Promise(r => { release = () => r(emptyPull()) }))
+
+    const first = syncTick()                    // hängt im Pull
+    await new Promise(r => setTimeout(r, 10))
+    const callsWhileBusy = fetchMock.mock.calls.length
+    await syncTick()                            // muss sofort zurückkommen, ohne Netz
+    expect(fetchMock.mock.calls.length).toBe(callsWhileBusy)
+
+    release()
+    await first
+  })
+})
+
 describe('scanOnce — fängt Trichter-Umgehungen', () => {
   it('importData (Restore) schreibt am Hook vorbei — der Scan sieht es', async () => {
     await enable()

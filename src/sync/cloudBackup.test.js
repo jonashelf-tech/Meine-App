@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { sv, lv, SK } from '../storage'
-import { generateCreds, buildRecoveryCode, sha256Hex, encryptPayload } from './crypto'
+import { generateCreds, buildRecoveryCode, sha256Hex, encryptPayload, decryptPayload } from './crypto'
 import {
   activateCloud, connectWithRecoveryCode, deactivateCloud,
   loadCloudCreds, isCloudActive,
   pushCloudBackup, maybeAutoPush, restoreCloudBackup,
   loadCloudMeta, saveCloudMeta, cloudBackupAgeDays,
+  pauseSync,
 } from './cloudBackup'
 
 const res = (status, body) => ({ ok: status < 300, status, json: async () => body })
@@ -162,6 +163,58 @@ describe('restoreCloudBackup', () => {
     await coupleDevice()
     fetchMock.mockResolvedValueOnce(res(404, { error: 'not found' }))
     await expect(restoreCloudBackup()).rejects.toThrow(/[Kk]ein/)
+  })
+})
+
+describe('Review-Fixes R2/R3 — Restore-Pfade & Konto-Wechsel', () => {
+  it('R2a: Cloud-Push enthält keine ephemeren Keys (syncMeta/Timer bleiben draußen)', async () => {
+    sv(SK.todos, [{ id: 'x', text: 'bleibt' }])
+    sv(SK.syncMeta, { cursor: 42, keys: {} })
+    sv(SK.timerRunning, true)
+    const creds = await coupleDevice()
+    fetchMock.mockResolvedValueOnce(res(200, { ok: true }))
+
+    await pushCloudBackup({ force: true })
+
+    const env = JSON.parse(fetchMock.mock.calls[0][1].body)
+    const payload = await decryptPayload(creds.key, env)
+    expect(payload[SK.todos]).toBeDefined()
+    expect(payload[SK.syncMeta]).toBeUndefined()
+    expect(payload[SK.timerRunning]).toBeUndefined()
+    expect(payload[SK.cloudCreds]).toBeDefined()   // Zugang bleibt drin (Recovery via Backup)
+  })
+
+  it('R3: connectWithRecoveryCode verwirft altes syncMeta (neue Identität)', async () => {
+    sv(SK.syncMeta, { cursor: 42, keys: { alt: true } })
+    await coupleDevice()
+    expect(lv(SK.syncMeta, null)).toBeNull()
+  })
+
+  it('R3: deactivateCloud verwirft syncMeta', async () => {
+    await coupleDevice()
+    sv(SK.syncMeta, { cursor: 7, keys: {} })
+    deactivateCloud()
+    expect(lv(SK.syncMeta, null)).toBeNull()
+  })
+
+  it('R2b: restoreCloudBackup pausiert den Sync und setzt syncMeta zurück', async () => {
+    const creds = await coupleDevice()
+    sv(SK.cloudCreds, { ...loadCloudCreds(), syncOn: true })
+    sv(SK.syncMeta, { cursor: 9, keys: {} })
+    const env = await encryptPayload(creds.key, { [SK.todos]: '[{"id":"r1"}]', _savedAt: 1 })
+    fetchMock.mockResolvedValueOnce(res(200, env))
+
+    const result = await restoreCloudBackup()
+
+    expect(result.syncPaused).toBe(true)
+    expect(loadCloudCreds().syncOn).toBe(false)
+    expect(lv(SK.syncMeta, null)).toBeNull()
+  })
+
+  it('pauseSync ist idempotent und ohne Sync ein No-op mit false', async () => {
+    await coupleDevice()
+    expect(pauseSync()).toBe(false)   // syncOn war nie an
+    expect(isCloudActive()).toBe(true)
   })
 })
 

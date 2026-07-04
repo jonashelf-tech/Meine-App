@@ -7,6 +7,7 @@ import {
   markOffDeviceBackup,
 } from '../../../storage'
 import { useToast } from '../../../components/Toast/Toast'
+import { pauseSync } from '../../../sync/cloudBackup'
 import CloudBackupSection from './CloudBackupSection'
 import s from './TabSettings.module.css'
 
@@ -120,7 +121,11 @@ export default function TabSettings() {
     const selected = Object.keys(restoreCats).filter(k => restoreCats[k])
     if (!selected.length) { showToast('Keine Kategorie gewählt', 'error'); return }
     importDataByCategories(restoreData, selected)
-    showToast('Backup eingespielt — App wird neu geladen', 'success')
+    // Restore = bewusste Zeitreise — darf nie still zurück-syncen (Review R2b)
+    const syncPaused = pauseSync()
+    showToast(syncPaused
+      ? 'Backup eingespielt — Geräte-Sync pausiert, App lädt neu'
+      : 'Backup eingespielt — App wird neu geladen', 'success')
     setTimeout(() => window.location.reload(), 1200)
   }
 
