@@ -4,7 +4,7 @@ import { hexToGlow } from './utils'
 import { TOOL_TAB, TOOL_REGISTRY } from './features/tools/toolRegistry.jsx'
 import { markToolUsed, seedToolUsage } from './features/tools/toolUsage'
 import { PENDING_TAB_KEY } from './features/tools/toolReset'
-import { saveAutoBackup, lv, sv, SK } from './storage'
+import { saveAutoBackup, sv, SK } from './storage'
 import { maybeAutoPush } from './sync/cloudBackup'
 import { initSync, syncTick } from './sync/syncEngine'
 import styles from './App.module.css'
@@ -103,12 +103,10 @@ export default function App() {
     }
   }, [setCurrentTab])
 
-  // First-Run: neues Onboarding einmalig zeigen (auch auf Bestandsgeräten,
-  // die nur das alte Briefing kannten — bewusst per neuem Key onboardingSeen).
-  useEffect(() => {
-    if (!lv(SK.onboardingSeen, false)) setOnboardingOpen(true)
-  }, [setOnboardingOpen])
-
+  // Onboarding-Auto-Start bewusst deaktiviert (2026-07): das geführte Briefing
+  // ist noch nicht rund. Der Code bleibt vollständig erhalten und lässt sich
+  // jederzeit über Einstellungen → Einführung manuell starten. Zum Reaktivieren
+  // den First-Run-Effekt wieder einsetzen: if (!lv(SK.onboardingSeen)) setOnboardingOpen(true).
   const closeOnboarding = () => { sv(SK.onboardingSeen, true); setOnboardingOpen(false) }
 
   useEffect(() => {
