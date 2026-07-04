@@ -7,6 +7,7 @@ import {
   activateCloud, connectWithRecoveryCode, deactivateCloud,
   pushCloudBackup, restoreCloudBackup,
 } from '../../../sync/cloudBackup'
+import { getSyncStatus, setSyncEnabled, stopSync } from '../../../sync/syncEngine'
 import s from './TabSettings.module.css'
 
 const formatPushAge = (ts) => {
@@ -37,6 +38,7 @@ export default function CloudBackupSection() {
   const [busy, setBusy] = useState(false)
   const [confirmRestore, setConfirmRestore] = useState(false)
   const [confirmDisconnect, setConfirmDisconnect] = useState(false)
+  const [confirmSync, setConfirmSync] = useState(false)
 
   const active = isCloudActive()
   const creds = loadCloudCreds()
@@ -88,10 +90,26 @@ export default function CloudBackupSection() {
 
   const handleDisconnect = () => {
     if (!confirmDisconnect) { setConfirmDisconnect(true); return }
+    stopSync()
     deactivateCloud()
     setConfirmDisconnect(false)
     showToast('Cloud getrennt — die Server-Daten bleiben liegen', 'success')
     refresh()
+  }
+
+  const syncStatus = getSyncStatus()
+
+  const handleSyncToggle = () => {
+    if (syncStatus.on) {
+      run(() => setSyncEnabled(false), 'Geräte-Sync aus')
+      return
+    }
+    if (!confirmSync) { setConfirmSync(true); return }
+    setConfirmSync(false)
+    run(async () => {
+      downloadFullBackup()   // Ritual: JSON-Kopie, BEVOR die Erst-Kopplung schreiben darf
+      await setSyncEnabled(true)
+    }, 'Geräte-Sync aktiv — erste Kopplung läuft')
   }
 
   const copyCode = async () => {
@@ -206,6 +224,41 @@ export default function CloudBackupSection() {
             <div className={s.infoRow}>
               <span className={s.infoLabel}>Letzter Fehler</span>
               <span className={s.infoValue} style={{ color: 'var(--rose)' }}>{meta.lastError}</span>
+            </div>
+          ) : null}
+
+          <div className={s.infoRow}>
+            <span className={s.infoLabel}>Geräte-Sync (Beta)</span>
+            <button
+              type="button"
+              className={[s.toggle, syncStatus.on ? s.toggleOn : ''].join(' ')}
+              onClick={handleSyncToggle}
+              disabled={busy}
+              aria-label="Geräte-Sync umschalten"
+            >
+              <span className={s.toggleThumb} />
+            </button>
+          </div>
+          {confirmSync && !syncStatus.on && (
+            <p className={s.infoText}>
+              Nochmal tippen zum Einschalten. Bei der ersten Kopplung gewinnt der
+              Server-Stand pro Datenbereich; eine JSON-Sicherung wird vorher
+              automatisch heruntergeladen.
+            </p>
+          )}
+          {syncStatus.on && (
+            <div className={s.infoRow}>
+              <span className={s.infoLabel}>Letzter Sync</span>
+              <span className={s.infoValue}>
+                {formatPushAge(syncStatus.lastSyncAt)}
+                {syncStatus.dirtyCount ? ` · ${syncStatus.dirtyCount} ausstehend` : ''}
+              </span>
+            </div>
+          )}
+          {syncStatus.on && syncStatus.lastError ? (
+            <div className={s.infoRow}>
+              <span className={s.infoLabel}>Sync-Fehler</span>
+              <span className={s.infoValue} style={{ color: 'var(--rose)' }}>{syncStatus.lastError}</span>
             </div>
           ) : null}
 

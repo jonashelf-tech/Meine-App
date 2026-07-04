@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
   generateCreds, buildRecoveryCode, parseRecoveryCode,
-  encryptPayload, decryptPayload, sha256Hex,
+  encryptPayload, decryptPayload, sha256Hex, hmacKeyId,
 } from './crypto'
 
 describe('generateCreds', () => {
@@ -105,6 +105,25 @@ describe('encryptPayload / decryptPayload', () => {
     expect(env.zip).toBe('gzip')
     expect(env.ct.length).toBeLessThan(20000)            // deutlich kleiner als das Original
     expect(await decryptPayload(key, env)).toEqual(big)
+  })
+})
+
+describe('hmacKeyId', () => {
+  it('pseudonymisiert Key-Namen: deterministisch, URL-safe, ohne Klartext', async () => {
+    const { key } = generateCreds()
+    const a = await hmacKeyId(key, 'adhs_todos_list')
+    const b = await hmacKeyId(key, 'adhs_todos_list')
+    const c = await hmacKeyId(key, 'adhs_elvi_v1')
+    expect(a).toBe(b)
+    expect(a).not.toBe(c)
+    expect(a).toMatch(/^[A-Za-z0-9_-]{22}$/)
+    expect(a).not.toContain('todos')
+  })
+
+  it('anderer Schlüssel → andere IDs (Provider kann Namen nicht erraten)', async () => {
+    const a = await hmacKeyId(generateCreds().key, 'adhs_todos_list')
+    const b = await hmacKeyId(generateCreds().key, 'adhs_todos_list')
+    expect(a).not.toBe(b)
   })
 })
 

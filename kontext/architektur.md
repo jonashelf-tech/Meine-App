@@ -152,7 +152,7 @@ src/
 
   store/            index.js    — Zustand Store
   storage/          index.js    — sv / lv / SK / exportData / importData
-  sync/             crypto.js (AES-GCM, Recovery-Code, getestet) · cloudBackup.js (Cloud-Voll-Backup, getestet) — Server-Code liegt in server/ (Cloudflare Worker + D1)
+  sync/             crypto.js (AES-GCM, Recovery-Code, HMAC-Key-IDs) · cloudBackup.js (Voll-Backup) · entryModel/diff/merge.js (rein: Diff-on-write + Client-Merge, Guards G5) · syncEngine.js (Hook+Scan+Pull/Push, dormant bis cloudCreds.syncOn) — alles getestet; Server in server/ (Cloudflare Worker + D1)
   styles/           vars.css    — Globale CSS-Variablen + Keyframes
   utils/            index.js    — sk, dateKey, todayKey, parseHHMM, ALL_SLOT_KEYS …
 ```
@@ -342,6 +342,7 @@ Der Umbau soll **eine Schicht hinter `storage/index.js`** werden — kein App-Um
 - OPFS-Auto-Backup (`saveAutoBackup`, throttle 30 Min) — Spiegel same-origin. Rettet bei Reload/Crash, **stirbt** mit localStorage bei "Browserdaten löschen".
 - **Off-Device-Download** — Datei landet außerhalb des Browsers, überlebt Browser-Löschung.
 - **Cloud-Backup** (`src/sync/cloudBackup.js`, Sync-Etappe 2) — E2E-verschlüsseltes Voll-Backup (`exportData()` → AES-GCM → eigener Cloudflare Worker, `server/`). Auto-Push stündlich gedrosselt, Trigger in App.jsx neben `saveAutoBackup` (Mount + visibilitychange); `BackupNudge` rechnet Cloud-Alter als Off-Device-Sicherung mit ein. Einrichtung/Restore: Einstellungen → Cloud-Sicherung (`CloudBackupSection.jsx`), Recovery-Code = Schlüssel, Server sieht nur Ciphertext. Neue Keys: `SK.cloudCreds` (Backup: einstellungen) + `SK.cloudMeta` (ephemer). Architektur: `Dateien/output/sync-architektur.md`, Plan: `sync-plan.md`.
+- **Geräte-Sync** (`src/sync/syncEngine.js`, Sync-Etappe 3 — GEBAUT, standardmäßig AUS): Policy pro Key (`SYNC_POLICY` in storage/index.js, Guard `syncPolicy.test.js`), Diff-on-write über `setWriteListener` in sv/rmKey + Boot-Scan (fängt importData/toolReset), Client-Merge (`merge.js`, Guard-Eigenschaften in `merge.test.js`), Server-`/kv` mit If-Match/409. Key-Namen gehen HMAC-pseudonymisiert zum Server. Einschalten: Toggle „Geräte-Sync (Beta)" (2-Tap, lädt vorher JSON-Backup); Erst-Kopplung = Server gewinnt pro Key, Live-Edits werden gemerged. Nach Remote-Apply lädt die App gedrosselt neu (V1-Verhalten, bewusst simpel). `SK.syncMeta` = ephemer. **Vor erstem Echt-Einsatz: Security-Review (Roadmap Fable-Einsatz 2).**
 
 **Helfer für Off-Device:**
 - `downloadFullBackup()` — exportiert alle Kategorien als JSON-Download + `markOffDeviceBackup()`.

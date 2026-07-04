@@ -84,6 +84,49 @@ export default {
         return json({ ok: true, kept: keep.size }, 200, cors)
       }
 
+      // ─── /kv — Sync-Etappe 3: versionierter Blob-Store pro Key ───
+      // Optimistische Nebenläufigkeit: PUT trägt If-Match (letzte bekannte
+      // Version, 0 = neu). Bei Konflikt 409 + aktuelle Version → Client pullt,
+      // merged, pusht erneut. Version ist monoton pro user_ns (MAX+1 reicht
+      // für 2 Nutzer; Race käme höchstens als zusätzlicher 409-Umlauf raus).
+      const kvPut = path.match(/^\/kv\/([A-Za-z0-9_-]{8,64})$/)
+      if (kvPut && request.method === 'PUT') {
+        const keyId = kvPut[1]
+        const ns = `u:${user.id}`
+        const ifMatch = Number(request.headers.get('If-Match') ?? '0')
+        const envelope = await request.text()
+        if (envelope.length > MAX_ENVELOPE_BYTES) return json({ error: 'Payload zu groß' }, 413, cors)
+        let parsed
+        try { parsed = JSON.parse(envelope) } catch { parsed = null }
+        if (parsed?.v !== 1 || !parsed?.ct) return json({ error: 'Kein gültiges Envelope' }, 400, cors)
+
+        const row = await env.DB.prepare('SELECT version FROM kv WHERE user_ns = ? AND key_id = ?')
+          .bind(ns, keyId).first()
+        const current = row?.version ?? 0
+        if (current !== ifMatch) return json({ version: current }, 409, cors)
+
+        const { next } = await env.DB.prepare(
+          'SELECT COALESCE(MAX(version), 0) + 1 AS next FROM kv WHERE user_ns = ?'
+        ).bind(ns).first()
+        await env.DB.prepare(`
+          INSERT INTO kv (user_ns, key_id, version, ciphertext, client_changed_at, server_at)
+          VALUES (?, ?, ?, ?, NULL, ?)
+          ON CONFLICT (user_ns, key_id)
+          DO UPDATE SET version = excluded.version, ciphertext = excluded.ciphertext, server_at = excluded.server_at
+        `).bind(ns, keyId, next, envelope, Date.now()).run()
+        return json({ version: next }, 200, cors)
+      }
+
+      if (path === '/kv' && request.method === 'GET') {
+        const ns = `u:${user.id}`
+        const since = Number(new URL(request.url).searchParams.get('since') ?? '0')
+        const { results } = await env.DB.prepare(
+          'SELECT key_id AS keyId, version, ciphertext FROM kv WHERE user_ns = ? AND version > ? ORDER BY version'
+        ).bind(ns, since).all()
+        const cursor = results.length ? results[results.length - 1].version : since
+        return json({ rows: results, cursor }, 200, cors)
+      }
+
       if (path === '/backups' && request.method === 'GET') {
         const { results } = await env.DB.prepare(
           'SELECT id, created_at AS createdAt, bytes FROM backups WHERE user_id = ? ORDER BY created_at DESC LIMIT 50'

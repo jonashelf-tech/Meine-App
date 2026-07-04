@@ -19,12 +19,28 @@ const rescueCorrupt = (key, raw) => {
   }
 }
 
+// Hook der Sync-Schicht (Etappe 3): sieht jedes Schreiben/Löschen mit altem
+// Rohwert. Genau EIN Listener; Fehler darin dürfen die App nie brechen.
+let writeListener = null
+export const setWriteListener = (fn) => { writeListener = fn }
+
+const notifyWrite = (key, oldRaw, value) => {
+  if (!writeListener) return
+  try { writeListener(key, oldRaw, value) } catch (e) {
+    console.warn('[storage] Write-Listener-Fehler (ignoriert):', e)
+  }
+}
+
 export const sv = (key, value) => {
+  let oldRaw
   try {
+    oldRaw = localStorage.getItem(key)
     localStorage.setItem(key, JSON.stringify(value))
   } catch (e) {
     console.warn(`[storage] sv("${key}") fehlgeschlagen — nicht gespeichert:`, e)
+    return
   }
+  notifyWrite(key, oldRaw, value)
 }
 
 export const lv = (key, fallback) => {
@@ -42,7 +58,12 @@ export const lv = (key, fallback) => {
 // Key komplett entfernen (Tool-Reset, App-Reset). Einziger legaler Löschpfad —
 // rohes localStorage außerhalb dieses Layers verbietet der Guard rawStorage.test.js.
 export const rmKey = (key) => {
-  try { localStorage.removeItem(key) } catch { /* Löschen scheitert nie kritisch */ }
+  let oldRaw
+  try {
+    oldRaw = localStorage.getItem(key)
+    localStorage.removeItem(key)
+  } catch { return /* Löschen scheitert nie kritisch */ }
+  notifyWrite(key, oldRaw, null)
 }
 
 export const storageKeys = () => {
@@ -127,6 +148,7 @@ export const SK = {
   notizenMigrated: `${PREFIX}notizen_migrated`,// einmalige Migration: notizen in activeTools eingereiht
   cloudCreds:      `${PREFIX}cloud_creds`,     // Cloud-Backup: serverUrl + token + key (E2E — Schlüssel bleibt clientseitig)
   cloudMeta:       `${PREFIX}cloud_meta`,      // ephemer — letzter Cloud-Push/Fehler, gerätelokal
+  syncMeta:        `${PREFIX}sync_meta`,       // ephemer — Sync-Zustand pro Key (Versionen, Stempel, Tombstones); frisches Gerät baut ihn neu auf
 }
 
 // ─── Sync-Policy pro Key (Sync-Etappe 3, sync-architektur.md §3) ──
@@ -222,6 +244,7 @@ export const SYNC_POLICY = {
   [SK.noteDraft]:           'ephemeral',
   [SK.rezepteScreen]:       'ephemeral',
   [SK.cloudMeta]:           'ephemeral',
+  [SK.syncMeta]:            'ephemeral',   // bewusst NICHT im Backup: Restore auf frischem Gerät → Erst-Kopplung statt stale Versionen
 }
 
 // Abgeleitet — einzige Quelle ist SYNC_POLICY (Guard erzwingt Deckung mit BACKUP_CATS)

@@ -112,6 +112,18 @@ export const decryptPayload = async (keyB64url, env) => {
   return JSON.parse(new TextDecoder().decode(bytes))
 }
 
+// ─── Key-Namen pseudonymisieren (sync-architektur.md §7) ──
+// Der Server sieht nicht einmal, WELCHE Tools genutzt werden: statt
+// 'adhs_elvi_v1' bekommt er HMAC(name, key), gekürzt auf 132 bit.
+
+export const hmacKeyId = async (keyB64url, name) => {
+  const hmacKey = await subtle.importKey(
+    'raw', fromB64url(keyB64url), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  )
+  const sig = new Uint8Array(await subtle.sign('HMAC', hmacKey, new TextEncoder().encode(name)))
+  return toB64url(sig).slice(0, 22)
+}
+
 // ─── Hash (Token-Registrierung: Server speichert nur den Hash) ───
 
 export const sha256Hex = async (str) => {

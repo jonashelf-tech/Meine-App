@@ -3,6 +3,7 @@ import {
   sv, lv, SK, BACKUP_CATS, EPHEMERAL,
   importData, exportData,
   exportDataByCategories, importDataByCategories,
+  rmKey, setWriteListener,
 } from './index'
 
 describe('lv / sv — round-trip & Fallback', () => {
@@ -32,6 +33,37 @@ describe('lv / sv — round-trip & Fallback', () => {
     })
     expect(() => sv(SK.todos, [1, 2, 3])).not.toThrow()
     spy.mockRestore()
+  })
+})
+
+describe('Write-Listener — Hook der Sync-Schicht', () => {
+  it('sv meldet Schreiben mit altem Rohwert und neuem Wert', () => {
+    const calls = []
+    setWriteListener((key, oldRaw, value) => calls.push({ key, oldRaw, value }))
+    sv(SK.todos, [1])
+    sv(SK.todos, [1, 2])
+    setWriteListener(null)
+    expect(calls).toEqual([
+      { key: SK.todos, oldRaw: null, value: [1] },
+      { key: SK.todos, oldRaw: '[1]', value: [1, 2] },
+    ])
+  })
+
+  it('rmKey meldet die Löschung (neuer Wert null)', () => {
+    sv(SK.garten, { xp: 5 })
+    const calls = []
+    setWriteListener((key, oldRaw, value) => calls.push({ key, oldRaw, value }))
+    rmKey(SK.garten)
+    setWriteListener(null)
+    expect(calls).toEqual([{ key: SK.garten, oldRaw: '{"xp":5}', value: null }])
+    expect(lv(SK.garten, 'weg')).toBe('weg')
+  })
+
+  it('ein werfender Listener bricht sv nicht — Daten sind trotzdem gespeichert', () => {
+    setWriteListener(() => { throw new Error('Sync kaputt') })
+    expect(() => sv(SK.todos, [7])).not.toThrow()
+    setWriteListener(null)
+    expect(lv(SK.todos, [])).toEqual([7])
   })
 })
 
