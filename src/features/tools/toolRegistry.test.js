@@ -1,18 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { TOOL_REGISTRY } from './toolRegistry.jsx'
 
-const FEATURED = ['geburtstage', 'fitness', 'kognitiv', 'growth', 'rezepte', 'haushalt', 'projekte', 'garten']
-
-describe('Tool-Registry — Onboarding-Vorstellung', () => {
-  it('genau die vorgesehenen 8 Tools sind featured', () => {
-    const featured = TOOL_REGISTRY.filter(t => t.featured).map(t => t.id).sort()
-    expect(featured).toEqual([...FEATURED].sort())
+describe('Tool-Registry — Hilfe-Sheet-Liste', () => {
+  it('jedes Tool hat eine description (>= 10 Zeichen)', () => {
+    for (const t of TOOL_REGISTRY) {
+      expect(typeof t.description, `${t.id}.description fehlt`).toBe('string')
+      expect(t.description.trim().length, `${t.id}.description zu kurz`).toBeGreaterThanOrEqual(10)
+    }
   })
 
-  it('jedes featured Tool hat einen Vorstellungstext (intro, >= 20 Zeichen)', () => {
-    for (const t of TOOL_REGISTRY.filter(t => t.featured)) {
-      expect(typeof t.intro, `${t.id}.intro fehlt`).toBe('string')
-      expect(t.intro.trim().length, `${t.id}.intro zu kurz`).toBeGreaterThanOrEqual(20)
-    }
+  it('jede id ist eindeutig', () => {
+    const ids = TOOL_REGISTRY.map(t => t.id)
+    expect(new Set(ids).size).toBe(ids.length)
   })
 })
