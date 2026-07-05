@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import { TOOL_REGISTRY, ToolIcon } from '../../tools/toolRegistry.jsx'
 import s from './Hilfe.module.css'
@@ -40,10 +40,15 @@ export default function Hilfe({ onBack }) {
   const { setBackInterceptor } = useAppStore()
 
   // Swipe-/Zurück-Geste schließt zuerst die Hilfe, nicht den ganzen Tab.
+  // onBack via Ref, damit der Effect nur bei Mount/Unmount läuft — sonst
+  // Endlosschleife (onBack ist pro Render eine neue Funktion → setBackInterceptor
+  // re-rendert TabSettings → neues onBack → Effect erneut …).
+  const onBackRef = useRef(onBack)
+  onBackRef.current = onBack
   useEffect(() => {
-    setBackInterceptor(() => onBack())
+    setBackInterceptor(() => onBackRef.current())
     return () => setBackInterceptor(null)
-  }, [onBack, setBackInterceptor])
+  }, [setBackInterceptor])
 
   return (
     <div className={s.page}>
