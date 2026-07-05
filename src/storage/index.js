@@ -81,8 +81,7 @@ export const SK = {
   settings:       `${PREFIX}app_settings`,
   theme:          `${PREFIX}app_theme`,
   appBriefingSeen:`${PREFIX}app_briefing_seen`,   // LEGACY — nur Backup-Kompat, wird nicht mehr gelesen
-  onboardingSeen: `${PREFIX}onboarding_seen`,      // Gate: neues Onboarding gelaufen/übersprungen
-  missedHintSeen: `${PREFIX}missed_hint_seen`,     // Einmal-Erklärkopf der ersten echten Zeitablauf-Abfrage
+  onboardingSeen: `${PREFIX}onboarding_seen`,      // LEGACY — Tour entfernt 2026-07, nur Backup-Kompat
   templates:      `${PREFIX}calendar_templates`,
   recipes:        `${PREFIX}recipes_list`,
   shopping:       `${PREFIX}recipes_shopping`,
@@ -179,7 +178,6 @@ export const SYNC_POLICY = {
   [SK.activeTools]:     'lww',
   [SK.appBriefingSeen]: 'lww',
   [SK.onboardingSeen]:  'lww',
-  [SK.missedHintSeen]:  'lww',
   [SK.notizenMigrated]: 'lww',     // synct mit, damit Zweitgerät nicht erneut migriert
   [SK.autoParse]:       'lww',
 
@@ -289,7 +287,7 @@ export const BACKUP_CATS = {
     SK.notes,
   ],
   einstellungen: [
-    SK.settings, SK.theme, SK.appBriefingSeen, SK.onboardingSeen, SK.missedHintSeen,
+    SK.settings, SK.theme, SK.appBriefingSeen, SK.onboardingSeen,
     SK.kognitivIntroSeen, SK.rezepteIntroSeen,
     SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
     SK.notizenMigrated, SK.cloudCreds,
