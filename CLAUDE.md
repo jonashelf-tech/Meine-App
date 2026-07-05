@@ -23,6 +23,8 @@ Aufgabe in prüfbares Ziel übersetzen. „Fix bug" → Test der den Bug reprodu
 **Anti-Drift:**
 Grep-bare Regeln werden als Guard-Test abgesichert statt nur dokumentiert (Vorbilder: `src/styleguide.test.js` für Fonts, `storage.test.js` für Backup-Abdeckung). Neue „Verboten"-Regel → kurz prüfen, ob ein Guard sie erzwingen kann.
 
+**Hilfe-Sheet statt Tour:** Es gibt kein aktives Onboarding — Erklärung wohnt im Layout (Empty-States, Untertitel) + im Hilfe-Sheet (`src/features/settings/Hilfe/`). Die Tool-Liste dort generiert sich aus `TOOL_REGISTRY` (Guard: `toolRegistry.test.js` verlangt `description` je Tool). Neue **Kern-Mechanik** (Pool/Zeitplan/Kalender/+/Pause-artig) → im selben Change eine Hilfe-Karte ergänzen oder anpassen. In Feature-Specs nie „wird im Onboarding erklärt" schreiben.
+
 ## Tooling
 Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder Bash.
 

@@ -43,6 +43,7 @@ src/
         Zeitplan.jsx + .module.css
 
     settings/         TabSettings/TabSettings.jsx
+                      Hilfe/Hilfe.jsx        — Sub-View „Wie funktioniert die App?": Kern-Karten (Prosa) + Tool-Liste generiert aus TOOL_REGISTRY. Kein Onboarding, kein Storage-Key; backInterceptor schließt zuerst die Hilfe.
 
     todos/
       Block.js          — createBlock(), isTermin(), isFaelligkeit(), isTodo()
