@@ -9,6 +9,7 @@ import {
 import { useToast } from '../../../components/Toast/Toast'
 import { pauseSync } from '../../../sync/cloudBackup'
 import CloudBackupSection from './CloudBackupSection'
+import Hilfe from '../Hilfe/Hilfe'
 import s from './TabSettings.module.css'
 
 const THEMES = [
@@ -63,10 +64,11 @@ function CatSelect({ cats, onChange }) {
 }
 
 export default function TabSettings() {
-  const { theme, setTheme, accentColor, setAccentColor, setOnboardingOpen } = useAppStore()
+  const { theme, setTheme, accentColor, setAccentColor } = useAppStore()
   const { showToast } = useToast()
 
   const [confirmReset, setConfirmReset] = useState(false)
+  const [helpOpen, setHelpOpen]         = useState(false)
   const [backupOpen, setBackupOpen]     = useState(false)
   const [restoreOpen, setRestoreOpen]   = useState(false)
   const [backupCats, setBackupCats]     = useState({ kalender: true, tools: true, einstellungen: true })
@@ -156,6 +158,8 @@ export default function TabSettings() {
       .forEach(rmKey)
     window.location.reload()
   }
+
+  if (helpOpen) return <Hilfe onBack={() => setHelpOpen(false)} />
 
   return (
     <div className={s.page}>
@@ -280,9 +284,9 @@ export default function TabSettings() {
       </section>
 
       <section className={s.card}>
-        <h3 className={s.cardTitle}>Einführung</h3>
-        <button className={s.actionBtn} onClick={() => setOnboardingOpen(true)}>
-          ↻ Einführung nochmal ansehen
+        <h3 className={s.cardTitle}>Hilfe</h3>
+        <button className={s.actionBtn} onClick={() => setHelpOpen(true)}>
+          Wie funktioniert die App?
         </button>
       </section>
     </div>
