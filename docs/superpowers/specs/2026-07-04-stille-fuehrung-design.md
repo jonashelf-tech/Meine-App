@@ -76,10 +76,36 @@ Einstellungen → Hilfe nachlesbar.
      Pool-Ende, ▶ am Chip setzt sie fort.
   4. **Kalender** — Woche: Blöcke frei über Tage und Zeiten ziehen. Monat: Überblick.
   5. **Der +-Knopf** — Auto-Erkennung („Einkaufen 30min wichtig"), Notiz-Modus.
-  6. **Tools** — Konzept-Satz (aus/an) + Liste **aller** Tools mit Icon, Toolfarbe
-     und der `description` aus der Tool-Registry (generiert).
+  6. **Tools** — Konzept-Satz (aus/an) + Liste **aller** Tools, generiert per
+     `TOOL_REGISTRY.map(...)`: `ToolIcon` + `name` + Toolfarbe + `description`.
+     Kein hartkodierter Text, keine Reihenfolge-Pflege — die Registry ist die Quelle.
   7. **Deine Daten** — alles bleibt offline auf dem Gerät; Backup:
      Einstellungen → Speicher.
+
+## Auto-Update: wo sich das Sheet selbst pflegt (und wo nicht)
+
+**Ehrliche Grenze — der wachsende Teil ist automatisch, der stabile Teil ist Prosa:**
+
+- **Tool-Liste (Karte 6) = selbstpflegend.** Neues Tool = ein Eintrag in
+  `TOOL_REGISTRY` mit `description` → erscheint sofort im Hilfe-Sheet, richtige Farbe,
+  richtiges Icon. Kein Anfassen des Sheets nötig. Das ist der Teil, der real wächst
+  (Tools werden laufend ergänzt).
+- **Anti-Drift-Guard sichert das ab:** `toolRegistry.test.js` wird erweitert —
+  **jedes** Tool (nicht nur `featured`) braucht eine nicht-leere `description`
+  (≥ 10 Zeichen). Vergisst jemand sie, wird der Test rot, bevor ein leerer Eintrag
+  im Sheet landet. Genau das Guard-Muster aus `styleguide.test.js`.
+- **`intro`/`featured`-Felder:** wurden nur für die gelöschten Onboarding-Karten
+  gebraucht. Beim Bau prüfen (Grep), ob nach der Löschung noch ein Leser existiert —
+  wenn nicht: Felder + der `featured`-intro-Test raus (verwaisten Code selbst
+  aufräumen, Projektregel). Falls das Sheet doch die längeren Texte nutzen soll,
+  bewusst auf `description` bleiben (kompakt, jedes Tool hat sie).
+- **Kern-Karten (1–5, 7) = handgeschriebene Prosa, NICHT automatisch.** Es gibt keine
+  Datenquelle, die „Pause" oder „Drag" als Verhalten beschreibt — Verhalten lässt sich
+  nicht generieren. Diese ~6 Karten sind aber selten und stabil (Kern-Mechaniken
+  ändern sich kaum, anders als Tools). Damit eine **neue Kern-Mechanik** nicht wie die
+  Pause durchs Raster fällt: **CLAUDE.md-Regel** — „Neue Kern-Mechanik (Pool/Zeitplan/
+  Kalender/+) → Hilfe-Karte ergänzen oder anpassen, in derselben Änderung." Keine
+  Tour-Erwähnung mehr in Feature-Specs.
 
 ## Storage
 
@@ -105,9 +131,12 @@ Keine neuen Keys. `storage.test.js` (Anti-Drift) bleibt grün, weil nur entfernt
 
 ## Tests
 
+- **`toolRegistry.test.js` erweitert:** jedes Tool braucht `description` ≥ 10 Zeichen
+  (Guard für die selbstpflegende Tool-Liste — kein leerer Eintrag im Sheet).
 - **`storage.test.js`:** bleibt grün (nur Entfernung/LEGACY-Markierung).
 - **Bestehende Suiten:** `onboardingLogic.test.js` + `onboardingTargets.test.js`
-  werden mit den Komponenten gelöscht.
+  werden mit den Komponenten gelöscht. Der `featured`-intro-Test entfällt, falls
+  `featured`/`intro` beim Bau als verwaist bestätigt werden.
 - **Manuelle Preview-Verifikation:** frisches Profil → startet direkt im Tagesplaner,
   Pool-Empty-Text da, kein Overlay; Hilfe-Sheet öffnet aus den Einstellungen, alle
   Registry-Tools gelistet, Swipe-Back schließt nur das Sheet; MissedReview zeigt den
