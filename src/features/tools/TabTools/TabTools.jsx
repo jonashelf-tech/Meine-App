@@ -316,7 +316,7 @@ export default function TabTools() {
   }
 
   return (
-    <div className={s.page} data-onboarding="tools-list">
+    <div className={s.page}>
       <input
         ref={colorInputRef}
         type="color"

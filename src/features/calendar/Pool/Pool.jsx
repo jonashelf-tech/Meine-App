@@ -187,7 +187,6 @@ export default function Pool({
     <div
       className={s.pool}
       ref={el => registerHalf?.('pool', el, 'empty')}
-      data-onboarding="pool"
     >
 
       {/* ── Header ────────────────────────────────────── */}

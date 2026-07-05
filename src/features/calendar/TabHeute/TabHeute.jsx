@@ -240,7 +240,7 @@ export default function TabHeute() {
             .filter(id => SECTIONS[id])
             .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
           return secs.length > 0
-            ? <div data-onboarding="tool-section" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{secs}</div>
+            ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{secs}</div>
             : null
         })()}
         </div>

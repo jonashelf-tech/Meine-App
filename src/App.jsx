@@ -4,7 +4,7 @@ import { hexToGlow } from './utils'
 import { TOOL_TAB, TOOL_REGISTRY } from './features/tools/toolRegistry.jsx'
 import { markToolUsed, seedToolUsage } from './features/tools/toolUsage'
 import { PENDING_TAB_KEY } from './features/tools/toolReset'
-import { saveAutoBackup, sv, SK } from './storage'
+import { saveAutoBackup } from './storage'
 import { maybeAutoPush } from './sync/cloudBackup'
 import { initSync, syncTick } from './sync/syncEngine'
 import styles from './App.module.css'
@@ -16,7 +16,6 @@ import TodoModal       from './components/TodoModal/TodoModal'
 import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
 import BackupNudge     from './components/BackupNudge/BackupNudge'
 import UpdatePrompt     from './components/UpdatePrompt/UpdatePrompt'
-import AppOnboarding    from './components/AppOnboarding/AppOnboarding'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
 const IconTagesplaner = () => (
@@ -68,7 +67,7 @@ const TABS = [
 const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 
 export default function App() {
-  const { currentTab, previousTab, setCurrentTab, accentColor, theme, onboardingOpen, setOnboardingOpen } = useAppStore()
+  const { currentTab, previousTab, setCurrentTab, accentColor, theme } = useAppStore()
   const [addOpen, setAddOpen] = useState(false)
   const [sharePrefill, setSharePrefill] = useState(null)
   const [exercising, setExercising] = useState(false)
@@ -102,12 +101,6 @@ export default function App() {
       setCurrentTab(Number(pending))
     }
   }, [setCurrentTab])
-
-  // Onboarding-Auto-Start bewusst deaktiviert (2026-07): das geführte Briefing
-  // ist noch nicht rund. Der Code bleibt vollständig erhalten und lässt sich
-  // jederzeit über Einstellungen → Einführung manuell starten. Zum Reaktivieren
-  // den First-Run-Effekt wieder einsetzen: if (!lv(SK.onboardingSeen)) setOnboardingOpen(true).
-  const closeOnboarding = () => { sv(SK.onboardingSeen, true); setOnboardingOpen(false) }
 
   useEffect(() => {
     const onVisible = () => { if (document.visibilityState === 'visible') { saveAutoBackup(); maybeAutoPush(); syncTick() } }
@@ -171,7 +164,6 @@ export default function App() {
           className={styles.fab}
           onClick={() => setAddOpen(true)}
           aria-label="Todo hinzufügen"
-          data-onboarding="add-fab"
         >
           +
         </button>
@@ -185,8 +177,6 @@ export default function App() {
       )}
 
       <UpdatePrompt />
-
-      {onboardingOpen && <AppOnboarding onClose={closeOnboarding} />}
 
       {!exercising && <nav className={styles.tabBar}>
         {TABS.map(({ id, label, Icon }) => {
