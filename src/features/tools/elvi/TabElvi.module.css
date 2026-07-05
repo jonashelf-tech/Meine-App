@@ -181,9 +181,45 @@
 .presetChip:hover { border-color: var(--text-faint); color: var(--text); }
 
 .canvasWrap {
+  position: relative;
   border-radius: var(--r);
   overflow: hidden;
   border: 1px solid var(--border);
+}
+.probeTip {
+  position: absolute;
+  top: 8px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 9px;
+  background: rgba(6,7,15,0.92);
+  border: 1px solid rgba(0,229,184,0.45);
+  border-radius: 9px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.probeMg {
+  font-family: var(--font-num);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #00e5b8;
+  line-height: 1.1;
+}
+.probeTime {
+  font-family: var(--font);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  line-height: 1;
+}
+.probeHint {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: -6px;
 }
 
 .totalRow {

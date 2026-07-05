@@ -44,6 +44,11 @@ function evalSpline(sp, t) {
 const SPLINE = buildSpline(ELVI_NORM)
 const doseConc = (t, doseH, mg) => { const dt=t-doseH; return dt<0?0:evalSpline(SPLINE,dt)*mg }
 const hhmmToH = s => { const[h,m]=s.split(":").map(Number); return h+m/60 }
+// Höchste Konzentration pro mg (Peak der Einheitskurve) — Basis fürs „mg-Äquivalent":
+// am eigenen Peak entspricht die Wirkung genau der eingenommenen Dosis.
+const PEAK_PER_MG = (() => { let m=0; for(let t=0;t<=24;t+=0.02) m=Math.max(m, evalSpline(SPLINE,t)); return m })()
+// Dezimalstunde → "HH:MM" (auf die Minute gerundet, Tages-Umbruch sauber).
+const fmtHHMM = t => { let mins=((Math.round(((t%24)+24)%24*60))%1440+1440)%1440; return `${String(Math.floor(mins/60)).padStart(2,"0")}:${String(mins%60).padStart(2,"0")}` }
 
 // ─── Constants ───────────────────────────────────────────────
 const PRESETS = [10,20,30,50,70]
@@ -144,6 +149,8 @@ export default function TabElvi({ onBack }) {
   const [justSaved, setJustSaved] = useState(false)
   const [section, setSection] = useState("kurve")
   const canvasRef = useRef(null)
+  const [canvasW, setCanvasW] = useState(0)
+  const [probeT, setProbeT] = useState(() => { const n=new Date(); return n.getHours()+n.getMinutes()/60 })
 
   const setDoses = d => { setDosesRaw(d); save({doses:d, savedDays}) }
   const setSavedDays = sd => { setSavedDaysRaw(sd); save({doses, savedDays:sd}) }
@@ -164,20 +171,45 @@ export default function TabElvi({ onBack }) {
     setJustSaved(true); setTimeout(()=>setJustSaved(false),2000)
   }
 
+  // ── Diagramm-Geometrie (geteilt: Zeichnung, Sonde, Tooltip) ──────────────
+  const PAD = { l: 34, r: 12, t: 12, b: 24 }
+  const CANVAS_H = 185
+  const activeDoses = doses.filter(d => d.active && d.time)
+  const firstDoseH = activeDoses.length ? Math.min(...activeDoses.map(d => hhmmToH(d.time))) : 0
+  const winStart = Math.max(0, firstDoseH - 0.5)
+  const cw = Math.max(0, canvasW - PAD.l - PAD.r)
+  const txPx = t => PAD.l + ((t - winStart) / 24) * cw
+  const pxToT = px => winStart + ((px - PAD.l) / cw) * 24
+  // aktuelle Wirkstärke zum Zeitpunkt t, ausgedrückt als „noch wirkende mg" (Peak = volle Dosis)
+  const mgActiveAt = t => activeDoses.reduce((sum, d) => sum + doseConc(t, hhmmToH(d.time), d.mg), 0) / PEAK_PER_MG
+  const probeVisible = probeT != null && cw > 0 && probeT >= winStart && probeT <= winStart + 24
+
+  // Canvas-Breite messen → px-genaue Sonde/Tooltip trotz responsivem Layout.
+  useEffect(() => {
+    const el = canvasRef.current
+    if (!el) return
+    const measure = () => setCanvasW(el.offsetWidth)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [section])
+
+  const handleProbe = e => {
+    if (cw <= 0) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    setProbeT(Math.max(winStart, Math.min(winStart + 24, pxToT(e.clientX - rect.left))))
+  }
+
   useEffect(() => {
     const canvas = canvasRef.current
-    if(!canvas||section!=="kurve") return
+    if(!canvas||section!=="kurve"||!canvasW) return
     const dpr = window.devicePixelRatio||1
-    const W = canvas.offsetWidth, H = canvas.offsetHeight
-    if(!W||!H) return
+    const W = canvasW, H = CANVAS_H
     canvas.width=W*dpr; canvas.height=H*dpr
     const ctx = canvas.getContext("2d")
     ctx.scale(dpr,dpr)
-    const PAD={l:32,r:12,t:12,b:24}
-    const cw=W-PAD.l-PAD.r, ch=H-PAD.t-PAD.b
-    const activeDoses=doses.filter(d=>d.active&&d.time)
-    const firstDoseH=activeDoses.length>0?Math.min(...activeDoses.map(d=>hhmmToH(d.time))):0
-    const winStart=Math.max(0,firstDoseH-0.5)
+    const ch=H-PAD.t-PAD.b
     const winEnd=winStart+24
     const pts=[]
     for(let t=winStart;t<=winEnd;t+=0.1){
@@ -185,42 +217,60 @@ export default function TabElvi({ onBack }) {
       pts.push({t,total})
     }
     const maxC=Math.max(...pts.map(p=>p.total),1)
-    const tx=t=>PAD.l+((t-winStart)/24)*cw
     const ty=v=>PAD.t+(1-v/maxC)*ch
     ctx.fillStyle="#06070f"; ctx.fillRect(0,0,W,H)
-    ctx.strokeStyle="rgba(255,255,255,0.04)"; ctx.lineWidth=1
-    for(let i=0;i<=4;i++){const y=PAD.t+i*(ch/4);ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cw,y);ctx.stroke()}
+    // horizontale Raster + mg-Achse (mg-Äquivalent)
+    for(let i=0;i<=4;i++){
+      const y=PAD.t+i*(ch/4)
+      ctx.strokeStyle="rgba(255,255,255,0.04)";ctx.lineWidth=1
+      ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cw,y);ctx.stroke()
+      if(i%2===0){
+        ctx.fillStyle="rgba(255,255,255,0.3)";ctx.font="8px Geist,sans-serif";ctx.textAlign="right"
+        ctx.fillText(String(Math.round((maxC*(1-i/4))/PEAK_PER_MG)),PAD.l-5,y+3)
+      }
+    }
     for(let i=0;i<=12;i++){
       const t=winStart+i*2
-      const x=tx(t)
+      const x=txPx(t)
       ctx.strokeStyle="rgba(255,255,255,0.06)";ctx.lineWidth=1
       ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+ch);ctx.stroke()
-      ctx.fillStyle="rgba(255,255,255,0.25)";ctx.font=`9px Geist,sans-serif`;ctx.textAlign="center"
+      ctx.fillStyle="rgba(255,255,255,0.25)";ctx.font="9px Geist,sans-serif";ctx.textAlign="center"
       ctx.fillText(String(Math.floor(t%24)).padStart(2,"0"),x,PAD.t+ch+14)
     }
     activeDoses.forEach((d,i)=>{
       const doseH=hhmmToH(d.time)
       if(doseH<winStart||doseH>winEnd)return
-      const x=tx(doseH)
+      const x=txPx(doseH)
       ctx.strokeStyle=COLORS[i%4]+"66";ctx.lineWidth=1;ctx.setLineDash([4,3])
       ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+ch);ctx.stroke()
       ctx.setLineDash([])
-      ctx.fillStyle=COLORS[i%4];ctx.font=`bold 9px Geist,sans-serif`;ctx.textAlign="center"
-      ctx.fillText(`${d.mg}mg`,x,PAD.t+8+(i%2)*11)
+      ctx.fillStyle=COLORS[i%4];ctx.font="bold 9px Geist,sans-serif";ctx.textAlign="center"
+      ctx.fillText(`${fmtMg(d.mg)}mg`,x,PAD.t+8+(i%2)*11)
     })
     if(pts.length<2) return
     const grad=ctx.createLinearGradient(0,PAD.t,0,PAD.t+ch)
     grad.addColorStop(0,"rgba(0,229,184,0.25)"); grad.addColorStop(1,"rgba(0,229,184,0)")
     ctx.beginPath()
-    ctx.moveTo(tx(pts[0].t),ty(pts[0].total))
-    pts.forEach(p=>ctx.lineTo(tx(p.t),ty(p.total)))
-    ctx.lineTo(tx(pts[pts.length-1].t),PAD.t+ch)
-    ctx.lineTo(tx(pts[0].t),PAD.t+ch)
+    ctx.moveTo(txPx(pts[0].t),ty(pts[0].total))
+    pts.forEach(p=>ctx.lineTo(txPx(p.t),ty(p.total)))
+    ctx.lineTo(txPx(pts[pts.length-1].t),PAD.t+ch)
+    ctx.lineTo(txPx(pts[0].t),PAD.t+ch)
     ctx.closePath(); ctx.fillStyle=grad; ctx.fill()
     ctx.beginPath();ctx.strokeStyle="#00e5b8";ctx.lineWidth=2;ctx.lineJoin="round"
-    pts.forEach((p,i)=>i===0?ctx.moveTo(tx(p.t),ty(p.total)):ctx.lineTo(tx(p.t),ty(p.total)))
+    pts.forEach((p,i)=>i===0?ctx.moveTo(txPx(p.t),ty(p.total)):ctx.lineTo(txPx(p.t),ty(p.total)))
     ctx.stroke()
-  }, [doses, section])
+    // Sonde/Marker beim angetippten Zeitpunkt
+    if(probeVisible){
+      const mx=txPx(probeT)
+      const conc=activeDoses.reduce((sm,d)=>sm+doseConc(probeT,hhmmToH(d.time),d.mg),0)
+      const my=ty(conc)
+      ctx.strokeStyle="rgba(255,255,255,0.55)";ctx.lineWidth=1;ctx.setLineDash([3,3])
+      ctx.beginPath();ctx.moveTo(mx,PAD.t);ctx.lineTo(mx,PAD.t+ch);ctx.stroke();ctx.setLineDash([])
+      ctx.beginPath();ctx.arc(mx,my,4.5,0,Math.PI*2);ctx.fillStyle="#06070f";ctx.fill()
+      ctx.lineWidth=2;ctx.strokeStyle="#fff";ctx.stroke()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doses, section, canvasW, probeT])
 
   const currentDose = doses.filter(d=>d.active).reduce((sum,d)=>sum+(Number(d.mg)||0),0)
   const rec = section==="historie"
@@ -266,13 +316,25 @@ export default function TabElvi({ onBack }) {
         </div>
 
         <div className={s.canvasWrap}>
-          <canvas ref={canvasRef} style={{width:"100%",height:185,display:"block"}}/>
+          <canvas ref={canvasRef}
+            onPointerDown={handleProbe}
+            onPointerMove={e=>{ if(e.buttons) handleProbe(e) }}
+            style={{width:"100%",height:185,display:"block",touchAction:"none",cursor:"crosshair"}}/>
+          {probeVisible && (
+            <div className={s.probeTip} style={{left: Math.max(30, Math.min(canvasW-30, txPx(probeT)))}}>
+              <span className={s.probeMg}>{fmtMg(Math.round(mgActiveAt(probeT)*10)/10)} mg</span>
+              <span className={s.probeTime}>{fmtHHMM(probeT)} · wirkt noch</span>
+            </div>
+          )}
         </div>
+        {activeDoses.length>0 && (
+          <div className={s.probeHint}>Tippe ins Diagramm — es zeigt, wie viel mg zu der Uhrzeit noch wirken.</div>
+        )}
 
         {doses.filter(d=>d.active).length>0 && (
           <div className={s.totalRow}>
             <span>Tagesdosis</span>
-            <span className={s.totalVal}>{doses.filter(d=>d.active).reduce((s,d)=>s+d.mg,0)} mg</span>
+            <span className={s.totalVal}>{fmtMg(doses.filter(d=>d.active).reduce((s,d)=>s+(Number(d.mg)||0),0))} mg</span>
           </div>
         )}
 
