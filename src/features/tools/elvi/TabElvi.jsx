@@ -4,6 +4,9 @@ import { getToolColor, todayKey } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import { ToolIcon } from '../toolRegistry'
 import { sv, lv, SK } from '../../../storage'
+import { loadSessions } from '../kognitiv/sessionStore'
+import { MODULE_CONFIG } from '../kognitiv/moduleConfig'
+import { doseRecommendation, toleranceCost } from './elviLogic'
 import s from './TabElvi.module.css'
 
 // ─── PK Model ────────────────────────────────────────────────
@@ -43,7 +46,7 @@ const doseConc = (t, doseH, mg) => { const dt=t-doseH; return dt<0?0:evalSpline(
 const hhmmToH = s => { const[h,m]=s.split(":").map(Number); return h+m/60 }
 
 // ─── Constants ───────────────────────────────────────────────
-const DOSE_OPTS = [10,20,30,40,50,60,70]
+const PRESETS = [10,20,30,50,70]
 const COLORS = ["#00e5b8","#ff5577","#ffb547","#8e9eff"]
 const RATING_QS = [
   {key:"fokus",    label:"Fokus",              lo:"zerstreut", hi:"scharf"},
@@ -53,6 +56,73 @@ const RATING_QS = [
   {key:"crash",    label:"Crash",              lo:"kein",      hi:"stark"},
   {key:"reiz",     label:"Reizempfindlichkeit",lo:"normal",    hi:"hoch"},
 ]
+
+// Deutsche Dezimal-Anzeige (7.5 → "7,5") und robustes Parsen ("7,5" → 7.5).
+const fmtMg = n => String(n).replace('.', ',')
+const parseDose = raw => {
+  const n = parseFloat(String(raw).replace(',', '.'))
+  if (!Number.isFinite(n) || n < 0) return null
+  return Math.min(200, Math.round(n * 10) / 10)   // 1 Nachkommastelle, gedeckelt
+}
+
+// Freie Dosis: editierbares Feld (Komma erlaubt) + ±2,5-Stepper.
+function DoseStepper({ mg, color, disabled, onChange }) {
+  const [text, setText] = useState(fmtMg(mg))
+  useEffect(() => { setText(fmtMg(mg)) }, [mg])   // Preset-Klick spiegelt ins Feld
+  const commit = raw => {
+    const parsed = parseDose(raw)
+    if (parsed == null) setText(fmtMg(mg))         // ungültig → zurücksetzen
+    else onChange(parsed)
+  }
+  const step = delta => onChange(Math.max(0, Math.round((mg + delta) * 2) / 2))
+  return (
+    <div className={s.stepper} style={disabled ? undefined : { borderColor: color + '55' }}>
+      <button className={s.stepBtn} disabled={disabled || mg <= 0} onClick={() => step(-2.5)} aria-label="weniger">−</button>
+      <input className={s.doseField} value={text} inputMode="decimal" disabled={disabled}
+        onChange={e => setText(e.target.value)}
+        onBlur={e => commit(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }}
+        style={disabled ? undefined : { color }} />
+      <span className={s.doseUnit}>mg</span>
+      <button className={s.stepBtn} disabled={disabled} onClick={() => step(2.5)} aria-label="mehr">+</button>
+    </div>
+  )
+}
+
+const CONF = {
+  low:    { label: 'grobe Tendenz', color: 'var(--text-dim)' },
+  medium: { label: 'solide',        color: 'var(--cyan)' },
+  high:   { label: 'belastbar',     color: '#00FF94' },
+}
+function ConfidenceBadge({ level }) {
+  const c = CONF[level]
+  if (!c) return null
+  return <span className={s.confBadge} style={{ color: c.color, borderColor: c.color + '44' }}>{c.label}</span>
+}
+
+// Verträglichkeit als 0–10 (höher = besser), aus der 0–100-Nebenwirkungslast.
+const vertraeglich = cost => Math.round((10 - cost / 10) * 10) / 10
+
+function BucketOverview({ buckets, bestDose }) {
+  return (
+    <div className={s.buckets}>
+      {buckets.map(b => {
+        const cost = toleranceCost(b)
+        const v = cost == null ? null : vertraeglich(cost)
+        return (
+          <div key={b.dose} className={`${s.bRow} ${b.dose === bestDose ? s.bRowBest : ''}`}>
+            <span className={s.bDose}>{fmtMg(b.dose)} mg</span>
+            <span className={s.bCell}>{b.cog != null ? `Form ${b.cog}` : '·'}</span>
+            <span className={s.bCell}>{b.fokus != null ? `Fokus ${fmtMg(Math.round(b.fokus * 10) / 10)}` : '·'}</span>
+            <span className={s.bCell} style={v != null ? { color: v >= 7 ? '#00FF94' : v <= 4 ? 'var(--pink)' : 'var(--text-dim)' } : undefined}>
+              {v != null ? `Vertr. ${fmtMg(v)}` : '·'}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 // ─── Component ───────────────────────────────────────────────
 export default function TabElvi({ onBack }) {
   const { toolColors } = useAppStore()
@@ -92,23 +162,6 @@ export default function TabElvi({ onBack }) {
     const newSaved = existing>=0 ? savedDays.map((s,i)=>i===existing?record:s) : [record,...savedDays]
     setSavedDays(newSaved)
     setJustSaved(true); setTimeout(()=>setJustSaved(false),2000)
-  }
-
-  const recommend = () => {
-    if(!savedDays.length) return null
-    const recent = savedDays.slice(0,5)
-    const avg = key => recent.reduce((s,d)=>s+(d.ratings?.[key]??5),0)/recent.length
-    const fokusAvg=avg("fokus"),crashAvg=avg("crash"),reizAvg=avg("reiz"),stimmAvg=avg("stimmung")
-    const totalMg = recent[0]?.doses.reduce((s,d)=>s+d.mg,0)||50
-    const opts = [20,30,40,50,60,70]
-    const nearest = opts.reduce((p,c)=>Math.abs(c-totalMg)<Math.abs(p-totalMg)?c:p)
-    const idx = opts.indexOf(nearest)
-    let dir=0, msg="Aktuelle Dosis scheint passend."
-    if(crashAvg>6||reizAvg>6) { dir=-1; msg="Crash/Reizempfindlichkeit zu hoch → Dosis reduzieren." }
-    else if(fokusAvg<4) { dir=1; msg="Fokus schwach → Dosis erhöhen." }
-    else if(stimmAvg<4&&crashAvg<5) { dir=1; msg="Stimmung niedrig, gute Verträglichkeit → erhöhen." }
-    const recMg = dir>0&&idx<opts.length-1?opts[idx+1]:dir<0&&idx>0?opts[idx-1]:nearest
-    return {msg,recMg,dir,totalMg:nearest}
   }
 
   useEffect(() => {
@@ -169,7 +222,10 @@ export default function TabElvi({ onBack }) {
     ctx.stroke()
   }, [doses, section])
 
-  const rec = recommend()
+  const currentDose = doses.filter(d=>d.active).reduce((sum,d)=>sum+(Number(d.mg)||0),0)
+  const rec = section==="historie"
+    ? doseRecommendation(savedDays, loadSessions(), MODULE_CONFIG, currentDose || null)
+    : null
 
   return (
     <div className={s.page} style={{ '--tool-color': toolColor }}>
@@ -184,21 +240,27 @@ export default function TabElvi({ onBack }) {
         <div className={s.doses}>
           {doses.map((d,i) => (
             <div key={i} className={`${s.doseRow} ${d.active?s.doseActive:""}`}>
-              <button className={s.doseToggle}
-                style={{background:d.active?COLORS[i%4]+"22":"transparent",borderColor:d.active?COLORS[i%4]:"rgba(255,255,255,0.15)"}}
-                onClick={()=>updateDose(i,"active",!d.active)}/>
-              <input type="time" value={d.time} disabled={!d.active}
-                onChange={e=>updateDose(i,"time",e.target.value)}
-                className={s.timeInput} style={{opacity:d.active?1:0.3}}/>
-              <div className={s.mgBtns}>
-                {DOSE_OPTS.map(mg => (
-                  <button key={mg} disabled={!d.active}
-                    onClick={()=>updateDose(i,"mg",mg)}
-                    className={`${s.mgBtn} ${d.mg===mg&&d.active?s.mgActive:""}`}
-                    style={d.mg===mg&&d.active?{borderColor:COLORS[i%4],color:COLORS[i%4],background:COLORS[i%4]+"18"}:{}}
-                  >{mg}</button>
-                ))}
+              <div className={s.doseTop}>
+                <button className={s.doseToggle}
+                  style={{background:d.active?COLORS[i%4]+"22":"transparent",borderColor:d.active?COLORS[i%4]:"rgba(255,255,255,0.15)"}}
+                  onClick={()=>updateDose(i,"active",!d.active)}/>
+                <input type="time" value={d.time} disabled={!d.active}
+                  onChange={e=>updateDose(i,"time",e.target.value)}
+                  className={s.timeInput} style={{opacity:d.active?1:0.3}}/>
+                <DoseStepper mg={d.mg} color={COLORS[i%4]} disabled={!d.active}
+                  onChange={v=>updateDose(i,"mg",v)}/>
               </div>
+              {d.active && (
+                <div className={s.presets}>
+                  {PRESETS.map(mg => (
+                    <button key={mg}
+                      onClick={()=>updateDose(i,"mg",mg)}
+                      className={`${s.presetChip} ${d.mg===mg?s.presetOn:""}`}
+                      style={d.mg===mg?{borderColor:COLORS[i%4],color:COLORS[i%4],background:COLORS[i%4]+"18"}:{}}
+                    >{mg}</button>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -244,11 +306,23 @@ export default function TabElvi({ onBack }) {
 
       {section==="historie" && (
         <div className={s.historie}>
-          {rec && (
-            <div className={`${s.recCard} ${rec.dir>0?s.recUp:rec.dir<0?s.recDown:""}`}>
-              <div className={s.recTitle}>Empfehlung</div>
-              <div className={s.recMsg}>{rec.msg}</div>
-              {rec.recMg!==rec.totalMg&&<div className={s.recMg}>{rec.totalMg} mg → <strong>{rec.recMg} mg</strong></div>}
+          {rec && rec.status !== "no-data" && (
+            <div className={`${s.recCard} ${rec.direction>0?s.recUp:rec.direction<0?s.recDown:""}`}>
+              <div className={s.recTop}>
+                <div className={s.recTitle}>Dosis-Tendenz</div>
+                <ConfidenceBadge level={rec.confidence} />
+              </div>
+              {rec.recommendedDose != null ? (
+                <div className={s.recDose}>{fmtMg(rec.currentDose)} mg → <strong>{fmtMg(rec.recommendedDose)} mg</strong></div>
+              ) : rec.direction !== 0 ? (
+                <div className={s.recDir}>{rec.direction>0 ? "↑ Tendenz: eher höher" : "↓ Tendenz: eher niedriger"}</div>
+              ) : (
+                <div className={s.recDir}>→ aktuelle Dosis halten</div>
+              )}
+              <div className={s.recMsg}>{rec.message}</div>
+              {rec.buckets.length > 1 && <BucketOverview buckets={rec.buckets} bestDose={rec.bestDose} />}
+              {rec.hint && <div className={s.recHint}>{rec.hint}</div>}
+              <div className={s.recDisclaimer}>Nur eine Tendenz aus deinen eigenen Daten — kein medizinischer Rat, ersetzt keine ärztliche Einschätzung.</div>
             </div>
           )}
           {savedDays.length===0 ? (

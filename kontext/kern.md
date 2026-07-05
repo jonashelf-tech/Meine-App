@@ -265,7 +265,9 @@ SK.birthdays         → 'adhs_birthdays'
 SK.birthdaySort      → 'adhs_bday_sort'
 SK.reminder          → 'adhs_reminder_v1'         // { items: [...] }
 SK.reminderDismissed → 'adhs_reminder_dismissed'  // { "YYYY-MM-DD": [ids] }
-SK.elvi              → 'adhs_elvi_v1'             // { doses, savedDays } — Leser: elvi/elviData.js
+SK.elvi              → 'adhs_elvi_v1'             // { doses (mg = freie Zahl, dezimal), savedDays } — Leser: elvi/elviData.js
+//                                                  Dosis-Empfehlung: elvi/elviLogic.js (rein/getestet) korreliert Dosis-Stufen
+//                                                  mit kognitiver Tagesform (liest kognitiv/sessionStore cross-tool) + Ratings
 SK.timerStart        → 'adhs_timer_startTs'       // ephemer (laufender Timer), NICHT im Backup
 SK.timerTotal        → 'adhs_timer_totalSecs'     // ephemer (laufender Timer), NICHT im Backup
 SK.timerRunning      → 'adhs_timer_running'       // ephemer (laufender Timer), NICHT im Backup
