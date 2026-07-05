@@ -74,6 +74,7 @@ export default function MissedReviewModal({ items, variant, onDone, onIgnore, on
             <p className={s.subtitle}>
               {items.length} {items.length === 1 ? 'Eintrag' : 'Einträge'} offen
             </p>
+            <p className={s.reassure}>Nichts geht verloren — entscheide in Ruhe.</p>
           </div>
         </div>
 

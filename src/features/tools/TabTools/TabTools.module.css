@@ -2,6 +2,14 @@
   padding-bottom: 24px;
 }
 
+.allToolsHint {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  padding: 2px 4px 10px;
+}
+
 .segmented {
   display: flex;
   background: var(--surface);

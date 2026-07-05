@@ -240,7 +240,11 @@ export default function Pool({
           {/* ── Aktive Liste ──────────────────────────── */}
           <div className={s.listArea}>
             {activePool.length === 0 && (
-              <p className={s.empty}>Alle Todos verplant ✓</p>
+              <p className={s.empty}>
+                {todos.length === 0
+                  ? 'Über + legst du deine erste Aufgabe an.'
+                  : 'Alle Todos verplant ✓'}
+              </p>
             )}
 
             {visiblePool.map(renderChip)}

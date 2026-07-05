@@ -332,9 +332,12 @@ export default function TabTools() {
       </button>
 
       {showAll && (
-        <div className={s.list}>
-          {allToolsSorted.map(renderChip)}
-        </div>
+        <>
+          <p className={s.allToolsHint}>Aus = taucht nirgends auf. An = in die App integriert.</p>
+          <div className={s.list}>
+            {allToolsSorted.map(renderChip)}
+          </div>
+        </>
       )}
 
       {!showAll && (
