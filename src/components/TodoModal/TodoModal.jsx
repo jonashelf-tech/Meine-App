@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useAppStore } from '../../store'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
@@ -22,6 +22,17 @@ const TrashIcon = () => (
     <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/>
     <line x1="10" y1="11" x2="10" y2="17"/>
     <line x1="14" y1="11" x2="14" y2="17"/>
+  </svg>
+)
+
+const SubDragIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+    <circle cx="9"  cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="6"  r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="9"  cy="18" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
   </svg>
 )
 
@@ -61,6 +72,9 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     (existingTodo?.subItems ?? []).map(si => ({ ...si }))
   )
   const [subInput,    setSubInput]    = useState('')
+  const [subDragOver, setSubDragOver] = useState(null)
+  const subItemsWrapRef = useRef(null)
+  const subDragRef = useRef({ from: null, over: null })
   const [blinkDate,   setBlinkDate]   = useState(false)
   const [blinkTime,   setBlinkTime]   = useState(false)
   const [catEditMode, setCatEditMode] = useState(false)
@@ -123,6 +137,41 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     setSubInput('')
   }
   const removeSubItem = (id) => setSubItems(prev => prev.filter(si => si.id !== id))
+
+  // Schritte per Ziehen umsortieren — gleiche Mechanik wie TodoChip (Zeitplan/Pool)
+  const startSubDrag = (fromIdx, e) => {
+    e.stopPropagation(); e.preventDefault()
+    subDragRef.current = { from: fromIdx, over: fromIdx }
+    const mv = (me) => {
+      const y = me.touches ? me.touches[0].clientY : me.clientY
+      const wrap = subItemsWrapRef.current; if (!wrap) return
+      const rows = wrap.querySelectorAll('[data-sub-row]')
+      let closest = subDragRef.current.from, closestDist = Infinity
+      rows.forEach((el, idx) => {
+        const rc  = el.getBoundingClientRect()
+        const mid = rc.top + rc.height / 2
+        const dist = Math.abs(y - mid)
+        if (dist < closestDist) { closestDist = dist; closest = idx }
+      })
+      if (closest !== subDragRef.current.over) {
+        subDragRef.current.over = closest; setSubDragOver(closest)
+      }
+    }
+    const up = () => {
+      const { from, over } = subDragRef.current
+      if (from !== null && over !== null && from !== over) {
+        const ni = [...subItems]
+        const [moved] = ni.splice(from, 1)
+        ni.splice(over, 0, moved)
+        setSubItems(ni)
+      }
+      subDragRef.current = { from: null, over: null }; setSubDragOver(null)
+      document.removeEventListener('pointermove', mv)
+      document.removeEventListener('pointerup', up)
+    }
+    document.addEventListener('pointermove', mv, { passive: false })
+    document.addEventListener('pointerup', up)
+  }
 
   const addCat = () => {
     const name = catNewInput.trim(); if (!name) return
@@ -433,11 +482,20 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         {/* Schritte */}
         <div className={s.row} style={{ alignItems: 'flex-start' }}>
           <span className={s.rowLabel} style={{ marginTop: 6 }}>Schritte</span>
-          <div className={s.subSection}>
-            {subItems.map(si => (
-              <div key={si.id} className={s.subRow}>
+          <div className={s.subSection} ref={subItemsWrapRef}>
+            {subItems.map((si, idx) => (
+              <div
+                key={si.id}
+                data-sub-row
+                className={[s.subRow, subDragOver === idx ? s.subRowDragOver : ''].join(' ')}
+              >
                 <span className={s.subText}>{si.text}</span>
                 <button className={s.subRm} onClick={() => removeSubItem(si.id)}>✕</button>
+                <span
+                  className={s.subDragHandle}
+                  onPointerDown={e => startSubDrag(idx, e)}
+                  aria-label="Ziehen"
+                ><SubDragIcon /></span>
               </div>
             ))}
             <div className={s.subAddRow}>
