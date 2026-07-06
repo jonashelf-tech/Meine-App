@@ -18,6 +18,24 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+/* ── Schließen (Abbrechen ohne Speichern/Löschen) ──────────── */
+.closeBtn {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  padding: 8px;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.closeBtn:hover { color: var(--text); }
+
 /* ── Navigation ──────────────────────────────────────────── */
 .back {
   background: none;
