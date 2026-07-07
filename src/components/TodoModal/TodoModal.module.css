@@ -590,7 +590,7 @@
 .subDragHandle:active { cursor: grabbing; }
 
 .subRowDragOver {
-  background: rgba(139, 92, 246, 0.07) !important;
+  background: color-mix(in srgb, var(--primary) 7%, transparent) !important;
 }
 
 .subAddRow {

@@ -11,13 +11,14 @@ export const PENDING_TAB_KEY = 'adhs_pending_tab'
 // teilen sich Daten mit dem Kalender und gehören bewusst NICHT hierher.
 export const TOOL_RESETS = {
   haushalt:    { keys: [SK.haushalt, SK.haushaltEnergie] },
-  geburtstage: { keys: [SK.birthdays, 'adhs_bday_sort'] },
+  geburtstage: { keys: [SK.birthdays, SK.birthdaySort] },
   rezepte:     { keys: [SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv] },
   fitness:     { keys: [SK.weight, SK.weightDash, SK.fitness, SK.fitnessSessions] },
   garten:      { keys: [SK.garten] },
-  reminder:    { keys: ['adhs_reminder_v1', 'adhs_reminder_dismissed'] },
+  reminder:    { keys: [SK.reminder, SK.reminderDismissed] },
+  // prefixes: Alt-Bestand ohne SK-Eintrag (Briefing-Flags früherer Versionen) — Reset räumt sie weiter ab
   kognitiv:    { keys: [SK.kognitiv, SK.kognitivCheckin, SK.kognitivSchedule], prefixes: ['briefing-seen-'] },
-  elvi:        { keys: ['adhs_elvi_v1'] },
+  elvi:        { keys: [SK.elvi] },
   // SK.dailyState gehört bewusst NICHT hierher (geteilt mit Kognitiv).
   // SK.wachstum (Legacy) bleibt erhalten — Garten zählt eingefrorene Habit-Checks daraus.
   growth:      { keys: [SK.growth] },
