@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "Write-Output '{\"systemMessage\": \"Kontext-Queue: Wurden kontext-relevante Aenderungen gemacht? -> eine Zeile in Dateien/kontext-queue.md eintragen\"}'",
+            "command": "Write-Output '{\"systemMessage\": \"Check: kontext/-Dateien in derselben Aenderung aktualisiert? Fertiges committet (sprechende Message), Unfertiges benannt?\"}'",
             "shell": "powershell"
           }
         ]

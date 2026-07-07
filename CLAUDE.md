@@ -49,15 +49,21 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 
 **Bevor ich "totes" Zeug lösche/ersetze:** erst prüfen ob es wirklich tot ist. Im Zweifel melden statt löschen.
 
-**Modellwahl:** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen → Opus. Fable sparsam und gezielt: Audits, Reviews von schwer revidierbaren Entscheidungen (Sync-Datenmodell, Security, Migrationen), festgefahrene Bugs — Faustregel: Fable prüft, Opus baut, Sonnet setzt um.
+**Modellwahl (Stand 2026-07-07 — Fable-Zugang ausgelaufen):** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen, Bau-Orchestrierung → Opus. Die frühere **Fable-Rolle** (Audits, Security-/Datenverlust-Reviews, schwer revidierbare Entscheidungen, festgefahrene Bugs) übernimmt jetzt **Opus in einer eigenen Session mit explizitem Prüf-Auftrag** — Prüfen und Bauen bewusst nicht in derselben Session vermischen, das war der Wert der getrennten Fable-Einsätze. Faustregel bleibt: eine Session prüft, eine baut, Sonnet setzt um.
 
-**Modell-Check (jede Session, erste Antwort):** Passt das laufende Modell nicht zur Aufgabe — z. B. Fable für ein Routine-Feature oder Sonnet für eine Datenmodell-Entscheidung — sage ich das sofort und empfehle das passende Modell (Wechsel: Modell-Auswahl in der UI oder neuer Chat). Danach arbeite ich normal weiter, falls Jonas nicht wechselt; delegierbare Teile gehen ohnehin an Sonnet-Subagenten.
+**Modell-Check (jede Session, erste Antwort):** Passt das laufende Modell nicht zur Aufgabe — z. B. Opus für ein Routine-Feature oder Sonnet für eine Datenmodell-Entscheidung — sage ich das sofort und empfehle das passende Modell (Wechsel: Modell-Auswahl in der UI oder neuer Chat). Danach arbeite ich normal weiter, falls Jonas nicht wechselt; delegierbare Teile gehen ohnehin an Sonnet-Subagenten.
 
 **Delegieren statt selbst machen:** Läuft die Session auf einem großen Modell (Opus/Fable), gehen klar umrissene Routine-Aufgaben (Template-Bau, mechanische Migrationen, Suche über viele Dateien) an Sonnet-Subagenten (Agent-Tool, `model: "sonnet"`). Das große Modell orchestriert, reviewt und entscheidet. Nicht delegieren: Aufgaben, deren Kontext-Übergabe teurer wäre als das Selbermachen.
 
 **Kontext aktuell halten:** Ändere ich einen Bereich, aktualisiere ich die zugehörige `kontext/`-Datei in derselben Änderung. Kein Queue-Ritual.
 
 **Session-Ende — kein Müll liegen lassen:** Jede Arbeitssession endet mit sauberem Working Tree: fertige Arbeit committen mit sprechender Message (was + warum — keine Rätsel-Messages wie „2HI4U"), Unfertiges explizit benennen („X bleibt als WIP liegen, weil …"). Kontext-Dateien sind zu dem Zeitpunkt schon nachgezogen.
+
+**Git-Hygiene (Lehre aus Parallel-Sessions, mehrfach passiert):**
+- Stagen nur mit expliziten Pfaden (`git add <datei>`) — nie `-A`/`-u`/`.`: parallele Sessions und Jonas selbst teilen den Working Tree; breites Stagen hat schon fremde Arbeit mit-committet (`8568668`).
+- Vor dem Commit `git status` lesen: unbekannte Änderungen = andere Session/Jonas → liegen lassen.
+- Größere Parallel-Arbeit → eigener Worktree statt geteiltem Tree.
+- `git push` gehört zum sauberen Session-Ende dazu (nach grünen Tests/Lint/Build). Deploy (`npx vercel --prod`) dagegen nur, wenn der Auftrag es umfasst oder Jonas es sagt — die App läuft auf seinem Handy.
 
 ---
 
@@ -79,6 +85,8 @@ Freie Beschreibung reicht — ich erkenne den Typ selbst und lese die relevanten
 `Dateien/input/` — Dateien die ich mitbringe  
 `Dateien/output/` — Dateien die Claude ausgibt  
 Ich weise hin wenn etwas Relevantes drin liegt.
+
+**⚠ `Dateien/` ist komplett gitignored** — die Entscheidungs-Dokumente dort (sync-architektur.md, sync-plan.md, sync-review-fable.md, etappe4-geteilter-kalender-spec.md, roadmap-prompts.md, Audit-Reports) existieren **nur auf diesem Rechner**. Offene Entscheidung [Jonas]: ins Repo holen (`docs/` — landet dann im GitHub-Backup, enthält aber Persönliches wie Paulas Namen) oder bewusst lokal + selbst sichern. Bis dahin: Sessions dürfen nicht annehmen, dass diese Docs überall existieren.
 
 ## Deploy
 `npx vercel --prod`
