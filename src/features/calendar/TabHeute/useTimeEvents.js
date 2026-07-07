@@ -38,13 +38,14 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
           if (!slot || slot.done || slot.reviewed || !slot.text) return
           // ignored = true → kommen hier trotzdem dran
           collected.push({
-            id:      `${dk}|${slotKey}`,
-            dateKey: dk,
+            id:       `${dk}|${slotKey}`,
+            dateKey:  dk,
             slotKey,
-            text:    slot.text,
-            color:   slot.color || '#8B5CF6',
-            type:    slot.todoId ? 'todo' : 'text',
-            todoId:  slot.todoId || null,
+            text:     slot.text,
+            color:    slot.color || '#8B5CF6',
+            type:     slot.todoId ? 'todo' : 'text',
+            todoId:   slot.todoId || null,
+            subItems: slot.subItems ?? [],   // Text-Slots: Unterpunkte überleben „In Pool"
           })
         })
       })
@@ -86,13 +87,14 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
       const endMins = parseFloat(slotKey) * 60 + (slot.duration || 30)
       if (endMins > nowMins) return
       collected.push({
-        id:      `${today}|${slotKey}`,
-        dateKey: today,
+        id:       `${today}|${slotKey}`,
+        dateKey:  today,
         slotKey,
-        text:    slot.text,
-        color:   slot.color || '#8B5CF6',
-        type:    slot.todoId ? 'todo' : 'text',
-        todoId:  slot.todoId || null,
+        text:     slot.text,
+        color:    slot.color || '#8B5CF6',
+        type:     slot.todoId ? 'todo' : 'text',
+        todoId:   slot.todoId || null,
+        subItems: slot.subItems ?? [],
       })
     })
 
@@ -178,7 +180,8 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
     const textItems  = sel.filter(i => i.type === 'text')
     const faelligIds = new Set(sel.filter(i => i.type === 'faellig').map(i => i.todoId))
     const todoIds    = new Set(sel.filter(i => i.type === 'todo').map(i => i.todoId).filter(Boolean))
-    const newTodos   = textItems.map(i => createBlock({ text: i.text, color: i.color, priority: 3 }))
+    const newTodos   = textItems.map(i =>
+      createBlock({ text: i.text, color: i.color, priority: 3, subItems: i.subItems ?? [] }))
 
     if (newTodos.length > 0) {
       setTodos(prev => [...prev, ...newTodos])
