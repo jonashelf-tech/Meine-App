@@ -69,20 +69,27 @@ export function useDragDrop() {
       ghost.style.transition    = 'none'
       ghost.style.animation     = 'none'
     } else {
-      // Fallback: einfacher Ghost
+      // Fallback: einfacher Ghost — per DOM-API statt innerHTML: text/color
+      // sind künftig Fremddaten (geteilter Kalender, ICS-Import), Interpolation
+      // in HTML wäre ein XSS-Sink.
       ghostW  = 220
       offsetX = ghostW / 2
       offsetY = 14
       ghost   = document.createElement('div')
-      ghost.innerHTML =
-        `<div style="width:3px;min-width:3px;align-self:stretch;background:${color};flex-shrink:0;"></div>` +
-        `<span style="flex:1;padding:6px 10px;font-size:0.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${text}</span>`
+      const stripe = document.createElement('div')
+      stripe.style.cssText = 'width:3px;min-width:3px;align-self:stretch;flex-shrink:0;'
+      stripe.style.background = color
+      const label = document.createElement('span')
+      label.style.cssText = 'flex:1;padding:6px 10px;font-size:0.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'
+      label.textContent = text
+      ghost.append(stripe, label)
       ghost.style.cssText =
         `position:fixed;z-index:9999;display:flex;align-items:center;height:${slotH}px;width:${ghostW}px;` +
-        `border-radius:10px;background:rgba(7,7,14,0.97);border:1px solid ${color}55;` +
-        `color:#fff;font-family:var(--font);pointer-events:none;opacity:0.92;` +
-        `box-shadow:0 4px 20px ${color}44;overflow:hidden;` +
+        'border-radius:10px;background:rgba(7,7,14,0.97);' +
+        'color:#fff;font-family:var(--font);pointer-events:none;opacity:0.92;overflow:hidden;' +
         `left:${cx0 - offsetX}px;top:${cy0 - offsetY}px;`
+      ghost.style.border = `1px solid ${color}55`
+      ghost.style.boxShadow = `0 4px 20px ${color}44`
     }
 
     document.body.appendChild(ghost)
