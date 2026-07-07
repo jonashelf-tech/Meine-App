@@ -5,7 +5,8 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // server/.wrangler = generierte Artefakte lokaler `wrangler dev`-Läufe (gitignored)
+  globalIgnores(['dist', 'server/.wrangler']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [

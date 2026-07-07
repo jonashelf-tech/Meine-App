@@ -204,7 +204,13 @@ Slot-Keys: `sk(h)` = ganzeStunde (`"8"`), `sk(h, true)` = halbeStunde (`"8.5"`)
 **Lock-Verhalten:**
 - Todos mit `time`-Feld werden beim Drop automatisch auf `locked: true` gesetzt
 - Per UI (Schloss-Icon am Slot) jederzeit umschaltbar
-- `handleShiftAll` überspringt locked Slots
+- `handleShiftAll` überspringt locked Slots und zieht `todo.time` verschobener Slots nach (wie startSlotDrag)
+
+**Done-Semantik (Invariante seit 2026-07-07):** Ein Done-Toggle auf einem Slot mit `todoId`
+setzt IMMER beide Flags synchron — `slot.done` UND `todo.done`/`doneAt` (Tagesplaner:
+`useSlotMutations.handleToggleSlotDone`, Woche: `WocheView.handleToggleSlotDone`, Timer +
+Missed-Review taten es schon). Grund: Missed-Review liest `slot.done`, DayPanel-Erledigt +
+Garten-XP lesen `todo.done`/`doneAt` — einseitige Writes lassen die Ansichten divergieren.
 
 ---
 
