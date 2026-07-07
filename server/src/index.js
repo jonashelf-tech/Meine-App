@@ -24,7 +24,7 @@ const corsHeaders = (request, env) => {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET,PUT,POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'authorization,content-type,x-setup-secret',
+    'Access-Control-Allow-Headers': 'authorization,content-type,x-setup-secret,if-match',
     'Access-Control-Max-Age': '86400',
   }
 }
