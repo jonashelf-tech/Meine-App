@@ -31,16 +31,30 @@ const notifyWrite = (key, oldRaw, value) => {
   }
 }
 
+// Schreibfehler (Quota voll, Private-Mode) dem Nutzer sichtbar machen:
+// Konsole reicht auf dem Handy nicht — App.jsx hört auf dieses Event und
+// zeigt einen Toast (Drossel liegt dort, Storage bleibt dumm).
+const notifyWriteFailure = (key) => {
+  if (typeof window === 'undefined') return   // Tests/Node — Konsole hat schon gewarnt
+  try {
+    window.dispatchEvent(new CustomEvent('adhs:storage-write-failed', { detail: { key } }))
+  } catch { /* Event-Fehler nie eskalieren */ }
+}
+
 export const sv = (key, value) => {
+  // undefined ist kein JSON — würde als String "undefined" landen und beim
+  // nächsten lv als korrupt gerettet werden. null ist die ehrliche Absicht.
+  const v = value === undefined ? null : value
   let oldRaw
   try {
     oldRaw = localStorage.getItem(key)
-    localStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem(key, JSON.stringify(v))
   } catch (e) {
     console.warn(`[storage] sv("${key}") fehlgeschlagen — nicht gespeichert:`, e)
+    notifyWriteFailure(key)
     return
   }
-  notifyWrite(key, oldRaw, value)
+  notifyWrite(key, oldRaw, v)
 }
 
 export const lv = (key, fallback) => {

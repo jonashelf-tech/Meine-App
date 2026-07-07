@@ -34,6 +34,27 @@ describe('lv / sv — round-trip & Fallback', () => {
     expect(() => sv(SK.todos, [1, 2, 3])).not.toThrow()
     spy.mockRestore()
   })
+
+  it('meldet Schreibfehler per Event (App zeigt dazu einen Toast)', () => {
+    // Test-Env ist Node ohne window — minimales EventTarget-Shim nur hier
+    const events = []
+    const win = new EventTarget()
+    win.addEventListener('adhs:storage-write-failed', (e) => events.push(e.detail.key))
+    globalThis.window = win
+    const spy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceeded')
+    })
+    sv(SK.todos, [1])
+    spy.mockRestore()
+    delete globalThis.window
+    expect(events).toEqual([SK.todos])
+  })
+
+  it('sv(key, undefined) speichert null statt korruptem "undefined"-String', () => {
+    sv(SK.theme, undefined)
+    expect(localStorage.getItem(SK.theme)).toBe('null')
+    expect(lv(SK.theme, 'fallback')).toBeNull()
+  })
 })
 
 describe('Write-Listener — Hook der Sync-Schicht', () => {

@@ -14,6 +14,7 @@ import TabTools        from './features/tools/TabTools/TabTools'
 import TabSettings     from './features/settings/TabSettings/TabSettings'
 import TodoModal       from './components/TodoModal/TodoModal'
 import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
+import { useToast }    from './components/Toast/Toast'
 import BackupNudge     from './components/BackupNudge/BackupNudge'
 import UpdatePrompt     from './components/UpdatePrompt/UpdatePrompt'
 
@@ -68,6 +69,7 @@ const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 
 export default function App() {
   const { currentTab, previousTab, setCurrentTab, accentColor, theme } = useAppStore()
+  const { showToast } = useToast()
   const [addOpen, setAddOpen] = useState(false)
   const [sharePrefill, setSharePrefill] = useState(null)
   const [exercising, setExercising] = useState(false)
@@ -85,6 +87,19 @@ export default function App() {
   }, [])
 
   useEffect(() => { saveAutoBackup(); maybeAutoPush(); initSync() }, [])
+
+  // Storage-Schreibfehler (Quota voll, Private-Mode) sichtbar machen — sonst
+  // arbeitet man im RAM weiter und verliert beim Reload alles. Max. 1 Toast/Minute.
+  useEffect(() => {
+    let lastToastAt = 0
+    const onWriteFailed = () => {
+      if (Date.now() - lastToastAt < 60_000) return
+      lastToastAt = Date.now()
+      showToast('Speichern fehlgeschlagen — Speicherplatz prüfen, Backup ziehen!', 'error')
+    }
+    window.addEventListener('adhs:storage-write-failed', onWriteFailed)
+    return () => window.removeEventListener('adhs:storage-write-failed', onWriteFailed)
+  }, [showToast])
 
   // Dachboden-Regel: letztes Öffnen pro Tool tracken
   useEffect(() => { seedToolUsage(useAppStore.getState().activeTools) }, [])
