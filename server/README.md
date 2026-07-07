@@ -66,6 +66,25 @@ Die App zeigt dir einmalig den **Recovery-Code** — in den Passwortmanager dami
 - Backups von Hand ansehen (Metadaten, unverschlüsselt ist da nichts):
   `npx wrangler d1 execute adhs-sync --remote --command "SELECT id, user_id, created_at, bytes FROM backups ORDER BY id DESC LIMIT 20"`
 
+## Lokale Feuerprobe (ohne Cloudflare-Account)
+
+Kompletter End-to-End-Test der Cloud-Kette gegen einen **lokalen** Worker —
+mit den echten Client-Krypto-Funktionen der App (31 Checks: Registrierung,
+Backup-Roundtrip, /kv mit If-Match/409, Nutzer-Isolation, Retention, CORS):
+
+```
+echo SETUP_SECRET=feuerprobe-lokal-2026 > .dev.vars
+npx wrangler d1 execute adhs-sync --local --file schema.sql
+npx wrangler dev --local --port 8787        # laufen lassen (eigenes Terminal)
+node feuerprobe.mjs                          # → „✅ 31 bestanden"
+```
+
+Frische DB pro Lauf: vorher `.wrangler/state` löschen (sonst zählt der
+Retention-Check Backups aus früheren Läufen mit). Bei Server-Änderungen
+(z. B. Etappe 4: /pair-Routen) hier neue Checks ergänzen — das Skript ist
+der Test-Harness, den Unit-Tests nicht ersetzen können (CORS/Preflight,
+echtes D1).
+
 ## Was hier liegt
 
 - `src/index.js` — der Worker: `/register` (mit Setup-Code), `PUT /backup`,
