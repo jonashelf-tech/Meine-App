@@ -205,7 +205,13 @@ export function doseRecommendation(savedDays, sessions, moduleConfig, currentDos
     const lower = scored.filter(b => b.dose < refDose).sort((a, b) => b.dose - a.dose)[0]
     if (lower) {
       recommendedDose = lower.dose
-      message = 'Bei deiner aktuellen Dosis sind Crash/Reizempfindlichkeit deutlich erhöht — die kleinere Stufe war spürbar verträglicher.'
+      // "war verträglicher" nur behaupten, wenn die Daten es zeigen — die
+      // nächstkleinere Stufe kann selbst hohe Crash-/Reiz-Werte haben.
+      const lowerCost = toleranceCost(lower)
+      const refCost   = toleranceCost(refBucket)
+      message = lowerCost != null && refCost != null && lowerCost < refCost
+        ? 'Bei deiner aktuellen Dosis sind Crash/Reizempfindlichkeit deutlich erhöht — die kleinere Stufe war spürbar verträglicher.'
+        : 'Bei deiner aktuellen Dosis sind Crash/Reizempfindlichkeit deutlich erhöht — eine kleinere Stufe könnte verträglicher sein.'
     }
   }
 

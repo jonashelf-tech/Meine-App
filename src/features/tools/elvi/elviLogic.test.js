@@ -176,6 +176,20 @@ describe('doseRecommendation — Datenlagen', () => {
     // aktuell 70 → trotz bester Roh-Wirkung soll Sicherheit auf 50 ziehen
     const rec = doseRecommendation(days, [], CFG, 70)
     expect(rec.recommendedDose).toBeLessThan(70)
+    // die 50er-Stufe WAR hier messbar verträglicher → Aussage in Vergangenheitsform erlaubt
+    expect(rec.message).toContain('war spürbar verträglicher')
+  })
+
+  it('Sicherheits-Override behauptet "war verträglicher" nicht ohne Daten-Beleg', () => {
+    const days = [
+      day('d1', 50, { fokus: 5, crash: 8, reiz: 8 }), // kleinere Stufe ist selbst unverträglich
+      day('d2', 70, { fokus: 9, crash: 8, reiz: 8 }),
+      day('d3', 70, { fokus: 9, crash: 8, reiz: 8 }),
+    ]
+    const rec = doseRecommendation(days, [], CFG, 70)
+    expect(rec.recommendedDose).toBeLessThan(70)
+    expect(rec.message).toContain('könnte verträglicher sein')
+    expect(rec.message).not.toContain('war spürbar verträglicher')
     expect(rec.direction).toBe(-1)
   })
 
