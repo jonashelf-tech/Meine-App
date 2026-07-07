@@ -102,27 +102,27 @@ export default function TabHeute() {
   }, [])
 
   // ─── Todo mutations ───────────────────────────────────────
+  // Seiteneffekte (Haushalt/Reminder) bewusst VOR dem setTodos — Updater
+  // müssen pure bleiben (React darf sie mehrfach aufrufen).
   const handleToggleDone = useCallback((id) => {
-    setTodos(prev => {
-      const todo    = prev.find(t => t.id === id)
-      const nowDone = !todo?.done
-      if (nowDone && todo?.haushaltTaskIds?.length > 0) {
-        const cfg     = loadHaushalt()
-        const updated = todo.haushaltTaskIds.reduce(
-          (c, tid) => haushaltMarkDone(c, tid), cfg
-        )
-        saveHaushalt(updated)
-      }
-      if (nowDone && todo?.reminderItemId) {
-        setReminderLastAdded(todo.reminderItemId, todayKey())
-      }
-      return prev.map(t =>
-        t.id === id
-          ? { ...t, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null }
-          : t
+    const todo    = todos.find(t => t.id === id)
+    const nowDone = !todo?.done
+    if (nowDone && todo?.haushaltTaskIds?.length > 0) {
+      const cfg     = loadHaushalt()
+      const updated = todo.haushaltTaskIds.reduce(
+        (c, tid) => haushaltMarkDone(c, tid), cfg
       )
-    })
-  }, [setTodos])
+      saveHaushalt(updated)
+    }
+    if (nowDone && todo?.reminderItemId) {
+      setReminderLastAdded(todo.reminderItemId, todayKey())
+    }
+    setTodos(prev => prev.map(t =>
+      t.id === id
+        ? { ...t, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null }
+        : t
+    ))
+  }, [todos, setTodos])
 
   // ─── Kalender-Link ────────────────────────────────────────
   const handleDoneCalendar = useCallback(() => {
