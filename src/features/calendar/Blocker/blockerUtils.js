@@ -36,7 +36,10 @@ function isActiveOn(b, dateStr) {
   if (b.repeat.type === 'custom') {
     if (!b.date) return true
     const anchor = new Date(b.date + 'T00:00:00')
-    const diff = Math.floor((d - anchor) / 86400000)
+    // round statt floor: lokale Mitternachten liegen über die Sommerzeit-
+    // Umstellung ±1h auseinander — floor ließe custom-Blocker ab Ende März
+    // dauerhaft einen Tag verrutschen.
+    const diff = Math.round((d - anchor) / 86400000)
     if (diff < 0) return false
     const { every: ev = 1, unit = 'days' } = b.repeat
     const step = unit === 'months' ? ev * 30 : unit === 'weeks' ? ev * 7 : ev

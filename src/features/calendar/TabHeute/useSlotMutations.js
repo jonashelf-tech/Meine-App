@@ -17,17 +17,26 @@ export function useSlotMutations({ viewDate, days, setDays, setTodos }) {
     })
   }, [setDays, viewDate])
 
+  // Slot UND verknüpftes Todo togglen — sonst divergieren die Ansichten:
+  // Missed-Review liest slot.done, DayPanel/Garten-XP lesen todo.done/doneAt.
   const handleToggleSlotDone = useCallback((slotKey) => {
-    setTodaySlots(prev => {
-      const slot = prev[slotKey]
-      if (!slot) return prev
-      const nowDone = !slot.done
-      if (nowDone && slot.reminderItemId) {
-        setReminderLastAdded(slot.reminderItemId, todayKey())
-      }
-      return { ...prev, [slotKey]: { ...slot, done: nowDone } }
-    })
-  }, [setTodaySlots])
+    const slot = todaySlots[slotKey]
+    if (!slot) return
+    const nowDone = !slot.done
+    if (nowDone && slot.reminderItemId) {
+      setReminderLastAdded(slot.reminderItemId, todayKey())
+    }
+    setTodaySlots(prev => prev[slotKey]
+      ? { ...prev, [slotKey]: { ...prev[slotKey], done: nowDone } }
+      : prev)
+    if (slot.todoId) {
+      setTodos(prev => prev.map(t =>
+        t.id === slot.todoId
+          ? { ...t, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null }
+          : t
+      ))
+    }
+  }, [todaySlots, setTodaySlots, setTodos])
 
   const handleToggleLock = useCallback((slotKey) => {
     setTodaySlots(prev => {
@@ -88,21 +97,32 @@ export function useSlotMutations({ viewDate, days, setDays, setTodos }) {
   }, [visStart, visEnd])
 
   const handleShiftAll = useCallback((dir) => {
-    setTodaySlots(currentSlots => {
-      const keys   = Object.keys(currentSlots).filter(k => !currentSlots[k]?.locked)
-      const sorted = [...keys].sort((a, b) => dir * (parseFloat(b) - parseFloat(a)))
-      const ns     = { ...currentSlots }
-      sorted.forEach(k => {
-        let ni = ALL_SLOT_KEYS.indexOf(k) + dir
-        while (ni >= 0 && ni < ALL_SLOT_KEYS.length && ns[ALL_SLOT_KEYS[ni]]?.locked) ni += dir
-        if (ni >= 0 && ni < ALL_SLOT_KEYS.length && !ns[ALL_SLOT_KEYS[ni]]) {
-          ns[ALL_SLOT_KEYS[ni]] = ns[k]
-          delete ns[k]
-        }
-      })
-      return ns
+    const keys   = Object.keys(todaySlots).filter(k => !todaySlots[k]?.locked)
+    const sorted = [...keys].sort((a, b) => dir * (parseFloat(b) - parseFloat(a)))
+    const ns     = { ...todaySlots }
+    const moved  = new Map()   // todoId → neuer Slot-Key
+    sorted.forEach(k => {
+      let ni = ALL_SLOT_KEYS.indexOf(k) + dir
+      while (ni >= 0 && ni < ALL_SLOT_KEYS.length && ns[ALL_SLOT_KEYS[ni]]?.locked) ni += dir
+      if (ni >= 0 && ni < ALL_SLOT_KEYS.length && !ns[ALL_SLOT_KEYS[ni]]) {
+        const nk = ALL_SLOT_KEYS[ni]
+        ns[nk] = ns[k]
+        delete ns[k]
+        if (ns[nk].todoId) moved.set(ns[nk].todoId, nk)
+      }
     })
-  }, [setTodaySlots])
+    setTodaySlots(ns)
+    // Uhrzeit im verknüpften Todo nachziehen — wie startSlotDrag/Wochenansicht,
+    // sonst zeigen TodoModal/Kalender nach dem Verschieben die alte Zeit.
+    if (moved.size) {
+      setTodos(prev => prev.map(t => {
+        const nk = moved.get(t.id)
+        if (!nk || !t.time) return t
+        const h = parseFloat(nk)
+        return { ...t, time: `${String(Math.floor(h)).padStart(2, '0')}:${h % 1 ? '30' : '00'}` }
+      }))
+    }
+  }, [todaySlots, setTodaySlots, setTodos])
 
   return {
     todaySlots, setTodaySlots,

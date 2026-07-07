@@ -196,6 +196,12 @@ export default function WocheView({
           ? { ...t, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null }
           : t
       ))
+      // Slot-Flag mitziehen — Missed-Review liest slot.done, nicht todo.done:
+      // sonst fragt das Abend-Review nach längst abgehakten Terminen.
+      setDays(prev => ({
+        ...prev,
+        [dk]: { ...prev[dk], [key]: { ...slot, done: nowDone } },
+      }))
     } else {
       const nowDone = !slot.done
       if (nowDone) {
