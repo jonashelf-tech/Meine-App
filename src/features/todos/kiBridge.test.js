@@ -57,14 +57,15 @@ describe('parseZerlegenResult', () => {
 // ── buildZerlegenPrompt ───────────────────────────────────────────────────────
 
 describe('buildZerlegenPrompt', () => {
-  const todo = { text: 'Steuererklärung machen', category: 'Finanzen', duration: 60 }
+  const projects = [{ id: 'p1', name: 'Finanzen' }]
+  const todo = { text: 'Steuererklärung machen', projectId: 'p1', duration: 60 }
 
   it('enthält todo.text, hindernis, wert, today und <<<SCHRITTE-Marker', () => {
     const result = buildZerlegenPrompt(todo, {
       hindernis: 'Zu viele Belege',
       wert: 'Mehr Geld zurück',
       today: '2026-06-19',
-    })
+    }, projects)
     expect(result).toContain('Steuererklärung machen')
     expect(result).toContain('Zu viele Belege')
     expect(result).toContain('Mehr Geld zurück')
@@ -73,14 +74,25 @@ describe('buildZerlegenPrompt', () => {
     expect(result).toContain('SCHRITTE>>>')
   })
 
+  it('enthält den Projektnamen wenn projectId auf ein bestehendes Projekt zeigt', () => {
+    const result = buildZerlegenPrompt(todo, { hindernis: '', wert: '', today: '2026-06-19' }, projects)
+    expect(result).toContain('Projekt: Finanzen')
+  })
+
+  it('lässt die Projekt-Angabe weg wenn projectId zu keinem Projekt passt', () => {
+    const orphanTodo = { ...todo, projectId: 'unbekannt' }
+    const result = buildZerlegenPrompt(orphanTodo, { hindernis: '', wert: '', today: '2026-06-19' }, projects)
+    expect(result).not.toContain('Projekt:')
+  })
+
   it('lässt leere Kontextzeilen weg (kein hindernis, kein wert)', () => {
-    const result = buildZerlegenPrompt(todo, { hindernis: '', wert: '', today: '2026-06-19' })
+    const result = buildZerlegenPrompt(todo, { hindernis: '', wert: '', today: '2026-06-19' }, projects)
     expect(result).not.toContain('Was mich blockiert')
     expect(result).not.toContain('Was besser wird')
   })
 
   it('lässt hindernis-Zeile weg wenn nur wert gesetzt', () => {
-    const result = buildZerlegenPrompt(todo, { hindernis: '', wert: 'Weniger Stress', today: '2026-06-19' })
+    const result = buildZerlegenPrompt(todo, { hindernis: '', wert: 'Weniger Stress', today: '2026-06-19' }, projects)
     expect(result).not.toContain('Was mich blockiert')
     expect(result).toContain('Was besser wird')
   })
@@ -93,7 +105,7 @@ describe('buildZerlegenPrompt', () => {
         { id: '2', text: 'Formular öffnen', done: false },
       ],
     }
-    const result = buildZerlegenPrompt(todoWithSteps, { hindernis: '', wert: '', today: '2026-06-19' })
+    const result = buildZerlegenPrompt(todoWithSteps, { hindernis: '', wert: '', today: '2026-06-19' }, projects)
     expect(result).toContain('Bereits vorhandene Schritte')
     expect(result).toContain('Belege sammeln')
   })

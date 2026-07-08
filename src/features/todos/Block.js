@@ -23,7 +23,7 @@ export const createBlock = (partial = {}) => ({
   time:                  null,
   repeat:                null, // { type: 'daily'|'weekly'|'monthly'|'custom', every?, unit? }
   subItems:              [],
-  category:              null,
+  projectId:             null,
   notes:                 null,
   paused:                false,  // pausiert = raus aus dem präsenten Vordergrund, ans Pool-Ende
   pauseReason:           null,   // optionaler Grund („woran hängt's"), als Marker am Chip

@@ -69,7 +69,7 @@ export default function ReminderSection({ onStartDrag }) {
   const handleItemDone = useCallback((item) => {
     setTodos(prev => [...prev, createBlock({
       text: item.text, priority: 2, color: item.color ?? toolColor,
-      category: 'Selfcare', reminderItemId: item.id, toolId: 'reminder',
+      reminderItemId: item.id, toolId: 'reminder',
       done: true, doneAt: new Date().toISOString(),
     })])
   }, [toolColor, setTodos])
@@ -97,7 +97,7 @@ export default function ReminderSection({ onStartDrag }) {
     }
     return {
       type: 'todo',
-      block: createBlock({ text: item.text, priority: 2, color: item.color, category: 'Selfcare', reminderItemId: item.id, toolId: 'reminder' }),
+      block: createBlock({ text: item.text, priority: 2, color: item.color, reminderItemId: item.id, toolId: 'reminder' }),
     }
   }, [])
 
@@ -144,7 +144,7 @@ export default function ReminderSection({ onStartDrag }) {
             priority: 2,
             duration: null,
             subItems: [],
-            category: item.time ?? null,
+            tagLabel: item.time ?? null,
             date:     null,
             time:     null,
           }

@@ -90,7 +90,6 @@ export default function BirthdaySection({ onStartDrag }) {
             priority: chip.type === 'birthday' ? 2 : 3,
             duration: null,
             subItems: [],
-            category: null,
             date:     null,
             time:     null,
             toolId:   'geburtstage',

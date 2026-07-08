@@ -234,7 +234,6 @@ export default function HaushaltSection({ onStartDrag }) {
                 priority: room.priority ?? 3,
                 duration: uncoveredTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0),
                 subItems: uncoveredTasks.map(t => ({ id: t.id, text: t.text, done: false })),
-                category: null,
                 date:     null,
                 time:     null,
               }

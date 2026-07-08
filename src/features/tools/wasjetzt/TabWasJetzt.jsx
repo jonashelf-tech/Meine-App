@@ -19,16 +19,16 @@ const ZEIT_OPTIONS = [
 ]
 
 export default function TabWasJetzt({ onBack }) {
-  const { todos, setTodos } = useAppStore()
+  const { todos, setTodos, projects } = useAppStore()
 
   const [zeitBudget, setZeitBudget] = useState(30)
-  const [cards,      setCards]      = useState(() => buildWasJetzt(todos, 30))
+  const [cards,      setCards]      = useState(() => buildWasJetzt(todos, 30, projects))
   const [doneIds,    setDoneIds]    = useState(new Set())
   const [genKey,     setGenKey]     = useState(0) // ändert sich → Animationen feuern neu
 
   const regen = useCallback((zeit) => {
     const current = useAppStore.getState().todos
-    setCards(buildWasJetzt(current, zeit))
+    setCards(buildWasJetzt(current, zeit, useAppStore.getState().projects))
     setDoneIds(new Set())
     setGenKey(k => k + 1)
   }, [])

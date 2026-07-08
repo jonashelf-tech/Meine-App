@@ -16,7 +16,7 @@ function haushaltUrgency(task) {
 // Quellen: Pool-Todos + überfällige Haushalt-Tasks.
 // Filter: duration ≤ zeitBudget (null = egal), done = false, keine Termine.
 // Score: Alter × Prio-Faktor — Haushalt-Tasks kriegen +2 Bonus für Überfälligkeit.
-export function buildWasJetzt(todos, zeitBudget) {
+export function buildWasJetzt(todos, zeitBudget, projects = []) {
   const candidates = []
 
   // ── Pool-Todos ────────────────────────────────────────────
@@ -28,6 +28,7 @@ export function buildWasJetzt(todos, zeitBudget) {
     const ageDays    = daysSinceCreated(todo.createdAt)
     const prioFactor = todo.priority === 1 ? 3 : todo.priority === 2 ? 1.5 : 1
     const score      = (ageDays / 7) * prioFactor
+    const projektName = todo.projectId ? projects.find(p => p.id === todo.projectId)?.name : null
 
     candidates.push({
       type:     'todo',
@@ -36,7 +37,7 @@ export function buildWasJetzt(todos, zeitBudget) {
       text:     todo.text,
       duration: todo.duration,
       color:    todo.color ?? '#8B5CF6',
-      meta:     todo.priority === 1 ? 'Prio 1' : (todo.category ?? 'Todo'),
+      meta:     todo.priority === 1 ? 'Prio 1' : (projektName ?? 'Todo'),
       score,
     })
   }

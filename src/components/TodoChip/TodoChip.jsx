@@ -206,10 +206,15 @@ export default function TodoChip({
     return () => document.removeEventListener('click', onOutsideClick, true)
   }, [floatExpand, expanded, disableExpand, closeExpand])
 
-  const { klaerenSettings } = useAppStore()
+  const { klaerenSettings, projects } = useAppStore()
   const threshold = klaerenSettings?.threshold ?? 7
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
   const color     = todo.color || '#8B5CF6'
+
+  const projektName = todo.projectId
+    ? (projects.find(p => p.id === todo.projectId)?.name ?? null)
+    : null
+  const metaTag = todo.tagLabel ?? projektName
 
   const ageDays   = (showAge || !!onKlaeren) ? getAgeDays(todo.createdAt) : 0
   const ageLabel  = showAge ? fmtAge(ageDays) : null
@@ -285,7 +290,7 @@ export default function TodoChip({
                   <span className={s.quickBadge}>⚡</span>
                 )}
               </span>
-              {todo.category && <span className={s.categoryTag}>{todo.category}</span>}
+              {metaTag && <span className={s.categoryTag}>{metaTag}</span>}
               {timeLabel && <span className={s.timeLabel}>{timeLabel}</span>}
             </div>
 

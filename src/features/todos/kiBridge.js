@@ -7,13 +7,14 @@
  * Baut den deutschen Zerlegungs-Prompt.
  * Leere Kontextzeilen (kein hindernis, kein wert) werden weggelassen.
  */
-export function buildZerlegenPrompt(todo, { hindernis, wert, today }) {
+export function buildZerlegenPrompt(todo, { hindernis, wert, today }, projects = []) {
   const lines = []
   lines.push('Du hilfst mir (ich habe ADHS), eine Aufgabe in kleine, konkrete Schritte zu zerlegen.')
   lines.push('')
 
   let aufgabeLine = `Aufgabe: «${todo.text}»`
-  if (todo.category) aufgabeLine += ` · Kategorie: ${todo.category}`
+  const projektName = todo.projectId ? projects.find(p => p.id === todo.projectId)?.name : null
+  if (projektName) aufgabeLine += ` · Projekt: ${projektName}`
   if (todo.duration)  aufgabeLine += ` · ~${todo.duration} min`
   lines.push(aufgabeLine)
 

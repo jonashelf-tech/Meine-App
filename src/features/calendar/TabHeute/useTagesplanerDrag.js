@@ -97,7 +97,7 @@ export function useTagesplanerDrag({
     const text     = item.text
     const duration = 30
     startDrag(text, reminderColor, (dropKey) => {
-      const newTodo = createBlock({ text, priority: 2, color: reminderColor, category: 'Selfcare', reminderItemId: item.id, toolId: 'reminder', duration })
+      const newTodo = createBlock({ text, priority: 2, color: reminderColor, reminderItemId: item.id, toolId: 'reminder', duration })
       setTodos(prev => [...prev, newTodo])
       if (dropKey !== 'pool') {
         handleSetSlot(dropKey, { text, todoId: newTodo.id, color: reminderColor, duration, locked: false, done: false })

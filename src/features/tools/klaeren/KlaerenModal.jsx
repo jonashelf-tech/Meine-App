@@ -22,7 +22,7 @@ function ProgressDots({ current }) {
 }
 
 export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
-  const { toolColors, klaerenSettings } = useAppStore()
+  const { toolColors, klaerenSettings, projects } = useAppStore()
   const toolColor      = getToolColor('klaeren', toolColors)
   const keyboardOffset = useKeyboardOffset()
 
@@ -67,7 +67,7 @@ export default function KlaerenModal({ todo, onClose, onSave, onDelete }) {
   const copyPrompt = async () => {
     try {
       await navigator.clipboard.writeText(
-        buildZerlegenPrompt(todo, { hindernis, wert, today: todayKey() })
+        buildZerlegenPrompt(todo, { hindernis, wert, today: todayKey() }, projects)
       )
     } catch { /* clipboard nicht verfügbar */ }
     setKiCopied(true)
