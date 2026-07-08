@@ -1,0 +1,217 @@
+/* src/features/projekte/ProjekteView.module.css */
+.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+}
+.page > * { animation: fadeInUp .4s var(--ease-out) both; }
+
+/* ── Kopf ── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 2px 0;
+}
+
+.back {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.headTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eyebrow {
+  font-family: var(--font);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.title {
+  font-family: var(--font);
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.sum {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  padding: 0 2px;
+}
+
+/* ── CTA ── */
+.cta {
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 13px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--bg);
+  text-align: center;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 70%, white), var(--primary));
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 28%, transparent);
+  cursor: pointer;
+}
+.cta:active { transform: scale(.98); }
+
+/* ── Neues-Projekt-Formular ── */
+.createForm {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.createInput {
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  color: var(--text);
+  outline: none;
+}
+.createInput:focus { border-color: var(--primary); }
+.createInput::placeholder { color: var(--text-faint); }
+
+.palette {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.swatchDot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+
+.formActions {
+  display: flex;
+  gap: 8px;
+}
+
+.submitBtn {
+  flex: 1;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 11px;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.cancelBtn {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 11px;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: none;
+  cursor: pointer;
+}
+
+/* ── Leerzustand ── */
+.emptyCard {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.emptyTitle {
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.emptyText {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.emptyCta {
+  margin-top: 14px;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 14px 28px;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--bg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 70%, white), var(--primary));
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 28%, transparent);
+  cursor: pointer;
+}
+.emptyCta:active { transform: scale(.98); }
+
+/* ── Ausgeblendet ── */
+.hiddenToggle {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  padding: 6px 4px;
+  cursor: pointer;
+}

@@ -30,16 +30,18 @@ import { useTagesplanerDrag } from './useTagesplanerDrag'
 import KognitivSection from '../../tools/kognitiv/KognitivSection'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
 import FokusView from './FokusView'
+import ProjekteView from '../../projekte/ProjekteView'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays, heuteModus, setHeuteModus, setTimerAutoStart, projects } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays, heuteModus, setHeuteModus, setTimerAutoStart, projects, setBackInterceptor } = useAppStore()
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [editingTodo,       setEditingTodo]       = useState(null)
   const [klaerenTodo,       setKlaerenTodo]       = useState(null)
   const [slotSheet,         setSlotSheet]          = useState(null)  // slotKey | null
   const [createSlot,        setCreateSlot]         = useState(null)  // slotKey | null → TodoModal mit Datum+Zeit
+  const [projekteOpen,      setProjekteOpen]       = useState(false)
 
   const { registerHalf, startDrag, draggingRef } = useDragDrop()
 
@@ -88,6 +90,12 @@ export default function TabHeute() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // ─── ProjekteView: Swipe-Back schließt zuerst die Subview ─
+  useEffect(() => {
+    setBackInterceptor(projekteOpen ? () => setProjekteOpen(false) : null)
+    return () => setBackInterceptor(null)
+  }, [projekteOpen, setBackInterceptor])
 
   // ─── Tagesplaner-Öffnung tracken (einmalig pro Tag) ───
   useEffect(() => {
@@ -171,80 +179,87 @@ export default function TabHeute() {
 
   return (
     <div className={s.page}>
-      <DayNav
-        date={viewDate}
-        onChange={setViewDate}
-        onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
-      />
-      {heuteModus === 'fokus' ? (
-        <FokusView
-          viewDate={viewDate}
-          todaySlots={todaySlots}
-          todos={todos}
-          onToggleSlotDone={handleToggleSlotDone}
-          onToggleTodoDone={handleToggleDone}
-          onShowFull={() => setHeuteModus('voll')}
-        />
+      {projekteOpen ? (
+        <ProjekteView onBack={() => setProjekteOpen(false)} />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {/* Nur der Zeitplan swipt beim Tageswechsel — Pool + Dashboards sind
-            datumsunabhängig und bleiben stehen (sonst wandert Unverändertes mit). */}
-        <div ref={swipeRef}>
-        <Zeitplan
-          slots={todaySlots}
-          todos={todos}
-          setTodos={setTodos}
-          visibleStart={visStart}
-          visibleEnd={visEnd}
-          dateLabel={viewDate}
-          onSetSlot={handleSetSlot}
-          onToggleSlotDone={handleToggleSlotDone}
-          onEditTodo={handleEdit}
-          onTapExpand={handleBandExpand}
-          onTapShrink={handleBandShrink}
-          onShiftAll={handleShiftAll}
-          onToggleLock={handleToggleLock}
-          onFokusMode={() => setHeuteModus('fokus')}
-          onPlaySlot={handlePlaySlot}
-          onEmptyTap={setSlotSheet}
-          registerHalf={registerHalf}
-          startSlotDrag={startSlotDrag}
-          blockers={blockers}
-          onCreateBlocker={handleCreateBlocker}
-          onEditBlocker={handleEditBlocker}
-          onToggleBlockerLocked={handleToggleBlockerLocked}
-          birthdayPills={birthdays}
-          birthdayPillsDate={viewDate}
+        <>
+        <DayNav
+          date={viewDate}
+          onChange={setViewDate}
+          onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
         />
-        </div>
-        <Pool
-          todos={todos}
-          setTodos={setTodos}
-          todaySlots={todaySlots}
-          viewDate={viewDate}
-          onToggleDone={handleToggleDone}
-          onEdit={handleEdit}
-          startDrag={startPoolDrag}
-          onDoneCalendar={handleDoneCalendar}
-          onKlaeren={activeTools.includes('klaeren') ? (todo) => setKlaerenTodo(todo) : undefined}
-          registerHalf={registerHalf}
-          projects={projects}
-        />
-        {(() => {
-          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, fitness: FitnessSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, growth: GrowthSection, rezepte: MealprepSection }
-          const SECTION_PROPS = {
-            haushalt:    { onStartDrag: startHaushaltDrag },
-            reminder:    { onStartDrag: startReminderDrag },
-            geburtstage: { onStartDrag: startBirthdayDrag },
-          }
-          const secs = activeTools
-            .filter(id => SECTIONS[id])
-            .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
-          return secs.length > 0
-            ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{secs}</div>
-            : null
-        })()}
-        </div>
+        {heuteModus === 'fokus' ? (
+          <FokusView
+            viewDate={viewDate}
+            todaySlots={todaySlots}
+            todos={todos}
+            onToggleSlotDone={handleToggleSlotDone}
+            onToggleTodoDone={handleToggleDone}
+            onShowFull={() => setHeuteModus('voll')}
+          />
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {/* Nur der Zeitplan swipt beim Tageswechsel — Pool + Dashboards sind
+              datumsunabhängig und bleiben stehen (sonst wandert Unverändertes mit). */}
+          <div ref={swipeRef}>
+          <Zeitplan
+            slots={todaySlots}
+            todos={todos}
+            setTodos={setTodos}
+            visibleStart={visStart}
+            visibleEnd={visEnd}
+            dateLabel={viewDate}
+            onSetSlot={handleSetSlot}
+            onToggleSlotDone={handleToggleSlotDone}
+            onEditTodo={handleEdit}
+            onTapExpand={handleBandExpand}
+            onTapShrink={handleBandShrink}
+            onShiftAll={handleShiftAll}
+            onToggleLock={handleToggleLock}
+            onFokusMode={() => setHeuteModus('fokus')}
+            onPlaySlot={handlePlaySlot}
+            onEmptyTap={setSlotSheet}
+            registerHalf={registerHalf}
+            startSlotDrag={startSlotDrag}
+            blockers={blockers}
+            onCreateBlocker={handleCreateBlocker}
+            onEditBlocker={handleEditBlocker}
+            onToggleBlockerLocked={handleToggleBlockerLocked}
+            birthdayPills={birthdays}
+            birthdayPillsDate={viewDate}
+          />
+          </div>
+          <Pool
+            todos={todos}
+            setTodos={setTodos}
+            todaySlots={todaySlots}
+            viewDate={viewDate}
+            onToggleDone={handleToggleDone}
+            onEdit={handleEdit}
+            startDrag={startPoolDrag}
+            onDoneCalendar={handleDoneCalendar}
+            onKlaeren={activeTools.includes('klaeren') ? (todo) => setKlaerenTodo(todo) : undefined}
+            registerHalf={registerHalf}
+            projects={projects}
+            onOpenProjekte={() => setProjekteOpen(true)}
+          />
+          {(() => {
+            const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, fitness: FitnessSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, growth: GrowthSection, rezepte: MealprepSection }
+            const SECTION_PROPS = {
+              haushalt:    { onStartDrag: startHaushaltDrag },
+              reminder:    { onStartDrag: startReminderDrag },
+              geburtstage: { onStartDrag: startBirthdayDrag },
+            }
+            const secs = activeTools
+              .filter(id => SECTIONS[id])
+              .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
+            return secs.length > 0
+              ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{secs}</div>
+              : null
+          })()}
+          </div>
+        )}
+        </>
       )}
 
       {editingTodo && (

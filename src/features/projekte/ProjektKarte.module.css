@@ -1,0 +1,323 @@
+/* src/features/projekte/ProjektKarte.module.css */
+.card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--c) 75%, transparent), transparent);
+}
+
+.cardClosing {
+  opacity: 0.5;
+  transform: scale(0.97);
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+}
+
+/* ── Kopf ── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuBtn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ── Fortschritt ── */
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.track {
+  flex: 1;
+  height: 7px;
+  border-radius: 6px;
+  background: var(--surface-low);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, transparent), var(--c));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--c) 40%, transparent);
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+.count {
+  flex-shrink: 0;
+  font-family: var(--font-num);
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--c);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Meta-Chips ── */
+.chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+/* ── Abschluss-Banner ── */
+.doneBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: color-mix(in srgb, var(--emerald) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--emerald) 30%, transparent);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  font-family: var(--font);
+  font-size: 0.78rem;
+  color: var(--emerald);
+}
+
+.dissolveBtn {
+  flex-shrink: 0;
+  background: var(--emerald);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 5px 11px;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ── Todo-Liste ── */
+.todoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.todoRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.todoRowFuture {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 2px;
+  opacity: 0.55;
+}
+
+.cbox {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--c) 55%, transparent);
+}
+
+.cboxDone {
+  background: var(--c);
+  border-color: var(--c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg);
+}
+
+.todoText {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.todoTextFuture {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.todoTextDone {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.futureBadge {
+  flex-shrink: 0;
+  font-family: var(--font);
+  font-size: 0.58rem;
+  color: var(--text-faint);
+  border: 1px solid var(--border-dim);
+  border-radius: 999px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+.doneSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.doneToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.66rem;
+  cursor: pointer;
+  padding: 6px 2px;
+  text-align: left;
+}
+
+.emptyHint {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 6px 0 2px;
+}
+
+/* ── QuickAdd ── */
+.quickAdd {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.quickRow {
+  display: flex;
+  gap: 7px;
+}
+
+.quickInput {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: 9px;
+  padding: 8px 11px;
+  font-family: var(--font);
+  font-size: 0.76rem;
+  color: var(--text);
+  outline: none;
+}
+.quickInput::placeholder { color: var(--text-faint); }
+.quickInput:focus { border-color: color-mix(in srgb, var(--c) 45%, var(--border-dim)); }
+
+.quickBtn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--c) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+  color: var(--c);
+  cursor: pointer;
+}
+
+.dateToggle {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.66rem;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.dateInput {
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: 9px;
+  padding: 7px 10px;
+  font-family: var(--font-num);
+  font-size: 0.74rem;
+  color: var(--text);
+  outline: none;
+  color-scheme: light dark;
+}
+.dateInput:focus { border-color: color-mix(in srgb, var(--c) 45%, var(--border-dim)); }
