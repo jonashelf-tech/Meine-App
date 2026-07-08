@@ -35,6 +35,12 @@ const ChevronIcon = ({ collapsed }) => (
   </svg>
 )
 
+const FolderIcon = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+  </svg>
+)
+
 // ─── PoolChip ─────────────────────────────────────────────
 function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPlaced, onKlaeren }) {
   const color = todo.color || '#8B5CF6'
@@ -89,9 +95,14 @@ export default function Pool({
   onDoneCalendar,
   onKlaeren,        // fn(todo) — opens Klären dialog; wired up when Klären-Tool is built
   registerHalf,
+  projects = [],
+  onOpenProjekte,
 }) {
   const [collapsed,      setCollapsed]      = useState(false)
-  const [sort,           setSort]           = useState(() => lv(SK.poolSort, 'standard'))
+  const [sort,           setSort]           = useState(() => {
+    const s = lv(SK.poolSort, 'standard')
+    return s === 'kategorie' ? 'projekt' : s
+  })
   const [showAll,        setShowAll]        = useState(false)
 
   const handleSort = useCallback((key) => {
@@ -113,10 +124,10 @@ export default function Pool({
 
   // ─── Derived lists ──────────────────────────────────────
   const activePool = useMemo(() => {
-    const undone  = sortTodos(getActiveTodos(todos, todaySlots), sort)
+    const undone  = sortTodos(getActiveTodos(todos, todaySlots), sort, projects)
     const pending = todos.filter(t => t.done && pendingDoneIds.has(t.id))
     return [...undone, ...pending]
-  }, [todos, todaySlots, pendingDoneIds, sort])
+  }, [todos, todaySlots, pendingDoneIds, sort, projects])
 
   const doneCount = useMemo(() => {
     const today = todayKey()
@@ -168,6 +179,12 @@ export default function Pool({
     onToggleDone?.(id)
   }, [todos, onToggleDone])
 
+  // ─── Gruppen-Key für Sortierung 'projekt' ──────────────
+  const groupKey = (t) => {
+    if (!t.projectId) return null
+    return projects.some(p => p.id === t.projectId) ? t.projectId : null
+  }
+
   // ─── Render chip ────────────────────────────────────────
   const renderChip = (t) => (
     <PoolChip
@@ -205,9 +222,9 @@ export default function Pool({
         {!collapsed && (
           <div className={s.sortRow} onClick={e => e.stopPropagation()}>
             {[
-              { key: 'standard',  label: 'Standard'  },
-              { key: 'kategorie', label: 'Kategorie' },
-              { key: 'alter',     label: 'Alter'     },
+              { key: 'standard', label: 'Standard' },
+              { key: 'projekt',  label: 'Projekt'   },
+              { key: 'alter',    label: 'Alter'     },
             ].map(({ key, label }) => (
               <button
                 key={key}
@@ -218,6 +235,17 @@ export default function Pool({
               </button>
             ))}
           </div>
+        )}
+
+        {!collapsed && (
+          <button
+            className={s.projBtn}
+            onClick={(e) => { e.stopPropagation(); onOpenProjekte?.() }}
+            aria-label="Projekte verwalten"
+          >
+            {FolderIcon}
+            <span className={s.projBtnCount}>{projects.filter(p => !p.hidden).length}</span>
+          </button>
         )}
 
         <span className={s.chevron}><ChevronIcon collapsed={collapsed} /></span>
@@ -247,7 +275,31 @@ export default function Pool({
               </p>
             )}
 
-            {visiblePool.map(renderChip)}
+            {sort === 'projekt'
+              ? (() => {
+                  const rows = []
+                  let last
+                  let started = false
+                  visiblePool.forEach(t => {
+                    const key = groupKey(t)
+                    if (!started || key !== last) {
+                      started = true
+                      last = key
+                      const proj = key ? projects.find(p => p.id === key) : null
+                      const count = visiblePool.filter(x => groupKey(x) === key).length
+                      rows.push(
+                        <div key={`h-${key ?? 'ohne'}`} className={s.groupHead}>
+                          <span className={s.groupDot} style={{ background: proj ? proj.color : undefined }} />
+                          {proj?.name ?? 'Ohne Projekt'}
+                          <span className={s.groupCount}>{count}</span>
+                        </div>
+                      )
+                    }
+                    rows.push(renderChip(t))
+                  })
+                  return rows
+                })()
+              : visiblePool.map(renderChip)}
 
             {hasMore && (
               <button className={s.expandMore} onClick={() => setShowAll(true)}>

@@ -33,7 +33,7 @@ import FokusView from './FokusView'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
-  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays, heuteModus, setHeuteModus, setTimerAutoStart } = useAppStore()
+  const { todos, setTodos, days, setDays, activeTools, setCurrentTab, dayplanDate, setDayplanDate, setCalendarDate, blockers, setBlockers, birthdays, setBirthdays, heuteModus, setHeuteModus, setTimerAutoStart, projects } = useAppStore()
 
   const [viewDate, setViewDate] = useState(() => dayplanDate ?? todayKey())
   const [editingTodo,       setEditingTodo]       = useState(null)
@@ -228,6 +228,7 @@ export default function TabHeute() {
           onDoneCalendar={handleDoneCalendar}
           onKlaeren={activeTools.includes('klaeren') ? (todo) => setKlaerenTodo(todo) : undefined}
           registerHalf={registerHalf}
+          projects={projects}
         />
         {(() => {
           const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, fitness: FitnessSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, growth: GrowthSection, rezepte: MealprepSection }

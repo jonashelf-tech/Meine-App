@@ -1,21 +1,26 @@
 import { isFaelligkeit, isTermin } from '../todos/Block'
 import { todayKey } from '../../utils'
 
-// Sortierung wie im Pool: standard (fällig → prio → alter), kategorie, alter.
+// Sortierung wie im Pool: standard (fällig → prio → alter), projekt, alter.
+// 'kategorie' ist der Alt-Wert aus persistiertem View-State (vor der
+// Projekte-Migration) und verhält sich identisch zu 'projekt'.
 // Pausierte Todos landen — unabhängig vom Sort — stabil ans Ende (raus aus dem
 // präsenten Vordergrund, aber sichtbar). Innerhalb beider Gruppen bleibt die
 // gewählte Sortierung erhalten.
-export function sortTodos(list, sort) {
+export function sortTodos(list, sort, projects = []) {
   let sorted
   if (sort === 'alter') {
     sorted = [...list].sort((a, b) =>
       new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
     )
-  } else if (sort === 'kategorie') {
+  } else if (sort === 'projekt' || sort === 'kategorie') {
+    const nameOf = (t) => {
+      if (!t.projectId) return '￿'
+      return projects.find(p => p.id === t.projectId)?.name ?? '￿'
+    }
     sorted = [...list].sort((a, b) => {
-      const ca = a.category || '￿'
-      const cb = b.category || '￿'
-      return ca.localeCompare(cb) || (a.priority - b.priority)
+      const na = nameOf(a), nb = nameOf(b)
+      return na.localeCompare(nb) || (a.priority - b.priority)
     })
   } else {
     const today = todayKey()

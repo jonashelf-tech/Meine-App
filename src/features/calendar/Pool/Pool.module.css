@@ -83,6 +83,32 @@
   flex-shrink: 0;
 }
 
+/* ─── Projekte-Button (Pool-Header) ──────────────────── */
+.projBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-low);
+  color: var(--text-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.projBtn:hover { color: var(--text); }
+
+.projBtnCount {
+  color: var(--primary);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ─── Endzeit-Projektion ─────────────────────────────── */
 .projection {
   display: flex;
@@ -114,6 +140,35 @@
   color: var(--text-dim);
   padding: 8px 14px;
   font-style: italic;
+}
+
+/* ─── Projekt-Gruppen-Header ─────────────────────────── */
+.groupHead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 6px 2px;
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.groupDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--border);
+}
+
+.groupCount {
+  margin-left: auto;
+  color: var(--text-faint);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ─── Drag handle ────────────────────────────────────── */
