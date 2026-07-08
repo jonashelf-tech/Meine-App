@@ -1,5 +1,9 @@
 import { create } from 'zustand'
 import { sv, lv, SK } from '../storage'
+import { migrateProjekte } from '../features/projekte/projektMigration'
+
+// Kategorie→Projekt-Migration MUSS vor den lv()-Reads der Store-Initialisierung laufen.
+migrateProjekte()
 
 const ACCENT_LEGACY = {
   cyan:   '#00CFFF',

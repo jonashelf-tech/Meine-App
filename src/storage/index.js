@@ -351,14 +351,16 @@ export const downloadFullBackup = () => {
 const OPFS_FILE = 'adhs-auto-backup.json'
 const AUTO_BACKUP_THROTTLE_MS = 30 * 60 * 1000
 
-export const saveAutoBackup = async () => {
+export const saveAutoBackup = async (force = false) => {
   const last = lv(SK.lastAutoBackup, 0)
-  if (Date.now() - last < AUTO_BACKUP_THROTTLE_MS) return
+  if (!force && Date.now() - last < AUTO_BACKUP_THROTTLE_MS) return
+  // Snapshot synchron VOR dem ersten await — Aufrufer (Migration) verlassen
+  // sich darauf, dass der Stand VOR ihren Writes gesichert wird.
+  const data = { ...exportData(), _savedAt: Date.now() }
   try {
     const root = await navigator.storage.getDirectory()
     const handle = await root.getFileHandle(OPFS_FILE, { create: true })
     const writable = await handle.createWritable()
-    const data = { ...exportData(), _savedAt: Date.now() }
     await writable.write(JSON.stringify(data))
     await writable.close()
     sv(SK.lastAutoBackup, Date.now())
