@@ -406,7 +406,24 @@
 .colorCircle:hover { transform: scale(1.15); }
 .colorCircleActive { border-color: #fff; transform: scale(1.15); }
 
-/* ─── Kategorie ──────────────────────────────────────────── */
+.pjDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.colorFromProject {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ─── Projekt ────────────────────────────────────────────── */
 .catWrap {
   flex: 1;
   display: flex;
@@ -422,6 +439,9 @@
 }
 
 .catChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -433,42 +453,10 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.catChipActive {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
-  color: #8B5CF6;
-  font-weight: 600;
-}
-
-.catChipDel {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--surface-low);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  color: var(--text-dim);
-  font-size: 0.75rem;
-  padding: 4px 6px 4px 10px;
-  font-family: inherit;
-}
-
-.catChipRm {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(251, 113, 133, 0.2);
-  border: 1px solid rgba(251, 113, 133, 0.35);
-  color: #FB7185;
-  font-size: 0.62rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
+.pjChipActive {
+  background: color-mix(in srgb, var(--pj) 16%, transparent);
+  border-color: color-mix(in srgb, var(--pj) 45%, transparent);
+  color: var(--text);
 }
 
 .catEditBtn {
@@ -666,6 +654,9 @@
 }
 
 .summaryChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.68rem;
   background: rgba(139, 92, 246, 0.12);
   border: 1px solid rgba(139, 92, 246, 0.25);

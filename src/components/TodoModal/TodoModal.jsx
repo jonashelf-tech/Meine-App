@@ -4,6 +4,7 @@ import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
 import { createNote, noteTitle, formatNoteTime } from '../../features/notes/Note'
 import { parseTodoText } from '../../features/todos/parseTodoText'
+import { resolveProject } from '../../features/projekte/projektModel'
 import { TOOL_TAB } from '../../features/tools/toolTabs'
 import { parseHHMM, minsToHHMM, minutesToSk, NEON } from '../../utils'
 import { lv, sv, SK } from '../../storage'
@@ -56,7 +57,7 @@ function formatSummaryDate(dateStr) {
 
 export default function TodoModal({ onClose, existingTodo = null, prefill = null }) {
   const keyboardOffset = useKeyboardOffset()
-  const { setTodos, setDays, setNotes, notes, cats, setCats, accentColor, setCurrentTab } = useAppStore()
+  const { setTodos, setDays, setNotes, notes, projects, setProjects, accentColor, setCurrentTab } = useAppStore()
 
   const isEdit = existingTodo !== null
 
@@ -64,7 +65,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const [priority, setPriority] = useState(existingTodo?.priority ?? 3)
   const [duration, setDuration] = useState(existingTodo?.duration ?? null)
   const [color,    setColor]    = useState(existingTodo?.color    ?? accentColor ?? '#8B5CF6')
-  const [category, setCategory] = useState(existingTodo?.category ?? null)
+  const [projectId, setProjectId] = useState(existingTodo?.projectId ?? null)
   const [date,     setDate]     = useState(existingTodo?.date ?? prefill?.date ?? '')
   const [time,     setTime]     = useState(existingTodo?.time ?? prefill?.time ?? '')
   const [repeat,   setRepeat]   = useState(existingTodo?.repeat   ?? null)
@@ -77,10 +78,10 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const subDragRef = useRef({ from: null, over: null })
   const [blinkDate,   setBlinkDate]   = useState(false)
   const [blinkTime,   setBlinkTime]   = useState(false)
-  const [catEditMode, setCatEditMode] = useState(false)
-  const [catNewInput, setCatNewInput] = useState('')
+  const [projNewMode, setProjNewMode] = useState(false)
+  const [projNewInput, setProjNewInput] = useState('')
   const [detailsOpen, setDetailsOpen] = useState(() =>
-    isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.category)
+    isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.projectId)
   )
   const [confirmDelete, setConfirmDelete] = useState(false)
 
@@ -119,7 +120,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     duration: duration ?? parsed?.duration ?? null,
     date:     date || parsed?.date || '',
     time:     time || parsed?.time || '',
-    category: category ?? parsed?.category ?? null,
+    tag:      parsed?.tag ?? null,
   }
 
   const autoChips = parsed ? [
@@ -128,7 +129,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     duration == null && parsed.duration != null && `${parsed.duration} min`,
     !date && parsed.date && formatSummaryDate(parsed.date),
     !time && parsed.time && parsed.time,
-    !category && parsed.category && `#${parsed.category}`,
+    !projectId && parsed.tag && `#${parsed.tag}`,
   ].filter(Boolean) : []
 
   const addSubItem = () => {
@@ -173,14 +174,25 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     document.addEventListener('pointerup', up)
   }
 
-  const addCat = () => {
-    const name = catNewInput.trim(); if (!name) return
-    if (!cats.includes(name)) setCats([...cats, name])
-    setCatNewInput('')
+  const addProject = () => {
+    const name = projNewInput.trim()
+    if (!name) return
+    const { projects: nextProjects, project } = resolveProject(projects, name)
+    if (nextProjects !== projects) setProjects(nextProjects)
+    setProjectId(project.id)
+    setColor(project.color)
+    setProjNewInput('')
+    setProjNewMode(false)
   }
-  const removeCat = (name) => {
-    setCats(cats.filter(c => c !== name))
-    if (category === name) setCategory(null)
+
+  const projekt = projects.find(p => p.id === projectId) ?? null
+  const visibleProjects = projects.filter(p => !p.hidden)
+  const pickProject = (p) => {
+    setProjectId(prev => {
+      const next = prev === p.id ? null : p.id
+      if (next) setColor(p.color)
+      return next
+    })
   }
 
   const handleDurPreset = (val) => setDuration(prev => prev === val ? null : val)
@@ -207,7 +219,15 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const handleSubmit = () => {
     if (!eff.text) return
     if (eff.time && !eff.date) { setDetailsOpen(true); triggerBlink('date'); return }
-    if (eff.category && !cats.includes(eff.category)) setCats([...cats, eff.category])
+
+    let effProjectId = projectId
+    let effColor = color
+    if (!effProjectId && eff.tag) {
+      const { projects: nextProjects, project } = resolveProject(projects, eff.tag)
+      if (nextProjects !== projects) setProjects(nextProjects)
+      effProjectId = project.id
+      effColor = project.color
+    }
 
     if (isEdit) {
       const wasTermin = !!(existingTodo.date && existingTodo.time)
@@ -215,15 +235,15 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
 
       const updated = {
         ...existingTodo,
-        text:     eff.text,
-        priority: eff.priority,
-        color,
-        duration: eff.duration || null,
-        category: eff.category || null,
-        repeat:   repeat || null,
+        text:      eff.text,
+        priority:  eff.priority,
+        color:     effColor,
+        duration:  eff.duration || null,
+        projectId: effProjectId,
+        repeat:    repeat || null,
         subItems,
-        date:     eff.date || null,
-        time:     eff.time || null,
+        date:      eff.date || null,
+        time:      eff.time || null,
       }
 
       setDays(prev => {
@@ -270,10 +290,10 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     } else {
       if (isTermin) {
         const block = createBlock({
-          text: eff.text, priority: eff.priority, color,
+          text: eff.text, priority: eff.priority, color: effColor,
           duration: eff.duration || 30,
           date: eff.date, time: eff.time,
-          category: eff.category || null,
+          projectId: effProjectId,
           repeat: repeat || null,
           subItems,
         })
@@ -292,10 +312,10 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         setTodos(prev => [...prev, block])
       } else {
         setTodos(prev => [...prev, createBlock({
-          text: eff.text, priority: eff.priority, color,
+          text: eff.text, priority: eff.priority, color: effColor,
           duration: eff.duration || null,
           date: eff.date || null,
-          category: eff.category || null,
+          projectId: effProjectId,
           repeat: repeat || null,
           subItems,
         })])
@@ -517,11 +537,11 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           onClick={() => setDetailsOpen(v => !v)}
         >
           <span className={s.detailsLabel}>Details</span>
-          {!detailsOpen && (date || time || category) && (
+          {!detailsOpen && (date || time || projekt) && (
             <span className={s.detailsSummary}>
               {date && <span className={s.summaryChip}>{formatSummaryDate(date)}</span>}
               {time && <span className={s.summaryChip}>{endTime ? `${time}–${endTime}` : time}</span>}
-              {category && <span className={s.summaryChip}>{category}</span>}
+              {projekt && <span className={s.summaryChip}><span className={s.pjDot} style={{ background: projekt.color }} />{projekt.name}</span>}
             </span>
           )}
           {isTermin && !detailsOpen && (
@@ -570,61 +590,69 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
             </div>
 
             {/* Farbe */}
-            <div className={s.row}>
-              <span className={s.rowLabel}>Farbe</span>
-              <div className={s.colorRow}>
-                {NEON.map(c => (
-                  <button
-                    key={c}
-                    className={[s.colorCircle, color === c ? s.colorCircleActive : ''].join(' ')}
-                    style={{ background: c }}
-                    onClick={() => setColor(c)}
-                  />
-                ))}
+            {projekt ? (
+              <div className={s.row}>
+                <span className={s.rowLabel}>Farbe</span>
+                <span className={s.colorFromProject}>
+                  <span className={s.pjDot} style={{ background: projekt.color }} />
+                  Farbe kommt vom Projekt
+                </span>
               </div>
-            </div>
+            ) : (
+              <div className={s.row}>
+                <span className={s.rowLabel}>Farbe</span>
+                <div className={s.colorRow}>
+                  {NEON.map(c => (
+                    <button
+                      key={c}
+                      className={[s.colorCircle, color === c ? s.colorCircleActive : ''].join(' ')}
+                      style={{ background: c }}
+                      onClick={() => setColor(c)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
-            {/* Kategorie */}
+            {/* Projekt */}
             <div className={s.row} style={{ alignItems: 'flex-start' }}>
-              <span className={s.rowLabel} style={{ marginTop: 6 }}>Kategorie</span>
+              <span className={s.rowLabel} style={{ marginTop: 6 }}>Projekt</span>
               <div className={s.catWrap}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                  <div className={s.catChips}>
-                    {cats.length === 0 && !catEditMode && (
-                      <span className={s.catEmpty}>Noch keine Kategorien</span>
-                    )}
-                    {catEditMode
-                      ? cats.map(name => (
-                          <span key={name} className={s.catChipDel}>
-                            {name}
-                            <button className={s.catChipRm} onClick={() => removeCat(name)}>✕</button>
-                          </span>
-                        ))
-                      : cats.map(name => (
-                          <button
-                            key={name}
-                            className={[s.catChip, category === name ? s.catChipActive : ''].join(' ')}
-                            onClick={() => setCategory(prev => prev === name ? null : name)}
-                          >{name}</button>
-                        ))
-                    }
-                  </div>
+                  {!projNewMode && (
+                    <div className={s.catChips}>
+                      {visibleProjects.length === 0 && (
+                        <span className={s.catEmpty}>Noch keine Projekte</span>
+                      )}
+                      {visibleProjects.map(p => (
+                        <button
+                          key={p.id}
+                          className={[s.catChip, projectId === p.id ? s.pjChipActive : ''].join(' ')}
+                          style={{ '--pj': p.color }}
+                          onClick={() => pickProject(p)}
+                        >
+                          <span className={s.pjDot} style={{ background: p.color }} />
+                          {p.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <button
-                    className={[s.catEditBtn, catEditMode ? s.catEditBtnActive : ''].join(' ')}
-                    onClick={() => { setCatEditMode(v => !v); setCatNewInput('') }}
-                    aria-label={catEditMode ? 'Fertig' : 'Kategorien bearbeiten'}
+                    className={[s.catEditBtn, projNewMode ? s.catEditBtnActive : ''].join(' ')}
+                    onClick={() => { setProjNewMode(v => !v); setProjNewInput('') }}
+                    aria-label={projNewMode ? 'Fertig' : 'Neues Projekt'}
                   ><EditIcon /></button>
                 </div>
-                {catEditMode && (
+                {projNewMode && (
                   <div className={s.catManageRow}>
                     <input
                       className={s.catNewInput}
-                      placeholder={cats.length === 0 ? 'Erste Kategorie anlegen…' : 'Neue Kategorie…'}
-                      value={catNewInput}
-                      onChange={e => setCatNewInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCat() } }}
+                      placeholder="Neues Projekt…"
+                      value={projNewInput}
+                      onChange={e => setProjNewInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addProject() } }}
                     />
-                    <button className={s.catAddBtn} onClick={addCat}>+</button>
+                    <button className={s.catAddBtn} onClick={addProject}>+</button>
                   </div>
                 )}
               </div>

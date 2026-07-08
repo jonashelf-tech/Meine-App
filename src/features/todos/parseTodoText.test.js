@@ -29,7 +29,7 @@ describe('parseTodoText — konsolidierter Parser', () => {
 
   it('erkennt #Kategorie (aus QuickAdd übernommen)', () => {
     const p = parseTodoText('Rasen mähen #Garten')
-    expect(p.category).toBe('Garten')
+    expect(p.tag).toBe('Garten')
     expect(p.text).toBe('Rasen mähen')
   })
 
@@ -56,6 +56,6 @@ describe('parseTodoText — konsolidierter Parser', () => {
 
   it('ohne Marker bleibt alles leer', () => {
     const p = parseTodoText('Einfach nur Text')
-    expect(p).toMatchObject({ text: 'Einfach nur Text', date: null, time: null, duration: null, priority: 3, category: null })
+    expect(p).toMatchObject({ text: 'Einfach nur Text', date: null, time: null, duration: null, priority: 3, tag: null })
   })
 })

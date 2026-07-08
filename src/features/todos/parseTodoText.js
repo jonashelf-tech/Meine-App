@@ -6,7 +6,7 @@ import { dateKey } from '../../utils'
 // Erkennt:
 //   !text / !!text                  → Priorität 1
 //   dringend/wichtig/asap/sofort    → Priorität 1 · sollte/bald → Priorität 2
-//   #Kategorie                      → category
+//   #Kategorie                      → tag
 //   15-17 / 15:00-17:30 (uhr)       → time + duration
 //   14:30 / 14.30 uhr / 14 uhr      → time
 //   heute/morgen/übermorgen/Montag… → date
@@ -88,5 +88,5 @@ export function parseTodoText(raw) {
     }
   }
 
-  return { text: text.trim().replace(/\s+/g, ' '), date, time, duration, priority, category }
+  return { text: text.trim().replace(/\s+/g, ' '), date, time, duration, priority, tag: category }
 }
