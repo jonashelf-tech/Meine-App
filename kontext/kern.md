@@ -9,7 +9,7 @@
   priority:  3,         // 1=Wichtig · 2=Sollte · 3=Kann
   color:     "#8B5CF6", // Default = Akzentfarbe
   duration:  null,      // Minuten, null = keine Angabe
-  category:  null,
+  projectId: null,      // Projekt-Referenz (UUID) — siehe Abschnitt „Projekte (Kernfunktion)"
   date:      null,      // "2024-01-15" — Fälligkeit oder Termin
   time:      null,      // "14:30" — nur bei Terminen (date+time = Kalender-Termin)
   done:      false,
@@ -43,6 +43,42 @@ Zeitspanne (`10-12` / `10:00-12:00`, optional „uhr" mit beliebigem Leerzeichen
 Start — kein eigener State, reine Ableitung aus `time`+`duration` (`minsToHHMM(parseHHMM(time)+duration)`).
 Eintippen von Ende schreibt direkt auf `duration` (Ende−Start, nur wenn > 0). Datenmodell unverändert —
 Block speichert weiterhin nur `duration` in Minuten, kein `endTime`-Feld.
+
+---
+
+## Projekte (Kernfunktion)
+
+Todos gehören optional zu einem Projekt (`todo.projectId`, UUID) statt zu einer freien
+Kategorie-Zeichenkette. Datenmodell (`createProject(partial?)` in `src/features/projekte/projektModel.js`):
+
+```js
+{
+  id:         genId(),
+  name:       "",
+  color:      "#4D9EFF",    // aus PROJEKT_COLORS[]
+  hidden:     false,
+  autoDelete: false,
+  createdAt:  new Date().toISOString(),
+}
+```
+
+- **`PROJEKT_COLORS`** — feste Farbpalette (Daten in JS, `projektModel.js`), bewusst **ohne**
+  Akzent-Violett `#8B5CF6` (das bleibt reserviert für „Todo ohne Projekt"). `nextFreeColor()`
+  vergibt neuen Projekten die am wenigsten genutzte Farbe.
+- **Sweep-Modell:** Die Projektfarbe wird nicht zur Render-Zeit aufgelöst, sondern beim
+  Zuweisen/Umfärben direkt auf `todo.color` **und** alle referenzierenden Slots geschrieben
+  (`recolorProject()` in projektModel.js). Kalender/Zeitplan brauchen deshalb keine
+  Projekt-Lookups beim Rendern — sie zeigen einfach `todo.color`/`slot.color`.
+- **Boot-Migration** (`src/features/projekte/projektMigration.js`): marker-los und idempotent
+  (Shape entscheidet, nicht ein Versions-Flag) — wandelt altes `todo.category` + `cats`-Strings
+  in Projekte um, läuft in `store/index.js` VOR den `lv()`-Reads der Store-Initialisierung
+  (heilt damit auch Restores alter Backups beim nächsten Boot).
+- **ProjekteView** (`src/features/projekte/ProjekteView.jsx` + `ProjektKarte.jsx` +
+  `ProjektMenuSheet.jsx`): Vollbild-Subview **im Tagesplaner** (kein eigener Tab) — Einstieg
+  über den Projekte-Button im Pool-Header (`onOpenProjekte`-Prop, TabHeute), `backInterceptor`
+  schließt sie vor dem restlichen Tagesplaner.
+- **Guard:** `src/projektGuard.test.js` verhindert, dass das tote Todo-Feld `category`/`catName`
+  zurücksickert (nur `projektMigration.js` darf es lesen).
 
 ---
 
@@ -221,7 +257,7 @@ Garten-XP lesen `todo.done`/`doneAt` — einseitige Writes lassen die Ansichten 
 SK.todos          → 'adhs_todos_list'
 SK.routines       → 'adhs_todos_routines'
 SK.todoOrder      → 'adhs_todos_order'
-SK.cats           → 'adhs_todos_cats'
+SK.cats           → 'adhs_todos_cats'    // LEGACY (nur Alt-Backup + Boot-Migration; kein Store-Slice mehr) — Todo-Gruppierung läuft über Projekte
 SK.notes          → 'adhs_notes_v1'           // eigener Notiz-Store (in BACKUP_CATS.tools)
 SK.noteDraft      → 'adhs_notes_draft'        // ephemer — +-Modal Notiz-Entwurf
 SK.addMode        → 'adhs_view_add_mode'      // 'aufgabe'|'notiz' — letzter +-Modus
@@ -421,7 +457,7 @@ Damit geht Swipe-Back innerhalb eines Tools eine Ebene zurück (statt das Tool z
 - **Drag blockiert Page-Swipe (2026-07-01):** `useDragDrop` liefert `draggingRef` (true während `startDrag`…`pointerup`). TabHeute's `usePageSwipe`-`disabled` ist dafür eine **Funktion** (nicht mehr ein am Render eingefrorener Boolean) und prüft `draggingRef.current` live — sonst bliebe der Ref-Wert vom letzten Render hängen. Gleiches Muster wie `weekDraggingRef` in TabKalender/WocheView.
 - **Löschen ausschließlich über TodoModal / Drag-in-Pool (2026-07-01):** Swipe-to-delete im TodoChip (translate + `.deleteReveal`) + der Zeitplan-`RemoveDialog` ("Zurück in Pool"/"Löschen") sind entfernt — die Geste kollidierte mit dem Drag-Handle (löste beim Wischen sofort ein Drag statt Löschen aus) und wackelte bei jedem Scroll mit. Ersatz: Doppeltipp → TodoModal → „Löschen" (2-Schritt-Bestätigung, entfernt Todo + räumt referenzierende Slots auf) für alles mit `onEdit`; Ziehen-in-Pool bleibt der Weg für „Slot loswerden ohne Todo zu löschen" (funktioniert auch bei reinen Text-Slots ohne `todoId` — dann verschwindet der Slot komplett, da nichts „zurückzulegen" ist). `onRemove`/„✕"-Button existiert nur noch für fakeTodo-Chips ohne `onEdit` (Reminder/Haushalt/Geburtstage-Widgets).
 - **Endzeit-Projektion (Pool):** dezente Zeile unter dem Pool-Header — Summe der Dauern offener Todos + „fertig ~HH:MM" (wenn jetzt gestartet) + „+N ohne Dauer". Tickt minütlich, erscheint nur wenn mind. ein offenes Todo eine Dauer hat.
-- **Pool-Sortierung „Projekt" (`poolLogic.js` → `sortTodos(list, sort, projects)`):** gruppiert nach Projekt-Name (`localeCompare`, dann `priority`). Todos ohne `projectId` sowie mit dangling `projectId` (Projekt existiert nicht mehr) bilden gemeinsam die letzte Gruppe „Ohne Projekt" (Sentinel `'￿'`). Farbige Gruppen-Header (`Pool.module.css` → `.groupHead`/`.groupDot`, Farbe per Inline-Style aus `project.color`) zeigen Name + Anzahl der **sichtbaren** Todos der Gruppe. Alt-Wert `'kategorie'` aus `SK.poolSort` (vor der Projekte-Migration) verhält sich identisch und wird beim Laden auf `'projekt'` migriert. **Projekte-Button** im Pool-Header (Ordner-Icon + Anzahl nicht versteckter Projekte) ruft die optionale `onOpenProjekte`-Prop auf — noch nicht verdrahtet, öffnet später die ProjekteView.
+- **Pool-Sortierung „Projekt" (`poolLogic.js` → `sortTodos(list, sort, projects)`):** gruppiert nach Projekt-Name (`localeCompare`, dann `priority`). Todos ohne `projectId` sowie mit dangling `projectId` (Projekt existiert nicht mehr) bilden gemeinsam die letzte Gruppe „Ohne Projekt" (Sentinel `'￿'`). Farbige Gruppen-Header (`Pool.module.css` → `.groupHead`/`.groupDot`, Farbe per Inline-Style aus `project.color`) zeigen Name + Anzahl der **sichtbaren** Todos der Gruppe. Alt-Wert `'kategorie'` aus `SK.poolSort` (vor der Projekte-Migration) verhält sich identisch und wird beim Laden auf `'projekt'` migriert. **Projekte-Button** im Pool-Header (Ordner-Icon + Anzahl nicht versteckter Projekte) ruft `onOpenProjekte` auf — TabHeute öffnet darüber die `ProjekteView` als Vollbild-Subview (siehe Abschnitt „Projekte (Kernfunktion)").
 - **Eingebettete Sektionen:** `<ReminderSection />` und `<HaushaltSection />` erscheinen unter dem Pool wenn aktiv. Beide nutzen das **fakeTodo-Pattern**: Items werden als `fakeTodo`-Objekte in `<TodoChip>` gerendert (disableExpand, 6-Punkte-Drag-Handle, Auswahl-Checkbox, Masse-Add-Button). Todo-Erstellung passiert erst **beim Drop** (atomar mit dem Slot) — kein Flackern im Pool. TabHeute liefert `startHaushaltDrag` / `startReminderDrag` via `onStartDrag`-Prop. Siehe `kontext/tool-pattern.md` für das vollständige Muster.
 - **Blocker:** `BlockerModal` + `RepeatDeleteSheet` — Blocker im Zeitplan erstellen/bearbeiten/löschen. Löschen wiederkehrender Blocker: "Nur diese" (exception) oder "Diese und alle zukünftigen" (endDate).
 - **Play am Slot:** ▶-Button an nicht-erledigten Slots (TodoChip `onPlay`-Prop) → `setTimerAutoStart({todoId,text,color,duration,date,slotKey})` + Tab-Wechsel zum Fokus-Timer. Timer startet sofort, „✓ Fertig"-Button beendet vorzeitig; Abschluss-Dialog zeigt **geplant X min · gebraucht Y min** und hakt Todo **und** Slot ab.

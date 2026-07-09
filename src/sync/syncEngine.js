@@ -78,7 +78,6 @@ const setStore = (patch) => useAppStore.setState(patch)
 const REHYDRATE = {
   [SK.todos]:           v => setStore({ todos: v ?? [] }),
   [SK.todoOrder]:       v => setStore({ todoOrder: v ?? [] }),
-  [SK.cats]:            v => setStore({ cats: v ?? [] }),
   [SK.projects]:        v => setStore({ projects: v ?? [] }),
   [SK.notes]:           v => setStore({ notes: v ?? [] }),
   [SK.blockers]:        v => setStore({ blockers: v ?? [] }),

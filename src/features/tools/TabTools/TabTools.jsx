@@ -17,7 +17,7 @@ const SWATCHES = [
 ]
 
 // Vorübergehend geparkt — eigener Bereich, taucht nicht mehr unter "Alle Tools" auf.
-const STUFF_IDS = ['elvi', 'timer', 'garten', 'pizza', 'projekte', 'reminder', 'wasjetzt', 'rad']
+const STUFF_IDS = ['elvi', 'timer', 'garten', 'pizza', 'reminder', 'wasjetzt', 'rad']
 const stuffTools = STUFF_IDS.map(id => TOOL_REGISTRY.find(t => t.id === id)).filter(Boolean)
 
 const allToolsSorted = TOOL_REGISTRY

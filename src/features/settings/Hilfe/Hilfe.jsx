@@ -26,6 +26,10 @@ const CARDS = [
     title: 'Der +-Knopf',
     body: 'Über + legst du Aufgaben an. Schreib einfach drauflos — aus „Einkaufen 30min wichtig" erkennt die App Dauer und Priorität von selbst. Über den Umschalter oben wird aus dem + auch eine schnelle Notiz.',
   },
+  {
+    title: 'Projekte',
+    body: 'Gehören mehrere Todos zusammen — Einkauf, Urlaub, Wohnung — bündelst du sie zu einem Projekt. Jedes Projekt hat eine eigene Farbe, die das Todo überall trägt: im Pool, im Zeitplan, im Kalender. Projekte verwaltest du über den Projekte-Knopf oben im Pool; dort siehst du auch den Fortschritt und kannst Todos „erst ab einem Datum" auftauchen lassen.',
+  },
 ]
 
 const TOOLS_INTRO =

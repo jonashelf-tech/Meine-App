@@ -16,7 +16,7 @@ Tab 13 — Haushalt      (haushalt)
 Tab 14 — Was jetzt?    (wasjetzt)
 Tab 15 — Klar+Sehen   (klaeren)
 Tab 16 — Kognitiv      (kognitiv)
-Tab 17 — Projekte      (projekte)
+Tab 17 — frei (Projekte ist Kernfunktion geworden, kein Tool mehr — siehe kern.md „Projekte")
 Tab 18 — Growth        (growth)   ← ersetzt Wachstum (Journaling-Tool)
 Tab 19 — Notizen       (notizen)
 Tab 20 → nächstes Tool
@@ -203,7 +203,7 @@ export default function ToolnameSection({ onStartDrag }) {
     priority: 3,        // Default Prio für Tool-Items
     duration: null,     // kein "Xmin" in Meta
     subItems: [],
-    category: null,     // optional: Zusatzinfo (z.B. item.time)
+    tagLabel: null,     // optional: Zusatzinfo (z.B. item.time) — TodoChip zeigt das statt des Projekt-Namens im Meta-Tag
     date:     null,
     time:     null,
     toolId:   'toolname',
@@ -364,7 +364,7 @@ export default function ToolnameSection({ onStartDrag }) {
             priority: 3,
             duration: null,
             subItems: [],
-            category: null,
+            tagLabel: null,
             date:     null,
             time:     null,
             toolId:   'toolname',

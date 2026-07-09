@@ -42,6 +42,13 @@ src/
         bandLogic.js            — rein+getestet: computeBands() — Sichtfenster + "frei"-Bänder außerhalb
         Zeitplan.jsx + .module.css
 
+    projekte/          — Projekte als Kernfunktion: Todos gruppieren sich über `projectId` statt freier Kategorie-Strings
+      projektModel.js               — Datenmodell (createProject, PROJEKT_COLORS ohne Akzent-Violett) + nextFreeColor, recolorProject (Farb-Sweep → Todos+Slots), dissolveProject
+      projektMigration.js           — Boot-Migration Kategorie→Projekt (marker-los/idempotent, Shape statt Versions-Flag), läuft in store/index.js vor Store-Init
+      ProjekteView.jsx + .module.css     — Vollbild-Subview im Tagesplaner (kein eigener Tab): Projekt-Liste, Anlegen, Sichtbar/Versteckt
+      ProjektKarte.jsx + .module.css     — einzelne Projekt-Karte: Fortschritt, zugehörige Todos, Menü-Einstieg
+      ProjektMenuSheet.jsx + .module.css — Bottom-Sheet: Umbenennen, Umfärben (recolorProject), Verstecken, Auflösen (dissolveProject)
+
     settings/         TabSettings/TabSettings.jsx
                       Hilfe/Hilfe.jsx        — Sub-View „Wie funktioniert die App?": Kern-Karten (Prosa) + Tool-Liste generiert aus TOOL_REGISTRY. Kein Onboarding, kein Storage-Key; backInterceptor schließt zuerst die Hilfe.
 

@@ -36,7 +36,6 @@ export const useAppStore = create((set, get) => ({
   // ─── Todos ─────────────────────────────────────────────
   todos:     lv(SK.todos, []),
   todoOrder: lv(SK.todoOrder, []),
-  cats:      lv(SK.cats, []),
   projects:  lv(SK.projects, []),
 
   setTodos: (todos) => {
@@ -45,7 +44,6 @@ export const useAppStore = create((set, get) => ({
     sv(SK.todos, next)
   },
   setTodoOrder: (order) => { set({ todoOrder: order }); sv(SK.todoOrder, order) },
-  setCats: (cats) => { set({ cats }); sv(SK.cats, cats) },
   setProjects: (projects) => {
     const next = typeof projects === 'function' ? projects(get().projects) : projects
     set({ projects: next })

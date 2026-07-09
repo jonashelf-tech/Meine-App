@@ -387,6 +387,7 @@ export const exportDataReadable = () => {
   const recipes   = lv(SK.recipes, [])
   const rezepteZutaten = lv(SK.rezepteZutaten, [])
   const cats      = lv(SK.cats, [])
+  const projects  = lv(SK.projects, [])
   const haushalt  = lv(SK.haushalt, null)
 
   const doneTodos = todos.filter(t => t.done && t.doneAt)
@@ -414,7 +415,7 @@ export const exportDataReadable = () => {
         erledigt: t.done ?? false,
         erledigt_am: t.doneAt ?? null,
         prioritaet: t.priority ?? null,
-        kategorie: t.category ?? null,
+        projekt: projects.find(p => p.id === t.projectId)?.name ?? null,
         faelligkeit: t.date ?? null,
       })),
     },
