@@ -17,17 +17,24 @@
 }
 
 .back {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: none;
-  color: var(--text-dim);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 5px 10px 5px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--border-dim);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  white-space: nowrap;
   cursor: pointer;
+}
+
+.backArrow {
+  color: var(--primary);
+  font-size: 0.9rem;
 }
 
 .headTitle {

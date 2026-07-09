@@ -76,7 +76,9 @@ Kategorie-Zeichenkette. Datenmodell (`createProject(partial?)` in `src/features/
 - **ProjekteView** (`src/features/projekte/ProjekteView.jsx` + `ProjektKarte.jsx` +
   `ProjektMenuSheet.jsx`): Vollbild-Subview **im Tagesplaner** (kein eigener Tab) — Einstieg
   über den Projekte-Button im Pool-Header (`onOpenProjekte`-Prop, TabHeute), `backInterceptor`
-  schließt sie vor dem restlichen Tagesplaner.
+  schließt sie vor dem restlichen Tagesplaner (Swipe-Back, Browser-Back **oder** Tap auf den
+  aktiven Tagesplaner-Reiter). Zurück-Button in der Kopfzeile = dieselbe „← Zurück"-Pille wie
+  `ToolHeader` (nicht mehr der runde Icon-Button).
 - **Guard:** `src/projektGuard.test.js` verhindert, dass das tote Todo-Feld `category`/`catName`
   zurücksickert (nur `projektMigration.js` darf es lesen).
 
@@ -167,7 +169,7 @@ currentTab,   previousTab,  setCurrentTab
 dayplanDate,  setDayplanDate   // Flüchtiger Intent-Wert (kein localStorage)
 calendarDate, setCalendarDate  // Flüchtiger Intent-Wert (kein localStorage)
 heuteModus,   setHeuteModus    // 'voll' | 'fokus' — persistiert (SK.heuteModus), Default 'voll'
-backInterceptor, setBackInterceptor  // fn | null — App.jsx ruft vor Tab-Navigation auf (Swipe-Back-Fix)
+backInterceptor, setBackInterceptor  // fn | null — App.jsx ruft ihn bei Browser-Back UND bei Tap auf den schon aktiven Reiter auf (poppt offene Subview statt Tab-Wechsel)
 
 // Kognitiv
 kognitivAutoStart, setKognitivAutoStart  // string | null — moduleId für Auto-Start aus Tagesplaner
@@ -433,6 +435,8 @@ Tool-Navigation: `setCurrentTab(TOOL_TAB[toolId])` — TOOL_TAB-Mapping **aussch
 `backInterceptor` im Store (`store/index.js`) — `fn | null`.
 
 `App.jsx` fängt den Browser-Popstate-Event ab. Bevor der Tab-Wechsel ausgeführt wird, wird geprüft ob ein Interceptor gesetzt ist → wird aufgerufen statt zurück zu navigieren.
+
+Zusätzlich prüft die **Tab-Leiste**: Tap auf den *bereits aktiven* Reiter ruft den Interceptor auf (statt `setCurrentTab` mit gleichem Wert, was nichts täte). Damit schließt z.B. ein Tap auf „Tagesplaner" die offene `ProjekteView`, ein Tap auf „Einstellungen" die offene Hilfe — gleicher Effekt wie Swipe-/Browser-Back.
 
 **Nutzung in Tools:**
 ```js

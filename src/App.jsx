@@ -200,7 +200,17 @@ export default function App() {
             <button
               key={id}
               className={`${styles.tabBtn}${active ? ' ' + styles.active : ''}`}
-              onClick={() => setCurrentTab(id)}
+              onClick={() => {
+                // Tap auf den schon aktiven Reiter poppt eine offene Subview (Projekte,
+                // Hilfe) — selber Weg wie Swipe-/Browser-Back. Sonst passiert nichts,
+                // weil der Reiter „denkt", er sei bereits da.
+                if (id === currentTab) {
+                  const { backInterceptor } = useAppStore.getState()
+                  if (backInterceptor) backInterceptor()
+                } else {
+                  setCurrentTab(id)
+                }
+              }}
             >
               <span className={styles.tabIcon}><Icon /></span>
               <span className={styles.tabLabel}>{label}</span>

@@ -6,12 +6,6 @@ import ProjektKarte from './ProjektKarte'
 import ProjektMenuSheet from './ProjektMenuSheet'
 import s from './ProjekteView.module.css'
 
-const BackIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="15 18 9 12 15 6" />
-  </svg>
-)
-
 const ChevronIcon = ({ open }) => (
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
     style={{ transform: open ? 'rotate(90deg)' : 'none', transition: 'transform var(--dur-fast) var(--ease)' }}>
@@ -63,8 +57,8 @@ export default function ProjekteView({ onBack }) {
   return (
     <div className={s.page}>
       <div className={s.head}>
-        <button className={s.back} onClick={onBack} aria-label="Zurück">
-          <BackIcon />
+        <button className={s.back} onClick={onBack}>
+          <span className={s.backArrow}>←</span> Zurück
         </button>
         <div className={s.headTitle}>
           <span className={s.eyebrow}>Planung</span>
