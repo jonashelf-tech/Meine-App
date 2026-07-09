@@ -1,5 +1,5 @@
 // src/features/projekte/ProjekteView.jsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppStore } from '../../store'
 import { PROJEKT_COLORS, createProject, nextFreeColor, dissolveProject } from './projektModel'
 import ProjektKarte from './ProjektKarte'
@@ -27,6 +27,12 @@ export default function ProjekteView({ onBack }) {
   const [color, setColor] = useState(() => nextFreeColor(projects))
   const [showHidden, setShowHidden] = useState(false)
   const [menuProject, setMenuProject] = useState(null)
+
+  // Verschwindet das Projekt hinterm offenen Sheet (z.B. Auto-Abschluss), Sheet schließen —
+  // sonst bliebe ein Ghost mit totem Snapshot stehen.
+  useEffect(() => {
+    if (menuProject && !projects.some(p => p.id === menuProject.id)) setMenuProject(null)
+  }, [projects, menuProject])
 
   const visible = projects.filter(p => !p.hidden)
   const hidden  = projects.filter(p => p.hidden)
