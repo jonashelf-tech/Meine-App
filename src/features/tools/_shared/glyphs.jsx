@@ -49,7 +49,7 @@ const PATHS = {
 export const GLYPH_NAMES = Object.keys(PATHS)
 
 // Icon-Sets für Picker — kuratierte Reihenfolge je Kontext.
-export const ROOM_GLYPHS = ['home','kitchen','bath','sofa','bed','door','desk','balcony','car','window','washer','plant']
+export const ROOM_GLYPHS = ['home','kitchen','bath','sofa','bed','door','desk','balcony','car','window','washer','plant','sparkle']
 export const CARE_GLYPHS = ['droplet','coffee','utensils','moon','leaf','sun','tooth','health','eye','pill','dumbbell','phone','calendar','heart','book','bell']
 
 export function Glyph({ name, size = 20, strokeWidth = 1.8 }) {
