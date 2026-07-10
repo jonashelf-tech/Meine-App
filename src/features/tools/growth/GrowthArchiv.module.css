@@ -1,5 +1,5 @@
 .wrap { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
-.label { font-size: 0.66rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+.label { font-family: var(--font); font-size: 0.66rem; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.14em; }
 .strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
 .mini { flex: 0 0 auto; width: 110px; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px 10px; cursor: pointer; font-family: var(--font); }
 .miniHead { display: flex; align-items: center; gap: 5px; }

@@ -90,7 +90,7 @@ src/
         coach/planGenerator.js   — SPLIT_CATALOG (Varianten/Größe, genau 1× recommended) + generateCoachPlan; Prio-Level `off`→Muskel raus, sonst low/normal/high. coach/SplitPicker (Onboarding+Settings), coach/RhythmPicker (legacy/Zyklus)
       growth/         — Journaling-Tool (ersetzt Wachstum, Tab 18) — geführter Fluss + Übersicht
         growthContent.json      — 250 Karten / 6 Kategorien / 4 Opener (Guard: growthContent.test.js)
-        growthStore.js          — Datenlayer: Ziehlogik (60-Tage-Sperre, Skip-Queue, Bonus), Schwelle, Migration, KI-Prompt, flowAbgeschlossen-Flag
+        growthStore.js          — Datenlayer: Ziehlogik (60-Tage-Sperre, Skip-Queue, Bonus), Schwelle, Migration, KI-Prompt, flowAbgeschlossen-Flag; Statistik growthStreak/doneThisWeek (Guard: growthStats.test.js)
         growthFlowLogic.js      — pure: growthViewMode (flow|overview) + flowSteps (Guard: growthFlowLogic.test.js) — NB: ≠ GrowthFlow.jsx (Case-Kollision auf Windows!)
         TabGrowth.jsx           — Router: briefing | settings | flow | overview. Mode ist STATE (nicht pro Render abgeleitet, sonst kippt der Fluss bei Check-in-Eingabe in die Übersicht). persist zieht dataRef synchron.
         GrowthFlow.jsx          — geführte State-Machine: Ankommen → Karte → (Bonus?) → Freitext → Abschluss, über FlowStepper
@@ -98,7 +98,7 @@ src/
         BreathingCircle.jsx     — Atemkreis (4 ein/6 aus) + 2-Min-Ring + Breath-Label (ambient, kein Auto-Weiter)
         StepAnkommen.jsx        — Ankommen + Check-in verschmolzen; Atemkreis nur bei settings.openerAn (Toggle entfernt nur die Atem-Ebene)
         StepKarte / StepBonusFrage / StepFreitext / StepAbschluss — die übrigen Flow-Schritte
-        GrowthOverview.jsx      — Ruhezustand (Ziel von Fertig/Überspringen + Re-Entry): Check-in + Karten (inline edit via TageskarteCard) + Notiz + frühere Tage
+        GrowthOverview.jsx      — Ruhezustand im Goldstandard (Ziel von Fertig/Überspringen + Re-Entry): Hero (Tageszustand, Check-Burst bzw. Loslegen-CTA) + 3 Kacheln (gesamt/Serie/Woche, nur heute) + Check-in + Karten (inline edit via TageskarteCard) + Notiz + frühere Tage
         GrowthSection.jsx       — Tagesplaner-Widget ("Karte offen")
         DailyStateRow / TageskarteCard / GrowthArchiv / GrowthBriefing / GrowthSettings
         useAutosave.js          — Debounce-Autosave (Freitext + Antworten)

@@ -215,6 +215,26 @@ export function getDoneDates(data = loadGrowth()) {
   return Object.entries(data.days).filter(([, d]) => dayHasEntry(d)).map(([date]) => date).sort()
 }
 
+// ─── Statistik (Overview-Kacheln) ─────────────────────────
+// Serie: zusammenhängende Eintrags-Tage bis heute. Ein (noch) leerer heutiger
+// Tag bricht die Serie nicht — er zählt nur nicht mit.
+export function growthStreak(data, today = todayKey()) {
+  const done = new Set(getDoneDates(data))
+  const d = new Date(today + 'T12:00:00')
+  if (!done.has(today)) d.setDate(d.getDate() - 1)
+  let streak = 0
+  while (done.has(dateKey(d))) { streak++; d.setDate(d.getDate() - 1) }
+  return streak
+}
+
+// Eintrags-Tage der laufenden Woche (Mo bis heute).
+export function doneThisWeek(data, today = todayKey()) {
+  const d = new Date(today + 'T12:00:00')
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  const monday = dateKey(d)
+  return getDoneDates(data).filter(x => x >= monday && x <= today).length
+}
+
 // Nur Karte 1 zählt als „offen" — Bonuskarten nie.
 export function isTageskarteOffen(data, date) {
   const day = data.days[date]
