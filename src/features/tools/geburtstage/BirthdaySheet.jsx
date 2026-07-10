@@ -30,11 +30,13 @@ const BellIcon = () => (
   </svg>
 )
 
-export default function BirthdaySheet({ birthday = null, onSave, onClose }) {
+export default function BirthdaySheet({ birthday = null, onSave, onDelete, onClose }) {
   const keyboardOffset = useKeyboardOffset()
   const { showToast }  = useToast()
   const nameRef        = useRef(null)
   const isEdit         = birthday !== null
+
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const [form, setForm] = useState(() => {
     if (birthday) {
@@ -219,6 +221,19 @@ export default function BirthdaySheet({ birthday = null, onSave, onClose }) {
         <button className={s.submitBtn} onClick={handleSave}>
           {isEdit ? 'Speichern' : 'Hinzufügen'}
         </button>
+
+        {isEdit && onDelete && (
+          <button
+            className={[s.deleteBtn, confirmDelete ? s.deleteBtnConfirm : ''].join(' ')}
+            onClick={() => {
+              if (!confirmDelete) { setConfirmDelete(true); return }
+              onDelete(birthday.id)
+              onClose()
+            }}
+          >
+            {confirmDelete ? 'Wirklich löschen?' : 'Löschen'}
+          </button>
+        )}
       </div>
     </Overlay>
   )

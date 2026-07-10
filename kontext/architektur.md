@@ -68,9 +68,9 @@ src/
         GartenSzene.jsx         — prozedurales SVG, Funktion von (stage, dekos, night)
         gartenData.js           — XP abgeleitet aus App-Daten + Monotonie-Ratchet, MILESTONES
       geburtstage/
-        BirthdaySheet.jsx   — Bottom Sheet (Neu + Edit)
+        BirthdaySheet.jsx   — Bottom Sheet (Neu + Edit + 2-Tap-Löschen; Farben via --tool-color/--amber/--teal)
         BirthdaySection.jsx — Tagesplaner-Widget (Chips: Geburtstag + Geschenk, fakeTodo-Pattern)
-        TabGeburtstage.jsx  — Avatar-Karten, Sort, Swipe-Delete
+        TabGeburtstage.jsx  — Goldstandard: Hero (nächster/heutiger Geburtstag + Countdown-Ring), 3 Kacheln, Segmented-Sort, Avatar-Karten (Tap = Edit; Swipe-Delete entfernt — Löschen wohnt im Sheet)
         birthdayUtils.js    — Migration, Chip-Logik, Hilfsfunktionen
       fitness/
         TabFitness.jsx          — Shell: ToolHeader + 7 Sub-Tabs (Heute·Pläne·Übungen·Auswertung·Archiv·Körpergewicht·⚙). Default-Tab Heute; beim allerersten Öffnen (noch keine Pläne) direkt Pläne+Onboarding statt Heute-Leerzustand

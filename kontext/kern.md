@@ -198,9 +198,9 @@ projects,     setProjects
   year:        null,           // Geburtsjahr (optional)
   kalender:    false,          // true → Balken in Monats-/Wochenansicht + DayPanel
   wichtig:     false,          // true → Geburtstags-Chip in BirthdaySection (Tagesplaner)
-  wichtigDays: 3,              // Vorlauf-Tage für Geburtstags-Chip
+  wichtigDays: 7,              // Vorlauf-Tage für Geburtstags-Chip
   geschenk:    false,          // true → Geschenk-Chip in BirthdaySection
-  geschenkDays:7,              // Vorlauf-Tage für Geschenk-Chip
+  geschenkDays:14,             // Vorlauf-Tage für Geschenk-Chip
   notes:       "",
   plannedYear: null,           // Jahr in dem der Geburtstag auf den Zeitplan gezogen wurde → blendet Kalender-Balken aus bis nächstes Jahr
 }

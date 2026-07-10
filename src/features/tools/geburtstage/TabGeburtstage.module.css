@@ -1,95 +1,249 @@
-﻿/* TabGeburtstage.module.css */
+/* TabGeburtstage.module.css */
 
-.page { padding-bottom: 40px; }
+.page {
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+.page > * { animation: fadeInUp .4s var(--ease-out) both; }
 
-/* ─── Sort Bar ─────────────────────────────────────────── */
+/* ─── Header-Action ────────────────────────────────────── */
+.addBtn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--tool-color);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--tool-color) 40%, transparent);
+  cursor: pointer;
+}
+.addBtn:active { transform: scale(.94); }
+
+/* ─── Hero ─────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  border-radius: var(--r-lg);
+  border: 1px solid color-mix(in srgb, var(--tool-color) 32%, var(--border));
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--tool-color) 12%, transparent) 0%, transparent 60%),
+    var(--surface);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tool-color) 12%, transparent), 0 12px 34px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.hero:active { transform: scale(.99); }
+
+.heroToday {
+  border-color: color-mix(in srgb, var(--tool-color) 55%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tool-color) 25%, transparent), 0 0 26px color-mix(in srgb, var(--tool-color) 22%, transparent);
+}
+
+.heroInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heroKick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.heroDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tool-color);
+  box-shadow: 0 0 10px var(--tool-color);
+  flex-shrink: 0;
+}
+
+.heroTitle {
+  font-family: var(--font);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heroMeta {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.heroSame {
+  font-family: var(--font);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.ring {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ringTxt {
+  position: absolute;
+  font-family: var(--font-num);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.heroBurst {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--tool-color);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--tool-color) 55%, transparent);
+}
+
+/* ─── 3 Kacheln ────────────────────────────────────────── */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.tile {
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 13px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 88px;
+}
+
+.tileHighlight {
+  border-color: color-mix(in srgb, var(--tool-color) 30%, var(--border));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--tool-color) 12%, transparent), var(--surface));
+}
+
+.tileIcon {
+  color: var(--tool-color);
+  margin-bottom: 3px;
+}
+
+.tileNum {
+  font-family: var(--font-num);
+  font-size: 1.32rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.tileHighlight .tileNum { color: var(--tool-color); }
+
+.tileLabel {
+  font-family: var(--font);
+  font-size: 0.66rem;
+  color: var(--text-dim);
+}
+
+/* ─── Sortierung (segmented) ───────────────────────────── */
 .sortBar {
   display: flex;
-  gap: 5px;
-  margin: 0 0 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
+  gap: 3px;
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  border-radius: 11px;
+  padding: 3px;
 }
-.sortBar::-webkit-scrollbar { display: none; }
 
 .sortPill {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 5px 12px;
+  flex: 1;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  padding: 7px 4px;
   font-family: var(--font);
-  font-size: 11px;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-dim);
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.15s;
-  flex-shrink: 0;
+  transition: all var(--dur-fast) var(--ease);
 }
+
 .sortPillActive {
-  background: rgba(139,92,246,0.15);
-  border-color: rgba(139,92,246,0.4);
-  color: var(--primary);
+  background: color-mix(in srgb, var(--tool-color) 16%, transparent);
+  color: var(--tool-color);
 }
 
 /* ─── Sektion ──────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
 .sectionLabel {
   font-family: var(--font);
-  font-size: 10px;
+  font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-faint);
-  margin: 12px 0 8px;
+  margin: 4px 2px -2px;
 }
 
-/* ─── Karte (Swipe-Wrapper) ────────────────────────────── */
-.cardWrapper {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  margin-bottom: 6px;
-}
-
-.deleteReveal {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 72px;
-  background: var(--rose);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 0 var(--r-sm) var(--r-sm) 0;
-}
-
-.deleteRevealIcon {
-  color: #fff;
-}
-
+/* ─── Karte ────────────────────────────────────────────── */
 .card {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
   background: var(--surface);
-  padding: 11px 14px;
-  transition: transform 0.2s ease;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 13px;
+  text-align: left;
   cursor: pointer;
-  position: relative;
-  touch-action: pan-y;
-  user-select: none;
 }
+.card:active { transform: scale(.99); }
 
-.cardWrapperSoon { border-color: rgba(20,184,166,0.35); }
-.cardWrapperToday {
-  border-color: rgba(139,92,246,0.5);
-  box-shadow: 0 0 14px rgba(139,92,246,0.12);
+.cardSoon { border-color: color-mix(in srgb, var(--teal) 35%, var(--border)); }
+
+.cardToday {
+  border-color: color-mix(in srgb, var(--tool-color) 50%, var(--border));
+  background: linear-gradient(155deg, color-mix(in srgb, var(--tool-color) 10%, transparent), var(--surface));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--tool-color) 14%, transparent);
 }
-.cardToday { background: rgba(139,92,246,0.06); }
 
 /* ─── Avatar ───────────────────────────────────────────── */
 .avatarWrap {
@@ -98,22 +252,31 @@
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font);
-  font-size: 14px;
+  font-size: 0.92rem;
   font-weight: 700;
+  background: color-mix(in srgb, var(--tool-color) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tool-color) 35%, transparent);
+  color: var(--tool-color);
 }
 
-.crownIcon {
+.avatarWichtig {
+  background: color-mix(in srgb, var(--amber) 12%, transparent);
+  border-color: color-mix(in srgb, var(--amber) 40%, transparent);
+  color: var(--amber);
+}
+
+.crown {
   position: absolute;
   top: -6px;
   right: -5px;
-  color: #FBBF24;
+  color: var(--amber);
   line-height: 1;
 }
 
@@ -122,8 +285,8 @@
 
 .name {
   font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 0.86rem;
+  font-weight: 700;
   color: var(--text);
   margin-bottom: 2px;
   white-space: nowrap;
@@ -133,64 +296,115 @@
 
 .meta {
   font-family: var(--font);
-  font-size: 11px;
+  font-size: 0.72rem;
   color: var(--text-dim);
-  margin-bottom: 4px;
 }
 
-.statusPills {
+.pills {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+  margin-top: 5px;
 }
 
-.statusPill {
-  display: flex;
+.pill {
+  display: inline-flex;
   align-items: center;
   gap: 3px;
-  border-radius: 5px;
-  padding: 2px 6px;
+  border-radius: 999px;
+  padding: 2px 7px;
   font-family: var(--font);
-  font-size: 10px;
+  font-size: 0.62rem;
   border: 1px solid;
+}
+
+.pillKalender {
+  color: var(--tool-color);
+  border-color: color-mix(in srgb, var(--tool-color) 35%, transparent);
+  background: color-mix(in srgb, var(--tool-color) 8%, transparent);
+}
+
+.pillWichtig {
+  color: var(--amber);
+  border-color: color-mix(in srgb, var(--amber) 35%, transparent);
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+}
+
+.pillGeschenk {
+  color: var(--teal);
+  border-color: color-mix(in srgb, var(--teal) 35%, transparent);
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
 }
 
 /* ─── Badge ────────────────────────────────────────────── */
 .badge {
-  font-family: var(--font-num);
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 4px 8px;
   flex-shrink: 0;
+  font-family: var(--font-num);
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-variant-numeric: tabular-nums;
 }
 
-/* ─── Empty ────────────────────────────────────────────── */
-.empty {
+.badgeDefault {
+  color: var(--text-dim);
+  border: 1px solid var(--border-dim);
+  background: var(--surface-low);
+}
+
+.badgeSoon {
+  color: var(--teal);
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  background: color-mix(in srgb, var(--teal) 10%, transparent);
+}
+
+.badgeToday {
+  color: var(--bg);
+  background: var(--tool-color);
+  border: 1px solid var(--tool-color);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tool-color) 40%, transparent);
+}
+
+/* ─── Leerzustand ──────────────────────────────────────── */
+.emptyCard {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.emptyTitle {
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.emptyText {
   font-family: var(--font);
   font-size: 0.85rem;
   color: var(--text-dim);
-  text-align: center;
-  padding: 48px 16px;
-  line-height: 1.6;
+  line-height: 1.5;
+  max-width: 280px;
 }
 
-/* ─── Tool Reset ─────────────────────────────────────────── */
-.toolReset {
-  width: 100%;
-  margin-top: 24px;
-  padding: 9px 16px;
-  background: none;
-  border: 1px solid rgba(251,113,133,0.25);
+.emptyCta {
+  margin-top: 14px;
+  border: none;
   border-radius: var(--r-sm);
-  color: var(--rose);
+  padding: 14px 28px;
   font-family: var(--font);
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--bg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tool-color) 70%, white), var(--tool-color));
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--tool-color) 28%, transparent);
   cursor: pointer;
-  transition: border-color 0.15s;
 }
-.toolResetConfirm {
-  border-color: var(--rose);
-  background: rgba(251,113,133,0.08);
-}
+.emptyCta:active { transform: scale(.98); }
