@@ -3,16 +3,17 @@ import { sv, lv, SK } from '../../../storage'
 import { useAppStore } from '../../../store'
 import { getToolColor, todayKey } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
+import { useToast } from '../../../components/Toast/Toast'
 import HaushaltBriefing from './HaushaltBriefing'
 import {
   loadHaushalt, saveHaushalt,
-  taskSegments, taskDueLabel, calcRingScore, roomStatus, STATUS_META, FREQ_LABELS,
+  taskSegments, taskDueLabel, calcRingScore, roomStatus, STATUS_META,
   markTaskDone, resetTaskDone, getUrgentTasks, getDueRooms,
   addRoom, updateRoom, deleteRoom,
   addTask, updateTask, deleteTask,
 } from './haushaltData'
-import { Glyph, ROOM_GLYPHS } from '../_shared/glyphs'
-import GlyphPicker from '../_shared/GlyphPicker'
+import { Glyph } from '../_shared/glyphs'
+import { RoomSheet, TaskSheet } from './HaushaltSheet'
 import s from './TabHaushalt.module.css'
 
 // ─── Icons ────────────────────────────────────────────────
@@ -45,20 +46,6 @@ const BatteryLowIcon = () => (
   </svg>
 )
 
-const ResetIcon = () => (
-  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-    <path d="M3 3v5h5" />
-  </svg>
-)
-
-const XIcon = () => (
-  <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-)
-
 const ChevronIcon = ({ open }) => (
   <svg
     width={10} height={10} viewBox="0 0 10 10"
@@ -71,29 +58,29 @@ const ChevronIcon = ({ open }) => (
 )
 
 const ClockIcon = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" />
   </svg>
 )
 
 const CheckCircleIcon = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="9" /><path d="M8.5 12.2l2.4 2.4 4.6-4.8" />
   </svg>
 )
 
 const ListIcon = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
     <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
   </svg>
 )
 
 // ─── Score Hero ───────────────────────────────────────────
+const RING_R = 24
+const RING_C = 2 * Math.PI * RING_R
+
 function ScoreHero({ score, dueCount, energie, onEnergieChange }) {
-  const r     = 30
-  const circ  = 2 * Math.PI * r
-  const dash  = (Math.min(score, 100) / 100) * circ
   const color = score >= 70 ? 'var(--emerald)' : score >= 40 ? 'var(--amber)' : 'var(--rose)'
   const label = score >= 70 ? 'Wohnung im Griff' : score >= 40 ? 'Einiges liegt an' : 'Viel offen, kein Stress'
   const sub   = dueCount === 0
@@ -102,27 +89,24 @@ function ScoreHero({ score, dueCount, energie, onEnergieChange }) {
 
   return (
     <div className={s.hero}>
-      <div className={s.heroMain}>
-        <svg width={84} height={84} viewBox="0 0 84 84" className={s.ringsvg}>
-          <circle cx={42} cy={42} r={r} fill="none" strokeWidth={6} style={{ stroke: 'var(--border)' }} />
-          <circle
-            cx={42} cy={42} r={r} fill="none"
-            stroke={color} strokeWidth={6}
-            strokeDasharray={`${dash} ${circ}`}
-            strokeLinecap="round"
-            transform="rotate(-90 42 42)"
-            style={{ transition: 'stroke-dasharray 0.5s var(--ease-out)' }}
-          />
-          <text x={42} y={45} textAnchor="middle" fill={color} fontSize={19} fontWeight={800} style={{ fontFamily: 'var(--font-num)' }}>
-            {score}
-          </text>
-          <text x={42} y={57} textAnchor="middle" fill="var(--text-faint)" fontSize={8} fontWeight={700} style={{ fontFamily: 'var(--font)', letterSpacing: '0.08em' }}>
-            PROZENT
-          </text>
-        </svg>
-        <div className={s.heroText}>
-          <span className={s.heroLabel} style={{ color }}>{label}</span>
-          <span className={s.heroSub}>{sub}</span>
+      <div className={s.heroTop}>
+        <div className={s.heroInfo}>
+          <div className={s.heroKick}><span className={s.heroDot} /> Wohnung im Blick</div>
+          <h2 className={s.heroTitle}>{label}</h2>
+          <div className={s.heroMeta}>{sub}</div>
+        </div>
+        <div className={s.ring}>
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r={RING_R} fill="none" stroke="var(--border)" strokeWidth="5" />
+            <circle
+              cx="28" cy="28" r={RING_R} fill="none"
+              stroke={color} strokeWidth="5" strokeLinecap="round"
+              strokeDasharray={RING_C} strokeDashoffset={RING_C * (1 - Math.min(score, 100) / 100)}
+              transform="rotate(-90 28 28)"
+              style={{ transition: 'stroke-dashoffset 0.5s var(--ease-out)' }}
+            />
+          </svg>
+          <span className={s.ringTxt} style={{ color }}>{score}<small>%</small></span>
         </div>
       </div>
 
@@ -186,225 +170,62 @@ function SegmentBar({ task }) {
   )
 }
 
-// ─── Task Row ─────────────────────────────────────────────
-const FREQ_OPTIONS = ['daily', 'biweekly', 'weekly', 'monthly', 'custom']
-
-function TaskRow({ task, editing, dimmed, onToggleEdit, onDone, onReset, onUpdate, onDelete }) {
-  const [confirmDel, setConfirmDel] = useState(false)
+// ─── Task Row (Anzeige — Bearbeiten wohnt im Sheet) ───────
+function TaskRow({ task, dimmed, onOpen, onDone }) {
   const { color, overdue } = taskSegments(task)
-  const since = taskDueLabel(task)
 
   return (
     <div className={[s.taskRow, dimmed ? s.taskRowDimmed : ''].join(' ')}>
-      {/* Always-visible view — click toggles drawer */}
-      <div
-        className={[s.taskView, editing ? s.taskViewEditing : ''].join(' ')}
-        onClick={onToggleEdit}
-      >
+      <button className={s.taskView} onClick={onOpen}>
         <div className={s.taskTop}>
-          {editing ? (
-            <input
-              className={s.taskNameInput}
-              value={task.text}
-              onChange={e => onUpdate({ text: e.target.value })}
-              onClick={e => e.stopPropagation()}
-            />
-          ) : (
-            <span className={s.taskText}>
-              {task.text}
-              {task.lowEnergy && <span className={s.lowBadge}><BatteryLowIcon /></span>}
-            </span>
-          )}
+          <span className={s.taskText}>
+            {task.text}
+            {task.lowEnergy && <span className={s.lowBadge}><BatteryLowIcon /></span>}
+          </span>
           <span className={s.taskDue} style={{ color: overdue ? 'var(--rose)' : color }}>
-            {since}
+            {taskDueLabel(task)}
           </span>
-          <span className={[s.editHintIcon, editing ? s.editHintIconOn : ''].join(' ')}>
-            <PencilIcon />
-          </span>
-          {!dimmed && (
-            <button className={s.doneBtn} onClick={e => { e.stopPropagation(); onDone() }} title="Erledigt">
-              <CheckIcon />
-            </button>
-          )}
         </div>
         <SegmentBar task={task} />
-      </div>
-
-      {/* Expandable edit drawer */}
-      <div className={[s.taskEditDrawer, editing ? s.taskEditDrawerOpen : ''].join(' ')}>
-        <div className={s.taskEditInner} style={editing ? { padding: '10px 6px 10px' } : {}}>
-          <div className={s.editDivider} />
-          <span className={s.fieldLabel}>Wie oft?</span>
-          <div className={s.freqChips}>
-            {FREQ_OPTIONS.map(f => (
-              <button
-                key={f}
-                className={[s.freqChip, task.freq === f ? s.freqChipOn : ''].join(' ')}
-                onClick={() => onUpdate({ freq: f })}
-              >
-                {FREQ_LABELS[f]}
-              </button>
-            ))}
-          </div>
-          {task.freq === 'custom' && (
-            <div className={s.customDaysRow}>
-              <span className={s.fieldLabel}>Alle</span>
-              <input
-                type="number"
-                className={s.customDaysInput}
-                value={task.customDays ?? ''}
-                min={1}
-                onChange={e => onUpdate({ customDays: e.target.value === '' ? null : Number(e.target.value) })}
-                onClick={e => e.stopPropagation()}
-              />
-              <span className={s.fieldLabel}>Tage</span>
-            </div>
-          )}
-          <div className={s.customDaysRow}>
-            <span className={s.fieldLabel}>Dauer</span>
-            <input
-              type="number"
-              className={s.customDaysInput}
-              value={task.duration ?? ''}
-              min={1}
-              onChange={e => onUpdate({ duration: e.target.value === '' ? null : Number(e.target.value) })}
-              onClick={e => e.stopPropagation()}
-            />
-            <span className={s.fieldLabel}>min</span>
-          </div>
-          <span className={s.fieldLabel}>Aufwand</span>
-          <div className={s.effortRow}>
-            <button
-              className={[s.effortBtn, !task.lowEnergy ? s.effortBtnOn : ''].join(' ')}
-              onClick={() => onUpdate({ lowEnergy: false })}
-            >
-              <BoltIcon /> Normal
-            </button>
-            <button
-              className={[s.effortBtn, task.lowEnergy ? s.effortBtnOn : ''].join(' ')}
-              onClick={() => onUpdate({ lowEnergy: true })}
-            >
-              <BatteryLowIcon /> Low Energy
-            </button>
-          </div>
-          <div className={s.editFoot}>
-            <button className={s.linkBtn} onClick={onReset}><ResetIcon /> Zurücksetzen</button>
-            <button
-              className={[s.linkBtn, s.linkBtnDanger].join(' ')}
-              style={confirmDel ? { color: 'var(--rose)' } : undefined}
-              onClick={() => {
-                if (confirmDel) { onDelete(); return }
-                setConfirmDel(true)
-                setTimeout(() => setConfirmDel(false), 2500)
-              }}
-            >
-              <XIcon /> {confirmDel ? 'Wirklich?' : 'Löschen'}
-            </button>
-            <span style={{ flex: 1 }} />
-            <button className={s.doneEditBtn} onClick={onToggleEdit}>Fertig</button>
-          </div>
-        </div>
-      </div>
+      </button>
+      {!dimmed && (
+        <button className={s.doneBtn} onClick={onDone} title="Erledigt">
+          <CheckIcon />
+        </button>
+      )}
     </div>
   )
 }
 
 // ─── Raum Karte ───────────────────────────────────────────
-const PRIO_LABELS = { 1: 'P1', 2: 'P2', 3: 'P3' }
-
-function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTaskDone, onTaskReset, onUpdateTask, onAddTask, onDeleteTask, onUpdateRoom, onDeleteRoom }) {
-  const [newTaskText, setNewTaskText] = useState('')
-  const [editTaskId, setEditTaskId]   = useState(null)
-  const [confirmRoomDel, setConfirmRoomDel] = useState(false)
+function RaumKarte({ room, energie, open, onToggle, onEditRoom, onOpenTask, onAddTask, onTaskDone }) {
   const status = roomStatus(room)
   const sm     = STATUS_META[status]
-
-  const handleAddTask = () => {
-    const text = newTaskText.trim()
-    if (!text) return
-    onAddTask({
-      id: crypto.randomUUID(), text,
-      duration: 15, freq: 'weekly', customDays: null,
-      lowEnergy: false, lastDone: null, subItems: [],
-    })
-    setNewTaskText('')
-  }
-
-  const toggleTaskEdit = (taskId) => {
-    setEditTaskId(prev => prev === taskId ? null : taskId)
-  }
-
   const dueInRoom = room.tasks.filter(t => taskSegments(t).overdue).length
 
   return (
     <div className={[s.roomCard, open ? s.roomCardOpen : ''].join(' ')}>
       <div className={s.roomHeader} onClick={onToggle}>
         <span className={s.roomIcon}><Glyph name={room.icon} size={19} /></span>
-        {editing ? (
-          <input
-            className={s.roomNameInput}
-            value={room.name}
-            onChange={e => onUpdateRoom({ name: e.target.value })}
-            onClick={e => e.stopPropagation()}
-          />
-        ) : (
-          <span className={s.roomName}>{room.name}</span>
-        )}
-        {!open && !editing && dueInRoom > 0 && (
+        <span className={s.roomName}>{room.name}</span>
+        {!open && dueInRoom > 0 && (
           <span className={s.roomDueDot} title={`${dueInRoom} fällig`} />
         )}
         <span className={s.statusBadge} style={{ color: sm.color, background: `color-mix(in srgb, ${sm.color} 14%, transparent)` }}>{sm.label}</span>
         <button
-          className={[s.editBtn, editing ? s.editBtnOn : ''].join(' ')}
-          onClick={e => { e.stopPropagation(); onToggleEdit() }}
-          title={editing ? 'Fertig' : 'Bearbeiten'}
+          className={s.editBtn}
+          onClick={e => { e.stopPropagation(); onEditRoom() }}
+          title="Raum bearbeiten"
         >
-          {editing ? <CheckIcon /> : <PencilIcon />}
+          <PencilIcon />
         </button>
         <span className={s.chevron}><ChevronIcon open={open} /></span>
       </div>
 
-      {editing && (
-        <div className={s.roomSettingsPanel}>
-          <div className={s.setRow}>
-            <span className={s.setLabel}>Icon</span>
-            <GlyphPicker
-              glyphs={ROOM_GLYPHS}
-              value={room.icon}
-              onChange={name => onUpdateRoom({ icon: name })}
-            />
-          </div>
-          <div className={s.setRow}>
-            <span className={s.setLabel}>Priorität</span>
-            <div className={s.prioBtnGroup}>
-              {[1, 2, 3].map(p => (
-                <button
-                  key={p}
-                  className={[s.prioBtn, (room.priority ?? 3) === p ? s.prioBtnActive : ''].join(' ')}
-                  onClick={() => onUpdateRoom({ priority: p })}
-                >
-                  {PRIO_LABELS[p]}
-                </button>
-              ))}
-            </div>
-          </div>
-          <button
-            className={s.deleteRoomBtn}
-            onClick={() => {
-              if (confirmRoomDel) { onDeleteRoom(); return }
-              setConfirmRoomDel(true)
-              setTimeout(() => setConfirmRoomDel(false), 2500)
-            }}
-          >
-            {confirmRoomDel ? 'Wirklich löschen? Alle Tasks gehen mit.' : 'Raum löschen'}
-          </button>
-        </div>
-      )}
-
       {open && (
-        <div className={[s.roomBody, editing ? s.roomBodyAfterSettings : ''].join(' ')}>
-          {room.tasks.length === 0 && !editing && (
-            <div className={s.emptyRoom}>Keine Tasks — Stift zum Hinzufügen</div>
+        <div className={s.roomBody}>
+          {room.tasks.length === 0 && (
+            <div className={s.emptyRoom}>Noch keine Aufgaben in diesem Raum.</div>
           )}
 
           {room.tasks.map(task => {
@@ -413,38 +234,23 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
               <TaskRow
                 key={task.id}
                 task={task}
-                editing={editTaskId === task.id}
                 dimmed={dimmed}
-                onToggleEdit={() => toggleTaskEdit(task.id)}
+                onOpen={() => onOpenTask(task)}
                 onDone={() => onTaskDone(task.id)}
-                onReset={() => onTaskReset(task.id)}
-                onUpdate={patch => onUpdateTask(task.id, patch)}
-                onDelete={() => { onDeleteTask(task.id); if (editTaskId === task.id) setEditTaskId(null) }}
               />
             )
           })}
 
-          {!editing && energie === 'low' && (() => {
+          {energie === 'low' && (() => {
             const hidden = room.tasks.filter(t => !t.lowEnergy).length
             return hidden > 0 ? (
               <div className={s.hiddenHint}>
-                {hidden} {hidden === 1 ? 'Task' : 'Tasks'} ausgeblendet — Normal für alle
+                {hidden} {hidden === 1 ? 'Aufgabe' : 'Aufgaben'} ausgeblendet — Normal für alle
               </div>
             ) : null
           })()}
 
-          {editing && (
-            <div className={s.addTaskRow}>
-              <input
-                className={s.addTaskInput}
-                placeholder="Neue Aufgabe…"
-                value={newTaskText}
-                onChange={e => setNewTaskText(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleAddTask()}
-              />
-              <button className={s.addTaskBtn} onClick={handleAddTask}>+</button>
-            </div>
-          )}
+          <button className={s.addTaskBtn} onClick={onAddTask}>+ Aufgabe</button>
         </div>
       )}
     </div>
@@ -454,10 +260,12 @@ function RaumKarte({ room, energie, open, editing, onToggle, onToggleEdit, onTas
 // ─── TabHaushalt ──────────────────────────────────────────
 export default function TabHaushalt({ onBack }) {
   const { toolColors } = useAppStore()
+  const { showToast }  = useToast()
   const [config,    setConfig]    = useState(() => loadHaushalt())
   const [energie,   setEnergie]   = useState(() => lv(SK.haushaltEnergie, 'normal'))
   const [openRooms, setOpenRooms] = useState({})
-  const [editRooms, setEditRooms] = useState({})
+  // sheet: null | { type: 'room', room: Room|null } | { type: 'task', roomId, task: Task|null }
+  const [sheet,     setSheet]     = useState(null)
 
   const toolColor = getToolColor('haushalt', toolColors)
 
@@ -479,18 +287,36 @@ export default function TabHaushalt({ onBack }) {
 
   const toggleRoom = (id) => setOpenRooms(p => ({ ...p, [id]: !p[id] }))
 
-  const toggleEdit = (id) => {
-    const isCurrentlyOpen = editRooms[id]
-    setEditRooms(p => ({ ...p, [id]: !p[id] }))
-    // open room when entering edit mode so tasks + add row are visible
-    if (!isCurrentlyOpen) setOpenRooms(p => ({ ...p, [id]: true }))
+  const handleRoomSave = (room) => {
+    const isNew = !sheet.room
+    updateConfig(prev => isNew ? addRoom(prev, room) : updateRoom(prev, room.id, room))
+    if (isNew) setOpenRooms(p => ({ ...p, [room.id]: true }))
+    setSheet(null)
+    showToast(isNew ? `${room.name} angelegt` : 'Gespeichert', 'success')
   }
 
-  const handleAddRoom = () => {
-    const room = { id: crypto.randomUUID(), name: 'Neuer Raum', icon: 'home', tasks: [], priority: 3 }
-    updateConfig(prev => addRoom(prev, room))
-    setOpenRooms(p => ({ ...p, [room.id]: true }))
-    setEditRooms(p => ({ ...p, [room.id]: true }))
+  const handleRoomDelete = (roomId) => {
+    updateConfig(prev => deleteRoom(prev, roomId))
+    setOpenRooms(p => { const n = { ...p }; delete n[roomId]; return n })
+    showToast('Raum gelöscht', 'success')
+  }
+
+  const handleTaskSave = (task) => {
+    const { roomId } = sheet
+    const isNew = !sheet.task
+    updateConfig(prev => isNew ? addTask(prev, roomId, task) : updateTask(prev, roomId, task.id, task))
+    setSheet(null)
+    showToast(isNew ? 'Aufgabe angelegt' : 'Gespeichert', 'success')
+  }
+
+  const handleTaskDelete = (taskId) => {
+    updateConfig(prev => deleteTask(prev, sheet.roomId, taskId))
+    showToast('Aufgabe gelöscht', 'success')
+  }
+
+  const handleTaskReset = (taskId) => {
+    updateConfig(prev => resetTaskDone(prev, taskId))
+    showToast('Als neu markiert', 'success')
   }
 
   if (!config.briefingDone) {
@@ -516,7 +342,7 @@ export default function TabHaushalt({ onBack }) {
       <StatTiles dueCount={dueCount} dueMin={dueMin} doneToday={doneToday} />
 
       {urgent.length > 0 && (
-        <div className={s.urgentBlock}>
+        <section className={s.section}>
           <div className={s.sectionLabel}>Jetzt dran</div>
           <div className={s.urgentCard}>
             {urgent.map(({ task, room }) => (
@@ -536,10 +362,10 @@ export default function TabHaushalt({ onBack }) {
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      <div className={s.roomsBlock}>
+      <section className={s.section}>
         <div className={s.sectionLabel}>Räume</div>
         <div className={s.rooms}>
           {config.rooms.map(room => (
@@ -548,28 +374,19 @@ export default function TabHaushalt({ onBack }) {
               room={room}
               energie={energie}
               open={!!openRooms[room.id]}
-              editing={!!editRooms[room.id]}
               onToggle={() => toggleRoom(room.id)}
-              onToggleEdit={() => toggleEdit(room.id)}
+              onEditRoom={() => setSheet({ type: 'room', room })}
+              onOpenTask={(task) => setSheet({ type: 'task', roomId: room.id, task })}
+              onAddTask={() => setSheet({ type: 'task', roomId: room.id, task: null })}
               onTaskDone={taskId => updateConfig(prev => markTaskDone(prev, taskId))}
-              onTaskReset={taskId => updateConfig(prev => resetTaskDone(prev, taskId))}
-              onUpdateTask={(taskId, patch) => updateConfig(prev => updateTask(prev, room.id, taskId, patch))}
-              onAddTask={task => updateConfig(prev => addTask(prev, room.id, task))}
-              onDeleteTask={taskId => updateConfig(prev => deleteTask(prev, room.id, taskId))}
-              onUpdateRoom={patch => updateConfig(prev => updateRoom(prev, room.id, patch))}
-              onDeleteRoom={() => {
-                updateConfig(prev => deleteRoom(prev, room.id))
-                setOpenRooms(p => { const n = { ...p }; delete n[room.id]; return n })
-                setEditRooms(p => { const n = { ...p }; delete n[room.id]; return n })
-              }}
             />
           ))}
 
-          <button className={s.addRoomBtn} onClick={handleAddRoom}>
+          <button className={s.addRoomBtn} onClick={() => setSheet({ type: 'room', room: null })}>
             + Raum hinzufügen
           </button>
         </div>
-      </div>
+      </section>
 
       <button
         className={s.setupLink}
@@ -577,6 +394,24 @@ export default function TabHaushalt({ onBack }) {
       >
         Setup neu starten
       </button>
+
+      {sheet?.type === 'room' && (
+        <RoomSheet
+          room={sheet.room}
+          onSave={handleRoomSave}
+          onDelete={handleRoomDelete}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet?.type === 'task' && (
+        <TaskSheet
+          task={sheet.task}
+          onSave={handleTaskSave}
+          onDelete={handleTaskDelete}
+          onReset={handleTaskReset}
+          onClose={() => setSheet(null)}
+        />
+      )}
     </div>
   )
 }

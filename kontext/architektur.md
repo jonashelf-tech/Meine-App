@@ -105,7 +105,8 @@ src/
       haushalt/
         HaushaltBriefing.jsx
         HaushaltSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
-        TabHaushalt.jsx + .module.css
+        HaushaltSheet.jsx       — Bottom-Sheets Raum + Aufgabe (Anlegen/Bearbeiten/Löschen/Zurücksetzen, Muster BirthdaySheet)
+        TabHaushalt.jsx + .module.css — Goldstandard: Hero (Kicker, Status-Titel, Score-Ring, Energie-Segmented), 3 Kacheln, Jetzt-dran-Karte, Raum-Akkordeons; Tap auf Aufgabe/Stift öffnet Sheet, kein Inline-Editing mehr
         haushaltData.js
       klaeren/
         TabKlaeren.jsx + .module.css — Goldstandard: Hero (dringendstes altes Todo + Alters-Ring, CTA „Jetzt klären"), 3 Kacheln, Karten-Liste (Tap = Klär-Fluss); Einstellungen im Bottom-Sheet (Zahnrad im Header)
