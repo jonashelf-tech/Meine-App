@@ -107,6 +107,9 @@ src/
         HaushaltSection.jsx     — Eingebettet in TabHeute (Tagesplaner-Widget)
         TabHaushalt.jsx + .module.css
         haushaltData.js
+      klaeren/
+        TabKlaeren.jsx + .module.css — Goldstandard: Hero (dringendstes altes Todo + Alters-Ring, CTA „Jetzt klären"), 3 Kacheln, Karten-Liste (Tap = Klär-Fluss); Einstellungen im Bottom-Sheet (Zahnrad im Header)
+        KlaerenModal.jsx        — geführter Klär-Fluss: Angehen/Loslassen → Hindernis → Wert → Schritte (inkl. KI-Zerlegen)
       pizza/          TabPizza.jsx
       rad/            TabRad.jsx
       reminder/
