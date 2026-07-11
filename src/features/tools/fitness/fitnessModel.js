@@ -51,21 +51,21 @@ export const EQUIPMENT_LABELS = {
 
 // ─── Bewegungsmuster (für Auswahl-Entdopplung & Ranking) ──
 export const EXERCISE_PATTERNS = [
-  'flachDruck', 'schraegDruck', 'brustFly', 'vertikalDruck', 'seitheben',
-  'vertikalZug', 'horizontalZug', 'reverseFly', 'shrug',
-  'bizepsCurl', 'hammerCurl', 'trizepsPushdown', 'trizepsUeberkopf', 'trizepsStirn',
-  'kniebeuge', 'beinstrecker', 'hipHinge', 'beinbeuger', 'hipThrust', 'gluteKickback',
+  'flachDruck', 'schraegDruck', 'brustFly', 'dip', 'vertikalDruck', 'seitheben', 'frontheben',
+  'vertikalZug', 'horizontalZug', 'pullover', 'reverseFly', 'shrug',
+  'bizepsCurl', 'hammerCurl', 'unterarmCurl', 'trizepsPushdown', 'trizepsUeberkopf', 'trizepsStirn',
+  'kniebeuge', 'beinstrecker', 'hipHinge', 'beinbeuger', 'hipThrust', 'gluteKickback', 'hyperextension',
   'wade', 'bauchCrunch', 'huftBeugung',
 ]
 
 export const PATTERN_LABELS = {
-  flachDruck: 'Flachdruck', schraegDruck: 'Schrägdruck', brustFly: 'Brust-Fly',
-  vertikalDruck: 'Überkopfdruck', seitheben: 'Seitheben', vertikalZug: 'Vertikalzug',
-  horizontalZug: 'Horizontalzug', reverseFly: 'Reverse-Fly', shrug: 'Shrug',
-  bizepsCurl: 'Bizeps-Curl', hammerCurl: 'Hammer-Curl', trizepsPushdown: 'Trizeps-Pushdown',
-  trizepsUeberkopf: 'Trizeps Überkopf', trizepsStirn: 'Stirndrücken',
+  flachDruck: 'Flachdruck', schraegDruck: 'Schrägdruck', brustFly: 'Brust-Fly', dip: 'Dips',
+  vertikalDruck: 'Überkopfdruck', seitheben: 'Seitheben', frontheben: 'Frontheben', vertikalZug: 'Vertikalzug',
+  horizontalZug: 'Horizontalzug', pullover: 'Überzug', reverseFly: 'Reverse-Fly', shrug: 'Shrug',
+  bizepsCurl: 'Bizeps-Curl', hammerCurl: 'Hammer-Curl', unterarmCurl: 'Handgelenk-Curl',
+  trizepsPushdown: 'Trizeps-Pushdown', trizepsUeberkopf: 'Trizeps Überkopf', trizepsStirn: 'Stirndrücken',
   kniebeuge: 'Kniebeuge', beinstrecker: 'Beinstrecker', hipHinge: 'Hüftbeuge',
-  beinbeuger: 'Beinbeuger', hipThrust: 'Hip Thrust', gluteKickback: 'Glute Kickback',
+  beinbeuger: 'Beinbeuger', hipThrust: 'Hip Thrust', gluteKickback: 'Glute Kickback', hyperextension: 'Rückenstrecker',
   wade: 'Wade', bauchCrunch: 'Crunch', huftBeugung: 'Hüftbeugung',
 }
 

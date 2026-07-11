@@ -19,6 +19,11 @@ const SCHULTER_ARME_A = ['schulterVorne','schulterSeitlich','bizeps','trizeps']
 // Push/Pull mit verteilten Beinen (Push = Quad-dominant, Pull = Hüft-/Posterior)
 const PUSH_BEINE = ['brust','schulterVorne','schulterSeitlich','trizeps','quadrizeps','waden','bauch']
 const PULL_BEINE = ['ruecken','schulterHinten','bizeps','trapez','hamstrings','gluteus']
+// 5er-Bro-Split (muskel-fokussierte Tage, jeder Muskel 1×/Woche)
+const BRUST_BRO    = ['brust']
+const RUECKEN_BRO  = ['ruecken','trapez']
+const SCHULTER_BRO = ['schulterVorne','schulterSeitlich','schulterHinten']
+const ARME_BRO     = ['bizeps','trizeps','unterarme']
 
 const day = (name, muscles) => ({ name, muscles })
 
@@ -52,12 +57,16 @@ export const SPLIT_CATALOG = {
       days: [day('Push', PUSH), day('Ganzkörper A', GANZ), day('Pull', PULL), day('Ganzkörper B', GANZ)] },
     { id: 'split4', name: '4er-Split', recommended: false,
       days: [day('Brust', BRUST_TAG), day('Rücken', RUECKEN_TAG), day('Schulter & Arme', SCHULTER_ARME), day('Beine', BEINE_BAUCH)] },
+    { id: 'pplu4', name: 'Push / Pull / Beine / Oberkörper', recommended: false,
+      days: [day('Push', PUSH), day('Pull', PULL), day('Beine', BEINE), day('Oberkörper', OBER)] },
   ],
   5: [
     { id: 'ulppl5', name: 'Ober / Unter / Push / Pull / Beine', recommended: true,
       days: [day('Oberkörper', OBER), day('Unterkörper', UNTER), day('Push', PUSH), day('Pull', PULL), day('Beine', BEINE)] },
     { id: 'ula5', name: 'Ober / Unter ×2 + Arme & Schultern', recommended: false,
       days: [day('Oberkörper A', OBER), day('Unterkörper A', UNTER), day('Oberkörper B', OBER), day('Unterkörper B', UNTER), day('Arme & Schultern', ARME)] },
+    { id: 'bro5', name: 'Bro-Split (Brust/Rücken/Schulter/Arme/Beine)', recommended: false,
+      days: [day('Brust', BRUST_BRO), day('Rücken', RUECKEN_BRO), day('Schultern', SCHULTER_BRO), day('Arme', ARME_BRO), day('Beine', BEINE_BAUCH)] },
   ],
   6: [
     { id: 'ppl6', name: 'Push / Pull / Beine ×2', recommended: true,

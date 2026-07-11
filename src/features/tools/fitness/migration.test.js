@@ -30,7 +30,7 @@ describe('Übungs-Metadaten-Migration', () => {
     expect(bank.stabilitaet).toBe(4)
     expect(bank.dehnung).toBe(3)
     expect(bank.last).toBe(5)
-    expect(f.meta.exerciseMetaVersion).toBe(1)
+    expect(f.meta.exerciseMetaVersion).toBe(2)
   })
 
   it('lässt eigene Übungen samt Edits unangetastet, füllt nur Defaults', () => {

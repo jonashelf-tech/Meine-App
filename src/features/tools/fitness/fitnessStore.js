@@ -16,7 +16,8 @@ const DEFAULT_META = { activePlanId: null, planCursor: {}, seeded: false, exerci
 
 // Hochzählen, wenn der Seed neue Übungs-Metadaten (pattern/Ratings) bekommt,
 // die per Migration in vorhandene Seed-Übungen gemerged werden sollen.
-const EXERCISE_META_VERSION = 1
+// v2: Kreuzheben Dehnung 3→2 (kein Stretch-Movement wie RDL).
+const EXERCISE_META_VERSION = 2
 
 const DEFAULT_FITNESS = { exercises: [], plans: [], settings: DEFAULT_SETTINGS, meta: DEFAULT_META }
 

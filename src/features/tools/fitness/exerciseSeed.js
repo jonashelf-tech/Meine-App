@@ -163,7 +163,7 @@ export const EXERCISE_SEED = [
   { id: 'seed-kreuzheben-lh', name: 'Kreuzheben (Langhantel)',
     allocation: { untererRuecken: 35, gluteus: 25, hamstrings: 25, ruecken: 15 },
     kategorie: 'grund', equipment: 'langhantel', defaultRepRange: [3, 8],
-    pattern: 'hipHinge', stabilitaet: 3, dehnung: 3, last: 5, ...common },
+    pattern: 'hipHinge', stabilitaet: 3, dehnung: 2, last: 5, ...common },
 
   // ─── Kuratierte Stretch-Picks (Konsens-Empfehlungen) ──────
   { id: 'seed-incline-curls-kh', name: 'Incline-Curls (Kurzhantel)',
@@ -205,4 +205,40 @@ export const EXERCISE_SEED = [
     allocation: { schulterHinten: 80, trapez: 20 },
     kategorie: 'isolation', equipment: 'maschine', defaultRepRange: [12, 20],
     pattern: 'reverseFly', stabilitaet: 5, dehnung: 3, last: 2, ...common },
+
+  // ─── Lücken-Füller (fehlende Standard-Bewegungen) ─────────
+  { id: 'seed-lat-pullover-kabel', name: 'Lat-Pullover (Kabel)',
+    allocation: { ruecken: 75, brust: 15, trizeps: 10 },
+    kategorie: 'isolation', equipment: 'kabel', defaultRepRange: [10, 15],
+    pattern: 'pullover', stabilitaet: 4, dehnung: 5, last: 3, ...common },
+
+  { id: 'seed-dips', name: 'Dips',
+    allocation: { brust: 50, trizeps: 35, schulterVorne: 15 },
+    kategorie: 'grund', equipment: 'koerpergewicht', defaultRepRange: [6, 12],
+    pattern: 'dip', stabilitaet: 2, dehnung: 5, last: 4, ...common },
+
+  { id: 'seed-frontheben-kh', name: 'Frontheben (Kurzhantel)',
+    allocation: { schulterVorne: 100 },
+    kategorie: 'isolation', equipment: 'kurzhantel', defaultRepRange: [10, 15],
+    pattern: 'frontheben', stabilitaet: 3, dehnung: 2, last: 2, ...common },
+
+  { id: 'seed-einarm-rudern-kh', name: 'Einarmiges Rudern (Kurzhantel)',
+    allocation: { ruecken: 65, bizeps: 20, schulterHinten: 15 },
+    kategorie: 'grund', equipment: 'kurzhantel', defaultRepRange: [8, 12],
+    pattern: 'horizontalZug', stabilitaet: 4, dehnung: 4, last: 4, ...common },
+
+  { id: 'seed-tbar-rudern', name: 'T-Bar-Rudern',
+    allocation: { ruecken: 65, bizeps: 15, schulterHinten: 15, trapez: 5 },
+    kategorie: 'grund', equipment: 'langhantel', defaultRepRange: [8, 12],
+    pattern: 'horizontalZug', stabilitaet: 3, dehnung: 3, last: 5, ...common },
+
+  { id: 'seed-handgelenk-curls', name: 'Handgelenk-Curls (Kurzhantel)',
+    allocation: { unterarme: 100 },
+    kategorie: 'isolation', equipment: 'kurzhantel', defaultRepRange: [12, 20],
+    pattern: 'unterarmCurl', stabilitaet: 4, dehnung: 3, last: 2, ...common },
+
+  { id: 'seed-hyperextension', name: 'Rückenstrecker (Hyperextension)',
+    allocation: { untererRuecken: 55, gluteus: 30, hamstrings: 15 },
+    kategorie: 'isolation', equipment: 'koerpergewicht', defaultRepRange: [10, 15],
+    pattern: 'hyperextension', stabilitaet: 4, dehnung: 3, last: 2, ...common },
 ]
