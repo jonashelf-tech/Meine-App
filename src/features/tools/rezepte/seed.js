@@ -99,7 +99,7 @@ export const seedRezepte = () => [
     anleitung: '1. Zwiebeln + Knoblauch glasig dünsten.\n2. Tomatenmark 2 Min mitrösten.\n3. Dosentomaten + Salz dazu, 30 Min köcheln.\n4. Pürieren.\nTipp: Kräuter erst beim Ableiten — Basis bleibt neutral.' }),
 
   createRezept({ id: 'r_pulledchicken', name: 'Pulled Chicken', kategorien: ['Saucen'],
-    basisPortionen: 6, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 180,
+    basisPortionen: 5, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 180,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
       { zutatId: 'z_haehnchensch', menge: 1500 },
@@ -109,7 +109,7 @@ export const seedRezepte = () => [
     anleitung: '1. Schenkel + Zwiebeln + 1 Tasse Brühe in den Topf.\n2. 3 Std bei 160° schmoren (Deckel).\n3. Knochen raus, Fleisch mit 2 Gabeln zerzupfen.\n4. Als Block einfrieren.' }),
 
   createRezept({ id: 'r_pulledpork', name: 'Pulled Pork BBQ', kategorien: ['Saucen'],
-    basisPortionen: 8, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 480,
+    basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 480,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
       { zutatId: 'z_schweinenacken', menge: 2200 },
@@ -123,15 +123,15 @@ export const seedRezepte = () => [
     basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'ml', kochdauer: 30,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Blockform'] },
     zutaten: [
-      { zutatId: 'z_kokosmilch',  menge: 800 },
-      { zutatId: 'z_currypaste',  menge: 60  },
-      { zutatId: 'z_zwiebel',     menge: 200 },
-      { zutatId: 'z_salz',        menge: 8   },
+      { zutatId: 'z_kokosmilch',  menge: 1200 },
+      { zutatId: 'z_currypaste',  menge: 60   },
+      { zutatId: 'z_zwiebel',     menge: 200  },
+      { zutatId: 'z_salz',        menge: 8    },
     ],
     anleitung: '1. Zwiebeln anschwitzen.\n2. Currypaste 2 Min mitrösten, bis es duftet.\n3. Kokosmilch aufgießen, 20 Min sanft köcheln.\n4. Als Block einfrieren.\nTipp: Gemüse + Protein immer frisch dazu.' }),
 
   createRezept({ id: 'r_tacohack', name: 'Taco-Hack', kategorien: ['Saucen'],
-    basisPortionen: 6, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 30,
+    basisPortionen: 5, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 30,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
       { zutatId: 'z_hack',         menge: 1000 },
@@ -143,7 +143,7 @@ export const seedRezepte = () => [
     anleitung: '1. Hack krümelig braten, Zwiebeln dazu.\n2. Tomatenmark + Taco-Gewürz (Kreuzkümmel, Paprika, Chili, Oregano) rösten.\n3. Bohnen + 1 Tasse Wasser, 10 Min einköcheln.\n4. Als Block einfrieren.' }),
 
   createRezept({ id: 'r_kaesesauce', name: 'Cheddar-Käsesauce', kategorien: ['Saucen'],
-    basisPortionen: 6, ergibtMenge: 1000, ergibtEinheit: 'ml', kochdauer: 20,
+    basisPortionen: 4, ergibtMenge: 1000, ergibtEinheit: 'ml', kochdauer: 20,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Eiswürfel'] },
     zutaten: [
       { zutatId: 'z_milch',   menge: 700 },
@@ -155,7 +155,7 @@ export const seedRezepte = () => [
     anleitung: '1. Butter + Mehl zur Mehlschwitze verrühren.\n2. Milch nach und nach einrühren, glatt aufkochen.\n3. Cheddar schmelzen, mit Muskat + Salz abschmecken.\n4. Einfrieren — beim Auftauen mit Schuss Milch aufschlagen.' }),
 
   createRezept({ id: 'r_dal', name: 'Rote-Linsen-Dal', kategorien: ['Saucen'],
-    basisPortionen: 5, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 35,
+    basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 35,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Glas'] },
     zutaten: [
       { zutatId: 'z_linsen',     menge: 400 },
@@ -326,7 +326,7 @@ export const seedRezepte = () => [
 
   // ── Zwischen-Basis: Bolognese (aus Tomatensoße) → Basis für Lasagne & Chili ──
   createRezept({ id: 'r_bolognese', name: 'Bolognese', kategorien: ['Onepot/Auflauf'],
-    basisPortionen: 5, kochdauer: 30, ergibtMenge: 1500, ergibtEinheit: 'g',
+    basisPortionen: 6, kochdauer: 30, ergibtMenge: 1500, ergibtEinheit: 'g',
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Glas'] },
     zutaten: [
       { zutatId: 'z_hack',        menge: 600 },
@@ -438,7 +438,7 @@ export const seedRezepte = () => [
     anleitung: '1. Reis kochen.\n2. Pulled Chicken erwärmen, BBQ-Sauce unterziehen.\n3. Bowl: Reis, Chicken, frischer Salat.\nPickled Onions als Topping.' }),
 
   createRezept({ id: 'r_pulled_wrap', name: 'Pulled Chicken Wrap', kategorien: ['Burritos'],
-    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
     zutaten: [
       { zutatId: 'z_wrap',    menge: 256 },
       { zutatId: 'z_joghurt', menge: 200 },
@@ -670,7 +670,7 @@ export const seedRezepte = () => [
     anleitung: '1. Dal erwärmen, Spinat unterrühren bis er zusammenfällt.\n2. Bowl: Reis, Dal, Klecks Joghurt, Koriander.\nNaan optional.' }),
 
   createRezept({ id: 'r_dal_wrap', name: 'Dal-Wrap', kategorien: ['Burritos'],
-    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
     zutaten: [
       { zutatId: 'z_wrap',    menge: 256 },
       { zutatId: 'z_joghurt', menge: 160 },
@@ -704,7 +704,7 @@ export const seedRezepte = () => [
     anleitung: '1. Reis kochen, Gyros erwärmen.\n2. Tzatziki: Joghurt + geraspelte Gurke + Knoblauch.\n3. Bowl: Reis, Gyros, Salat, Tzatziki.' }),
 
   createRezept({ id: 'r_gyros_wrap', name: 'Gyros-Wrap', kategorien: ['Burritos'],
-    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Box'] },
+    basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: false, behaelter: ['Box', 'frisch'] },
     zutaten: [
       { zutatId: 'z_wrap',    menge: 256 },
       { zutatId: 'z_joghurt', menge: 160 },
