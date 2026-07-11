@@ -26,7 +26,10 @@ export const FREQ_LABELS = {
 const FREQ_DAYS = { daily: 1, biweekly: 3, weekly: 7, monthly: 30 }
 
 export function freqToDays(task) {
-  if (task.freq === 'custom') return task.customDays ?? 7
+  // customDays muss > 0 sein: 0/negativ (oder null) würde in taskUrgency/taskSegments
+  // eine Division durch 0 (→ Infinity/NaN) auslösen und roomStatus/calcRingScore
+  // vergiften. `?? 7` fängt nur null/undefined, nicht die 0 — daher `> 0`.
+  if (task.freq === 'custom') return task.customDays > 0 ? task.customDays : 7
   return FREQ_DAYS[task.freq] ?? 7
 }
 

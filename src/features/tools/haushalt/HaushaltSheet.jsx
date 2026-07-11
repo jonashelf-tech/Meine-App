@@ -197,7 +197,7 @@ export function TaskSheet({ task = null, onSave, onDelete, onReset, onClose }) {
               value={form.customDays ?? ''}
               placeholder="7"
               min={1}
-              onChange={e => set('customDays', e.target.value === '' ? null : Number(e.target.value))}
+              onChange={e => set('customDays', e.target.value === '' ? null : Math.max(1, Number(e.target.value)))}
             />
             <span className={s.numLabel}>Tage</span>
           </div>

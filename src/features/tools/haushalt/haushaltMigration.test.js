@@ -1,6 +1,21 @@
 import { describe, it, expect } from 'vitest'
 import { sv, SK } from '../../../storage'
-import { loadHaushalt, normalizeRoomIcon, DEFAULT_ROOMS } from './haushaltData'
+import { loadHaushalt, normalizeRoomIcon, DEFAULT_ROOMS, freqToDays } from './haushaltData'
+
+describe('freqToDays — Custom-Intervall robust gegen 0/negativ', () => {
+  it('nutzt customDays wenn > 0', () => {
+    expect(freqToDays({ freq: 'custom', customDays: 14 })).toBe(14)
+  })
+  it('fällt bei 0/negativ/null auf 7 zurück (verhindert Division durch 0)', () => {
+    expect(freqToDays({ freq: 'custom', customDays: 0 })).toBe(7)
+    expect(freqToDays({ freq: 'custom', customDays: -3 })).toBe(7)
+    expect(freqToDays({ freq: 'custom', customDays: null })).toBe(7)
+  })
+  it('nicht-custom nutzt die Frequenz-Tabelle', () => {
+    expect(freqToDays({ freq: 'weekly' })).toBe(7)
+    expect(freqToDays({ freq: 'daily' })).toBe(1)
+  })
+})
 
 describe('normalizeRoomIcon', () => {
   it('lässt gültige Glyph-Namen unverändert', () => {
