@@ -196,7 +196,9 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   }
 
   const handleDurPreset = (val) => setDuration(prev => prev === val ? null : val)
-  const handleDurFree   = (e)   => setDuration(e.target.value ? parseInt(e.target.value) : null)
+  // Dauer immer > 0: eine negative/ungültige Eingabe (type=number lässt "-60" zu)
+  // würde Slot-Überlappung und getDurationKeys kaputtmachen. Leer bleibt null.
+  const handleDurFree   = (e)   => { const n = parseInt(e.target.value, 10); setDuration(e.target.value === '' ? null : (n > 0 ? n : 1)) }
 
   // Ende-Zeit ist reine Ableitung aus time+duration (kein eigener State) —
   // Eintippen schreibt direkt auf duration, damit Dauer-Presets & Ende-Feld

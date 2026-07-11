@@ -1,4 +1,9 @@
-import { getToolColor } from '../../../utils'
+import { getToolColor, dateKey } from '../../../utils'
+
+// createdAt ist ein UTC-ISO-Zeitstempel; ein Vergleich per startsWith(localDateKey)
+// verschöbe den Tool-Punkt in UTC+X für nachts erstellte Todos um einen Tag.
+// Immer über den lokalen Datums-Key vergleichen (Konvention wie kognitiv/sessionStore).
+const createdOnLocalDay = (createdAt, dk) => !!createdAt && dateKey(new Date(createdAt)) === dk
 
 // Gemeinsame Konstanten + pure Helfer für Woche/Monat/DayPanel.
 export const DAY_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -34,8 +39,10 @@ export function slotToHeight(duration) {
 
 // Überlappen sich zwei Zeitblöcke (Start in Dezimalstunden, Dauer in Minuten)?
 export function blocksOverlap(start1, dur1, start2, dur2) {
-  const end1 = start1 + (dur1 || 30) / 60
-  const end2 = start2 + (dur2 || 30) / 60
+  // Dauer nach unten auf 1 min klemmen: eine negative Dauer würde end < start
+  // erzeugen und die Überlappungsprüfung invertieren (Kollisionen unerkannt).
+  const end1 = start1 + Math.max(1, dur1 || 30) / 60
+  const end2 = start2 + Math.max(1, dur2 || 30) / 60
   return start1 < end2 && start2 < end1
 }
 
@@ -61,12 +68,12 @@ export function getToolDots(dk, todos, activeTools, weightEntries, days, toolCol
   }
 
   if (activeTools.includes('haushalt')) {
-    if (todos.some(t => t.toolId === 'haushalt' && t.createdAt?.startsWith(dk)))
+    if (todos.some(t => t.toolId === 'haushalt' && createdOnLocalDay(t.createdAt, dk)))
       dots.push({ id: 'haushalt', color: getToolColor('haushalt', toolColors) })
   }
 
   if (activeTools.includes('reminder')) {
-    const hasTodo = todos.some(t => t.reminderItemId && t.createdAt?.startsWith(dk))
+    const hasTodo = todos.some(t => t.reminderItemId && createdOnLocalDay(t.createdAt, dk))
     const hasSlot = Object.values(days[dk] ?? {}).some(s => s.reminderItemId)
     if (hasTodo || hasSlot)
       dots.push({ id: 'reminder', color: getToolColor('reminder', toolColors) })

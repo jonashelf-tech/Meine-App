@@ -63,7 +63,9 @@ export const getDurationKeys = (startKey, durationMins) => {
   const keys = []
   const startIdx = ALL_SLOT_KEYS.indexOf(startKey)
   if (startIdx < 0) return [startKey]
-  const slots = Math.ceil(durationMins / 30)
+  // Mindestens 1 Slot: eine 0/negative/ungültige Dauer würde sonst [] liefern,
+  // obwohl ein Block immer wenigstens seinen eigenen Start-Slot belegt.
+  const slots = Math.max(1, Math.ceil((durationMins || 30) / 30))
   for (let i = 0; i < slots; i++) {
     if (startIdx + i < ALL_SLOT_KEYS.length) keys.push(ALL_SLOT_KEYS[startIdx + i])
   }
