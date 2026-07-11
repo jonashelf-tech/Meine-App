@@ -25,7 +25,14 @@ export function useDragDrop() {
     let node = e.target
     while (node && node !== document.body) {
       const ov = window.getComputedStyle(node).overflowY
-      if (ov === 'auto' || ov === 'scroll') { scrollEl = node; break }
+      // Nur ein Element wählen, das WIRKLICH scrollt (scrollHeight > clientHeight).
+      // Sonst gewinnt ein Wrapper, der nur scheinbar scrollt: `overflow-x: hidden`
+      // lässt `overflow-y` per CSS-Spec zu `auto` berechnen (z.B. TabHeute `.page`),
+      // obwohl nicht er, sondern sein Elternteil (`.content`) den Scroll trägt —
+      // dann liefe scrollBy() ins Leere und der Auto-Scroll beim Drag bliebe tot.
+      if ((ov === 'auto' || ov === 'scroll') && node.scrollHeight > node.clientHeight) {
+        scrollEl = node; break
+      }
       node = node.parentElement
     }
 
