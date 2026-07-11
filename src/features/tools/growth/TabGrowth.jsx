@@ -87,7 +87,6 @@ export default function TabGrowth({ onBack }) {
     if (!id) return
     setTimerRueckkehr(id)
     persist(setTimerKarte(dataRef.current, todayKey(), null))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // KI-Export: fertigen Prompt in die Zwischenablage (keine API)
