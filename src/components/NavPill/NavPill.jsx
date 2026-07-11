@@ -9,7 +9,7 @@ const Chevron = ({ dir }) => (
 export default function NavPill({ label, onPrev, onNext, isCurrent, leftGlows, rightGlows, onLabelClick, onLabelDoubleClick, badge }) {
   const isInteractive = onLabelClick || onLabelDoubleClick
   return (
-    <div className={s.pill}>
+    <div className={[s.pill, isCurrent ? s.pillCurrent : ''].join(' ')}>
       <button
         className={[s.arrow, leftGlows ? s.arrowGlow : ''].join(' ')}
         onClick={onPrev}

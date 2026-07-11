@@ -1,9 +1,26 @@
 /* ── Section-Wrapper ──────────────────────────────── */
+/* Akzent: getönter Vollrahmen + Fade-Linie oben (transparente Enden) —
+   kein einseitiger Vollrand auf runder Ecke (Akzentlinie-Regel). */
 .section {
-  border-top: 2px solid var(--border);
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--tc, var(--text-dim)) 22%, var(--border));
   border-radius: var(--r);
-  background: var(--surface-low);
+  background:
+    linear-gradient(170deg, color-mix(in srgb, var(--tc, transparent) 7%, transparent), transparent 46%),
+    var(--surface-low);
   overflow: hidden;
+  box-shadow: var(--elev-1);
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--tc, var(--primary)) 55%, transparent), transparent);
+  pointer-events: none;
 }
 
 /* ── Header-Zeile ────────────────────────────────── */
@@ -11,14 +28,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 12px;
-  background: rgba(255, 255, 255, 0.025);
+  padding: 10px 12px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s;
 }
 
-.header:hover { background: rgba(255, 255, 255, 0.045); }
+.header:hover,
+.header:active { background: var(--surface-low); }
 
 /* Icon */
 .iconWrap {
@@ -58,9 +75,10 @@
 .badge {
   display: flex;
   align-items: center;
-  padding: 1px 7px;
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 8px;
+  padding: 2px 8px;
+  background: color-mix(in srgb, var(--tc, var(--text-dim)) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tc, var(--text-dim)) 26%, transparent);
+  border-radius: 999px;
   font-size: 10px;
   font-weight: 700;
   font-family: var(--font);
@@ -73,11 +91,11 @@
 .actionBtn {
   font-size: 10px;
   font-weight: 600;
-  padding: 3px 9px;
+  padding: 4px 9px;
   border: none;
-  border-radius: 5px;
-  background: color-mix(in srgb, var(--tc, #8B5CF6) 15%, transparent);
-  color: var(--tc, #a78bfa);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--tc, var(--primary)) 15%, transparent);
+  color: var(--tc, var(--primary));
   cursor: pointer;
   font-family: var(--font);
   white-space: nowrap;
@@ -86,11 +104,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 .actionBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--tc, #8B5CF6) 26%, transparent);
+  background: color-mix(in srgb, var(--tc, var(--primary)) 26%, transparent);
 }
 .actionBtn:disabled {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.18);
+  background: var(--surface-low);
+  color: var(--text-ghost);
   cursor: not-allowed;
 }
 

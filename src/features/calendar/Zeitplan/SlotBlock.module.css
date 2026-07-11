@@ -21,16 +21,16 @@
 .slotHandleLocked {
   cursor: pointer;
   color: var(--primary);
-  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.45));
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--primary) 45%, transparent));
 }
 
 .slotHandleLocked:hover {
-  color: #c4b5fd;
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.65));
+  color: color-mix(in srgb, var(--primary) 65%, white);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--primary) 65%, transparent));
 }
 
 :global(.dnd-half-locked) .slotHandle,
 :global(.dnd-half-locked) .slotHandleLocked {
-  color: #c4b5fd;
-  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.9));
+  color: color-mix(in srgb, var(--primary) 65%, white);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--primary) 90%, transparent));
 }

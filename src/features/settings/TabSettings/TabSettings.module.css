@@ -58,7 +58,7 @@
 }
 
 .toggleOn {
-  background: rgba(139,92,246,0.3);
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
   border-color: var(--primary);
 }
 

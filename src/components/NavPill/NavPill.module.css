@@ -1,12 +1,21 @@
 ﻿.pill {
   display: flex;
   align-items: center;
-  background: var(--surface-low);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 2px 4px;
+  padding: 3px 5px;
   gap: 0;
   user-select: none;
+  box-shadow: var(--elev-1);
+}
+
+/* Ansicht = heute: Pille schimmert dezent in Primary */
+.pillCurrent {
+  border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+  background:
+    radial-gradient(130% 120% at 50% 0%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 62%),
+    var(--surface);
 }
 
 .arrow {

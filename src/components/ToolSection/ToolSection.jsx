@@ -33,9 +33,7 @@ export default function ToolSection({
 }) {
   const [open, setOpen] = useState(defaultOpen)
 
-  const sectionStyle = color
-    ? { borderTop: `2px solid ${color}`, '--tc': color }
-    : undefined
+  const sectionStyle = color ? { '--tc': color } : undefined
 
   return (
     <div className={s.section} style={sectionStyle}>

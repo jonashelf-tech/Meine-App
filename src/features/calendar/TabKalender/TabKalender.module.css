@@ -8,30 +8,30 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 3px;
-  gap: 2px;
+  padding: 4px;
+  gap: 4px;
   margin-top: 8px;
   margin-bottom: 12px;
 }
 
 .seg {
   flex: 1;
-  padding: 8px 12px;
+  padding: 7px 12px;
   background: none;
   border: none;
-  border-radius: calc(var(--r) - 3px);
+  border-radius: var(--r-sm);
   color: var(--text-dim);
   font-family: var(--font);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .segActive {
-  background: var(--bg3);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
   color: var(--primary);
-  box-shadow: 0 1px 8px rgba(139,92,246,0.1);
 }
 
 .navRow {
@@ -79,7 +79,7 @@
   white-space: nowrap;
 }
 
-.navTodayBtn:hover { border-color: var(--primary); background: rgba(139,92,246,0.07); }
+.navTodayBtn:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 7%, transparent); }
 
 
 /* ─── Month View ───────────────────────────────────────── */
@@ -117,11 +117,11 @@
 }
 
 .monthCell:hover { border-color: var(--border); }
-.monthCellToday { border-color: var(--primary); box-shadow: 0 0 10px rgba(139,92,246,0.25); }
+.monthCellToday { border-color: var(--primary); box-shadow: 0 0 10px color-mix(in srgb, var(--primary) 25%, transparent); }
 .monthCellSelected {
-  background: rgba(139,92,246,0.1);
-  border-color: rgba(139,92,246,0.4);
-  box-shadow: 0 0 14px rgba(139,92,246,0.18);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 .monthCellEmpty { background: transparent; cursor: default; border-color: transparent !important; }
 
@@ -183,15 +183,30 @@
 
 
 /* ─── Week Time Grid ─────────────────────────────────────── */
+/* Zeitachsen-Akzent links als Fade-Linie statt Vollrand auf runder
+   Ecke (Akzentlinie-Regel) — gleiches Muster wie Zeitplan. */
 .weekWrapper {
   display: flex;
   flex-direction: column;
+  position: relative;
   border: 1px solid var(--border);
-  border-left: 2px solid color-mix(in srgb, var(--primary) 28%, transparent);
   border-radius: var(--r);
   overflow: hidden;
   background: rgba(0, 0, 0, 0.08);
-  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.7), var(--edge-hi);
+}
+
+.weekWrapper::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7%;
+  bottom: 7%;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--primary) 42%, transparent) 28% 72%, transparent);
+  pointer-events: none;
+  z-index: 3;
 }
 
 /* Fixe Kopfzone — Wochentage + Ganztägig + „früher" bleiben oben stehen,
@@ -241,10 +256,10 @@
 }
 
 .weekDayHeadToday {
-  background: rgba(139,92,246,0.08);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
-.weekDayHeadToday .weekDayHeadName { color: rgba(139,92,246,0.8); }
+.weekDayHeadToday .weekDayHeadName { color: var(--primary); }
 
 .weekDayHeadToday .weekDayHeadNum {
   display: flex;
@@ -467,7 +482,7 @@
   background: var(--primary);
   z-index: 2;
   pointer-events: none;
-  box-shadow: 0 0 6px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--primary) 60%, transparent);
 }
 
 .weekNowDot {
@@ -478,7 +493,7 @@
   height: 7px;
   border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 6px rgba(139, 92, 246, 0.7);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--primary) 70%, transparent);
 }
 
 /* ─── Week PillStrip ─────────────────────────────────────── */
@@ -522,7 +537,7 @@
 
 .weekPillBtn:hover { background: var(--surface); }
 
-.weekPillBtn:active { background: rgba(139,92,246,0.3); }
+.weekPillBtn:active { background: color-mix(in srgb, var(--primary) 30%, transparent); }
 
 .weekPillChips {
   flex: 1;
@@ -533,8 +548,8 @@
 }
 
 .weekPillChip {
-  background: rgba(139,92,246,0.14);
-  border: 1px solid rgba(139,92,246,0.25);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
   border-radius: 5px;
   padding: 2px 6px;
   font-family: var(--font);
@@ -549,7 +564,7 @@
   transition: background 0.12s;
 }
 
-.weekPillChip:active { background: rgba(139,92,246,0.25); }
+.weekPillChip:active { background: color-mix(in srgb, var(--primary) 25%, transparent); }
 
 .weekPillEmpty {
   font-family: var(--font);
@@ -584,20 +599,20 @@
 
 .toggleChipTermine.toggleChipOn {
   color: var(--primary);
-  border-color: rgba(139,92,246,0.35);
-  background: rgba(139,92,246,0.08);
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .toggleChipTodos.toggleChipOn {
   color: var(--teal);
-  border-color: rgba(20,184,166,0.35);
-  background: rgba(20,184,166,0.08);
+  border-color: color-mix(in srgb, var(--teal) 35%, transparent);
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
 }
 
 .toggleChipTools.toggleChipOn {
   color: var(--emerald);
-  border-color: rgba(16,185,129,0.35);
-  background: rgba(16,185,129,0.08);
+  border-color: color-mix(in srgb, var(--emerald) 35%, transparent);
+  background: color-mix(in srgb, var(--emerald) 8%, transparent);
 }
 
 
@@ -739,7 +754,7 @@
   font-family: var(--font);
   font-size: 0.9rem;
   font-weight: 700;
-  color: #00FF94;
+  color: var(--emerald);
 }
 
 .dayPanelGewichtKcal {
@@ -752,9 +767,9 @@
   margin-left: auto;
   font-family: var(--font);
   font-size: 0.68rem;
-  color: #00FF94;
+  color: var(--emerald);
   opacity: 0.75;
-  border: 1px solid rgba(0,255,148,0.2);
+  border: 1px solid color-mix(in srgb, var(--emerald) 25%, transparent);
   border-radius: 6px;
   padding: 4px 10px;
   background: transparent;
@@ -895,8 +910,8 @@
 .restoreBtnYes {
   flex: 1;
   padding: 10px;
-  background: rgba(139,92,246,0.15);
-  border: 1px solid rgba(139,92,246,0.35);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
   border-radius: var(--r);
   color: var(--primary);
   font-family: inherit;
@@ -929,15 +944,16 @@
 }
 
 .terminCard {
-  background: var(--surface, #1e1e2e);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
   padding: 20px 18px 16px;
   width: 100%;
   max-width: 300px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  box-shadow: var(--shadow-lg);
 }
 
 .terminTitle {
@@ -950,8 +966,8 @@
 
 .terminInput {
   width: 100%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--bg3);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 12px;
   font-family: var(--font);
@@ -984,8 +1000,8 @@
   flex: 1;
   padding: 6px 4px;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  background: var(--surface-low);
   color: var(--text-dim);
   font-family: var(--font);
   font-size: 0.72rem;
@@ -996,8 +1012,8 @@
 }
 
 .terminDurBtnActive {
-  background: rgba(139,92,246,0.2);
-  border-color: rgba(139,92,246,0.4);
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
   color: var(--primary);
 }
 
@@ -1018,7 +1034,7 @@
 }
 
 .terminColorDotActive {
-  border-color: rgba(255,255,255,0.7);
+  border-color: var(--text);
   transform: scale(1.2);
 }
 
@@ -1047,7 +1063,7 @@
 .terminBtnCancel {
   padding: 10px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid var(--border);
   background: transparent;
   color: var(--text-dim);
   font-family: var(--font);
@@ -1057,7 +1073,7 @@
   transition: background 0.12s;
 }
 
-.terminBtnCancel:active { background: rgba(255,255,255,0.06); }
+.terminBtnCancel:active { background: var(--surface-low); }
 
 /* ─── Wochenansicht: Slot abhaken ─────────────────────────── */
 @keyframes weekDoneFlash {
@@ -1091,7 +1107,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: rgba(139, 92, 246, 0.35);
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
   pointer-events: none;
   animation: weekRipple 0.42s ease-out forwards;
 }
