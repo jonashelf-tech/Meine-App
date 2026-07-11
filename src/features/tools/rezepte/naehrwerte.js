@@ -9,7 +9,12 @@ export function zutatNaehrwert(zutat, menge) {
 // Gesamt-Naehrwert eines Rezepts (nicht pro Portion). Rekursiv ueber Komponenten, Zyklenschutz.
 export function rezeptNaehrwertGesamt(rezept, zutatById, rezeptById, seen = new Set()) {
   if (!rezept || seen.has(rezept.id)) return ZERO()
-  if (rezept.id != null) seen.add(rezept.id)
+  // Ancestor-Pfad pro Zweig klonen statt ein global geteiltes Besuchsset zu
+  // mutieren: sonst zählt eine Basis, die in zwei Geschwister-Komponenten steckt
+  // (Diamant, z.B. zwei Bowls mit derselben Sosse), nur einmal statt doppelt und
+  // der Gesamt-Nährwert wird zu niedrig. Klonen schützt weiter vor echten Zyklen
+  // (gleiches Muster wie sammleZutaten in einkauf.js).
+  const childSeen = rezept.id != null ? new Set(seen).add(rezept.id) : seen
   const sum = ZERO()
   for (const { zutatId, menge } of rezept.zutaten ?? []) {
     const z = zutatById(zutatId)
@@ -18,7 +23,7 @@ export function rezeptNaehrwertGesamt(rezept, zutatById, rezeptById, seen = new 
   for (const { rezeptId, menge } of rezept.komponenten ?? []) {
     const basis = rezeptById(rezeptId)
     if (!basis || !basis.ergibtMenge) continue
-    const gesamt = rezeptNaehrwertGesamt(basis, zutatById, rezeptById, seen)
+    const gesamt = rezeptNaehrwertGesamt(basis, zutatById, rezeptById, childSeen)
     add(sum, scale(gesamt, menge / basis.ergibtMenge))
   }
   return sum

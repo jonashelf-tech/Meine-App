@@ -35,6 +35,19 @@ describe('rezeptNaehrwertGesamt — Zutaten + Komponenten rekursiv', () => {
     const rec = (id) => (id === 'a' ? a : null)
     expect(() => rezeptNaehrwertGesamt(a, zById, rec)).not.toThrow()
   })
+
+  it('zählt eine in zwei Geschwister-Komponenten geteilte Basis doppelt (Diamant, kein Zyklus)', () => {
+    // X → [A, B]; A → sosse (500ml); B → sosse (300ml). sosse muss in BEIDEN Zweigen zählen.
+    const sosse = { id: 'sosse', basisPortionen: 1, ergibtMenge: 1000, zutaten: [{ zutatId: 'tomate', menge: 1000 }], komponenten: [] }
+    const a = { id: 'a', basisPortionen: 1, ergibtMenge: 1000, zutaten: [], komponenten: [{ rezeptId: 'sosse', menge: 500 }] }
+    const b = { id: 'b', basisPortionen: 1, ergibtMenge: 1000, zutaten: [], komponenten: [{ rezeptId: 'sosse', menge: 300 }] }
+    const map = { sosse, a, b }
+    const rec = (id) => map[id] ?? null
+    const x = { id: 'x', basisPortionen: 1, zutaten: [], komponenten: [{ rezeptId: 'a', menge: 1000 }, { rezeptId: 'b', menge: 1000 }] }
+    // sosse gesamt = 1000 g Tomate = {200,10,40,0}
+    // A trägt 500/1000 = {100,5,20,0}; B trägt 300/1000 = {60,3,12,0}; Summe {160,8,32,0}
+    expect(rezeptNaehrwertGesamt(x, zById, rec)).toEqual({ kcal: 160, protein: 8, carbs: 32, fat: 0 })
+  })
 })
 
 describe('rezeptProPortion + format', () => {
