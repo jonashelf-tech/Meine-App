@@ -17,10 +17,10 @@ export const MUSCLE_LABELS = {
 // Nur UI-Schicht: Onboarding/Einstellungen setzen Gruppen, gespeichert wird weiter pro Muskel.
 export const MUSCLE_GROUPS = {
   brust: ['brust'],
-  ruecken: ['ruecken'],
+  ruecken: ['ruecken', 'untererRuecken'],
   beine: ['quadrizeps', 'hamstrings', 'gluteus', 'waden'],
-  schultern: ['schulterSeitlich', 'schulterHinten'],
-  arme: ['bizeps', 'trizeps'],
+  schultern: ['schulterSeitlich', 'schulterHinten', 'schulterVorne'],
+  arme: ['bizeps', 'trizeps', 'unterarme'],
   bauch: ['bauch'],
 }
 
@@ -81,6 +81,8 @@ export const DEFAULT_INCREMENTS = {
 export const VOLUME_REF = {
   brust:            { mev: 8,  mav: [12, 20], mrv: 22 },
   ruecken:          { mev: 10, mav: [14, 22], mrv: 25 },
+  untererRuecken:   { mev: 4,  mav: [6, 8],   mrv: 10 },
+  schulterVorne:    { mev: 3,  mav: [6, 8],   mrv: 10 },
   schulterSeitlich: { mev: 8,  mav: [16, 22], mrv: 26 },
   schulterHinten:   { mev: 8,  mav: [16, 22], mrv: 26 },
   quadrizeps:       { mev: 6,  mav: [10, 16], mrv: 20 },
@@ -88,11 +90,13 @@ export const VOLUME_REF = {
   gluteus:          { mev: 10, mav: [14, 20], mrv: 26 },
   bizeps:           { mev: 8,  mav: [12, 20], mrv: 26 },
   trizeps:          { mev: 6,  mav: [10, 14], mrv: 18 },
+  unterarme:        { mev: 4,  mav: [8, 10],  mrv: 12 },
   waden:            { mev: 10, mav: [12, 16], mrv: 20 },
   bauch:            { mev: 8,  mav: [16, 20], mrv: 25 },
 }
-// Muskeln ohne Eintrag (schulterVorne, trapez, unterarme, untererRuecken):
-// nur tracken, keine Zielvorgabe.
+// Niedrige Ziele für schulterVorne/untererRuecken/unterarme: kriegen viel
+// indirekt (Drücken/Kreuzheben/Zug) — der Generator gutschreibt das und
+// ergänzt nur, was fehlt. Trapez: weiter nur tracken, keine Zielvorgabe.
 
 // ─── Warmup-Schema (Anteil vom Arbeitsgewicht × Wdh) ──────
 export const WARMUP_SCHEME = [

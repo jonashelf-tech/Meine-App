@@ -112,7 +112,7 @@ describe('volumeZone', () => {
     expect(volumeZone('brust', 23)).toBe('over')
   })
   it('Muskel ohne Referenz → untracked', () => {
-    expect(volumeZone('unterarme', 10)).toBe('untracked')
+    expect(volumeZone('trapez', 10)).toBe('untracked')
   })
 })
 

@@ -1,13 +1,13 @@
 import { VOLUME_REF, AMBITION_LEVELS, SESSION_SET_BUDGET, MAX_EXERCISES_PER_SESSION, REP_PREF, ZIEL_RIR, DEFAULT_INCREMENTS, createPlan, createPlanDay } from '../fitnessModel'
 import { e1rmSeries, roundToIncrement, muscleContribution } from '../fitnessLogic'
 
-const OBER  = ['brust','ruecken','schulterVorne','schulterSeitlich','schulterHinten','bizeps','trizeps']
-const UNTER = ['quadrizeps','hamstrings','gluteus','waden','bauch']
+const OBER  = ['brust','ruecken','schulterVorne','schulterSeitlich','schulterHinten','bizeps','trizeps','unterarme']
+const UNTER = ['quadrizeps','hamstrings','gluteus','waden','bauch','untererRuecken']
 const PUSH  = ['brust','schulterVorne','schulterSeitlich','trizeps']
-const PULL  = ['ruecken','schulterHinten','bizeps','trapez']
-const BEINE = ['quadrizeps','hamstrings','gluteus','waden']
+const PULL  = ['ruecken','schulterHinten','bizeps','trapez','unterarme']
+const BEINE = ['quadrizeps','hamstrings','gluteus','waden','untererRuecken']
 const GANZ  = ['brust','ruecken','schulterSeitlich','quadrizeps','hamstrings','gluteus','bizeps','trizeps','bauch']
-const ARME  = ['bizeps','trizeps','schulterSeitlich','schulterHinten']
+const ARME  = ['bizeps','trizeps','schulterSeitlich','schulterHinten','unterarme']
 // 4er-Split
 const BRUST_TAG    = ['brust','trizeps']
 const RUECKEN_TAG  = ['ruecken','bizeps','trapez']
