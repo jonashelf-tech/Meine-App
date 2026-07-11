@@ -86,7 +86,7 @@ export const seedRezepte = () => [
   // BASEN (vorkochen, einfrieren) — Herzstück der Ketten
   // ══════════════════════════════════════════════════════════════════════════
 
-  createRezept({ id: 'r_tomatensauce', name: 'Tomatensoße', kategorien: ['Saucen'],
+  createRezept({ id: 'r_tomatensauce', name: 'Tomatensoße', kategorien: ['Basen'],
     basisPortionen: 8, ergibtMenge: 2000, ergibtEinheit: 'ml', kochdauer: 40,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Eiswürfel'] },
     zutaten: [
@@ -98,7 +98,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Zwiebeln + Knoblauch glasig dünsten.\n2. Tomatenmark 2 Min mitrösten.\n3. Dosentomaten + Salz dazu, 30 Min köcheln.\n4. Pürieren.\nTipp: Kräuter erst beim Ableiten — Basis bleibt neutral.' }),
 
-  createRezept({ id: 'r_pulledchicken', name: 'Pulled Chicken', kategorien: ['Saucen'],
+  createRezept({ id: 'r_pulledchicken', name: 'Pulled Chicken', kategorien: ['Basen'],
     basisPortionen: 5, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 180,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
@@ -108,7 +108,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Schenkel + Zwiebeln + 1 Tasse Brühe in den Topf.\n2. 3 Std bei 160° schmoren (Deckel).\n3. Knochen raus, Fleisch mit 2 Gabeln zerzupfen.\n4. Als Block einfrieren.' }),
 
-  createRezept({ id: 'r_pulledpork', name: 'Pulled Pork BBQ', kategorien: ['Saucen'],
+  createRezept({ id: 'r_pulledpork', name: 'Pulled Pork BBQ', kategorien: ['Basen'],
     basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 480,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
@@ -119,7 +119,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Nacken mit Rub (Paprika, Salz, Pfeffer, Kreuzkümmel) einreiben.\n2. 8 Std bei 120° im Ofen, bis Kerntemperatur 92°.\n3. Zerzupfen, mit BBQ-Sauce + Bratensaft mischen.\n4. Portionsweise als Block einfrieren.' }),
 
-  createRezept({ id: 'r_thaicurry', name: 'Thai-Curry', kategorien: ['Saucen'],
+  createRezept({ id: 'r_thaicurry', name: 'Thai-Curry', kategorien: ['Basen'],
     basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'ml', kochdauer: 30,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Blockform'] },
     zutaten: [
@@ -130,7 +130,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Zwiebeln anschwitzen.\n2. Currypaste 2 Min mitrösten, bis es duftet.\n3. Kokosmilch aufgießen, 20 Min sanft köcheln.\n4. Als Block einfrieren.\nTipp: Gemüse + Protein immer frisch dazu.' }),
 
-  createRezept({ id: 'r_tacohack', name: 'Taco-Hack', kategorien: ['Saucen'],
+  createRezept({ id: 'r_tacohack', name: 'Taco-Hack', kategorien: ['Basen'],
     basisPortionen: 5, ergibtMenge: 1250, ergibtEinheit: 'g', kochdauer: 30,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
@@ -142,7 +142,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Hack krümelig braten, Zwiebeln dazu.\n2. Tomatenmark + Taco-Gewürz (Kreuzkümmel, Paprika, Chili, Oregano) rösten.\n3. Bohnen + 1 Tasse Wasser, 10 Min einköcheln.\n4. Als Block einfrieren.' }),
 
-  createRezept({ id: 'r_kaesesauce', name: 'Cheddar-Käsesauce', kategorien: ['Saucen'],
+  createRezept({ id: 'r_kaesesauce', name: 'Cheddar-Käsesauce', kategorien: ['Basen'],
     basisPortionen: 4, ergibtMenge: 1000, ergibtEinheit: 'ml', kochdauer: 20,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Glas', 'Eiswürfel'] },
     zutaten: [
@@ -154,7 +154,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Butter + Mehl zur Mehlschwitze verrühren.\n2. Milch nach und nach einrühren, glatt aufkochen.\n3. Cheddar schmelzen, mit Muskat + Salz abschmecken.\n4. Einfrieren — beim Auftauen mit Schuss Milch aufschlagen.' }),
 
-  createRezept({ id: 'r_dal', name: 'Rote-Linsen-Dal', kategorien: ['Saucen'],
+  createRezept({ id: 'r_dal', name: 'Rote-Linsen-Dal', kategorien: ['Basen'],
     basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 35,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Glas'] },
     zutaten: [
@@ -166,7 +166,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Zwiebeln + Curry/Kurkuma anschwitzen.\n2. Tomatenmark kurz rösten.\n3. Linsen + Kokosmilch + 400 ml Wasser, 25 Min köcheln bis cremig.\n4. Als Block einfrieren.' }),
 
-  createRezept({ id: 'r_gyros', name: 'Hähnchen-Gyros', kategorien: ['Saucen'],
+  createRezept({ id: 'r_gyros', name: 'Hähnchen-Gyros', kategorien: ['Basen'],
     basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 30,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Blockform'] },
     zutaten: [
@@ -178,7 +178,7 @@ export const seedRezepte = () => [
     ],
     anleitung: '1. Hähnchen in Streifen schneiden.\n2. Mit Joghurt, Öl, Knoblauch, Gyros-Gewürz (Paprika, Kreuzkümmel, Oregano) + Salz marinieren — 1 Std, gern über Nacht.\n3. Scharf in der Pfanne braun braten (oder Ofen 220°, 20 Min).\n4. Als Block einfrieren — wird zu Bowl, Wrap oder Auflauf.' }),
 
-  createRezept({ id: 'r_roestgemuese', name: 'Ofen-Röstgemüse', kategorien: ['Saucen'],
+  createRezept({ id: 'r_roestgemuese', name: 'Ofen-Röstgemüse', kategorien: ['Basen'],
     basisPortionen: 6, ergibtMenge: 1500, ergibtEinheit: 'g', kochdauer: 35,
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'frisch'] },
     zutaten: [
@@ -325,7 +325,7 @@ export const seedRezepte = () => [
   // ══════════════════════════════════════════════════════════════════════════
 
   // ── Zwischen-Basis: Bolognese (aus Tomatensoße) → Basis für Lasagne & Chili ──
-  createRezept({ id: 'r_bolognese', name: 'Bolognese', kategorien: ['Onepot/Auflauf'],
+  createRezept({ id: 'r_bolognese', name: 'Bolognese', kategorien: ['Basen'],
     basisPortionen: 6, kochdauer: 30, ergibtMenge: 1500, ergibtEinheit: 'g',
     langlaeufer: true, aufbewahrung: { tk: true, behaelter: ['Box', 'Glas'] },
     zutaten: [
@@ -393,7 +393,7 @@ export const seedRezepte = () => [
     komponenten: [{ rezeptId: 'r_tomatensauce', menge: 500 }],
     anleitung: '1. Knoblauch + Chiliflocken in Öl anbraten.\n2. Tomatensoße dazu, einkochen.\n3. Penne al dente, mit etwas Nudelwasser schwenken.\n4. Parmesan + Petersilie.' }),
 
-  createRezept({ id: 'r_tomatensuppe', name: 'Cremige Tomatensuppe', kategorien: ['Onepot/Auflauf'],
+  createRezept({ id: 'r_tomatensuppe', name: 'Cremige Tomatensuppe', kategorien: ['Suppen'],
     basisPortionen: 4, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Glas', 'Box'] },
     zutaten: [
       { zutatId: 'z_schmand', menge: 150 },
@@ -626,7 +626,7 @@ export const seedRezepte = () => [
     komponenten: [{ rezeptId: 'r_thaicurry', menge: 750 }],
     anleitung: '1. Hähnchen scharf anbraten (nicht ganz durch).\n2. Thai-Curry Basis erhitzen, Hähnchen + Brokkoli rein.\n3. 8 Min köcheln.\n4. Mit Reis servieren.' }),
 
-  createRezept({ id: 'r_thai_suppe', name: 'Thai-Kokos-Suppe', kategorien: ['Onepot/Auflauf'],
+  createRezept({ id: 'r_thai_suppe', name: 'Thai-Kokos-Suppe', kategorien: ['Suppen'],
     basisPortionen: 3, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Glas'] },
     zutaten: [
       { zutatId: 'z_kokosmilch', menge: 300 },
@@ -679,7 +679,7 @@ export const seedRezepte = () => [
     komponenten: [{ rezeptId: 'r_dal', menge: 500 }],
     anleitung: '1. Dal eindicken (darf nicht zu flüssig sein).\n2. Wrap mit Joghurt bestreichen, Dal + Salat + rote Zwiebeln.\n3. Rollen, anbraten.' }),
 
-  createRezept({ id: 'r_dal_suppe', name: 'Linsen-Kokos-Suppe', kategorien: ['Onepot/Auflauf'],
+  createRezept({ id: 'r_dal_suppe', name: 'Linsen-Kokos-Suppe', kategorien: ['Suppen'],
     basisPortionen: 3, kochdauer: 15, aufbewahrung: { tk: true, behaelter: ['Glas', 'Box'] },
     zutaten: [
       { zutatId: 'z_kokosmilch', menge: 200 },

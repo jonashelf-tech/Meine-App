@@ -22,7 +22,7 @@ export default function Sammlung({ rezepte, zById, rById, toolColor, onEdit, onV
   const allKats = useMemo(() => {
     const fromRezepte = rezepte.flatMap(r => r.kategorien ?? [])
     const unique = [...new Set([...fromRezepte, ...extraKats])]
-    const ORDER = ['Fitness', 'Bowls', 'Burritos', 'Salate', 'Onepot/Auflauf', 'Saucen', 'Marinaden', 'Dressings']
+    const ORDER = ['Fitness', 'Bowls', 'Burritos', 'Salate', 'Suppen', 'Onepot/Auflauf', 'Basen', 'Saucen', 'Marinaden', 'Dressings']
     return [
       ...ORDER.filter(k => unique.includes(k)),
       ...unique.filter(k => !ORDER.includes(k)).sort(),
