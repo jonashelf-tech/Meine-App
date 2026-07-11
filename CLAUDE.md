@@ -49,7 +49,7 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 
 **Bevor ich "totes" Zeug lösche/ersetze:** erst prüfen ob es wirklich tot ist. Im Zweifel melden statt löschen.
 
-**Modellwahl (Stand 2026-07-07 — Fable-Zugang ausgelaufen):** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen, Bau-Orchestrierung → Opus. Die frühere **Fable-Rolle** (Audits, Security-/Datenverlust-Reviews, schwer revidierbare Entscheidungen, festgefahrene Bugs) übernimmt jetzt **Opus in einer eigenen Session mit explizitem Prüf-Auftrag** — Prüfen und Bauen bewusst nicht in derselben Session vermischen, das war der Wert der getrennten Fable-Einsätze. Faustregel bleibt: eine Session prüft, eine baut, Sonnet setzt um.
+**Modellwahl (Stand 2026-07-11 — Fable wieder verfügbar):** Template-/Routine-Arbeit → Sonnet. Architektur, Datenmodell, unklare Design-Fragen, Bau-Orchestrierung → Opus. **Fable-Rolle** (Audits, Security-/Datenverlust-Reviews, schwer revidierbare Entscheidungen, festgefahrene Bugs, Design-Pässe mit Urteilsvermögen) → Fable. Ist Fable gerade nicht verfügbar, übernimmt **Opus in einer eigenen Session mit explizitem Prüf-Auftrag** — Prüfen und Bauen bewusst nicht in derselben Session vermischen, das war der Wert der getrennten Fable-Einsätze. Faustregel bleibt: eine Session prüft, eine baut, Sonnet setzt um.
 
 **Modell-Check (jede Session, erste Antwort):** Passt das laufende Modell nicht zur Aufgabe — z. B. Opus für ein Routine-Feature oder Sonnet für eine Datenmodell-Entscheidung — sage ich das sofort und empfehle das passende Modell (Wechsel: Modell-Auswahl in der UI oder neuer Chat). Danach arbeite ich normal weiter, falls Jonas nicht wechselt; delegierbare Teile gehen ohnehin an Sonnet-Subagenten.
 

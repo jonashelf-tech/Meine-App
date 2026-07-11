@@ -22,14 +22,12 @@
   background: none;
   border: none;
   color: var(--text-faint);
-  font-size: 1.6rem;
-  font-weight: 700;
   min-width: 32px;
   min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
   cursor: pointer;
-  transition: color 0.15s, text-shadow 0.15s;
+  transition: color 0.15s, filter 0.15s;
   -webkit-tap-highlight-color: transparent;
   line-height: 1;
   display: flex;
@@ -48,14 +46,15 @@
   color: var(--text);
 }
 
+/* Pfeil zeigt Richtung "heute": Primary + Glow (SVG → drop-shadow, nicht text-shadow) */
 .arrowGlow {
   color: var(--primary);
-  text-shadow: 0 0 10px var(--glow-primary);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--primary) 55%, transparent));
 }
 
 .arrowGlow:hover {
   color: var(--primary);
-  text-shadow: 0 0 18px var(--glow-primary);
+  filter: drop-shadow(0 0 9px color-mix(in srgb, var(--primary) 70%, transparent));
 }
 
 .label {
@@ -82,7 +81,7 @@
 
 .labelCurrent {
   color: var(--primary);
-  text-shadow: 0 0 14px var(--glow-primary);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--primary) 40%, transparent);
 }
 
 .labelCurrent.labelClickable:hover {
