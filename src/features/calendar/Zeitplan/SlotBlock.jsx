@@ -54,7 +54,8 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
 
   // Zeitspanne fürs Block-Label: läuft gerade → Restzeit, hohe Blöcke →
   // Start–Ende in der Meta-Zeile, 30-min-Blöcke → nur Dauer inline.
-  const isActive  = nowMin != null && !slot.done && startMin <= nowMin && nowMin < endMin
+  // Pausiert zählt nicht als „läuft" — kein Countdown/Glow auf einem pausierten Slot.
+  const isActive  = nowMin != null && !slot.done && !displayTodo.paused && startMin <= nowMin && nowMin < endMin
   const spanInline = dur <= 30
   const timeSpan  = isActive
     ? (spanInline ? `noch ${endMin - nowMin} min` : `bis ${minsToHHMM(endMin)} · noch ${endMin - nowMin} min`)
@@ -110,7 +111,8 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
       saveItem={!todo ? (upd) => onSaveSlot?.(slotKey, { ...slot, subItems: upd.subItems }) : undefined}
       onToggleDone={onToggleDone}
       onEdit={onEdit}
-      onPlay={onPlay}
+      onPlay={displayTodo.paused ? undefined : onPlay}
+      pausable={!!todo}
       dragHandle={handle}
       timeSpan={timeSpan}
       timeSpanInline={spanInline}
