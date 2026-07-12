@@ -5,6 +5,13 @@ import { DAY_SHORT, getToolDots, getCellBars } from './kalenderShared'
 import { DayPanel } from './DayPanel'
 import s from './TabKalender.module.css'
 
+// Balkentext aufs erste Wort kürzen — 0.62rem auf ~46px Kachelbreite zeigt
+// ohnehin nur ein Wort; Ellipsis-Reste („Zahnar…") lesen sich schlechter.
+function firstWord(text) {
+  const w = (text ?? '').trim().split(/\s+/)[0]
+  return w || text || ''
+}
+
 // ─── Monatsansicht — Kacheln mit Farbbalken + DayPanel ───────────────
 export default function MonatView({
   monthRef, todayKey, selectedDay, onDayClick,
@@ -61,18 +68,18 @@ export default function MonatView({
                 <div
                   key={b.id}
                   className={s.cellBar}
-                  style={{ background: getToolColor('geburtstage', toolColors), opacity: 0.85 }}
+                  style={{ '--bar-c': getToolColor('geburtstage', toolColors) }}
                 >
-                  <span className={s.cellBarText}>{b.name}</span>
+                  <span className={s.cellBarText}>{firstWord(b.name)}</span>
                 </div>
               ))}
               {visible.map((bar, i) => (
                 <div
                   key={i}
                   className={[s.cellBar, bar.isTodo ? s.cellBarTodo : ''].join(' ')}
-                  style={{ background: bar.color }}
+                  style={{ '--bar-c': bar.color }}
                 >
-                  <span className={s.cellBarText}>{bar.text}</span>
+                  <span className={s.cellBarText}>{firstWord(bar.text)}</span>
                 </div>
               ))}
               {overflow > 0 && <span className={s.cellMore}>+{overflow}</span>}
