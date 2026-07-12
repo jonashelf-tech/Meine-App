@@ -42,15 +42,18 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
     time:   null,
     toolId: null, // Kein Tool-Glow im Zeitplan — Slot-Farbe zeigt die Herkunft
   }
-  // minHeight 0: das proportionale Raster (Dauer = Höhe) bestimmt die Höhe,
-  // nicht die Chip-Mindesthöhe (44px gilt weiter im Pool).
-  const chipStyle = { margin: 0, height: '100%', minHeight: 0 }
-
-  // Zeitspanne fürs Block-Label: läuft gerade → Restzeit, hohe Blöcke →
-  // Start–Ende in der Meta-Zeile, 30-min-Blöcke → nur Dauer inline.
   const startMin  = Math.round(parseFloat(slotKey) * 60)
   const dur       = slot.duration || 30
   const endMin    = startMin + dur
+
+  // Chip-Höhe explizit aus der Dauer: 48px pro Halbstunde − 4px Zellen-Padding
+  // → 30 min = 44px Einheits-Chip (wie im Pool). Der Chip treibt damit die
+  // minmax-Zeilen belegter Bereiche auf 48px; leere Zeilen bleiben 34px.
+  const spanSlots = Math.max(1, Math.ceil(dur / 30))
+  const chipStyle = { margin: 0, height: `${spanSlots * 48 - 4}px` }
+
+  // Zeitspanne fürs Block-Label: läuft gerade → Restzeit, hohe Blöcke →
+  // Start–Ende in der Meta-Zeile, 30-min-Blöcke → nur Dauer inline.
   const isActive  = nowMin != null && !slot.done && startMin <= nowMin && nowMin < endMin
   const spanInline = dur <= 30
   const timeSpan  = isActive

@@ -68,7 +68,7 @@
 .body {
   display: grid;
   grid-template-columns: 28px 1fr;
-  grid-auto-rows: 48px; /* fest = Dauer ∝ Höhe, gleicher Maßstab wie sgGrid */
+  grid-auto-rows: minmax(34px, auto); /* leer kompakt, belegt wächst — gleicher Maßstab wie sgGrid */
   overflow: visible;
 }
 

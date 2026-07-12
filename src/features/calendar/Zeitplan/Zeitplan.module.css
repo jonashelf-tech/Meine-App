@@ -29,13 +29,15 @@
   pointer-events: none;
 }
 
-/* Feste Zeilenhöhe: 1 Halbstunde = 48px → Slot-Höhe ∝ Dauer (Dauer=Höhe).
-   48 = 44px Einheits-Chip (TodoChip) + 2×2px Zellen-Padding: ein 30-min-Slot
-   ist damit exakt so hoch wie ein Pool-Chip. */
+/* Leere Zeilen kompakt (34px), belegte wachsen auf den Einheits-Chip:
+   SlotBlock gibt dem Chip seine Höhe explizit aus der Dauer (48px pro
+   Halbstunde − 4px Zellen-Padding → 30 min = 44px wie im Pool) und treibt
+   damit die minmax-Zeilen auf 48px. Belegte Bereiche bleiben so proportional
+   (Dauer = Höhe), der leere Plan bleibt klein. */
 .sgGrid {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
-  grid-auto-rows: 48px;
+  grid-auto-rows: minmax(34px, auto);
   overflow: visible;
 }
 
