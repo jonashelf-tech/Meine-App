@@ -5,6 +5,7 @@ import { TOOL_TAB } from '../../tools/toolTabs'
 import { sv, lv, SK } from '../../../storage'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan            from '../Zeitplan/Zeitplan'
+import CockpitBar          from './CockpitBar'
 import SlotSheet           from '../Zeitplan/SlotSheet'
 import Pool                from '../Pool/Pool'
 import TodoModal           from '../../../components/TodoModal/TodoModal'
@@ -202,6 +203,13 @@ export default function TabHeute() {
           {/* Nur der Zeitplan swipt beim Tageswechsel — Pool + Dashboards sind
               datumsunabhängig und bleiben stehen (sonst wandert Unverändertes mit). */}
           <div ref={swipeRef}>
+          <CockpitBar
+            viewDate={viewDate}
+            slots={todaySlots}
+            onShiftAll={handleShiftAll}
+            onCreateBlocker={handleCreateBlocker}
+            onFokusMode={() => setHeuteModus('fokus')}
+          />
           <Zeitplan
             slots={todaySlots}
             todos={todos}
@@ -214,15 +222,12 @@ export default function TabHeute() {
             onEditTodo={handleEdit}
             onTapExpand={handleBandExpand}
             onTapShrink={handleBandShrink}
-            onShiftAll={handleShiftAll}
             onToggleLock={handleToggleLock}
-            onFokusMode={() => setHeuteModus('fokus')}
             onPlaySlot={handlePlaySlot}
             onEmptyTap={setSlotSheet}
             registerHalf={registerHalf}
             startSlotDrag={startSlotDrag}
             blockers={blockers}
-            onCreateBlocker={handleCreateBlocker}
             onEditBlocker={handleEditBlocker}
             onToggleBlockerLocked={handleToggleBlockerLocked}
             birthdayPills={birthdays}

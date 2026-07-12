@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
-import PrioBadge from '../PrioBadge/PrioBadge'
 import { useDoubleTap } from '../../hooks/useDoubleTap'
 import { isFaelligkeit, isTermin } from '../../features/todos/Block'
 import { useAppStore } from '../../store'
@@ -79,6 +78,9 @@ export default function TodoChip({
   onKlaeren,          // fn(todo) — opens Klären dialog for this todo (Pool only)
   onPlay,             // fn() — startet Fokus-Timer mit diesem Task (Zeitplan only)
   pausable,           // true = Pause-Steuerung anzeigen (Pool only)
+  timeSpan,           // string — Zeitspannen-Label vom Zeitplan ("14:00–15:30 · 90m")
+  timeSpanInline,     // true = timeSpan in der Titelzeile (30-min-Blöcke) statt Meta-Zeile
+  active,             // true = Slot läuft gerade (hellere Kontur)
 }) {
   const [expanded, setExpanded]   = useState(false)
   const [itemInput, setItemInput] = useState('')
@@ -220,12 +222,18 @@ export default function TodoChip({
   const ageLabel  = showAge ? fmtAge(ageDays) : null
   const isOld     = ageDays >= threshold
 
-  const timeLabel = [
+  // timeSpan (Zeitplan) verdrängt das eigene Zeit/Dauer-Label: inline in der
+  // Titelzeile (30-min-Blöcke) oder unten in der Meta-Zeile (hohe Blöcke).
+  const ownTimeLabel = [
     isTermin(todo) ? todo.time : null,
     todo.duration  ? `${todo.duration}m` : null,
   ].filter(Boolean).join(' · ')
+  const timeLabel = timeSpan
+    ? (timeSpanInline ? timeSpan : null)
+    : ownTimeLabel
 
   const metaParts = [
+    timeSpan && !timeSpanInline ? timeSpan : null,
     isTermin(todo)      ? fmtDateShort(todo.date) : null,
     isFaelligkeit(todo) ? fmtDateShort(todo.date) : null,
   ].filter(Boolean)
@@ -247,6 +255,7 @@ export default function TodoChip({
           todo.done ? s.chipDone  : '',
           todo.paused && !todo.done ? s.chipPaused : '',
           !todo.done && isOld ? s.chipOld : '',
+          active && !todo.done ? s.chipNow : '',
           className || ''
         ].join(' ').trim()}
         style={{
@@ -360,9 +369,9 @@ export default function TodoChip({
           >✕</button>
         )}
 
-        {/* PrioBadge */}
-        <span className={s.prioBadgeWrap}>
-          <PrioBadge priority={todo.priority} />
+        {/* Prio-Punkt */}
+        <span className={s.prioBadgeWrap} aria-label={`Priorität ${todo.priority ?? 'keine'}`}>
+          <span className={[s.prioDot, s[`prioDot${todo.priority}`] || s.prioDot3].join(' ')} />
         </span>
 
         {/* Drag handle — passed in as JSX */}

@@ -1,0 +1,133 @@
+.cockpit {
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+/* ── Statuszeile ─────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+}
+
+.clock {
+  font-family: var(--font-num);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--primary) 55%, var(--text));
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.status {
+  flex: 1;
+  min-width: 0;
+}
+
+.statusLabel {
+  font-family: var(--font);
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.statusText {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusSuffix {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.balance {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.balanceNum {
+  font-family: var(--font-num);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--emerald);
+  line-height: 1.2;
+}
+
+.balanceCap {
+  font-family: var(--font);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ── Angedockte Funktionszeile ───────────────────────────── */
+.fnRow {
+  display: flex;
+  gap: 6px;
+  padding: 7px 8px;
+  border-top: 1px solid var(--border-dim);
+  background: rgba(0, 0, 0, 0.10);
+}
+
+.fnBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 9px;
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: 0.64rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fnBtn:hover {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.fnBtnGrow { flex: 1; }
+
+.fnBtnBlue {
+  color: rgba(100, 180, 255, 0.75);
+  background: rgba(59, 130, 246, 0.09);
+  border-color: rgba(59, 130, 246, 0.22);
+}
+
+.fnBtnBlue:hover {
+  color: rgba(100, 180, 255, 0.95);
+  border-color: rgba(59, 130, 246, 0.45);
+  background: rgba(59, 130, 246, 0.16);
+}
+
+.fnBtnViolet {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+.fnBtnViolet:hover {
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+}

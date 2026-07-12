@@ -52,17 +52,14 @@ export default function Zeitplan({
   onSetSlot,
   onToggleSlotDone,
   onEditTodo,
-  onShiftAll,
   onTapExpand,
   onTapShrink,
   onToggleLock,
   registerHalf,
   startSlotDrag,
   blockers = [],
-  onCreateBlocker,
   onEditBlocker,
   onToggleBlockerLocked,
-  onFokusMode,
   onPlaySlot,
   onEmptyTap,
   birthdayPills = [],
@@ -78,6 +75,8 @@ export default function Zeitplan({
     return () => clearInterval(id)
   }, [isNow])
   const now = new Date(nowTick)
+  // Minuten seit Mitternacht — null an fremden Tagen (kein Dimmen/Restzeit)
+  const nowMin = isNow ? now.getHours() * 60 + now.getMinutes() : null
 
   // blockersForDate muss vor hours berechnet werden
   const blockersForDate = useMemo(
@@ -106,6 +105,45 @@ export default function Zeitplan({
     if (dur <= 30) continue
     const spanned = getDurationKeys(key, dur)
     for (let i = 1; i < spanned.length; i++) consumedKeys.add(spanned[i])
+  }
+
+  // Pausen: zusammenhängende leere Halbstunden ZWISCHEN belegten Slots einer
+  // normal-Section (Randzeiten vor dem ersten/nach dem letzten Slot sind keine
+  // Pause — dafür gibt es die frei-Bänder). Bewusste Vereinfachung: Lücken
+  // über Blocker-Grenzen hinweg zählen nicht.
+  const computePauseRuns = (hourList) => {
+    const cells = []
+    hourList.forEach((h, hi) => {
+      for (const half of [false, true]) {
+        const key = sk(h, half)
+        cells.push({
+          key,
+          row: hi * 2 + (half ? 2 : 1),
+          occupied: !!slots[key] || consumedKeys.has(key),
+        })
+      }
+    })
+    const firstOcc = cells.findIndex(c => c.occupied)
+    if (firstOcc === -1) return []
+    const lastOcc = cells.map(c => c.occupied).lastIndexOf(true)
+    const runs = []
+    let run = null
+    for (let i = firstOcc; i <= lastOcc; i++) {
+      if (!cells[i].occupied) {
+        if (!run) run = { startKey: cells[i].key, startRow: cells[i].row, len: 0 }
+        run.len++
+      } else if (run) {
+        runs.push(run)
+        run = null
+      }
+    }
+    return runs
+  }
+
+  const fmtPause = (mins) => {
+    if (mins % 60 === 0 && mins >= 60) return `${mins / 60} h`
+    if (mins < 120) return `${mins} min`
+    return `${Math.floor(mins / 60)} h ${mins % 60} min`
   }
 
   // Stunden in Sections aufteilen: normal | blocker
@@ -142,6 +180,9 @@ export default function Zeitplan({
     const topSlot = slots[topKey]
     const botSlot = slots[botKey]
     const isNowHour   = isNow && now.getHours() === h
+    const hourPast    = nowMin != null && (h + 1) * 60 <= nowMin
+    const topPast     = nowMin != null && h * 60 + 30 <= nowMin
+    const botPast     = nowMin != null && (h + 1) * 60 <= nowMin
     const topConsumed = consumedKeys.has(topKey)
     const botConsumed = consumedKeys.has(botKey)
 
@@ -151,7 +192,7 @@ export default function Zeitplan({
     return [
       <div
         key={`lbl-${h}`}
-        className={[s.sgLabel, isNowHour ? s.sgLabelNow : ''].join(' ')}
+        className={[s.sgLabel, isNowHour ? s.sgLabelNow : '', hourPast ? s.sgLabelPast : ''].join(' ')}
         style={{ gridRow: `${rowBase} / span 2` }}
       >
         {String(h).padStart(2, '0')}
@@ -184,11 +225,12 @@ export default function Zeitplan({
                 onToggleLock={() => onToggleLock?.(topKey)}
                 onSaveSlot={onSetSlot}
                 onPlay={onPlaySlot && !topSlot.done ? () => onPlaySlot(topKey, topSlot) : undefined}
+                nowMin={nowMin}
               />
             </div>
           : <div
               key={`top-${h}`}
-              className={[s.sgHalf, s.sgEmpty, isNowHour ? s.sgNow : ''].join(' ')}
+              className={[s.sgHalf, s.sgEmpty, isNowHour ? s.sgNow : '', topPast ? s.sgPast : ''].join(' ')}
               style={{ gridRow: String(rowBase) }}
               ref={el => registerHalf?.(topKey, el, 'empty')}
               onClick={onEmptyTap ? () => onEmptyTap(topKey) : undefined}
@@ -221,11 +263,12 @@ export default function Zeitplan({
                 onToggleLock={() => onToggleLock?.(botKey)}
                 onSaveSlot={onSetSlot}
                 onPlay={onPlaySlot && !botSlot.done ? () => onPlaySlot(botKey, botSlot) : undefined}
+                nowMin={nowMin}
               />
             </div>
           : <div
               key={`bot-${h}`}
-              className={[s.sgHalf, s.sgHalfBot, s.sgEmpty].join(' ')}
+              className={[s.sgHalf, s.sgHalfBot, s.sgEmpty, botPast ? s.sgPast : ''].join(' ')}
               style={{ gridRow: String(rowBase + 1) }}
               ref={el => registerHalf?.(botKey, el, 'empty')}
               onClick={onEmptyTap ? () => onEmptyTap(botKey) : undefined}
@@ -235,33 +278,6 @@ export default function Zeitplan({
 
   return (
     <div className={s.zeitplan}>
-
-      {/* Shift controls */}
-      <div className={s.controls}>
-        <button
-          className={s.shiftBtn}
-          onClick={() => onShiftAll?.(-1)}
-          aria-label="Alle Slots 30 Minuten früher"
-          title="Alle Slots 30 Minuten früher"
-        >
-          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 15 12 9 18 15" /></svg>
-        </button>
-        <button
-          className={s.shiftBtn}
-          onClick={() => onShiftAll?.(1)}
-          aria-label="Alle Slots 30 Minuten später"
-          title="Alle Slots 30 Minuten später"
-        >
-          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
-        </button>
-        <div style={{ flex: 1 }} />
-        {onCreateBlocker && (
-          <button className={s.blockerBtn} onClick={onCreateBlocker}>+ Fenster</button>
-        )}
-        {onFokusMode && (
-          <button className={s.viewBtn} onClick={() => onFokusMode()}>Fokus</button>
-        )}
-      </div>
 
       {/* Sections: all-day-Streifen + normale Grids + Blocker-Cards */}
       <div className={s.slotsContainer}>
@@ -285,18 +301,41 @@ export default function Zeitplan({
                 {/* Minutengenaue Jetzt-Linie — erstes Grid-Kind (Position via gridRow),
                     damit die :last-child-Border-Regeln unberührt bleiben */}
                 {isNow && sec.hours.includes(now.getHours()) && (() => {
-                  const idx     = sec.hours.indexOf(now.getHours())
-                  const nowMin  = now.getMinutes()
+                  const idx      = sec.hours.indexOf(now.getHours())
+                  const nowMins  = now.getMinutes()
                   return (
                     <div
                       className={s.nowLine}
                       style={{
-                        gridRow: String(idx * 2 + 1 + (nowMin < 30 ? 0 : 1)),
-                        '--now-top': `${((nowMin % 30) / 30) * 100}%`,
+                        gridRow: String(idx * 2 + 1 + (nowMins < 30 ? 0 : 1)),
+                        '--now-top': `${((nowMins % 30) / 30) * 100}%`,
                       }}
-                    />
+                    >
+                      <span className={s.nowBadge}>
+                        {`${String(now.getHours()).padStart(2, '0')}:${String(nowMins).padStart(2, '0')}`}
+                      </span>
+                    </div>
                   )
                 })()}
+                {/* Pausen-Labels über Lücken zwischen Slots (Zellen bleiben tappbar) */}
+                {computePauseRuns(sec.hours).map(run => (
+                  <div
+                    key={`pause-${run.startKey}`}
+                    className={s.pauseOverlay}
+                    style={{ gridRow: `${run.startRow} / span ${run.len}` }}
+                  >
+                    <span className={s.pauseLabel}>
+                      {run.len === 1 ? '30 min' : `Pause · ${fmtPause(run.len * 30)}`}
+                    </span>
+                    {run.len >= 2 && onEmptyTap && (
+                      <button
+                        className={s.pausePlus}
+                        onClick={() => onEmptyTap(run.startKey)}
+                        aria-label="In der Pause planen"
+                      >+</button>
+                    )}
+                  </div>
+                ))}
                 {renderHourRows(sec.hours)}
               </div>
             )
@@ -309,6 +348,7 @@ export default function Zeitplan({
                 todos={todos}
                 setTodos={setTodos}
                 consumedKeys={consumedKeys}
+                nowMin={nowMin}
                 onToggleSlotDone={onToggleSlotDone}
                 onEditTodo={onEditTodo}
                 onToggleLock={onToggleLock}

@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import TodoChip from '../../../components/TodoChip/TodoChip'
+import { minsToHHMM } from '../../../utils'
 import s from './SlotBlock.module.css'
 
 const DragIcon = (
@@ -25,7 +26,7 @@ function LockIcon({ locked }) {
   )
 }
 
-export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit, onDragStart, onToggleLock, onSaveSlot, onPlay }) {
+export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onToggleDone, onEdit, onDragStart, onToggleLock, onSaveSlot, onPlay, nowMin = null }) {
   const displayTodo = {
     ...(todo ?? {
       id: null,
@@ -41,7 +42,20 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
     time:   null,
     toolId: null, // Kein Tool-Glow im Zeitplan — Slot-Farbe zeigt die Herkunft
   }
-  const chipStyle = { margin: 0, height: '100%' }
+  // minHeight 0: das proportionale Raster (Dauer = Höhe) bestimmt die Höhe,
+  // nicht die Chip-Mindesthöhe (44px gilt weiter im Pool).
+  const chipStyle = { margin: 0, height: '100%', minHeight: 0 }
+
+  // Zeitspanne fürs Block-Label: läuft gerade → Restzeit, hohe Blöcke →
+  // Start–Ende in der Meta-Zeile, 30-min-Blöcke → nur Dauer inline.
+  const startMin  = Math.round(parseFloat(slotKey) * 60)
+  const dur       = slot.duration || 30
+  const endMin    = startMin + dur
+  const isActive  = nowMin != null && !slot.done && startMin <= nowMin && nowMin < endMin
+  const spanInline = dur <= 30
+  const timeSpan  = isActive
+    ? (spanInline ? `noch ${endMin - nowMin} min` : `bis ${minsToHHMM(endMin)} · noch ${endMin - nowMin} min`)
+    : (spanInline ? `${dur}m` : `${minsToHHMM(startMin)}–${minsToHHMM(endMin)} · ${dur}m`)
 
   const dragRef = useRef(null)
 
@@ -95,6 +109,9 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
       onEdit={onEdit}
       onPlay={onPlay}
       dragHandle={handle}
+      timeSpan={timeSpan}
+      timeSpanInline={spanInline}
+      active={isActive}
     />
   )
 }

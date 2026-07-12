@@ -12,7 +12,7 @@ src/
     PrioBadge/        PrioBadge.jsx
     RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
     Toast/            Toast.jsx
-    TodoChip/         TodoChip.jsx + .module.css  — Farbe = Streifen links (3px) + Border in Chip-Farbe (gedimmt), kein Glow-Modus
+    TodoChip/         TodoChip.jsx + .module.css  — Block-Look: getönter Grund (color-mix Chip-Farbe + --bg2, theme-sicher) + 3px-Farbstreifen + Border in Chip-Farbe; Prio-Punkt (rose/amber/ghost) statt PrioBadge (Badge lebt weiter in TabKlaeren/SlotSheet); Subtodo-Fortschritt absolut an der Unterkante; Props timeSpan/timeSpanInline/active (Zeitplan: Zeitspanne bzw. Restzeit beim laufenden Slot, via SlotBlock)
     TodoModal/        TodoModal.jsx + .module.css
     ToolHeader/       ToolHeader.jsx          — Standard-Header für alle Tools
     ToolSection/      ToolSection.jsx
@@ -27,7 +27,8 @@ src/
       KiPlanSection/  KiPlanSection.jsx
       Pool/           Pool.jsx + Pool.module.css  — `.listArea` hat horizontales Padding 8px (Glow-Effekt nicht abschneiden)
       TabHeute/
-        TabHeute.jsx            — Tagesplaner (DayNav + Zeitplan + Pool + Sections)
+        TabHeute.jsx            — Tagesplaner (DayNav + CockpitBar + Zeitplan + Pool + Sections)
+        CockpitBar.jsx          — Statuskarte überm Zeitplan: Uhr (Orbitron) · Jetzt-läuft-/Nächster-Slot-Countdown (heute) bzw. Tages-Zusammenfassung (anderer Tag) · Bilanz done/total; unten angedockte Funktionszeile ↑30m/↓30m/+Fenster/Fokus (ersetzt die alte Controls-Zeile in Zeitplan.jsx)
         useTimeEvents.js        — Hook: abgelaufene/verpasste Slots behandeln
       TabKalender/
         TabKalender.jsx         — Orchestrator: View-State, NavPill, Woche/Monat-Segmented, Toggle-Strip
