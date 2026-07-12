@@ -42,7 +42,7 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
             dateKey:  dk,
             slotKey,
             text:     slot.text,
-            color:    slot.color || '#8B5CF6',
+            color:    slot.color ?? null,
             type:     slot.todoId ? 'todo' : 'text',
             todoId:   slot.todoId || null,
             subItems: slot.subItems ?? [],   // Text-Slots: Unterpunkte überleben „In Pool"
@@ -60,7 +60,7 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
           dateKey: t.date,
           slotKey: null,
           text:    t.text,
-          color:   t.color || '#8B5CF6',
+          color:   t.color ?? null,
           type:    'faellig',
           todoId:  t.id,
         })
@@ -91,7 +91,7 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
         dateKey:  today,
         slotKey,
         text:     slot.text,
-        color:    slot.color || '#8B5CF6',
+        color:    slot.color ?? null,
         type:     slot.todoId ? 'todo' : 'text',
         todoId:   slot.todoId || null,
         subItems: slot.subItems ?? [],

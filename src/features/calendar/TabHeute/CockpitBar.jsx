@@ -113,7 +113,8 @@ export default function CockpitBar({ viewDate, slots = {}, onShiftAll, onCreateB
             {WindowIcon}<span>Fenster</span>
           </button>
         )}
-        {onFokusMode && (
+        {/* Fokus nur anbieten, wenn Todos im Tagesplaner stehen — ohne Slots ist der Fokusmodus leer */}
+        {onFokusMode && total > 0 && (
           <button className={[s.fnBtn, s.fnBtnViolet, s.fnBtnGrow].join(' ')} onClick={() => onFokusMode()}>
             {FokusIcon}<span>Fokus</span>
           </button>

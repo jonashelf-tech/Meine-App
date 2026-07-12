@@ -17,7 +17,10 @@
 }
 
 /* ── Chip — Block-Look: getönter Grund in Chip-Farbe ─────────
-   color-mix mit --bg2 statt festem Dunkelwert → Light Mode tönt hell. */
+   color-mix mit --bg2 statt festem Dunkelwert → Light Mode tönt hell.
+   Feste Höhe: der zugeklappte Chip ist ÜBERALL gleich hoch (Pool, Zeitplan
+   bei 30 min, Tool-Sections). Nur der Zeitplan überschreibt per chipStyle
+   (height:100%) — dort wächst der Chip mit der Slot-Dauer. */
 .chip {
   position: relative;
   display: flex;
@@ -25,7 +28,7 @@
   background: color-mix(in srgb, var(--chip-color, var(--primary)) 16%, var(--bg2));
   border: 1px solid color-mix(in oklch, var(--chip-color, var(--primary)) 42%, transparent);
   border-radius: 10px;
-  min-height: 44px;
+  height: 44px;
   overflow: hidden;
   box-shadow: var(--elev-1);
   transition:
@@ -82,16 +85,17 @@
   opacity: 0.85;
 }
 
-/* Pause-Grund-Marker (oben im Body, wenn pausiert mit Grund) */
+/* Pause-Grund-Marker — ersetzt die Meta-Zeile (feste Chip-Höhe: nie stapeln) */
 .pauseMarker {
   display: flex;
   align-items: center;
   gap: 5px;
   color: var(--text-dim);
   font-family: var(--font);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-style: italic;
-  margin-top: 3px;
+  line-height: 1.25;
+  margin-top: 1px;
   min-width: 0;
 }
 
@@ -124,7 +128,7 @@
 /* ── Body ────────────────────────────────────────────────── */
 .body {
   flex: 1;
-  padding: 8px 8px;
+  padding: 3px 8px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -237,14 +241,15 @@
 }
 
 /* ── Fortschrittsbalken — absolut an der Chip-Unterkante, damit er in
-   niedrigen Zeitplan-Blöcken (30 min) keinen Body-Platz frisst. ─────── */
+   niedrigen Zeitplan-Blöcken (30 min) keinen Body-Platz frisst.
+   Track bewusst kräftig: auch bei 0 erledigten Unterpunkten sichtbar. ── */
 .progressTrack {
   position: absolute;
   left: 3px;
   right: 0;
   bottom: 0;
-  height: 3px;
-  background: color-mix(in srgb, var(--chip-color, var(--primary)) 12%, transparent);
+  height: 4px;
+  background: color-mix(in srgb, var(--chip-color, var(--primary)) 30%, var(--bg2));
   overflow: hidden;
   pointer-events: none;
 }
@@ -257,13 +262,25 @@
   transition: width var(--dur) var(--ease);
 }
 
+/* ── Subtodo-Zähler (Titelzeile) — "2/3" neben dem Fortschrittsbalken ── */
+.subCount {
+  font-family: var(--font-num);
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--chip-color, var(--primary)) 60%, var(--text));
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ── Meta ────────────────────────────────────────────────── */
 .meta {
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text-faint);
-  margin-top: 2px;
+  line-height: 1.25;
+  margin-top: 1px;
   display: flex;
   align-items: center;
   justify-content: space-between;

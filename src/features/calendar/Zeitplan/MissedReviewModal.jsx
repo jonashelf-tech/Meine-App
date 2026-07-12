@@ -88,7 +88,7 @@ export default function MissedReviewModal({ items, variant, onDone, onIgnore, on
               role="checkbox"
               aria-checked={selected.has(item.id)}
             >
-              <span className={s.colorBar} style={{ background: item.color }} />
+              <span className={s.colorBar} style={{ background: item.color || 'var(--primary)' }} />
               <span className={[s.checkbox, selected.has(item.id) ? s.checkboxChecked : ''].join(' ')}>
                 {selected.has(item.id) && <span className={s.checkmark}>✓</span>}
               </span>

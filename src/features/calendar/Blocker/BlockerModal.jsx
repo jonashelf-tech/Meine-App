@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { createBlocker, formatHour } from './blockerUtils'
 import { useKeyboardOffset } from '../../../hooks/useKeyboardOffset'
-import { NEON } from '../../../utils'
 import RepeatPicker from '../../../components/RepeatPicker/RepeatPicker'
 import Overlay from '../../../components/Overlay/Overlay'
 import s from './BlockerModal.module.css'
@@ -51,10 +50,11 @@ function TimeSelect({ value, options, onChange }) {
   )
 }
 
+// Ergänzt um die NEON-Farben, die oben noch nicht vorkommen (keine Dopplungen)
 const BLOCKER_COLORS = [
   '#3b82f6', '#8B5CF6', '#10b981', '#f59e0b',
   '#ef4444', '#06b6d4', '#ec4899', '#84cc16',
-  ...NEON.slice(0, 4),
+  '#14B8A6', '#EAB308', '#D946EF', '#6366F1',
 ]
 
 const initRepeat = (r) => {

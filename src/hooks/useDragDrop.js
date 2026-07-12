@@ -16,6 +16,9 @@ export function useDragDrop() {
   const startDrag = (text, color, onDrop, e, canDrop, duration = 30) => {
     e.preventDefault()
     draggingRef.current = true
+    // color darf null (Standard = Akzent) oder ein var()-Ausdruck sein —
+    // deshalb color-mix statt Hex-Konkatenation für die Ghost-Töne.
+    const ghostColor = color || 'var(--primary)'
 
     const SCROLL_ZONE = 80
     const MAX_SPEED   = 10
@@ -85,7 +88,7 @@ export function useDragDrop() {
       ghost   = document.createElement('div')
       const stripe = document.createElement('div')
       stripe.style.cssText = 'width:3px;min-width:3px;align-self:stretch;flex-shrink:0;'
-      stripe.style.background = color
+      stripe.style.background = ghostColor
       const label = document.createElement('span')
       label.style.cssText = 'flex:1;padding:6px 10px;font-size:0.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'
       label.textContent = text
@@ -95,8 +98,8 @@ export function useDragDrop() {
         'border-radius:10px;background:rgba(7,7,14,0.97);' +
         'color:#fff;font-family:var(--font);pointer-events:none;opacity:0.92;overflow:hidden;' +
         `left:${cx0 - offsetX}px;top:${cy0 - offsetY}px;`
-      ghost.style.border = `1px solid ${color}55`
-      ghost.style.boxShadow = `0 4px 20px ${color}44`
+      ghost.style.border = `1px solid color-mix(in srgb, ${ghostColor} 33%, transparent)`
+      ghost.style.boxShadow = `0 4px 20px color-mix(in srgb, ${ghostColor} 27%, transparent)`
     }
 
     document.body.appendChild(ghost)

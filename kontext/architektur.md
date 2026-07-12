@@ -12,7 +12,7 @@ src/
     PrioBadge/        PrioBadge.jsx
     RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
     Toast/            Toast.jsx
-    TodoChip/         TodoChip.jsx + .module.css  — Block-Look: getönter Grund (color-mix Chip-Farbe + --bg2, theme-sicher) + 3px-Farbstreifen + Border in Chip-Farbe; Prio-Punkt (rose/amber/ghost) statt PrioBadge (Badge lebt weiter in TabKlaeren/SlotSheet); Subtodo-Fortschritt absolut an der Unterkante; Props timeSpan/timeSpanInline/active (Zeitplan: Zeitspanne bzw. Restzeit beim laufenden Slot, via SlotBlock)
+    TodoChip/         TodoChip.jsx + .module.css  — Block-Look: getönter Grund (color-mix Chip-Farbe + --bg2, theme-sicher) + 3px-Farbstreifen + Border in Chip-Farbe; **feste Höhe 44px** zugeklappt (überall gleich — nur SlotBlock überschreibt inline auf height:100% fürs Dauer=Höhe-Raster); Pause-Grund VERDRÄNGT die Meta-Zeile (nie 3 Zeilen); Prio-Punkt (rose/amber/ghost) statt PrioBadge (Badge lebt weiter in TabKlaeren/SlotSheet); Subtodo-Fortschritt 4px absolut an der Unterkante (Track kräftig genug für 0/N) + „x/y"-Zähler in der Titelzeile; Props timeSpan/timeSpanInline/active (Zeitplan: Zeitspanne bzw. Restzeit beim laufenden Slot, via SlotBlock). Chip-Farbe: `todo.color || 'var(--primary)'` — null = Standard, folgt der Akzentfarbe
     TodoModal/        TodoModal.jsx + .module.css
     ToolHeader/       ToolHeader.jsx          — Standard-Header für alle Tools
     ToolSection/      ToolSection.jsx
@@ -312,6 +312,7 @@ Aus dem Fitness-Look abgeleitet — gilt für „hochwertige" Tool-Screens (Kogn
 - **Akzentlinie-Regel**: kein einseitiger Rand/keine Linie auf runder Ecke (wirkt „abgehackt"). Entweder weicher Schimmer ODER Linie mit transparenten Enden (`linear-gradient(90deg, transparent, …, transparent)`).
 - **Gradient-CTA**: `linear-gradient(135deg, color-mix(in srgb, var(--primary) 70%, white), var(--primary))`, Text weiß; Glow via `color-mix(var(--primary) …)`.
 - Modul-/Domänen-**Farben sind Daten** (moduleConfig / PROFILE_DOMAINS, Hex in JS) — nicht in CSS-Dateien hardcoden.
+- **Todo-/Slot-Farben (2026-07-12)**: Wählbare Palette = `NEON` in `utils` (12 Farbfamilien, jede 1×, inkl. Grün/Gelb; auch NoteEditor + Blocker-Zusatzfarben). `color: null` = Standard → rendert überall als `var(--primary)` und wandert live mit der Akzentfarbe. **Nie einen Hex-Default persistieren** (createBlock, Slot-Schreiber, Modals: alle `?? null`). Farb-Strings können var()-Ausdrücke sein → für Alpha-Töne `color-mix(in srgb, <farbe> X%, transparent)` statt Hex-Konkatenation (`${color}44` bricht).
 
 ---
 

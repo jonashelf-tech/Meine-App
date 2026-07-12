@@ -310,11 +310,7 @@ export default function Zeitplan({
                         gridRow: String(idx * 2 + 1 + (nowMins < 30 ? 0 : 1)),
                         '--now-top': `${((nowMins % 30) / 30) * 100}%`,
                       }}
-                    >
-                      <span className={s.nowBadge}>
-                        {`${String(now.getHours()).padStart(2, '0')}:${String(nowMins).padStart(2, '0')}`}
-                      </span>
-                    </div>
+                    />
                   )
                 })()}
                 {/* Pausen-Labels über Lücken zwischen Slots (Zellen bleiben tappbar) */}

@@ -29,13 +29,13 @@
   pointer-events: none;
 }
 
-/* Feste Zeilenhöhe: 1 Halbstunde = 34px → Slot-Höhe ∝ Dauer (Dauer=Höhe).
-   Die alte minmax(33px,auto)+min-height-Kombi ließ Chips die Zeilen aufblähen
-   und verzerrte die Proportion. */
+/* Feste Zeilenhöhe: 1 Halbstunde = 48px → Slot-Höhe ∝ Dauer (Dauer=Höhe).
+   48 = 44px Einheits-Chip (TodoChip) + 2×2px Zellen-Padding: ein 30-min-Slot
+   ist damit exakt so hoch wie ein Pool-Chip. */
 .sgGrid {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
-  grid-auto-rows: 34px;
+  grid-auto-rows: 48px;
   overflow: visible;
 }
 
@@ -128,21 +128,6 @@
   height: 6px;
   border-radius: 50%;
   background: var(--primary);
-}
-
-/* Zeit-Badge an der Jetzt-Linie (rechts) */
-.nowBadge {
-  position: absolute;
-  right: 3px;
-  top: calc(var(--now-top, 0%) - 16px);
-  font-family: var(--font-num);
-  font-size: 0.55rem;
-  font-weight: 700;
-  color: #fff;
-  background: var(--primary);
-  border-radius: 4px;
-  padding: 1px 5px;
-  line-height: 1.5;
 }
 
 /* ── Pausen-Overlay — stille Lücken zwischen belegten Slots ──

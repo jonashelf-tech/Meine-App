@@ -73,13 +73,25 @@ export const getDurationKeys = (startKey, durationMins) => {
 }
 
 // ─── Misc ────────────────────────────────────────────────
+// Todo-/Notiz-Farbwahl: jede Farbfamilie genau 1× (unterscheidbar statt
+// 5 Blautöne). Keine Farbe gewählt = null → rendert als var(--primary),
+// wandert also live mit der Akzentfarbe mit.
 export const NEON = [
-  '#00CFFF','#FF2D78','#BF00FF','#00E5FF','#FF00C8',
-  '#4D9EFF','#CC44FF','#38BDFF','#E040FB','#7C4DFF',
-  '#00B4D8','#FF6EC7',
+  '#3B82F6', // Blau
+  '#06B6D4', // Cyan
+  '#14B8A6', // Teal
+  '#10B981', // Grün
+  '#84CC16', // Lime
+  '#EAB308', // Gelb
+  '#F97316', // Orange
+  '#EF4444', // Rot
+  '#EC4899', // Pink
+  '#D946EF', // Fuchsia
+  '#8B5CF6', // Violett
+  '#6366F1', // Indigo
 ]
 
-export const todoColor = (t) => t?.color || '#8B5CF6'
+export const todoColor = (t) => t?.color || 'var(--primary)'
 
 // ─── Tool color helpers ──────────────────────────────────
 export function hexToGlow(hex) {

@@ -167,7 +167,7 @@ export default function TabHeute() {
     handleSetSlot(slotKey, {
       text:     todo.text,
       todoId:   todo.id,
-      color:    todo.color || '#8B5CF6',
+      color:    todo.color ?? null,
       duration: todo.duration || 30,
       locked:   false,
       done:     false,

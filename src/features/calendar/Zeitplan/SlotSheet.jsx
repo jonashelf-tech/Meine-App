@@ -55,7 +55,7 @@ export default function SlotSheet({ slotKey, dateLabel = null, todos, todaySlots
                     disabled={!ok}
                     onClick={() => onPlace(t)}
                   >
-                    <span className={s.stripe} style={{ background: t.color || '#8B5CF6' }} />
+                    <span className={s.stripe} style={{ background: t.color || 'var(--primary)' }} />
                     <span className={s.rowText}>{t.text}</span>
                     {t.duration && <span className={s.rowDur}>{t.duration} min</span>}
                     {!ok && <span className={s.blockedHint}>passt nicht</span>}

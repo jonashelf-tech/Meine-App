@@ -36,14 +36,13 @@ const ChevronIcon = ({ collapsed }) => (
 )
 
 const FolderIcon = (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
   </svg>
 )
 
 // ─── PoolChip ─────────────────────────────────────────────
 function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPlaced, onKlaeren }) {
-  const color = todo.color || '#8B5CF6'
   const [doneFlash, setDoneFlash] = useState(false)
 
   const handlePointerDown = useCallback((e) => {
@@ -53,8 +52,9 @@ function PoolChip({ todo, todos, setTodos, onToggleDone, onEdit, startDrag, isPl
       setTimeout(() => setDoneFlash(false), 500)
       return
     }
-    startDrag?.(todo.id, todo.text, color, todo.duration, e)
-  }, [todo, color, startDrag])
+    // Farbe roh durchreichen: null = Standard (Akzent) — kein Hex einbrennen
+    startDrag?.(todo.id, todo.text, todo.color ?? null, todo.duration, e)
+  }, [todo, startDrag])
 
   const handle = (
     <span

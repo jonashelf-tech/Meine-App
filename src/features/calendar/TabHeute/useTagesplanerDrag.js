@@ -163,7 +163,7 @@ export function useTagesplanerDrag({
           return blocking.length === 0 ? true : blocking
         }
       : null
-    startDrag(slot.text, slot.color || '#8B5CF6', (toKey) => {
+    startDrag(slot.text, slot.color ?? null, (toKey) => {
       if (toKey === 'pool') {
         handleRemoveSlot(fromKey, 'back')
         return

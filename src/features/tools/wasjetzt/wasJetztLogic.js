@@ -36,7 +36,7 @@ export function buildWasJetzt(todos, zeitBudget, projects = []) {
       taskId:   null,
       text:     todo.text,
       duration: todo.duration,
-      color:    todo.color ?? '#8B5CF6',
+      color:    todo.color ?? 'var(--primary)',
       meta:     todo.priority === 1 ? 'Prio 1' : (projektName ?? 'Todo'),
       score,
     })

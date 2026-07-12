@@ -64,7 +64,9 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const [text,     setText]     = useState(existingTodo?.text ?? prefill?.text ?? '')
   const [priority, setPriority] = useState(existingTodo?.priority ?? 3)
   const [duration, setDuration] = useState(existingTodo?.duration ?? null)
-  const [color,    setColor]    = useState(existingTodo?.color    ?? accentColor ?? '#8B5CF6')
+  // null = Standard: rendert als var(--primary) und wandert live mit der
+  // Akzentfarbe mit — deshalb hier bewusst KEIN accentColor-Hex einbrennen.
+  const [color,    setColor]    = useState(existingTodo?.color    ?? null)
   const [projectId, setProjectId] = useState(existingTodo?.projectId ?? null)
   const [date,     setDate]     = useState(existingTodo?.date ?? prefill?.date ?? '')
   const [time,     setTime]     = useState(existingTodo?.time ?? prefill?.time ?? '')
@@ -604,6 +606,12 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
               <div className={s.row}>
                 <span className={s.rowLabel}>Farbe</span>
                 <div className={s.colorRow}>
+                  <button
+                    className={[s.colorCircle, s.colorCircleAuto, !color ? s.colorCircleActive : ''].join(' ')}
+                    onClick={() => setColor(null)}
+                    title="Standard — folgt der Akzentfarbe"
+                    aria-label="Standardfarbe (Akzent)"
+                  />
                   {NEON.map(c => (
                     <button
                       key={c}

@@ -211,7 +211,8 @@ export default function TodoChip({
   const { klaerenSettings, projects } = useAppStore()
   const threshold = klaerenSettings?.threshold ?? 7
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
-  const color     = todo.color || '#8B5CF6'
+  // Ohne gewählte Farbe → Akzentfarbe (live gekoppelt, wandert bei Akzentwechsel mit)
+  const color     = todo.color || 'var(--primary)'
 
   const projektName = todo.projectId
     ? (projects.find(p => p.id === todo.projectId)?.name ?? null)
@@ -300,17 +301,19 @@ export default function TodoChip({
                 )}
               </span>
               {metaTag && <span className={s.categoryTag}>{metaTag}</span>}
+              {!disableExpand && allItems.length > 0 && (
+                <span className={s.subCount}>{doneItems}/{allItems.length}</span>
+              )}
               {timeLabel && <span className={s.timeLabel}>{timeLabel}</span>}
             </div>
 
-            {todo.paused && !todo.done && todo.pauseReason && (
+            {/* Zweite Zeile — feste Chip-Höhe: Pause-Grund VERDRÄNGT die Meta-Zeile */}
+            {todo.paused && !todo.done && todo.pauseReason ? (
               <div className={s.pauseMarker}>
                 <PauseGlyph />
                 <span className={s.pauseMarkerText}>{todo.pauseReason}</span>
               </div>
-            )}
-
-            {(metaParts.length > 0 || ageLabel) && (
+            ) : (metaParts.length > 0 || ageLabel) && (
               <span className={s.meta}>
                 <span className={s.metaLeft}>{metaParts.join(' · ')}</span>
                 {ageLabel && (
@@ -397,7 +400,7 @@ export default function TodoChip({
               maxHeight:    '60vh',
               overflowY:    'auto',
               boxShadow:    '0 8px 24px rgba(0,0,0,0.6)',
-              border:       `1px solid ${color}44`,
+              border:       `1px solid color-mix(in srgb, ${color} 27%, transparent)`,
               borderTop:    `2px solid ${color}`,
             } : {})
           }}

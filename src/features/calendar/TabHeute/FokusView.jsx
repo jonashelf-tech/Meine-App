@@ -62,7 +62,7 @@ export default function FokusView({ viewDate, todaySlots, todos, onToggleSlotDon
           <button
             key={t.id}
             className={[s.card, t.done ? s.done : ''].join(' ')}
-            style={{ '--accent': t.color || '#8B5CF6' }}
+            style={{ '--accent': t.color || 'var(--primary)' }}
             onClick={() => onToggleTodoDone(t.id)}
           >
             <span className={s.tick}>{CheckIcon}</span>

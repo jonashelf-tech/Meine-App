@@ -49,7 +49,7 @@ function buildAlgoPlan(todos, slots, startHour, maxCount) {
     result[slotKey] = {
       text:    todo.text,
       todoId:  todo.id,
-      color:   todo.color || '#8B5CF6',
+      color:   todo.color ?? null,
       duration: dur,
       locked:  false,
     }

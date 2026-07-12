@@ -14,7 +14,7 @@ const genId = () =>
 export const createBlock = (partial = {}) => ({
   id:                    genId(),
   text:                  '',
-  color:                 '#8B5CF6',
+  color:                 null,    // null = Standard: rendert als Akzentfarbe (var(--primary))
   priority:              3,
   duration:              null,
   done:                  false,

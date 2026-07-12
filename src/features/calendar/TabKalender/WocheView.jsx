@@ -56,8 +56,9 @@ function WeekPillStrip({ days, weekDays, visibleStart, visibleEnd, isTop, onExpa
   )
 }
 
+// value null = Standard (Akzentfarbe) — kein Hex einbrennen, wandert mit dem Theme
 const TERMIN_COLORS = [
-  { value: '#8B5CF6', label: 'Lila'  },
+  { value: null,      label: 'Standard' },
   { value: '#FB7185', label: 'Rot'   },
   { value: '#F59E0B', label: 'Gelb'  },
   { value: '#10B981', label: 'Grün'  },
@@ -67,7 +68,7 @@ const TERMIN_COLORS = [
 function WeekTerminEditModal({ dk, slotKey, slot, onSave, onClose }) {
   const [text,     setText]     = useState(slot.text     ?? '')
   const [duration, setDuration] = useState(slot.duration ?? 30)
-  const [color,    setColor]    = useState(slot.color    ?? '#8B5CF6')
+  const [color,    setColor]    = useState(slot.color    ?? null)
 
   const handleSave = () => {
     if (!text.trim()) return
@@ -108,9 +109,9 @@ function WeekTerminEditModal({ dk, slotKey, slot, onSave, onClose }) {
           <div className={s.terminColorRow}>
             {TERMIN_COLORS.map(c => (
               <button
-                key={c.value}
-                className={[s.terminColorDot, color === c.value ? s.terminColorDotActive : ''].join(' ')}
-                style={{ background: c.value }}
+                key={c.label}
+                className={[s.terminColorDot, c.value === null ? s.terminColorDotAuto : '', color === c.value ? s.terminColorDotActive : ''].join(' ')}
+                style={{ background: c.value ?? 'var(--primary)' }}
                 onClick={() => setColor(c.value)}
                 aria-label={c.label}
               />
@@ -483,7 +484,7 @@ export default function WocheView({
                           (dragging?.dk === dk && dragging?.key === key) ? s.weekSlotDragging : '',
                           isBlocking ? s.weekSlotBlocked : '',
                         ].join(' ')}
-                        style={{ top, height, '--slot-color': slot.color || '#8B5CF6' }}
+                        style={{ top, height, '--slot-color': slot.color || 'var(--primary)' }}
                         onPointerDown={(e) => {
                           e.stopPropagation()
                           if (e.button !== 0 && e.pointerType === 'mouse') return
@@ -604,7 +605,7 @@ export default function WocheView({
                   [slotKey]: {
                     text:     todo.text,
                     todoId:   todo.id,
-                    color:    todo.color || '#8B5CF6',
+                    color:    todo.color ?? null,
                     duration: todo.duration || 30,
                     locked:   false,
                     done:     false,
@@ -645,7 +646,7 @@ export default function WocheView({
               top:            colRect.top  + slotPx,
               width:          colRect.width - 4,
               height:         chipH,
-              '--slot-color': dragging.slot.color || '#8B5CF6',
+              '--slot-color': dragging.slot.color || 'var(--primary)',
             }}
           >
             {chipH >= 14 && <span className={s.weekSlotName}>{dragging.slot.text}</span>}

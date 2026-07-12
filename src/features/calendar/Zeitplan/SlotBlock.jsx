@@ -31,7 +31,7 @@ export default function SlotBlock({ slotKey, slot, todo, todos, setTodos, onTogg
     ...(todo ?? {
       id: null,
       text: slot.text || '',
-      color: slot.color || '#8B5CF6',
+      color: slot.color || 'var(--primary)',
       priority: slot.priority ?? 3,
       subItems: slot.subItems || [],
       date: null, time: null, projectId: null,

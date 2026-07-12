@@ -406,6 +406,12 @@
 .colorCircle:hover { transform: scale(1.15); }
 .colorCircleActive { border-color: #fff; transform: scale(1.15); }
 
+/* Standard-Kreis: Akzentfarbe mit Innenring — „folgt dem Theme" */
+.colorCircleAuto {
+  background: var(--primary);
+  box-shadow: inset 0 0 0 3.5px var(--bg2);
+}
+
 .pjDot {
   width: 7px;
   height: 7px;

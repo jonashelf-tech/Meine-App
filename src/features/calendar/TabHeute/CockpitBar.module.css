@@ -1,9 +1,14 @@
+/* Außen-Glow in Akzentfarbe (Fitness-Stil): weicher Fade nach außen */
 .cockpit {
   background: var(--surface-low);
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
   margin-bottom: 8px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
+    0 0 22px color-mix(in srgb, var(--primary) 13%, transparent),
+    var(--elev-1);
 }
 
 /* ── Statuszeile ─────────────────────────────────────────── */
