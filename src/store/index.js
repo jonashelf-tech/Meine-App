@@ -108,6 +108,10 @@ export const useAppStore = create((set, get) => ({
   growthOpenDate: null,
   setGrowthOpenDate: (dk) => set({ growthOpenDate: dk }),
 
+  // Notizen: „+"-Modal → bestimmte Notiz direkt im Tool öffnen (flüchtig)
+  notizenOpenId: null,
+  setNotizenOpenId: (id) => set({ notizenOpenId: id }),
+
   // ─── Kognitiv auto-start ──────────────────────────────
   kognitivAutoStart: null,
   setKognitivAutoStart: (id) => set({ kognitivAutoStart: id }),

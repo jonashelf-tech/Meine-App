@@ -841,17 +841,32 @@
 }
 
 .recentAll {
-  background: none;
-  border: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, transparent);
+  border-radius: 999px;
   cursor: pointer;
   color: var(--primary);
   font-family: var(--font);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 600;
-  padding: 2px 0;
+  padding: 8px 14px;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s;
 }
-.recentAll:hover { text-decoration: underline; }
+/* Tap-Fläche unsichtbar auf ~44px strecken (visuell bleibt der Chip schlank) */
+.recentAll::after {
+  content: '';
+  position: absolute;
+  inset: -6px -4px;
+}
+.recentAll:hover {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+}
 
 .recentList {
   display: flex;

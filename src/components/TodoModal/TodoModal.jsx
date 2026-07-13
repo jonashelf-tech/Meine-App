@@ -57,7 +57,7 @@ function formatSummaryDate(dateStr) {
 
 export default function TodoModal({ onClose, existingTodo = null, prefill = null }) {
   const keyboardOffset = useKeyboardOffset()
-  const { setTodos, setDays, setNotes, notes, projects, setProjects, accentColor, setCurrentTab } = useAppStore()
+  const { setTodos, setDays, setNotes, notes, projects, setProjects, accentColor, setCurrentTab, setNotizenOpenId } = useAppStore()
 
   const isEdit = existingTodo !== null
 
@@ -107,6 +107,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''))
     .slice(0, 2)
   const openNotizen = () => { setCurrentTab(TOOL_TAB.notizen); onClose() }
+  // Klick auf eine letzte Notiz: Tool öffnen UND diese Notiz direkt aufschlagen.
+  const openNote = (id) => { setNotizenOpenId(id); setCurrentTab(TOOL_TAB.notizen); onClose() }
 
   // Auto-Parser als Toggle (persistiert): an = Live-Erkennung + Übernahme
   // beim Hinzufügen. Manuell gesetzte Felder gewinnen immer. Nur beim
@@ -422,7 +424,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
                       key={n.id}
                       className={s.recentCard}
                       style={{ '--nc': n.color }}
-                      onClick={openNotizen}
+                      onClick={() => openNote(n.id)}
                     >
                       <span className={s.recentDot} />
                       <span className={s.recentTitle}>{noteTitle(n)}</span>

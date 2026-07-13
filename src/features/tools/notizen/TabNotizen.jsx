@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAppStore } from '../../../store'
 import { getToolColor } from '../../../utils'
 import ToolHeader from '../../../components/ToolHeader/ToolHeader'
@@ -20,9 +20,14 @@ const SearchIcon = () => (
 )
 
 export default function TabNotizen({ onBack }) {
-  const { notes, toolColors } = useAppStore()
+  const { notes, toolColors, notizenOpenId, setNotizenOpenId } = useAppStore()
   const toolColor = getToolColor('notizen', toolColors)
-  const [editing, setEditing] = useState(null)   // note-Objekt | 'new' | null
+  // Deeplink aus dem „+"-Modal: gewählte Notiz gleich beim Öffnen aufschlagen.
+  const [editing, setEditing] = useState(() => {
+    const id = useAppStore.getState().notizenOpenId
+    return id ? (useAppStore.getState().notes.find(n => n.id === id) ?? null) : null
+  })   // note-Objekt | 'new' | null
+  useEffect(() => { if (notizenOpenId) setNotizenOpenId(null) }, [notizenOpenId, setNotizenOpenId])
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {

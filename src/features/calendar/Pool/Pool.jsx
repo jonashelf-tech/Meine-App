@@ -244,6 +244,7 @@ export default function Pool({
             aria-label="Projekte verwalten"
           >
             {FolderIcon}
+            <span className={s.projBtnLabel}>Projekte</span>
             <span className={s.projBtnCount}>{projects.filter(p => !p.hidden).length}</span>
           </button>
         )}

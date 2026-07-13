@@ -107,12 +107,12 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   margin-left: auto;
   font-family: var(--font);
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 5px 9px;
+  padding: 6px 11px;
   border-radius: 8px;
   border: 1px solid var(--border-dim);
   background: none;
@@ -129,6 +129,11 @@
 }
 
 .projBtn:hover { color: var(--text); }
+
+.projBtnLabel {
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
 
 .projBtnCount {
   color: var(--primary);
