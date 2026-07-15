@@ -60,8 +60,18 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const { setTodos, setDays, setNotes, notes, projects, setProjects, accentColor, setCurrentTab, setNotizenOpenId } = useAppStore()
 
   const isEdit = existingTodo !== null
+  // Notiz-Modus + gemeinsamer Entwurf: nur beim reinen Erfassen (globaler „+"),
+  // nicht beim Bearbeiten oder Slot-Anlegen (prefill mit Datum/Uhrzeit).
+  const showModeToggle = !isEdit && !prefill?.date && !prefill?.time
 
-  const [text,     setText]     = useState(existingTodo?.text ?? prefill?.text ?? '')
+  // Aufgabe- und Notiz-Feld teilen sich EINEN persistierten Erfassungs-Entwurf
+  // (SK.noteDraft, ephemer): Text bleibt beim Moduswechsel und über Schließen
+  // erhalten — geleert nur, wenn er echt als Todo oder Notiz gespeichert wird.
+  // Beim Bearbeiten/Slot-Anlegen kommt der Text aus dem Todo/prefill.
+  const [text, setText] = useState(() =>
+    existingTodo?.text ?? prefill?.text ?? (showModeToggle ? lv(SK.noteDraft, '') : '')
+  )
+  const updateText = (v) => { setText(v); if (showModeToggle) sv(SK.noteDraft, v) }
   const [priority, setPriority] = useState(existingTodo?.priority ?? 3)
   const [duration, setDuration] = useState(existingTodo?.duration ?? null)
   // null = Standard: rendert als var(--primary) und wandert live mit der
@@ -87,16 +97,10 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   )
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  // Notiz-Modus: nur beim reinen Erfassen (globaler „+"), nicht beim Bearbeiten
-  // oder Slot-Anlegen (prefill mit Datum/Uhrzeit). Entwurf bleibt erhalten bis
-  // „Speichern" — Schließen ohne Speichern lässt den Text stehen.
-  const showModeToggle = !isEdit && !prefill?.date && !prefill?.time
   const [mode, setMode] = useState(() => showModeToggle ? lv(SK.addMode, 'aufgabe') : 'aufgabe')
   const switchMode = (m) => { setMode(m); sv(SK.addMode, m) }
-  const [noteText, setNoteText] = useState(() => lv(SK.noteDraft, ''))
-  const updateNote = (v) => { setNoteText(v); sv(SK.noteDraft, v) }
   const saveNote = () => {
-    const t = noteText.trim()
+    const t = text.trim()
     if (!t) return
     setNotes(prev => [createNote({ text: t, color: accentColor ?? '#8B5CF6' }), ...prev])
     sv(SK.noteDraft, '')
@@ -328,6 +332,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
       }
     }
 
+    // Als Todo gespeichert → gemeinsamen Erfassungs-Entwurf leeren.
+    if (showModeToggle) sv(SK.noteDraft, '')
     onClose()
   }
 
@@ -393,8 +399,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
             <textarea
               className={s.noteArea}
               autoFocus
-              value={noteText}
-              onChange={e => updateNote(e.target.value)}
+              value={text}
+              onChange={e => updateText(e.target.value)}
               placeholder="Schreib alles rein, was raus muss…"
             />
             <div className={s.noteHint}>
@@ -407,7 +413,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
               className={s.submitBtn}
               style={{ '--tc': 'var(--primary)' }}
               onClick={saveNote}
-              disabled={!noteText.trim()}
+              disabled={!text.trim()}
             >
               Als Notiz speichern
             </button>
@@ -443,7 +449,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
             className={s.textInput}
             autoFocus
             value={text}
-            onChange={e => setText(e.target.value)}
+            onChange={e => updateText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
             placeholder="Was muss getan werden…"
             autoComplete="off" autoCorrect="off" spellCheck={false}

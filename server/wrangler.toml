@@ -6,7 +6,7 @@ compatibility_date = "2026-06-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "adhs-sync"
-database_id = "HIER-EINTRAGEN-NACH-db-create"
+database_id = "5d003988-aeb3-4078-a70f-ec3722d0e47a"
 
 [vars]
 # Wer darf aus dem Browser zugreifen (kommagetrennt). Bei neuer App-Domain erweitern.

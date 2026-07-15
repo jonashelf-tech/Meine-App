@@ -101,11 +101,14 @@ done/Termin/Kalender-Lebenszyklus und sollen nicht im Pool/Kalender/Missed-Revie
 
 **Zwei Einstiege:** (1) Tool „Notizen" (Tab 19) — Karten-Übersicht (angepinnt + alle, Suche,
 Farbe, Pin) via `NoteEditor`. (2) Globaler „+" → Umschalter `Aufgabe | Notiz` (`SK.addMode`,
-letzter Modus gemerkt). Notiz-Modus = persistentes Feld (`SK.noteDraft`, **ephemer**): Text
-bleibt bis „Speichern", Schließen ohne Speichern lässt ihn stehen. Umschalter nur beim reinen
-Erfassen — nicht bei Bearbeiten/Slot-Anlegen (prefill mit Datum/Zeit). Unter dem Speichern-Button
-zeigt der Notiz-Modus die **letzten 2 Notizen** (Vorschau) + „Alle Notizen" — Tippen springt ins
-Notizen-Tool (`setCurrentTab(TOOL_TAB.notizen)`, Entwurf bleibt via `SK.noteDraft` erhalten).
+letzter Modus gemerkt). **Beide Felder (Aufgabe + Notiz) teilen sich EINEN Erfassungs-Entwurf**
+(`SK.noteDraft`, **ephemer**): der getippte Text wandert beim Moduswechsel mit und bleibt über
+Schließen erhalten — geleert wird er nur, wenn er echt als Todo *oder* Notiz gespeichert wird.
+Gemeinsamer Entwurf + Umschalter nur beim reinen Erfassen — nicht bei Bearbeiten/Slot-Anlegen
+(prefill mit Datum/Zeit), dort kommt der Text aus dem Todo/prefill. Unter dem Speichern-Button
+zeigt der Notiz-Modus die **letzten 2 Notizen** (Vorschau) + „Alle Notizen" — Tippen auf eine
+Notiz springt ins Notizen-Tool und schlägt sie direkt auf (`setNotizenOpenId` +
+`setCurrentTab(TOOL_TAB.notizen)`), „Alle Notizen" nur ins Tool; Entwurf bleibt via `SK.noteDraft` erhalten.
 
 ---
 
@@ -261,7 +264,7 @@ SK.routines       → 'adhs_todos_routines'
 SK.todoOrder      → 'adhs_todos_order'
 SK.cats           → 'adhs_todos_cats'    // LEGACY (nur Alt-Backup + Boot-Migration; kein Store-Slice mehr) — Todo-Gruppierung läuft über Projekte
 SK.notes          → 'adhs_notes_v1'           // eigener Notiz-Store (in BACKUP_CATS.tools)
-SK.noteDraft      → 'adhs_notes_draft'        // ephemer — +-Modal Notiz-Entwurf
+SK.noteDraft      → 'adhs_notes_draft'        // ephemer — +-Modal Erfassungs-Entwurf (Aufgabe+Notiz gemeinsam)
 SK.addMode        → 'adhs_view_add_mode'      // 'aufgabe'|'notiz' — letzter +-Modus
 
 // Kalender
