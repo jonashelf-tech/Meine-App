@@ -21,7 +21,7 @@
 | `src/features/calendar/tagesListeLogic.js` | **Neu** — rein: `rankOf`, `insertRank`, `buildDayEntries` |
 | `src/features/calendar/tagesListeLogic.test.js` | **Neu** — Guard für obiges |
 | `src/features/calendar/poolLogic.js` | **Ändern** — `getActiveTodos(todos, todaySlots, excludeDate?)` |
-| `src/features/calendar/poolLogic.test.js` | **Neu** — Guard für den neuen Parameter |
+| `src/features/calendar/poolLogic.test.js` | **Ändern** (existiert, 12 Tests) — Guard für den neuen Parameter anhängen |
 | `src/store/index.js` | **Ändern** — `heuteModus` Werte `'raster'|'liste'` + Lese-Migration |
 | `src/features/calendar/TabHeute/CockpitBar.jsx` + `.module.css` | **Ändern** — Segmented statt Fokus-Knopf, modusabhängige Funktionszeile |
 | `src/features/calendar/Tagesliste/Tagesliste.jsx` + `.module.css` | **Neu** — rendert die Zeilen/Bänder/Lücken |
@@ -530,11 +530,11 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `src/features/calendar/poolLogic.js:39-57`
-- Create: `src/features/calendar/poolLogic.test.js`
+- Modify: `src/features/calendar/poolLogic.test.js`
 
 - [ ] **Step 1: Failing test schreiben**
 
-Create `src/features/calendar/poolLogic.test.js`:
+⚠️ **`poolLogic.test.js` existiert bereits** (12 Tests für `sortTodos` und `getActiveTodos`). Den folgenden Block **anhängen**, die Datei nicht überschreiben:
 
 ```js
 import { describe, it, expect } from 'vitest'
