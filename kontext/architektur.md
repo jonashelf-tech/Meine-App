@@ -12,7 +12,7 @@ src/
     PrioBadge/        PrioBadge.jsx
     RepeatPicker/     RepeatPicker.jsx        — Wiederholungs-Picker (Blocker + Todos)
     Toast/            Toast.jsx
-    TodoChip/         TodoChip.jsx + .module.css  — Block-Look: getönter Grund (color-mix Chip-Farbe + --bg2, theme-sicher) + 3px-Farbstreifen + Border in Chip-Farbe; **feste Höhe 44px** zugeklappt (überall gleich — nur SlotBlock überschreibt inline auf height:100% fürs Dauer=Höhe-Raster); Pause-Grund VERDRÄNGT die Meta-Zeile (nie 3 Zeilen); Prio-Punkt (rose/amber/ghost) statt PrioBadge (Badge lebt weiter in TabKlaeren/SlotSheet); Subtodo-Fortschritt 4px absolut an der Unterkante (Track kräftig genug für 0/N) + „x/y"-Zähler in der Titelzeile; Props timeSpan/timeSpanInline/active (Zeitplan: Zeitspanne bzw. Restzeit beim laufenden Slot, via SlotBlock). Chip-Farbe: `todo.color || 'var(--primary)'` — null = Standard, folgt der Akzentfarbe
+    TodoChip/         TodoChip.jsx + .module.css  — Block-Look: getönter Grund (color-mix Chip-Farbe + --bg2, theme-sicher) + 3px-Farbstreifen + Border in Chip-Farbe; **feste Höhe 44px** zugeklappt (überall gleich — nur SlotBlock überschreibt inline auf height:100% fürs Dauer=Höhe-Raster); Pause-Grund VERDRÄNGT die Meta-Zeile (nie 3 Zeilen); Prio-Punkt (rose/amber/ghost) statt PrioBadge (Badge lebt weiter in TabKlaeren/SlotSheet); Subtodo-Fortschritt 4px absolut an der Unterkante (Track kräftig genug für 0/N) + „x/y"-Zähler in der Titelzeile; Props timeSpan/timeSpanInline/active (Zeitplan: Zeitspanne bzw. Restzeit beim laufenden Slot, via SlotBlock). Chip-Farbe: `todo.color || 'var(--primary)'` — null = Standard, folgt der Akzentfarbe; Aufklapp-Panel Add-Row-Ordnung `[+] [Feld] [Pause] [Pool]` (Unterpunkt hinzufügen · Pausieren · Zurück in den Pool über neue Prop `onToPool`, nur im Zeitplan/Tagesliste gesetzt)
     TodoModal/        TodoModal.jsx + .module.css
     ToolHeader/       ToolHeader.jsx          — Standard-Header für alle Tools
     ToolSection/      ToolSection.jsx
@@ -27,8 +27,8 @@ src/
       KiPlanSection/  KiPlanSection.jsx
       Pool/           Pool.jsx + Pool.module.css  — `.listArea` hat horizontales Padding 8px (Glow-Effekt nicht abschneiden)
       TabHeute/
-        TabHeute.jsx            — Tagesplaner (DayNav + CockpitBar + Zeitplan + Pool + Sections)
-        CockpitBar.jsx          — Statuskarte überm Zeitplan: Uhr (Orbitron) · Jetzt-läuft-/Nächster-Slot-Countdown (heute) bzw. Tages-Zusammenfassung (anderer Tag) · Bilanz done/total; unten angedockte Funktionszeile ↑30m/↓30m/+Fenster/Fokus (ersetzt die alte Controls-Zeile in Zeitplan.jsx)
+        TabHeute.jsx            — Tagesplaner (DayNav + CockpitBar + Zeitplan oder Tagesliste + Pool + Sections)
+        CockpitBar.jsx          — Statuskarte überm Zeitplan: Uhr (Orbitron) · Jetzt-läuft-/Nächster-Slot-Countdown (heute) bzw. Tages-Zusammenfassung (anderer Tag) · Bilanz done/total; unten angedockte Funktionszeile ↑30m/↓30m (nur Raster) · +Fenster · Segmented Raster|Liste (ersetzt die alte Controls-Zeile in Zeitplan.jsx)
         useTimeEvents.js        — Hook: abgelaufene/verpasste Slots behandeln
       TabKalender/
         TabKalender.jsx         — Orchestrator: View-State, NavPill, Woche/Monat-Segmented, Toggle-Strip
@@ -36,6 +36,9 @@ src/
         MonatView.jsx           — Monats-Kacheln + DayPanel-Einbettung
         DayPanel.jsx            — read-only Tagesübersicht (Zeitplan/Erledigt/Tool-Karten)
         kalenderShared.js       — DAY_SHORT/MONTH_NAMES/SLOT_H + pure Helfer (getMonday, blocksOverlap, getToolDots, …)
+      Tagesliste/
+        Tagesliste.jsx + .module.css — Listenmodus: Slots + zeitlose Tages-Todos + Blocker-Bänder, Drop-Lücken statt Raster
+      tagesListeLogic.js      — rein+getestet: rankOf / insertRank / buildDayEntries
       Zeitplan/
         MissedReviewModal.jsx   — Modal für TimeEvents (abgelaufene/verpasste Slots)
         SlotBlock.jsx           — Einzelner Slot im Zeitplan (inkl. Play→Fokus-Timer via onPlay)
@@ -239,7 +242,7 @@ Globale Variablen nur in `styles/vars.css`.
 - **Schließt** bei Backdrop-Tap (nur wenn der Backdrop selbst getroffen wird) **und Escape**. Bewusst nicht-schließbare Dialoge (MissedReview, CheckinModal, UpdatePrompt) übergeben einfach kein `onClose`.
 - `role="dialog"` + `aria-modal`. `style` wird auf den Backdrop durchgereicht (z.B. Keyboard-Offset).
 - **Genutzt von:** TodoModal · KlaerenModal · MissedReviewModal · UpdatePrompt · Konfigurator-SaveDialog · SlotSheet (center) — BirthdaySheet · CheckinModal · BlockerModal · RepeatDeleteSheet (sheet). (Zeitplan-RemoveDialog wurde 2026-07-01 entfernt.)
-- **Nicht** für Vollbild-Modi (FokusView, Kognitiv-Übungen, Fitness-Session, Briefings) — anderer Archetyp.
+- **Nicht** für Vollbild-Modi (Kognitiv-Übungen, Fitness-Session, Briefings) — anderer Archetyp.
 - **Guard:** `src/components/Overlay/overlay.test.js` erzwingt, dass migrierte Dialog-CSS keinen eigenen Backdrop bzw. `scaleIn`/`slideUp`-Keyframe mehr definieren.
 
 ---

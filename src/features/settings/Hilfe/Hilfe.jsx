@@ -11,6 +11,10 @@ const CARDS = [
     body: 'Aufgaben sammeln sich im Pool. Um eine in deinen Tag zu bringen: halt sie am Griff gedrückt und zieh sie auf eine Uhrzeit — oder tipp auf eine freie Zeit und wähl die Aufgabe aus. Beide Wege führen zum selben Ziel.',
   },
   {
+    title: 'Raster oder Liste',
+    body: 'Der Tagesplaner kann deinen Tag auf zwei Arten zeigen — der Umschalter sitzt unten in der Statuskarte. Im Raster hängt jede Aufgabe an einer Uhrzeit. In der Liste behalten nur deine Termine ihre Uhrzeit; alles andere ziehst du einfach dazwischen, ohne dich auf eine Zeit festzulegen. Es ist derselbe Tag — nur anders angesehen. Aufgaben, die du in der Liste ohne Uhrzeit einplanst, findest du im Raster oben im Pool wieder.',
+  },
+  {
     title: 'Wenn Zeit abläuft',
     body: 'Läuft die Zeit eines Eintrags ab, sammelt die App ihn in einer ruhigen Abfrage. Du entscheidest pro Eintrag: erledigt, später nochmal, oder zurück in den Pool. Nichts geht verloren.',
   },
