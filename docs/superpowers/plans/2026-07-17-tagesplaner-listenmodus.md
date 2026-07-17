@@ -621,6 +621,11 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 ## Task 5: `heuteModus` → `'raster' | 'liste'` + Umschalter in der CockpitBar
 
+> ⚠️ **Task 6 muss vor diesem Task laufen.** Dieser Task importiert und rendert
+> `Tagesliste` — existiert die Komponente noch nicht, bricht der Build. Task 6
+> hängt umgekehrt an nichts aus Task 5 (die Komponente nimmt nur Props entgegen),
+> ist also unabhängig baubar. Reihenfolge daher: **6 → 5 → 7 → 8**.
+
 **Files:**
 - Modify: `src/store/index.js` (`heuteModus`-Zeile)
 - Modify: `src/features/calendar/TabHeute/CockpitBar.jsx:28,116-121`
