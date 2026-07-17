@@ -431,14 +431,19 @@ const byRank = (a, b) => {
 }
 
 // Lücken zwischen die Zeilen legen — jede Lücke ist ein Drop-Ziel und kennt
-// ihre Nachbar-Ränge. `bounds` sind die Bandkanten: innerhalb eines Blockers
+// ihre Nachbar-Ränge. `lo`/`hi` sind die Bandkanten: innerhalb eines Blockers
 // darf ein Drop nicht außerhalb des Bandes landen, sonst springt der Eintrag
 // beim nächsten Rendern wieder raus.
-function withGaps(items, { lo = null, hi = null, locked = false } = {}) {
+//
+// `scope` hält die Keys eindeutig: aus den Nachbar-Rängen allein lässt sich kein
+// eindeutiger Key bauen — zwei Fenster mit gleichen Stunden erzeugen sonst
+// beide `gap|9|17`. useDragDrop führt die Ziele in einer Map über den Key; ein
+// Duplikat überschreibt still das andere und macht eine Drop-Zone tot.
+function withGaps(items, { lo = null, hi = null, locked = false, scope = 'root' } = {}) {
   const out = []
   const gap = (prev, next) => ({
     type: 'gap',
-    key: `gap|${prev ?? ''}|${next ?? ''}`,
+    key: `gap|${scope}|${prev ?? ''}|${next ?? ''}`,
     prev, next, locked,
   })
   out.push(gap(lo, items.length ? rankOf(items[0]) : hi))
@@ -489,7 +494,10 @@ export function buildDayEntries({ slots = {}, todos = [], blockers = [], viewDat
     blocker,
     rows: withGaps(
       inBand.get(blocker.id + blocker.startHour).sort(byRank),
-      { lo: blocker.startHour, hi: blocker.endHour, locked: !!blocker.locked },
+      {
+        lo: blocker.startHour, hi: blocker.endHour, locked: !!blocker.locked,
+        scope: `b${blocker.id}${blocker.startHour}`,
+      },
     ),
   }))
 
@@ -500,7 +508,7 @@ export function buildDayEntries({ slots = {}, todos = [], blockers = [], viewDat
 - [ ] **Step 4: Tests laufen lassen**
 
 Run: `npx vitest run src/features/calendar/tagesListeLogic.test.js`
-Expected: PASS (22 Tests — 9 aus Task 2, 13 neue)
+Expected: PASS (21 Tests — 9 aus Task 2, 12 neue)
 
 - [ ] **Step 5: Commit**
 
@@ -1271,7 +1279,9 @@ import { insertRank } from '../tagesListeLogic'
       }
       if (!dropKey.startsWith('gap|')) return
 
-      const [, p, n] = dropKey.split('|')
+      // Key-Form: gap|<scope>|<prev>|<next> — der scope hält die Keys eindeutig
+      // (zwei Fenster mit gleichen Stunden), für den Rang zählen nur die Ränder.
+      const [, , p, n] = dropKey.split('|')
       const rank = insertRank(p === '' ? null : Number(p), n === '' ? null : Number(n))
 
       setTodos(prev => prev.map(t =>

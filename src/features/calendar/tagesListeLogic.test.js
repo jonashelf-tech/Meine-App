@@ -177,4 +177,28 @@ describe('buildDayEntries', () => {
     expect([rows[0].prev, rows[0].next]).toEqual([null, 10])
     expect([rows[2].prev, rows[2].next]).toEqual([10, null])
   })
+
+  // useDragDrop führt die Drop-Ziele in einer Map über den Key. Ein doppelter
+  // Key überschreibt still das andere Ziel — die Lücke wäre tot, ohne dass man
+  // etwas sieht. Zwei Fenster mit gleichen Stunden sind der Fall, der das
+  // auslöst: aus den Nachbar-Rängen allein ist kein eindeutiger Key baubar.
+  it('Lücken-Keys sind eindeutig, auch bei zwei Fenstern mit gleichen Stunden', () => {
+    const { rows } = buildDayEntries({
+      slots: { '10': { text: 'A' }, '12': { text: 'B' } },
+      todos: [T('steuer', 11), T('offen', null)],
+      blockers: [
+        { id: 'b1', text: 'Arbeit',  startHour: 9, endHour: 17, locked: false, date: '2026-07-17' },
+        { id: 'b2', text: 'Doppelt', startHour: 9, endHour: 17, locked: false, date: '2026-07-17' },
+      ],
+      viewDate: '2026-07-17',
+    })
+    const keys = []
+    const collect = (list) => list.forEach(r => {
+      keys.push(r.key)
+      if (r.type === 'band') collect(r.rows)
+    })
+    collect(rows)
+    expect(keys.length).toBeGreaterThan(0)
+    expect(new Set(keys).size).toBe(keys.length)
+  })
 })

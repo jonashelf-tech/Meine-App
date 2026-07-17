@@ -49,11 +49,16 @@ function trailingRankOf(row) {
 // ihre Nachbar-Ränge. `lo`/`hi` sind die Bandkanten: innerhalb eines Blockers
 // darf ein Drop nicht außerhalb des Bandes landen, sonst springt der Eintrag
 // beim nächsten Rendern wieder raus.
-function withGaps(items, { lo = null, hi = null, locked = false } = {}) {
+//
+// `scope` hält die Keys eindeutig: aus den Nachbar-Rängen allein lässt sich kein
+// eindeutiger Key bauen — zwei Fenster mit gleichen Stunden erzeugen sonst
+// beide `gap|9|17`. useDragDrop führt die Ziele in einer Map über den Key; ein
+// Duplikat überschreibt still das andere und macht eine Drop-Zone tot.
+function withGaps(items, { lo = null, hi = null, locked = false, scope = 'root' } = {}) {
   const out = []
   const gap = (prev, next) => ({
     type: 'gap',
-    key: `gap|${prev ?? ''}|${next ?? ''}`,
+    key: `gap|${scope}|${prev ?? ''}|${next ?? ''}`,
     prev, next, locked,
   })
   out.push(gap(lo, items.length ? rankOf(items[0]) : hi))
@@ -100,7 +105,10 @@ export function buildDayEntries({ slots = {}, todos = [], blockers = [], viewDat
     blocker,
     rows: withGaps(
       inBand.get(blocker.id + blocker.startHour).sort(byRank),
-      { lo: blocker.startHour, hi: blocker.endHour, locked: !!blocker.locked },
+      {
+        lo: blocker.startHour, hi: blocker.endHour, locked: !!blocker.locked,
+        scope: `b${blocker.id}${blocker.startHour}`,
+      },
     ),
   }))
 
