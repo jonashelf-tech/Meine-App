@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { rankOf, insertRank, buildDayEntries } from './tagesListeLogic'
+import { rankOf, insertRank, buildDayEntries, rankFromGapKey } from './tagesListeLogic'
 
 describe('rankOf', () => {
   it('Slot: Rang ist die Dezimalstunde des Slot-Keys', () => {
@@ -16,6 +16,31 @@ describe('rankOf', () => {
 
   it('Todo ohne dayRank landet am Tagesende (24), nicht bei 0', () => {
     expect(rankOf({ kind: 'todo', todo: { dayRank: null } })).toBe(24)
+  })
+})
+
+describe('rankFromGapKey', () => {
+  it('gap mit beiden Nachbarn → Mitte', () => {
+    expect(rankFromGapKey('gap|root|10|14')).toBe(12)
+  })
+
+  it('gap am oberen Rand (kein Vorgänger) → vor den ersten', () => {
+    expect(rankFromGapKey('gap|root||10')).toBe(9.5)
+  })
+
+  it('gap am unteren Rand (kein Nachfolger) → hinter den letzten', () => {
+    expect(rankFromGapKey('gap|root|17|')).toBe(17.5)
+  })
+
+  it('gap in einem Band nutzt die Bandkanten aus dem Key', () => {
+    expect(rankFromGapKey('gap|babc18|18|22')).toBe(20)
+  })
+
+  it('kein gap-Key (Pool oder echter Slot) → null', () => {
+    expect(rankFromGapKey('pool')).toBe(null)
+    expect(rankFromGapKey('10')).toBe(null)
+    expect(rankFromGapKey('10.5')).toBe(null)
+    expect(rankFromGapKey(null)).toBe(null)
   })
 })
 

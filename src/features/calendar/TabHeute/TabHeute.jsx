@@ -61,7 +61,7 @@ export default function TabHeute() {
   } = useBlockerActions({ setBlockers, viewDate })
 
   const { startPoolDrag, startListDrag, startHaushaltDrag, startReminderDrag, startBirthdayDrag, startSlotDrag } =
-    useTagesplanerDrag({ startDrag, todaySlots, setTodaySlots, handleSetSlot, handleRemoveSlot, todos, setTodos, viewDate, setBirthdays })
+    useTagesplanerDrag({ startDrag, todaySlots, setTodaySlots, handleSetSlot, handleRemoveSlot, todos, setTodos, viewDate, setBirthdays, heuteModus })
 
   const { isOpen: teOpen, variant: teVariant, items: teItems, handleDone: teDone, handleIgnore: teIgnore, handleMoveToPool: teToPool } =
     useTimeEvents({ days, setDays, todos, setTodos })

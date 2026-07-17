@@ -1,12 +1,13 @@
 import { useCallback } from 'react'
 import { getDurationKeys } from '../../../utils'
 import { createBlock } from '../../todos/Block'
-import { insertRank } from '../tagesListeLogic'
+import { rankFromGapKey } from '../tagesListeLogic'
 
 export function useTagesplanerDrag({
   startDrag, todaySlots, setTodaySlots, handleSetSlot, handleRemoveSlot,
-  todos, setTodos, viewDate, setBirthdays,
+  todos, setTodos, viewDate, setBirthdays, heuteModus,
 }) {
+  const listMode = heuteModus === 'liste'
   const startPoolDrag = useCallback((todoId, text, color, duration, e) => {
     const dur    = duration || 30
     const curKey = Object.keys(todaySlots).find(k => todaySlots[k]?.todoId === todoId)
@@ -76,13 +77,8 @@ export function useTagesplanerDrag({
         ))
         return
       }
-      if (!dropKey.startsWith('gap|')) return
-
-      // Key-Form: gap|<scope>|<prev>|<next> — der scope hält die Keys eindeutig
-      // (zwei Fenster mit gleichen Stunden), für den Rang zählen nur die Ränder.
-      const [, , p, n] = dropKey.split('|')
-      const rank = insertRank(p === '' ? null : Number(p), n === '' ? null : Number(n))
-
+      const rank = rankFromGapKey(dropKey)
+      if (rank === null) return
       setTodos(prev => prev.map(t =>
         t.id === todoId ? { ...t, date: viewDate, time: null, dayRank: rank } : t
       ))
@@ -92,12 +88,15 @@ export function useTagesplanerDrag({
   const startHaushaltDrag = useCallback((room, uncoveredTasks, haushaltColor, e) => {
     const existing = todos.find(t => t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done)
     if (existing) {
-      startPoolDrag(existing.id, existing.text, existing.color, existing.duration, e)
+      // Bestehendes Raum-Todo wiederverwenden — im passenden Modus platzieren.
+      const reuse = listMode ? startListDrag : startPoolDrag
+      reuse(existing.id, existing.text, existing.color, existing.duration, e)
       return
     }
     const text     = `${room.icon} ${room.name}`
     const duration = Math.max(uncoveredTasks.reduce((sum, t) => sum + (t.duration ?? 0), 0), 30)
-    const canDrop  = duration > 30
+    // In der Liste gibt es keine Slot-Kollisionen — jede Lücke ist droppbar.
+    const canDrop  = (!listMode && duration > 30)
       ? (key) => {
           if (key === 'pool') return true
           const blocking = getDurationKeys(key, duration).slice(1).filter(k => todaySlots[k])
@@ -105,6 +104,7 @@ export function useTagesplanerDrag({
         }
       : null
     startDrag(text, haushaltColor, (dropKey) => {
+      const rank = rankFromGapKey(dropKey)
       const newTodo = createBlock({
         text,
         duration,
@@ -114,23 +114,30 @@ export function useTagesplanerDrag({
         haushaltRoomId:  room.id,
         haushaltTaskIds: uncoveredTasks.map(t => t.id),
         priority:        room.priority ?? 3,
+        ...(rank !== null ? { date: viewDate, time: null, dayRank: rank } : {}),
       })
       setTodos(prev => [...prev, newTodo])
-      handleSetSlot(dropKey, { text, todoId: newTodo.id, color: haushaltColor, duration, locked: false, done: false })
+      if (rank === null && dropKey !== 'pool') {
+        handleSetSlot(dropKey, { text, todoId: newTodo.id, color: haushaltColor, duration, locked: false, done: false })
+      }
     }, e, canDrop, duration)
-  }, [todos, todaySlots, startDrag, startPoolDrag, setTodos, handleSetSlot])
+  }, [todos, todaySlots, startDrag, startPoolDrag, startListDrag, setTodos, handleSetSlot, listMode, viewDate])
 
   const startReminderDrag = useCallback((item, reminderColor, e) => {
     const text     = item.text
     const duration = 30
     startDrag(text, reminderColor, (dropKey) => {
-      const newTodo = createBlock({ text, priority: 2, color: reminderColor, reminderItemId: item.id, toolId: 'reminder', duration })
+      const rank = rankFromGapKey(dropKey)
+      const newTodo = createBlock({
+        text, priority: 2, color: reminderColor, reminderItemId: item.id, toolId: 'reminder', duration,
+        ...(rank !== null ? { date: viewDate, time: null, dayRank: rank } : {}),
+      })
       setTodos(prev => [...prev, newTodo])
-      if (dropKey !== 'pool') {
+      if (rank === null && dropKey !== 'pool') {
         handleSetSlot(dropKey, { text, todoId: newTodo.id, color: reminderColor, duration, locked: false, done: false })
       }
     }, e, null, duration)
-  }, [startDrag, setTodos, handleSetSlot])
+  }, [startDrag, setTodos, handleSetSlot, viewDate])
 
   const startBirthdayDrag = useCallback((chip, chipColor, e, bulkChips) => {
     // Bulk-Add in Pool (Masse-Hinzufügen-Button)
@@ -158,17 +165,21 @@ export function useTagesplanerDrag({
     }
 
     startDrag(chip.text, chipColor, (dropKey) => {
+      const rank = rankFromGapKey(dropKey)
       const newTodo = createBlock({
         text:           chip.text,
         priority:       chip.type === 'birthday' ? 2 : 3,
         color:          chipColor,
         toolId:         'geburtstage',
         birthdayChipId: `${chip.type}-${chip.birthday.id}`,
+        ...(rank !== null ? { date: viewDate, time: null, dayRank: rank } : {}),
       })
       setTodos(prev => [...prev, newTodo])
       if (dropKey !== 'pool') {
-        handleSetSlot(dropKey, { text: chip.text, todoId: newTodo.id, color: chipColor, locked: false, done: false })
-        // Geburtstags-Chip in Zeitplan platziert → Kalender-Entry ausblenden
+        if (rank === null) {
+          handleSetSlot(dropKey, { text: chip.text, todoId: newTodo.id, color: chipColor, locked: false, done: false })
+        }
+        // Auf einen Tag gelegt (Slot ODER Liste) → Kalender-Entry ausblenden
         if (chip.type === 'birthday') {
           const currentYear = new Date().getFullYear()
           setBirthdays(prev => prev.map(b =>
@@ -177,7 +188,7 @@ export function useTagesplanerDrag({
         }
       }
     }, e, null)
-  }, [startDrag, setTodos, handleSetSlot, setBirthdays])
+  }, [startDrag, setTodos, handleSetSlot, setBirthdays, viewDate])
 
   const startSlotDrag = useCallback((fromKey, e) => {
     const slot = todaySlots[fromKey]

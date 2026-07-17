@@ -27,6 +27,16 @@ export function insertRank(prev, next) {
   return 12
 }
 
+// Aus einem Drop-Key den Einfüge-Rang bestimmen. Lücken-Keys haben die Form
+// `gap|<scope>|<prev>|<next>` (der scope hält sie eindeutig, für den Rang zählen
+// nur die Ränder). Alles andere — 'pool', echte Slot-Keys — ist kein Listen-Ziel
+// und liefert null. Ein Aufrufer nutzt das als Weiche: null → Slot/Pool-Pfad.
+export function rankFromGapKey(dropKey) {
+  if (typeof dropKey !== 'string' || !dropKey.startsWith('gap|')) return null
+  const [, , p, n] = dropKey.split('|')
+  return insertRank(p === '' ? null : Number(p), n === '' ? null : Number(n))
+}
+
 const byRank = (a, b) => {
   const d = rankOf(a) - rankOf(b)
   if (d !== 0) return d
