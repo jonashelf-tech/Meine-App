@@ -21,6 +21,7 @@ export const createBlock = (partial = {}) => ({
   doneAt:                null,
   date:                  null,
   time:                  null,
+  dayRank:               null,   // Sortier-Rang auf der Tagesachse (Listenmodus) — KEIN Zeitpunkt, wird nie angezeigt
   repeat:                null, // { type: 'daily'|'weekly'|'monthly'|'custom', every?, unit? }
   subItems:              [],
   projectId:             null,
