@@ -173,7 +173,7 @@ export default function TabHeute() {
       done:     false,
     })
     setTodos(prev => prev.map(t =>
-      t.id === todo.id ? { ...t, date: viewDate, time: `${hh}:${mm}` } : t
+      t.id === todo.id ? { ...t, date: viewDate, time: `${hh}:${mm}`, dayRank: null } : t
     ))
     setSlotSheet(null)
   }, [slotSheet, handleSetSlot, setTodos, viewDate])
