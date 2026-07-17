@@ -89,6 +89,7 @@ export default function TodoChip({
   timeSpan,           // string — Zeitspannen-Label vom Zeitplan ("14:00–15:30 · 90m")
   timeSpanInline,     // true = timeSpan in der Titelzeile (30-min-Blöcke) statt Meta-Zeile
   active,             // true = Slot läuft gerade (hellere Kontur)
+  hideDate,           // true = Fälligkeits-Datum ausblenden (Tagesliste — der Tag ist eh schon der Kontext)
 }) {
   const [expanded, setExpanded]   = useState(false)
   const [itemInput, setItemInput] = useState('')
@@ -244,7 +245,7 @@ export default function TodoChip({
   const metaParts = [
     timeSpan && !timeSpanInline ? timeSpan : null,
     isTermin(todo)      ? fmtDateShort(todo.date) : null,
-    isFaelligkeit(todo) ? fmtDateShort(todo.date) : null,
+    (isFaelligkeit(todo) && !hideDate) ? fmtDateShort(todo.date) : null,
   ].filter(Boolean)
 
   return (

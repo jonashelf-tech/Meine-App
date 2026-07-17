@@ -76,6 +76,7 @@ function TodoRow({ todo, todos, setTodos, onToggleDone, onEdit, onToPool, onDrag
       onEdit={onEdit}
       onToPool={onToPool}
       pausable
+      hideDate
       dragHandle={
         <span className={s.handle} data-drag-handle="true" onPointerDown={onDragStart} aria-label="Ziehen">
           {DragIcon}
