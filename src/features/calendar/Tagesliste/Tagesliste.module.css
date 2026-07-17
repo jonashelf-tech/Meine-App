@@ -1,0 +1,80 @@
+.liste {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+}
+
+/* Drop-Lücke: ruhig und schmal, wächst beim Drag (dnd-half-over kommt aus useDragDrop) */
+.gap {
+  height: 8px;
+  border-radius: 4px;
+  transition: height var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 13px;
+  padding: 18px 4px;
+  line-height: 1.6;
+}
+
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  align-self: stretch;
+  color: var(--text-faint);
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Termine: Anker-Glyphe an der Griff-Stelle — sichtbar unbeweglich */
+.anchor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  align-self: stretch;
+  color: var(--text-faint);
+}
+
+.band {
+  border-radius: var(--r);
+  border-left-width: 3px;
+  overflow: hidden;
+  margin: 2px 0;
+}
+
+.bandHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bandDot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 7px; }
+.bandName { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+.bandTime { font-family: var(--font-num); font-size: 0.66rem; font-variant-numeric: tabular-nums; }
+
+.pill {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pillOpen   { background: var(--surface-low); color: var(--text-dim); border: 1px solid var(--border); }
+.pillLocked { background: color-mix(in srgb, var(--amber) 18%, transparent); color: var(--amber); border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent); }
+
+.bandBody {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 6px 6px;
+}
