@@ -265,9 +265,16 @@ Ganztagsstreifen, keine neue Zone, keine Änderung an `Zeitplan.jsx`.
    Band-Zuordnung inkl. Überlappung und tagesübergreifendem Blocker; `dayRank ?? 24`.
 2. **`dayRankGuard.test.js`** — die grep-baren Regeln:
    - `createBlock()` setzt `dayRank: null`.
-   - `dayRank` erscheint nur in einer Allowlist von Dateien — nie in einem `days`-Schreibpfad,
-     nie in `TabKalender/*`.
-   - Invariante: wo `time` gesetzt wird, wird `dayRank` genullt.
+   - `dayRank` erscheint nur in einer Allowlist von Dateien — insbesondere nirgends in
+     `TabKalender/*`, `Zeitplan/*`, `Pool/*`, `TodoChip/*`, `tools/*`. Der Rang ist ein
+     Begriff des Listenmodus und darf sich nicht ausbreiten.
+
+   **Kein Guard auf „`time` gesetzt ⇒ `dayRank === null`".** Beim Ausformulieren fiel auf,
+   dass das keine Korrektheits-, sondern eine Hygiene-Regel ist: `buildDayEntries` nimmt
+   ohnehin nur Todos mit `!t.time` auf, ein stehengebliebener Rang an einem Termin ist also
+   wirkungslos. Statt jeden Schreiber zu überwachen, macht der **Leser** es unmöglich, dass
+   es zählt. Die Schreiber nullen ihn trotzdem, wo sie das Todo sowieso anfassen — aber als
+   Sauberkeit, nicht als Verlass.
 3. `storage.test.js` braucht nichts — kein neuer `SK`-Key.
 
 ## Kontext-Dateien (gleicher Change)
