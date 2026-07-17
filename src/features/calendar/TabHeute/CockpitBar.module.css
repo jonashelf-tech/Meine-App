@@ -80,8 +80,12 @@
 }
 
 /* ── Angedockte Funktionszeile ───────────────────────────── */
+/* Umbruch nötig: im Rastermodus stehen hier ↑30m, ↓30m, Fenster UND der
+   Raster|Liste-Umschalter — zusammen 364px, die auf ein 375er-Display nicht in
+   eine Zeile passen. Ohne wrap wird der Umschalter abgeschnitten. */
 .fnRow {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   padding: 7px 8px;
   border-top: 1px solid var(--border-dim);
