@@ -116,3 +116,25 @@ describe('getActiveTodos', () => {
     expect(getActiveTodos(todos, todaySlots)).toEqual([])
   })
 })
+
+const T = (id, extra = {}) => ({
+  id, text: id, date: null, time: null, done: false,
+  createdAt: '2026-07-01T10:00:00.000Z', ...extra,
+})
+
+describe('getActiveTodos — excludeDate', () => {
+  it('ohne excludeDate bleibt alles wie bisher: Tages-Todos stehen im Pool', () => {
+    const todos = [T('pool'), T('heute', { date: '2026-07-17' })]
+    expect(getActiveTodos(todos, {}).map(t => t.id)).toEqual(['pool', 'heute'])
+  })
+
+  it('mit excludeDate fallen die zeitlosen Todos dieses Tages raus', () => {
+    const todos = [T('pool'), T('heute', { date: '2026-07-17' })]
+    expect(getActiveTodos(todos, {}, '2026-07-17').map(t => t.id)).toEqual(['pool'])
+  })
+
+  it('Todos anderer Tage bleiben im Pool', () => {
+    const todos = [T('morgen', { date: '2026-07-18' })]
+    expect(getActiveTodos(todos, {}, '2026-07-17').map(t => t.id)).toEqual(['morgen'])
+  })
+})

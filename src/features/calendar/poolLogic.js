@@ -36,7 +36,10 @@ export function sortTodos(list, sort, projects = []) {
 }
 
 // Offene, nicht-terminierte, noch nicht verplante Todos (ungeordnet).
-export function getActiveTodos(todos, todaySlots = {}) {
+// `excludeDate` (nur Listenmodus): zeitlose Todos DIESES Tages stehen dort oben
+// in der Tagesliste und gehören deshalb nicht zusätzlich in den Pool. Ohne den
+// Parameter bleibt das Rasterverhalten unverändert.
+export function getActiveTodos(todos, todaySlots = {}, excludeDate = null) {
   const today = todayKey()
   const slotValues = Object.values(todaySlots).filter(Boolean)
   const placedIds   = new Set(slotValues.map(sl => sl.todoId).filter(Boolean))
@@ -54,4 +57,5 @@ export function getActiveTodos(todos, todaySlots = {}) {
     .filter(t => !isTermin(t))
     .filter(t => !t.showFromDate || t.showFromDate <= today)
     .filter(t => !isPlaced(t))
+    .filter(t => !(excludeDate && t.date === excludeDate))
 }
