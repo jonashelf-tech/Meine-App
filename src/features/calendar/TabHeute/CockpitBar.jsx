@@ -11,8 +11,11 @@ const ChevronDown = (
 const WindowIcon = (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16"/></svg>
 )
-const FokusIcon = (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"/></svg>
+const RasterIcon = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16"/></svg>
+)
+const ListeIcon = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01"/></svg>
 )
 
 function fmtMins(m) {
@@ -25,7 +28,7 @@ function fmtMins(m) {
 // ─── CockpitBar — Statuskarte über dem Zeitplan ────────────────
 // Oben: Uhr (Orbitron) · Jetzt-/Nächster-Slot bzw. Tages-Zusammenfassung ·
 // Bilanz. Unten angedockt: die Zeitplan-Funktionen (Shift ↑/↓, Fenster, Fokus).
-export default function CockpitBar({ viewDate, slots = {}, onShiftAll, onCreateBlocker, onFokusMode }) {
+export default function CockpitBar({ viewDate, slots = {}, dayTodos = [], modus = 'raster', onModus, onShiftAll, onCreateBlocker }) {
   const isToday = viewDate === todayKey()
 
   const [nowTick, setNowTick] = useState(() => Date.now())
@@ -42,8 +45,8 @@ export default function CockpitBar({ viewDate, slots = {}, onShiftAll, onCreateB
       const start = Math.round(parseFloat(key) * 60)
       return { start, end: start + (slot.duration || 30), slot }
     })
-    const total = entries.length
-    const done = entries.filter(e => e.slot.done).length
+    const total = entries.length + dayTodos.length
+    const done = entries.filter(e => e.slot.done).length + dayTodos.filter(t => t.done).length
 
     if (!isToday) {
       const plannedMin = entries.reduce((sum, e) => sum + (e.slot.duration || 30), 0)
@@ -77,7 +80,7 @@ export default function CockpitBar({ viewDate, slots = {}, onShiftAll, onCreateB
       label: 'Heute',
       text: total > 0 ? (done === total ? 'Alles erledigt' : 'Nichts mehr geplant') : 'Noch nichts geplant',
     } }
-  }, [slots, isToday, nowMin])
+  }, [slots, dayTodos, isToday, nowMin])
 
   return (
     <div className={s.cockpit}>
@@ -96,29 +99,40 @@ export default function CockpitBar({ viewDate, slots = {}, onShiftAll, onCreateB
         </div>
       </div>
       <div className={s.fnRow}>
-        <button
-          className={s.fnBtn}
-          onClick={() => onShiftAll?.(-1)}
-          aria-label="Alle Slots 30 Minuten früher"
-          title="Alle Slots 30 Minuten früher"
-        >{ChevronUp}<span>30m</span></button>
-        <button
-          className={s.fnBtn}
-          onClick={() => onShiftAll?.(1)}
-          aria-label="Alle Slots 30 Minuten später"
-          title="Alle Slots 30 Minuten später"
-        >{ChevronDown}<span>30m</span></button>
+        {modus === 'raster' && (
+          <>
+            <button
+              className={s.fnBtn}
+              onClick={() => onShiftAll?.(-1)}
+              aria-label="Alle Slots 30 Minuten früher"
+              title="Alle Slots 30 Minuten früher"
+            >{ChevronUp}<span>30m</span></button>
+            <button
+              className={s.fnBtn}
+              onClick={() => onShiftAll?.(1)}
+              aria-label="Alle Slots 30 Minuten später"
+              title="Alle Slots 30 Minuten später"
+            >{ChevronDown}<span>30m</span></button>
+          </>
+        )}
         {onCreateBlocker && (
           <button className={[s.fnBtn, s.fnBtnBlue, s.fnBtnGrow].join(' ')} onClick={onCreateBlocker}>
             {WindowIcon}<span>Fenster</span>
           </button>
         )}
-        {/* Fokus nur anbieten, wenn Todos im Tagesplaner stehen — ohne Slots ist der Fokusmodus leer */}
-        {onFokusMode && total > 0 && (
-          <button className={[s.fnBtn, s.fnBtnViolet, s.fnBtnGrow].join(' ')} onClick={() => onFokusMode()}>
-            {FokusIcon}<span>Fokus</span>
-          </button>
-        )}
+        {/* Bewusst ohne Slot-Sperre: der leere Tag ist der Grund für die Liste. */}
+        <div className={s.seg} role="group" aria-label="Ansicht">
+          <button
+            className={[s.segBtn, modus === 'raster' ? s.segBtnActive : ''].join(' ')}
+            onClick={() => onModus?.('raster')}
+            aria-pressed={modus === 'raster'}
+          >{RasterIcon}<span>Raster</span></button>
+          <button
+            className={[s.segBtn, modus === 'liste' ? s.segBtnActive : ''].join(' ')}
+            onClick={() => onModus?.('liste')}
+            aria-pressed={modus === 'liste'}
+          >{ListeIcon}<span>Liste</span></button>
+        </div>
       </div>
     </div>
   )

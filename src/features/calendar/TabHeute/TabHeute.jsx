@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useAppStore } from '../../../store'
 import { todayKey, dateKey, skLabel } from '../../../utils'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import { sv, lv, SK } from '../../../storage'
 import { useDragDrop } from '../../../hooks/useDragDrop'
 import Zeitplan            from '../Zeitplan/Zeitplan'
+import Tagesliste          from '../Tagesliste/Tagesliste'
 import CockpitBar          from './CockpitBar'
 import SlotSheet           from '../Zeitplan/SlotSheet'
 import Pool                from '../Pool/Pool'
@@ -30,7 +31,6 @@ import { useBlockerActions } from './useBlockerActions'
 import { useTagesplanerDrag } from './useTagesplanerDrag'
 import KognitivSection from '../../tools/kognitiv/KognitivSection'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
-import FokusView from './FokusView'
 import ProjekteView from '../../projekte/ProjekteView'
 import s from './TabHeute.module.css'
 
@@ -60,7 +60,7 @@ export default function TabHeute() {
     handleRepeatDeleteThis, handleRepeatDeleteFuture, handleToggleBlockerLocked,
   } = useBlockerActions({ setBlockers, viewDate })
 
-  const { startPoolDrag, startHaushaltDrag, startReminderDrag, startBirthdayDrag, startSlotDrag } =
+  const { startPoolDrag, startListDrag, startHaushaltDrag, startReminderDrag, startBirthdayDrag, startSlotDrag } =
     useTagesplanerDrag({ startDrag, todaySlots, setTodaySlots, handleSetSlot, handleRemoveSlot, todos, setTodos, viewDate, setBirthdays })
 
   const { isOpen: teOpen, variant: teVariant, items: teItems, handleDone: teDone, handleIgnore: teIgnore, handleMoveToPool: teToPool } =
@@ -178,6 +178,20 @@ export default function TabHeute() {
     setSlotSheet(null)
   }, [slotSheet, handleSetSlot, setTodos, viewDate])
 
+  // Zeitlose Todos dieses Tages — Grundlage für Liste, Bilanz und Pool-Filter.
+  const dayTodos = useMemo(
+    () => todos.filter(t => t.date === viewDate && !t.time && !t.done),
+    [todos, viewDate]
+  )
+
+  // Zurück in den Pool — für Slot-Chips und für Tages-Todos derselbe Knopf.
+  const handleToPool = useCallback((target) => {
+    if (target.slotKey) { handleRemoveSlot(target.slotKey, 'back'); return }
+    setTodos(prev => prev.map(t =>
+      t.id === target.todoId ? { ...t, date: null, time: null, dayRank: null } : t
+    ))
+  }, [handleRemoveSlot, setTodos])
+
   return (
     <div className={s.page}>
       {projekteOpen ? (
@@ -189,27 +203,38 @@ export default function TabHeute() {
           onChange={setViewDate}
           onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
         />
-        {heuteModus === 'fokus' ? (
-          <FokusView
-            viewDate={viewDate}
-            todaySlots={todaySlots}
-            todos={todos}
-            onToggleSlotDone={handleToggleSlotDone}
-            onToggleTodoDone={handleToggleDone}
-            onShowFull={() => setHeuteModus('voll')}
-          />
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {/* Nur der Zeitplan swipt beim Tageswechsel — Pool + Dashboards sind
-              datumsunabhängig und bleiben stehen (sonst wandert Unverändertes mit). */}
-          <div ref={swipeRef}>
-          <CockpitBar
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {/* Nur die Tagesansicht swipt beim Tageswechsel — Pool + Dashboards sind
+            datumsunabhängig und bleiben stehen (sonst wandert Unverändertes mit). */}
+        <div ref={swipeRef}>
+        <CockpitBar
+          viewDate={viewDate}
+          slots={todaySlots}
+          dayTodos={dayTodos}
+          modus={heuteModus}
+          onModus={setHeuteModus}
+          onShiftAll={handleShiftAll}
+          onCreateBlocker={handleCreateBlocker}
+        />
+        {heuteModus === 'liste' ? (
+          <Tagesliste
             viewDate={viewDate}
             slots={todaySlots}
-            onShiftAll={handleShiftAll}
-            onCreateBlocker={handleCreateBlocker}
-            onFokusMode={() => setHeuteModus('fokus')}
+            todos={todos}
+            setTodos={setTodos}
+            blockers={blockers}
+            onToggleSlotDone={handleToggleSlotDone}
+            onToggleTodoDone={handleToggleDone}
+            onEditTodo={handleEdit}
+            onPlaySlot={handlePlaySlot}
+            onSaveSlot={handleSetSlot}
+            onToPool={handleToPool}
+            onEditBlocker={handleEditBlocker}
+            onToggleBlockerLocked={handleToggleBlockerLocked}
+            registerHalf={registerHalf}
+            startDrag={startListDrag}
           />
+        ) : (
           <Zeitplan
             slots={todaySlots}
             todos={todos}
@@ -224,6 +249,7 @@ export default function TabHeute() {
             onTapShrink={handleBandShrink}
             onToggleLock={handleToggleLock}
             onPlaySlot={handlePlaySlot}
+            onToPool={handleToPool}
             onEmptyTap={setSlotSheet}
             registerHalf={registerHalf}
             startSlotDrag={startSlotDrag}
@@ -233,37 +259,38 @@ export default function TabHeute() {
             birthdayPills={birthdays}
             birthdayPillsDate={viewDate}
           />
-          </div>
-          <Pool
-            todos={todos}
-            setTodos={setTodos}
-            todaySlots={todaySlots}
-            viewDate={viewDate}
-            onToggleDone={handleToggleDone}
-            onEdit={handleEdit}
-            startDrag={startPoolDrag}
-            onDoneCalendar={handleDoneCalendar}
-            onKlaeren={activeTools.includes('klaeren') ? (todo) => setKlaerenTodo(todo) : undefined}
-            registerHalf={registerHalf}
-            projects={projects}
-            onOpenProjekte={() => setProjekteOpen(true)}
-          />
-          {(() => {
-            const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, fitness: FitnessSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, growth: GrowthSection, rezepte: MealprepSection }
-            const SECTION_PROPS = {
-              haushalt:    { onStartDrag: startHaushaltDrag },
-              reminder:    { onStartDrag: startReminderDrag },
-              geburtstage: { onStartDrag: startBirthdayDrag },
-            }
-            const secs = activeTools
-              .filter(id => SECTIONS[id])
-              .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
-            return secs.length > 0
-              ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{secs}</div>
-              : null
-          })()}
-          </div>
         )}
+        </div>
+        <Pool
+          todos={todos}
+          setTodos={setTodos}
+          todaySlots={todaySlots}
+          viewDate={viewDate}
+          excludeDate={heuteModus === 'liste' ? viewDate : null}
+          onToggleDone={handleToggleDone}
+          onEdit={handleEdit}
+          startDrag={heuteModus === 'liste' ? startListDrag : startPoolDrag}
+          onDoneCalendar={handleDoneCalendar}
+          onKlaeren={activeTools.includes('klaeren') ? (todo) => setKlaerenTodo(todo) : undefined}
+          registerHalf={registerHalf}
+          projects={projects}
+          onOpenProjekte={() => setProjekteOpen(true)}
+        />
+        {(() => {
+          const SECTIONS = { reminder: ReminderSection, haushalt: HaushaltSection, garten: GartenSection, fitness: FitnessSection, geburtstage: BirthdaySection, kognitiv: KognitivSection, growth: GrowthSection, rezepte: MealprepSection }
+          const SECTION_PROPS = {
+            haushalt:    { onStartDrag: startHaushaltDrag },
+            reminder:    { onStartDrag: startReminderDrag },
+            geburtstage: { onStartDrag: startBirthdayDrag },
+          }
+          const secs = activeTools
+            .filter(id => SECTIONS[id])
+            .map(id => { const Sec = SECTIONS[id]; return <Sec key={id} {...(SECTION_PROPS[id] ?? {})} /> })
+          return secs.length > 0
+            ? <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{secs}</div>
+            : null
+        })()}
+        </div>
         </>
       )}
 

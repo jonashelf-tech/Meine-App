@@ -89,6 +89,7 @@ export default function Pool({
   setTodos,
   todaySlots = {},
   viewDate,
+  excludeDate = null,   // Listenmodus: zeitlose Todos dieses Tages stehen dort oben in der Liste
   onToggleDone,
   onEdit,
   startDrag,
@@ -124,10 +125,10 @@ export default function Pool({
 
   // ─── Derived lists ──────────────────────────────────────
   const activePool = useMemo(() => {
-    const undone  = sortTodos(getActiveTodos(todos, todaySlots), sort, projects)
+    const undone  = sortTodos(getActiveTodos(todos, todaySlots, excludeDate), sort, projects)
     const pending = todos.filter(t => t.done && pendingDoneIds.has(t.id))
     return [...undone, ...pending]
-  }, [todos, todaySlots, pendingDoneIds, sort, projects])
+  }, [todos, todaySlots, excludeDate, pendingDoneIds, sort, projects])
 
   const doneCount = useMemo(() => {
     const today = todayKey()
