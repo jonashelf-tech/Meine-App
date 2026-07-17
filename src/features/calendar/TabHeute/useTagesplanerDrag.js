@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { getDurationKeys } from '../../../utils'
 import { createBlock } from '../../todos/Block'
+import { insertRank } from '../tagesListeLogic'
 
 export function useTagesplanerDrag({
   startDrag, todaySlots, setTodaySlots, handleSetSlot, handleRemoveSlot,
@@ -22,7 +23,7 @@ export function useTagesplanerDrag({
           setTodaySlots(prev => { const ns = { ...prev }; delete ns[curKey]; return ns })
           if (todoId) {
             setTodos(prev => prev.map(t =>
-              t.id === todoId ? { ...t, date: null, time: null } : t
+              t.id === todoId ? { ...t, date: null, time: null, dayRank: null } : t
             ))
           }
         }
@@ -41,7 +42,7 @@ export function useTagesplanerDrag({
         })
         if (todoId) {
           setTodos(prev => prev.map(t =>
-            t.id === todoId ? { ...t, date: viewDate, time: `${hh}:${mm}` } : t
+            t.id === todoId ? { ...t, date: viewDate, time: `${hh}:${mm}`, dayRank: null } : t
           ))
         }
       } else {
@@ -55,12 +56,38 @@ export function useTagesplanerDrag({
         })
         if (todoId) {
           setTodos(prev => prev.map(t =>
-            t.id === todoId ? { ...t, date: viewDate, time: `${hh}:${mm}` } : t
+            t.id === todoId ? { ...t, date: viewDate, time: `${hh}:${mm}`, dayRank: null } : t
           ))
         }
       }
     }, e, canDrop, dur)
   }, [startDrag, todaySlots, setTodaySlots, handleSetSlot, setTodos, viewDate])
+
+  // Ziehen im Listenmodus — nur Todos, nie Termine (die sind Anker). Anders als
+  // startPoolDrag gibt es hier kein Raster: Drop-Ziele sind die Lücken zwischen
+  // den Zeilen (Key `gap|<scope>|<prev>|<next>`), und nichts kann kollidieren —
+  // deshalb kein canDrop. Der Drop schreibt nur Datum und Rang, nie eine Uhrzeit.
+  const startListDrag = useCallback((todoId, text, color, duration, e) => {
+    if (!todoId) return
+    startDrag(text, color ?? null, (dropKey) => {
+      if (dropKey === 'pool') {
+        setTodos(prev => prev.map(t =>
+          t.id === todoId ? { ...t, date: null, time: null, dayRank: null } : t
+        ))
+        return
+      }
+      if (!dropKey.startsWith('gap|')) return
+
+      // Key-Form: gap|<scope>|<prev>|<next> — der scope hält die Keys eindeutig
+      // (zwei Fenster mit gleichen Stunden), für den Rang zählen nur die Ränder.
+      const [, , p, n] = dropKey.split('|')
+      const rank = insertRank(p === '' ? null : Number(p), n === '' ? null : Number(n))
+
+      setTodos(prev => prev.map(t =>
+        t.id === todoId ? { ...t, date: viewDate, time: null, dayRank: rank } : t
+      ))
+    }, e, null, duration || 30)
+  }, [startDrag, setTodos, viewDate])
 
   const startHaushaltDrag = useCallback((room, uncoveredTasks, haushaltColor, e) => {
     const existing = todos.find(t => t.toolId === 'haushalt' && t.haushaltRoomId === room.id && !t.done)
@@ -190,5 +217,5 @@ export function useTagesplanerDrag({
     }, e, canDrop, slot.duration || 30)
   }, [startDrag, todaySlots, setTodaySlots, handleRemoveSlot, todos, setTodos])
 
-  return { startPoolDrag, startHaushaltDrag, startReminderDrag, startBirthdayDrag, startSlotDrag }
+  return { startPoolDrag, startListDrag, startHaushaltDrag, startReminderDrag, startBirthdayDrag, startSlotDrag }
 }

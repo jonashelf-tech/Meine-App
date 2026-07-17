@@ -191,7 +191,7 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
     const clearIds = new Set([...faelligIds, ...todoIds])
     if (clearIds.size > 0) {
       setTodos(prev => prev.map(t =>
-        clearIds.has(t.id) ? { ...t, date: null, time: null } : t
+        clearIds.has(t.id) ? { ...t, date: null, time: null, dayRank: null } : t
       ))
     }
 

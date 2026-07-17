@@ -60,14 +60,16 @@ export function useSlotMutations({ viewDate, days, setDays, setTodos }) {
     } else if (mode === 'back') {
       if (slot?.todoId) {
         setTodos(prev => prev.map(t =>
-          t.id === slot.todoId ? { ...t, date: null, time: null } : t
+          t.id === slot.todoId ? { ...t, date: null, time: null, dayRank: null } : t
         ))
       }
     }
   }, [setTodaySlots, todaySlots, setTodos])
 
   const handleSetSlot = useCallback((slotKey, slotData) => {
-    if (slotKey === 'pool') return  // 'pool' ist Drop-Zone, kein echter Slot-Key
+    // Nur echte Slot-Keys schreiben. 'pool' und die Lücken-Keys der Tagesliste
+    // (`gap|…`) sind Drop-Zonen, keine Slots — sonst landet Müll in days[].
+    if (!ALL_SLOT_KEYS.includes(slotKey)) return
     if (slotData === null) {
       setTodaySlots(prev => {
         const next = { ...prev }

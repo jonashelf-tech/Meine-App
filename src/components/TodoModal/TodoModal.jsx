@@ -254,6 +254,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         subItems,
         date:      eff.date || null,
         time:      eff.time || null,
+        dayRank:   eff.time ? null : existingTodo.dayRank ?? null,
       }
 
       setDays(prev => {
