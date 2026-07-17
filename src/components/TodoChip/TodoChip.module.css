@@ -550,7 +550,7 @@
 .itemAddRow {
   display: flex;
   align-items: center;
-  padding: 0 8px 0 14px;
+  padding: 0 8px;
   background: var(--surface-low);
 }
 
@@ -577,7 +577,7 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  padding: 6px 8px;
+  padding: 6px 10px 6px 4px;
   transition: color 0.12s;
   line-height: 1;
 }
@@ -587,19 +587,19 @@
   opacity: 0.75;
 }
 
-/* Pause-Button in der Add-Row (links, gegenüber dem +) */
-.pauseBtn {
+/* Aktionen rechts in der Add-Row (Pause, Zurück in Pool) */
+.rowAct {
   background: none;
   border: none;
   color: var(--primary);
   cursor: pointer;
-  padding: 6px 10px 6px 0;
+  padding: 6px 8px;
   display: flex;
   align-items: center;
   transition: opacity 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.pauseBtn:hover {
+.rowAct:hover {
   opacity: 0.7;
 }

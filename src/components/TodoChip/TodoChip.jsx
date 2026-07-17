@@ -41,6 +41,13 @@ const PlayGlyph = () => (
   </svg>
 )
 
+const ToPoolGlyph = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 14 4 9 9 4"/>
+    <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+  </svg>
+)
+
 function fmtDateShort(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr + 'T00:00:00')
@@ -78,6 +85,7 @@ export default function TodoChip({
   onKlaeren,          // fn(todo) — opens Klären dialog for this todo (Pool only)
   onPlay,             // fn() — startet Fokus-Timer mit diesem Task (Zeitplan only)
   pausable,           // true = Pause-Steuerung anzeigen (Pool only)
+  onToPool,           // fn() — Eintrag zurück in den Pool (Zeitplan + Tagesliste; im Pool selbst sinnlos)
   timeSpan,           // string — Zeitspannen-Label vom Zeitplan ("14:00–15:30 · 90m")
   timeSpanInline,     // true = timeSpan in der Titelzeile (30-min-Blöcke) statt Meta-Zeile
   active,             // true = Slot läuft gerade (hellere Kontur)
@@ -461,18 +469,13 @@ export default function TodoChip({
             </div>
           )}
 
-          {/* Add row — links Pause (Feldtext = Grund), rechts + (Subtodo) */}
+          {/* Add row — links + (Subtodo), rechts Pause und Zurück-in-Pool */}
           <div className={s.itemAddRow}>
-            {showPause && (
-              <button
-                className={s.pauseBtn}
-                onClick={e => { e.stopPropagation(); pauseTodo() }}
-                aria-label="Pausieren"
-                title="Pausieren — Text im Feld wird zum Grund"
-              >
-                <PauseGlyph />
-              </button>
-            )}
+            <button
+              className={s.itemAddBtn}
+              onClick={e => { e.stopPropagation(); addItem() }}
+              aria-label="Unterpunkt hinzufügen"
+            >+</button>
             <input
               ref={itemRef}
               className={s.itemInput}
@@ -485,10 +488,26 @@ export default function TodoChip({
               }}
               onClick={e => e.stopPropagation()}
             />
-            <button
-              className={s.itemAddBtn}
-              onClick={e => { e.stopPropagation(); addItem() }}
-            >+</button>
+            {showPause && (
+              <button
+                className={s.rowAct}
+                onClick={e => { e.stopPropagation(); pauseTodo() }}
+                aria-label="Pausieren"
+                title="Pausieren — Text im Feld wird zum Grund"
+              >
+                <PauseGlyph />
+              </button>
+            )}
+            {onToPool && (
+              <button
+                className={s.rowAct}
+                onClick={e => { e.stopPropagation(); closeExpand(); onToPool() }}
+                aria-label="Zurück in den Pool"
+                title="Zurück in den Pool"
+              >
+                <ToPoolGlyph />
+              </button>
+            )}
           </div>
         </div>
       )}

@@ -14,6 +14,7 @@ export default function BlockerCard({
   onToggleLock,
   onToggleLocked,
   onSetSlot,
+  onToPool,
   registerHalf,
   startSlotDrag,
   onEdit,
@@ -99,6 +100,7 @@ export default function BlockerCard({
                       onDragStart={startSlotDrag && !topSlot.locked ? (e) => startSlotDrag(topKey, e) : undefined}
                       onToggleLock={blocker.locked ? undefined : () => onToggleLock?.(topKey)}
                       onSaveSlot={onSetSlot}
+                      onToPool={() => onToPool?.({ slotKey: topKey })}
                       nowMin={nowMin}
                     />
                   </div>
@@ -134,6 +136,7 @@ export default function BlockerCard({
                       onDragStart={startSlotDrag && !botSlot.locked ? (e) => startSlotDrag(botKey, e) : undefined}
                       onToggleLock={blocker.locked ? undefined : () => onToggleLock?.(botKey)}
                       onSaveSlot={onSetSlot}
+                      onToPool={() => onToPool?.({ slotKey: botKey })}
                       nowMin={nowMin}
                     />
                   </div>

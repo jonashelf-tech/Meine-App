@@ -61,6 +61,7 @@ export default function Zeitplan({
   onEditBlocker,
   onToggleBlockerLocked,
   onPlaySlot,
+  onToPool,
   onEmptyTap,
   birthdayPills = [],
   birthdayPillsDate = null,
@@ -225,6 +226,7 @@ export default function Zeitplan({
                 onToggleLock={() => onToggleLock?.(topKey)}
                 onSaveSlot={onSetSlot}
                 onPlay={onPlaySlot && !topSlot.done ? () => onPlaySlot(topKey, topSlot) : undefined}
+                onToPool={() => onToPool?.({ slotKey: topKey })}
                 nowMin={nowMin}
               />
             </div>
@@ -263,6 +265,7 @@ export default function Zeitplan({
                 onToggleLock={() => onToggleLock?.(botKey)}
                 onSaveSlot={onSetSlot}
                 onPlay={onPlaySlot && !botSlot.done ? () => onPlaySlot(botKey, botSlot) : undefined}
+                onToPool={() => onToPool?.({ slotKey: botKey })}
                 nowMin={nowMin}
               />
             </div>
@@ -350,6 +353,7 @@ export default function Zeitplan({
                 onToggleLock={onToggleLock}
                 onToggleLocked={() => onToggleBlockerLocked?.(sec.blocker.id)}
                 onSetSlot={onSetSlot}
+                onToPool={onToPool}
                 registerHalf={registerHalf}
                 startSlotDrag={startSlotDrag}
                 onEdit={() => onEditBlocker?.(sec.blocker)}
