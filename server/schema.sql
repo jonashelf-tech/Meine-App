@@ -26,11 +26,27 @@ CREATE TABLE IF NOT EXISTS ns_version (
 
 -- Etappe 3 (Sync):
 CREATE TABLE IF NOT EXISTS kv (
-  user_ns           TEXT NOT NULL,   -- 'u:<id>' oder 'p:<pairId>' (geteilter Kalender)
+  user_ns           TEXT NOT NULL,   -- 'u:<id>' (persönlich) oder 'c:<calId>' (geteilter Kalender)
   key_id            TEXT NOT NULL,   -- HMAC-pseudonymisierter Storage-Key
   version           INTEGER NOT NULL,
   ciphertext        TEXT NOT NULL,
   client_changed_at INTEGER,
   server_at         INTEGER NOT NULL,
   PRIMARY KEY (user_ns, key_id)
+);
+
+-- Teilen Stufe A (teilen-spec.md §5): Kalender-Objekte + Mitglieder.
+-- Der Server kennt nur calId + joinSecretHash — der calKey (E2E) bleibt beim Client.
+CREATE TABLE IF NOT EXISTS cals (
+  cal_id           TEXT PRIMARY KEY,
+  creator_user     INTEGER NOT NULL,
+  join_secret_hash TEXT,              -- NULL = keine offene Einladung (nach Beitritt verbraucht)
+  join_expires     INTEGER,
+  created_at       INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS cal_members (
+  cal_id    TEXT NOT NULL,
+  user_id   INTEGER NOT NULL,
+  joined_at INTEGER NOT NULL,
+  PRIMARY KEY (cal_id, user_id)
 );

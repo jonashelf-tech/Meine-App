@@ -69,21 +69,25 @@ Die App zeigt dir einmalig den **Recovery-Code** — in den Passwortmanager dami
 ## Lokale Feuerprobe (ohne Cloudflare-Account)
 
 Kompletter End-to-End-Test der Cloud-Kette gegen einen **lokalen** Worker —
-mit den echten Client-Krypto-Funktionen der App (31 Checks: Registrierung,
-Backup-Roundtrip, /kv mit If-Match/409, Nutzer-Isolation, Retention, CORS):
+mit den echten Client-Krypto-Funktionen der App (46 Checks: Registrierung,
+Backup-Roundtrip, /kv mit If-Match/409, Nutzer-Isolation, Retention, CORS +
+geteilte Kalender /cal: anlegen/beitreten, Einmal-joinSecret, TTL, Mitglieder-Cap,
+Namespace-Isolation für Nicht-Mitglieder):
 
 ```
 echo SETUP_SECRET=feuerprobe-lokal-2026 > .dev.vars
 npx wrangler d1 execute adhs-sync --local --file schema.sql
 npx wrangler dev --local --port 8787        # laufen lassen (eigenes Terminal)
-node feuerprobe.mjs                          # → „✅ 31 bestanden"
+node feuerprobe.mjs                          # → „✅ 46 bestanden"
 ```
 
 Frische DB pro Lauf: vorher `.wrangler/state` löschen (sonst zählt der
-Retention-Check Backups aus früheren Läufen mit). Bei Server-Änderungen
-(z. B. Etappe 4: /pair-Routen) hier neue Checks ergänzen — das Skript ist
-der Test-Harness, den Unit-Tests nicht ersetzen können (CORS/Preflight,
-echtes D1).
+Retention-Check Backups aus früheren Läufen mit). Der TTL-Check der /cal-Routen
+setzt `join_expires` per `wrangler d1 execute --local` in die Vergangenheit —
+läuft der Worker parallel, geht das i. d. R. durch; falls die lokale D1 gerade
+gesperrt ist, überspringt das Skript nur diesen einen Check (mit Hinweis). Bei
+Server-Änderungen hier neue Checks ergänzen — das Skript ist der Test-Harness,
+den Unit-Tests nicht ersetzen können (CORS/Preflight, echtes D1).
 
 ## Was hier liegt
 
