@@ -162,6 +162,13 @@ export const SK = {
   cloudCreds:      `${PREFIX}cloud_creds`,     // Cloud-Backup: serverUrl + token + key (E2E — Schlüssel bleibt clientseitig)
   cloudMeta:       `${PREFIX}cloud_meta`,      // ephemer — letzter Cloud-Push/Fehler, gerätelokal
   syncMeta:        `${PREFIX}sync_meta`,       // ephemer — Sync-Zustand pro Key (Versionen, Stempel, Tombstones); frisches Gerät baut ihn neu auf
+
+  // Geteilte Kalender (Teilen Stufe A, teilen-spec.md §3.4)
+  calCreds:        `${PREFIX}cal_creds`,       // { [calId]: { key, memberId, joinedAt } } — die Kalender-Geheimnisse
+  calList:         `${PREFIX}cal_list`,        // { [calId]: { name, color, members, updatedAt } } — Cache der geteilten Meta
+  calTombstones:   `${PREFIX}cal_tombstones`,  // { [calId]: [{ id, updatedAt, by }] } — Löschungen/Umzüge pro Kalender
+  calFilter:       `${PREFIX}view_cal_filter`, // { privat, cals: { [calId]: { show, activity } } } — pro Gerät
+  calSeen:         `${PREFIX}cal_seen`,         // { [calId]: ts } — letzter Aktivitäts-Blick, ephemer
 }
 
 // ─── Sync-Policy pro Key (Sync-Etappe 3, sync-architektur.md §3) ──
@@ -171,6 +178,8 @@ export const SK = {
 //   lww          — ganzer Key, neuere Änderung gewinnt
 //   byId         — Array von {id,…}: Merge pro Datensatz · byId:date = Datensatz-Key ist `date`
 //   bySubkey     — Objekt-Map: Merge pro Unterschlüssel · bySubkey2 = zwei Ebenen (days: datum/slot)
+//   cal          — geteilter Kalender: nur die Kalender-Engine (calTick) routet ihn;
+//                  der persönliche Sync überspringt ihn (teilen-spec.md §6, Guard G6)
 export const SYNC_POLICY = {
   // Kalender-Kern
   [SK.todos]:        'byId',
@@ -257,6 +266,13 @@ export const SYNC_POLICY = {
   [SK.rezepteScreen]:       'ephemeral',
   [SK.cloudMeta]:           'ephemeral',
   [SK.syncMeta]:            'ephemeral',   // bewusst NICHT im Backup: Restore auf frischem Gerät → Erst-Kopplung statt stale Versionen
+
+  // Geteilte Kalender (Teilen Stufe A, teilen-spec.md §3.4)
+  [SK.calCreds]:       'bySubkey',     // Key-Wrapping: wandert per persönlichem Sync mit (mit dem persönlichen Key verschlüsselt)
+  [SK.calList]:        'cal',          // geteilte Meta — routet NUR die Kalender-Engine
+  [SK.calTombstones]:  'cal',          // Löschungen/Umzüge pro Kalender — dito
+  [SK.calFilter]:      'device-local', // Sichtbarkeit/Aktivität pro Gerät
+  [SK.calSeen]:        'ephemeral',    // Aktivitäts-Blick pro Gerät — nie Server, nie Backup
 }
 
 // Abgeleitet — einzige Quelle ist SYNC_POLICY (Guard erzwingt Deckung mit BACKUP_CATS)
@@ -286,6 +302,7 @@ export const BACKUP_CATS = {
     SK.days, SK.doneCounters, SK.templates, SK.blockers,
     SK.lastPoolReturn, SK.poolSort, SK.autoParse, SK.visStart, SK.visEnd,
     SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus, SK.addMode,
+    SK.calList, SK.calTombstones, SK.calFilter,
   ],
   tools: [
     SK.recipes, SK.rezepteZutaten, SK.rezepteKoerbe, SK.rezepteSettings, SK.recipesVersion, SK.rezepteKorbAktiv,
@@ -304,7 +321,7 @@ export const BACKUP_CATS = {
     SK.settings, SK.theme, SK.appBriefingSeen, SK.onboardingSeen,
     SK.kognitivIntroSeen, SK.rezepteIntroSeen,
     SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
-    SK.notizenMigrated, SK.cloudCreds,
+    SK.notizenMigrated, SK.cloudCreds, SK.calCreds,
   ],
 }
 

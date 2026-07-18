@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest'
 import { SK, SYNC_POLICY, EPHEMERAL, BACKUP_CATS } from './index'
 
-const ALLOWED = new Set(['ephemeral', 'device-local', 'lww', 'byId', 'byId:date', 'bySubkey', 'bySubkey2'])
+const ALLOWED = new Set(['ephemeral', 'device-local', 'lww', 'byId', 'byId:date', 'bySubkey', 'bySubkey2', 'cal'])
 
 describe('Sync-Policy-Registry — Anti-Drift (G1)', () => {
   it('jeder SK-Key hat eine Policy', () => {
@@ -52,5 +52,26 @@ describe('Sync-Policy-Registry — Anti-Drift (G1)', () => {
     expect(SYNC_POLICY[SK.cloudCreds]).toBe('device-local') // Zugang synct sich nicht selbst
     expect(SYNC_POLICY[SK.cloudMeta]).toBe('ephemeral')
     expect(SYNC_POLICY[SK.heuteModus]).toBe('device-local') // View-State bleibt pro Gerät
+  })
+
+  it('Geteilte-Kalender-Keys: Policy + Backup wie teilen-spec.md §3.4', () => {
+    expect(SYNC_POLICY[SK.calCreds]).toBe('bySubkey')       // Key-Wrapping — wandert per persönlichem Sync mit
+    expect(SYNC_POLICY[SK.calList]).toBe('cal')             // routet NUR die Kalender-Engine (G6)
+    expect(SYNC_POLICY[SK.calTombstones]).toBe('cal')
+    expect(SYNC_POLICY[SK.calFilter]).toBe('device-local')  // Sichtbarkeit pro Gerät
+    expect(SYNC_POLICY[SK.calSeen]).toBe('ephemeral')       // Aktivitäts-Blick pro Gerät
+    // 'cal'-Keys sind echte Nutzdaten → im Backup, nicht ephemer
+    expect(BACKUP_CATS.kalender).toContain(SK.calList)
+    expect(BACKUP_CATS.kalender).toContain(SK.calTombstones)
+    expect(BACKUP_CATS.kalender).toContain(SK.calFilter)
+    expect(BACKUP_CATS.einstellungen).toContain(SK.calCreds)
+  })
+
+  it('cal-Keys sind für den persönlichen Sync unsichtbar (G6-Fundament)', () => {
+    // Die persönliche Engine synct nur lww + mergebare Policies; 'cal' fällt raus.
+    const MERGEABLE = new Set(['byId', 'byId:date', 'bySubkey', 'bySubkey2'])
+    const personalSyncs = (k) => SYNC_POLICY[k] === 'lww' || MERGEABLE.has(SYNC_POLICY[k])
+    expect(personalSyncs(SK.calList)).toBe(false)
+    expect(personalSyncs(SK.calTombstones)).toBe(false)
   })
 })
