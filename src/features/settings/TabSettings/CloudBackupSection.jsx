@@ -5,7 +5,7 @@ import { buildRecoveryCode } from '../../../sync/crypto'
 import {
   isCloudActive, loadCloudCreds, loadCloudMeta,
   activateCloud, connectWithRecoveryCode, deactivateCloud,
-  pushCloudBackup, restoreCloudBackup,
+  pushCloudBackup, restoreCloudBackup, DEFAULT_SERVER_URL,
 } from '../../../sync/cloudBackup'
 import { getSyncStatus, setSyncEnabled, stopSync } from '../../../sync/syncEngine'
 import s from './TabSettings.module.css'
@@ -31,7 +31,7 @@ export default function CloudBackupSection() {
   const refresh = () => setTick(t => t + 1)
 
   const [panel, setPanel] = useState(null)               // null | 'setup' | 'connect'
-  const [serverUrl, setServerUrl] = useState('')
+  const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER_URL)
   const [setupSecret, setSetupSecret] = useState('')
   const [codeInput, setCodeInput] = useState('')
   const [recoveryCode, setRecoveryCode] = useState(null) // gesetzt = Sichern-Zeremonie läuft

@@ -11,6 +11,10 @@ const AUTO_PUSH_MS = 60 * 60 * 1000   // Auto-Push höchstens stündlich
 
 // ─── Config ───────────────────────────────────────────────
 
+// Jonas' eigener Worker — vorbefüllt, damit Zweitgerät/Paula die URL nicht
+// abtippen müssen. Das Eingabefeld bleibt editierbar (anderer Server möglich).
+export const DEFAULT_SERVER_URL = 'https://adhs-sync.jonas-helf-119.workers.dev'
+
 export const loadCloudCreds = () => lv(SK.cloudCreds, null)
 export const loadCloudMeta  = () => lv(SK.cloudMeta, {})
 export const saveCloudMeta  = (partial) => sv(SK.cloudMeta, { ...loadCloudMeta(), ...partial })
