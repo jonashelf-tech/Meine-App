@@ -16,6 +16,9 @@ export const createProject = (partial = {}) => ({
   hidden:     false,
   autoDelete: false,
   createdAt:  new Date().toISOString(),
+  cal:        null,   // null = privat · '<calId>' = geteilter Kalender (teilen-spec.md §3.1)
+  updatedAt:  null,   // ms-Epoch — nur für cal!=null gepflegt
+  by:         null,   // memberId des letzten Bearbeiters — nur für cal!=null
   ...partial,
 })
 

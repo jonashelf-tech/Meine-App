@@ -26,6 +26,7 @@ const ALLOWED = [
   'features/calendar/TabHeute/useSlotMutations.js',
   'features/calendar/TabHeute/useTimeEvents.js',
   'components/TodoModal/TodoModal.jsx',
+  'features/cal/calStamp.js',   // CAL_PERSONAL_FIELDS: dayRank wird beim Teilen bewusst NICHT gestempelt (§3.3)
 ]
 
 const files = walk(SRC).filter(f => /\.jsx?$/.test(f) && !/\.test\.jsx?$/.test(f))

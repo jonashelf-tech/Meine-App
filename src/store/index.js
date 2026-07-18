@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { sv, lv, SK } from '../storage'
 import { migrateProjekte } from '../features/projekte/projektMigration'
+import { stampCal } from '../features/cal/calStamp'
 
 // Kategorie→Projekt-Migration MUSS vor den lv()-Reads der Store-Initialisierung laufen.
 migrateProjekte()
@@ -39,13 +40,15 @@ export const useAppStore = create((set, get) => ({
   projects:  lv(SK.projects, []),
 
   setTodos: (todos) => {
-    const next = typeof todos === 'function' ? todos(get().todos) : todos
+    const prev = get().todos
+    const next = stampCal(prev, typeof todos === 'function' ? todos(prev) : todos)
     set({ todos: next })
     sv(SK.todos, next)
   },
   setTodoOrder: (order) => { set({ todoOrder: order }); sv(SK.todoOrder, order) },
   setProjects: (projects) => {
-    const next = typeof projects === 'function' ? projects(get().projects) : projects
+    const prev = get().projects
+    const next = stampCal(prev, typeof projects === 'function' ? projects(prev) : projects)
     set({ projects: next })
     sv(SK.projects, next)
   },
