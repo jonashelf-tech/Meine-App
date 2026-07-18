@@ -81,6 +81,52 @@ export const parseRecoveryCode = async (input) => {
   }
 }
 
+// ─── Geteilte Kalender: Schlüssel + Einladungs-Code (teilen-spec.md §4) ──
+// Ein Kalender ist ein Objekt mit eigenem AES-Schlüssel und Mitgliedern. Der
+// calKey verlässt den Server NIE — er reist nur im Einladungs-Code (Base32,
+// einmal-Gebrauch, „nicht per Messenger"). Der Server sieht nur joinSecretHash.
+
+export const newMemberId = () => toB64url(randomBytes(6))   // 8 Zeichen — meine ID in einem Kalender
+
+export const generateCalCreds = () => ({
+  calId:      toB64url(randomBytes(12)),   // 16 Zeichen — passt zur Server-Regex [A-Za-z0-9_-]{16}
+  joinSecret: toB64url(randomBytes(16)),   // Einmal-Geheimnis (Server kennt nur den Hash)
+  calKey:     toB64url(randomBytes(32)),   // AES-256 — bleibt clientseitig
+  memberId:   newMemberId(),
+})
+
+// Einladungs-Code = calId ‖ joinSecret ‖ calKey ‖ 2 Prüfsummen-Bytes (SHA-256),
+// Base32 in 5er-Gruppen — dasselbe Muster wie der Recovery-Code.
+const CAL_ID_BYTES = 12
+const JOIN_SECRET_BYTES = 16
+const CAL_KEY_BYTES = 32
+const INVITE_PAYLOAD_BYTES = CAL_ID_BYTES + JOIN_SECRET_BYTES + CAL_KEY_BYTES
+const INVITE_BYTES = INVITE_PAYLOAD_BYTES + 2
+
+export const buildCalInvite = async ({ calId, joinSecret, calKey }) => {
+  const payload = new Uint8Array([
+    ...fromB64url(calId), ...fromB64url(joinSecret), ...fromB64url(calKey),
+  ])
+  const digest = new Uint8Array(await subtle.digest('SHA-256', payload))
+  const full = new Uint8Array([...payload, digest[0], digest[1]])
+  return toB32(full).match(/.{1,5}/g).join('-')
+}
+
+export const parseCalInvite = async (input) => {
+  const clean = String(input).toUpperCase().replace(/[^A-Z2-7]/g, '')
+  const bytes = fromB32(clean)
+  if (bytes.length !== INVITE_BYTES) throw new Error('Einladungs-Code unvollständig')
+  const payload = bytes.subarray(0, INVITE_PAYLOAD_BYTES)
+  const digest = new Uint8Array(await subtle.digest('SHA-256', payload))
+  if (digest[0] !== bytes[INVITE_BYTES - 2] || digest[1] !== bytes[INVITE_BYTES - 1])
+    throw new Error('Prüfsumme stimmt nicht — vermutlich ein Tippfehler')
+  return {
+    calId:      toB64url(payload.subarray(0, CAL_ID_BYTES)),
+    joinSecret: toB64url(payload.subarray(CAL_ID_BYTES, CAL_ID_BYTES + JOIN_SECRET_BYTES)),
+    calKey:     toB64url(payload.subarray(CAL_ID_BYTES + JOIN_SECRET_BYTES)),
+  }
+}
+
 // ─── Verschlüsselung (AES-GCM-256, gzip wenn verfügbar) ───
 
 const importAesKey = (keyB64url, usages) =>
