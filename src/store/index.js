@@ -168,4 +168,22 @@ export const useAppStore = create((set, get) => ({
     set({ klaerenSettings: next })
     sv(SK.klaerenSettings, next)
   },
+
+  // ─── Geteilte Kalender (Teilen Stufe A) ────────────────
+  // Reaktiv, damit Einstellungen-Karte + Kalender-Views auf Sync/Mutationen reagieren.
+  calCreds:  lv(SK.calCreds, {}),   // { [calId]: { key, memberId, joinedAt } }
+  calList:   lv(SK.calList, {}),    // { [calId]: { name, color, members, updatedAt } }
+  calFilter: lv(SK.calFilter, { privat: true, cals: {} }),
+  setCalCreds: (c) => {
+    const next = typeof c === 'function' ? c(get().calCreds) : c
+    set({ calCreds: next }); sv(SK.calCreds, next)
+  },
+  setCalList: (c) => {
+    const next = typeof c === 'function' ? c(get().calList) : c
+    set({ calList: next }); sv(SK.calList, next)
+  },
+  setCalFilter: (c) => {
+    const next = typeof c === 'function' ? c(get().calFilter) : c
+    set({ calFilter: next }); sv(SK.calFilter, next)
+  },
 }))

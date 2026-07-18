@@ -5,11 +5,16 @@
 import { sv, lv, SK } from '../../storage'
 import { generateCalCreds, newMemberId, buildCalInvite, parseCalInvite, sha256Hex } from '../../sync/crypto'
 import { loadCloudCreds } from '../../sync/cloudBackup'
+import { resetCalSyncState } from '../../sync/syncEngine'
 import { useAppStore } from '../../store'
 import { myMemberId } from './calStamp'
 
-const loadCalCreds = () => lv(SK.calCreds, {})
-const loadCalList  = () => lv(SK.calList, {})
+// calCreds/calList sind reaktive Store-Slices (UI reagiert auf Sync + Mutationen).
+const store = () => useAppStore.getState()
+const loadCalCreds = () => store().calCreds
+const loadCalList  = () => store().calList
+const setCalCreds  = (v) => store().setCalCreds(v)
+const setCalList   = (v) => store().setCalList(v)
 const loadTombstones = () => lv(SK.calTombstones, {})
 
 const calRequest = (path, { method = 'GET', body } = {}) => {
@@ -91,8 +96,9 @@ export const createCal = async ({ name, color, myName }) => {
   const r = await calRequest('/cal', { method: 'POST', body: { calId, joinSecretHash: await sha256Hex(joinSecret) } })
   if (!r.ok) throw new Error(`Kalender anlegen fehlgeschlagen (${r.status})`)
   const now = Date.now()
-  sv(SK.calCreds, { ...loadCalCreds(), [calId]: { key: calKey, memberId, joinedAt: now } })
-  sv(SK.calList, { ...loadCalList(), [calId]: { name, color, members: { [memberId]: myName }, updatedAt: now } })
+  resetCalSyncState(calId)   // frischer Kalender → Erst-Sync
+  setCalCreds({ ...loadCalCreds(), [calId]: { key: calKey, memberId, joinedAt: now } })
+  setCalList({ ...loadCalList(), [calId]: { name, color, members: { [memberId]: myName }, updatedAt: now } })
   return { calId, invite: await buildCalInvite({ calId, joinSecret, calKey }) }
 }
 
@@ -117,10 +123,11 @@ export const joinCal = async ({ code, myName }) => {
   if (!r.ok) throw new Error(`Beitritt fehlgeschlagen (${r.status})`)
   const now = Date.now()
   const memberId = newMemberId()
-  sv(SK.calCreds, { ...loadCalCreds(), [calId]: { key: calKey, memberId, joinedAt: now } })
+  resetCalSyncState(calId)   // erzwingt Erst-Beitritt (Server-Meta gewinnt + self-heal)
+  setCalCreds({ ...loadCalCreds(), [calId]: { key: calKey, memberId, joinedAt: now } })
   const list = loadCalList()
   const prev = list[calId] ?? {}
-  sv(SK.calList, {
+  setCalList({
     ...list,
     [calId]: { name: prev.name ?? '', color: prev.color ?? null, members: { ...(prev.members ?? {}), [memberId]: myName }, updatedAt: now },
   })
@@ -131,9 +138,9 @@ export const joinCal = async ({ code, myName }) => {
 // lokal (cal-Feld erhalten) — ohne Creds read-only, kein stiller Datenverlust.
 export const leaveCal = async (calId) => {
   try { await calRequest(`/cal/${calId}/me`, { method: 'DELETE' }) } catch { /* Netz weg → lokal trotzdem trennen */ }
-  const creds = loadCalCreds()
-  delete creds[calId]
-  sv(SK.calCreds, creds)
+  const { [calId]: _weg, ...rest } = loadCalCreds()
+  setCalCreds(rest)
+  resetCalSyncState(calId)   // Sync-Zustand des verlassenen Kalenders wegräumen
   return { calId }
 }
 
@@ -141,7 +148,7 @@ export const leaveCal = async (calId) => {
 const patchMeta = (calId, patch) => {
   const list = loadCalList()
   if (!list[calId]) return
-  sv(SK.calList, { ...list, [calId]: { ...list[calId], ...patch, updatedAt: Date.now() } })
+  setCalList({ ...list, [calId]: { ...list[calId], ...patch, updatedAt: Date.now() } })
 }
 export const renameCal  = (calId, name)  => patchMeta(calId, { name })
 export const recolorCal = (calId, color) => patchMeta(calId, { color })
