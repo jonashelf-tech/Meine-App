@@ -11,7 +11,7 @@ import { useAppStore, migrateAccent } from '../store'
 import { loadCloudCreds } from './cloudBackup'
 import { encryptPayload, decryptPayload, hmacKeyId } from './crypto'
 import { updateChangeMap } from './diff'
-import { mergePayloads, mergeCalSlice } from './merge'
+import { mergePayloads, mergeCalSlice, stripDayRank } from './merge'
 
 const MERGEABLE = new Set(['byId', 'byId:date', 'bySubkey', 'bySubkey2'])
 const isSyncable = (key) => SYNC_POLICY[key] === 'lww' || MERGEABLE.has(SYNC_POLICY[key])
@@ -355,7 +355,7 @@ const byIdSort = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
 const localCalSlice = (calId) => ({
   records: lv(SK.todos, [])
     .filter(r => r?.cal === calId)
-    .map(({ dayRank, ...rest }) => rest)              // dayRank ist persönlich (§3.3)
+    .map(stripDayRank)                                // dayRank ist persönlich (§3.3)
     .sort(byIdSort),
   tombstones: [...((lv(SK.calTombstones, {})[calId]) ?? [])].sort(byIdSort),
 })

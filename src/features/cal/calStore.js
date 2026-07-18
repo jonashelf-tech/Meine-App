@@ -138,8 +138,9 @@ export const joinCal = async ({ code, myName }) => {
 // lokal (cal-Feld erhalten) — ohne Creds read-only, kein stiller Datenverlust.
 export const leaveCal = async (calId) => {
   try { await calRequest(`/cal/${calId}/me`, { method: 'DELETE' }) } catch { /* Netz weg → lokal trotzdem trennen */ }
-  const { [calId]: _weg, ...rest } = loadCalCreds()
-  setCalCreds(rest)
+  const creds = { ...loadCalCreds() }   // Kopie — Store-State nicht in place mutieren
+  delete creds[calId]
+  setCalCreds(creds)
   resetCalSyncState(calId)   // Sync-Zustand des verlassenen Kalenders wegräumen
   return { calId }
 }

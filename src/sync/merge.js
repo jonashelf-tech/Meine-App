@@ -124,9 +124,13 @@ const pickCal = (a, b) => {
 
 const byId = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
 
+// dayRank ist persönlich (§3.3) und zählt nie zum geteilten Inhalt — überall
+// vor Signatur/Push gestrippt.
+export const stripDayRank = (r) => { const c = { ...r }; delete c.dayRank; return c }
+
 // Inhalts-Signatur ohne persönliches dayRank (Reihenfolge egal → kein Push-Ping-Pong).
 const liveSig = (records) => JSON.stringify(
-  (records ?? []).map(({ dayRank, ...rest }) => rest).sort(byId)
+  (records ?? []).map(stripDayRank).sort(byId)
 )
 const tombSig = (tombstones) => JSON.stringify(
   (tombstones ?? []).map(t => ({ id: t.id, updatedAt: t.updatedAt ?? 0, by: t.by ?? null })).sort(byId)
