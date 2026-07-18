@@ -86,3 +86,74 @@ export const mergePayloads = (policy, local, remote, now = Date.now()) => {
     changedVsRemote: !mapsEqual(mergedMap, rMap),
   }
 }
+
+// ─── mergeCalSlice — geteilte Kalender (teilen-spec.md §3.6) ──────────────
+// Merge EINES Kalender-Slice zwischen PERSONEN. Eingabe je Seite:
+// { records: [...cal-Records...], tombstones: [{id,updatedAt,by}] }. Pro id
+// gewinnt das höhere updatedAt (Gleichstand: Tombstone schlägt Record, sonst
+// deterministisch der größere Inhalt). Tombstones älter als 90 Tage fallen weg
+// (GC — auf beiden Seiten deterministisch, sie konvergieren). dayRank ist
+// persönlich (§3.3) und bleibt IMMER der lokale Wert, nie der von der Gegenseite.
+const CAL_TOMBSTONE_TTL = 90 * 24 * 60 * 60 * 1000
+
+// Slice-Seite → Map id → { ts, deleted, record?, by? }
+const calSliceMap = (side) => {
+  const map = {}
+  for (const r of side?.records ?? []) {
+    if (r?.id == null) continue
+    map[r.id] = { ts: r.updatedAt ?? 0, deleted: false, record: r }
+  }
+  for (const t of side?.tombstones ?? []) {
+    if (t?.id == null) continue
+    const ts = t.updatedAt ?? 0
+    const prev = map[t.id]
+    // Record + Tombstone koexistieren pro Seite nur transient — höherer ts entscheidet.
+    if (!prev || ts >= prev.ts) map[t.id] = { ts, deleted: true, by: t.by ?? null }
+  }
+  return map
+}
+
+const pickCal = (a, b) => {
+  if (!a) return b
+  if (!b) return a
+  if (a.ts !== b.ts) return a.ts > b.ts ? a : b
+  if (a.deleted !== b.deleted) return a.deleted ? a : b   // Gleichstand: Tombstone gewinnt
+  if (a.deleted) return a
+  return JSON.stringify(a.record) >= JSON.stringify(b.record) ? a : b
+}
+
+const byId = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+
+// Inhalts-Signatur ohne persönliches dayRank (Reihenfolge egal → kein Push-Ping-Pong).
+const liveSig = (records) => JSON.stringify(
+  (records ?? []).map(({ dayRank, ...rest }) => rest).sort(byId)
+)
+const tombSig = (tombstones) => JSON.stringify(
+  (tombstones ?? []).map(t => ({ id: t.id, updatedAt: t.updatedAt ?? 0, by: t.by ?? null })).sort(byId)
+)
+
+export const mergeCalSlice = (local, remote, now = Date.now()) => {
+  const lMap = calSliceMap(local)
+  const rMap = calSliceMap(remote)
+  const ids = new Set([...Object.keys(lMap), ...Object.keys(rMap)])
+
+  const records = []
+  const tombstones = []
+  for (const id of ids) {
+    const winner = pickCal(lMap[id], rMap[id])
+    if (winner.deleted) {
+      if (now - winner.ts <= CAL_TOMBSTONE_TTL) tombstones.push({ id, updatedAt: winner.ts, by: winner.by ?? null })
+    } else {
+      records.push({ ...winner.record, dayRank: lMap[id]?.record?.dayRank ?? null })
+    }
+  }
+  records.sort(byId)
+  tombstones.sort(byId)
+
+  return {
+    records,
+    tombstones,
+    changedVsLocal: liveSig(records) !== liveSig(local?.records) || tombSig(tombstones) !== tombSig(local?.tombstones),
+    changedVsRemote: liveSig(records) !== liveSig(remote?.records) || tombSig(tombstones) !== tombSig(remote?.tombstones),
+  }
+}

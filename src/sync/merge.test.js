@@ -3,7 +3,7 @@
 // „ohne Tombstone verschwindet nie etwas". Das ist der Test, der nachts
 // ruhig schlafen lässt.
 import { describe, it, expect } from 'vitest'
-import { mergePayloads } from './merge'
+import { mergePayloads, mergeCalSlice } from './merge'
 
 const NOW = 1_800_000_000_000
 const DAY = 24 * 60 * 60 * 1000
@@ -117,5 +117,97 @@ describe('mergePayloads — lww', () => {
     const b = { value: 'zzz', changedAt: 10 }
     expect(mergePayloads('lww', a, b, NOW).payload.value)
       .toEqual(mergePayloads('lww', b, a, NOW).payload.value)
+  })
+})
+
+// ─── mergeCalSlice — geteilte Kalender (G5-Erweiterung, teilen-spec.md §3.6) ──
+// Merge zweier Kalender-Slices zwischen PERSONEN: Records ∪ Tombstones, LWW über
+// updatedAt, Tombstone schlägt Älteres, GC nach 90 Tagen, dayRank bleibt lokal.
+describe('mergeCalSlice', () => {
+  const rec = (id, updatedAt, extra = {}) => ({ id, cal: 'C', updatedAt, by: 'x', text: `t${id}`, ...extra })
+  const tomb = (id, updatedAt, by = 'x') => ({ id, updatedAt, by })
+  const S = (records = [], tombstones = []) => ({ records, tombstones })
+
+  it('disjunkte Records beider Seiten: Union — kommutativ', () => {
+    const local = S([rec('a', 10)]), remote = S([rec('b', 12)])
+    const ab = mergeCalSlice(local, remote, NOW)
+    const ba = mergeCalSlice(remote, local, NOW)
+    expect(ab.records.map(r => r.id)).toEqual(['a', 'b'])
+    expect(ba.records.map(r => r.id)).toEqual(['a', 'b'])
+  })
+
+  it('gleicher Record beidseitig geändert: höheres updatedAt gewinnt — kommutativ', () => {
+    const local = S([rec('a', 10, { text: 'alt' })])
+    const remote = S([rec('a', 20, { text: 'neu' })])
+    expect(mergeCalSlice(local, remote, NOW).records[0].text).toBe('neu')
+    expect(mergeCalSlice(remote, local, NOW).records[0].text).toBe('neu')
+  })
+
+  it('Tombstone schlägt älteren Record → Record raus, Tombstone bleibt', () => {
+    const local = S([rec('a', NOW - 2 * DAY)])
+    const remote = S([], [tomb('a', NOW - DAY)])
+    const { records, tombstones } = mergeCalSlice(local, remote, NOW)
+    expect(records).toEqual([])
+    expect(tombstones).toEqual([{ id: 'a', updatedAt: NOW - DAY, by: 'x' }])
+  })
+
+  it('neuerer Record schlägt älteren Tombstone (Wiederbelebung, z.B. Umzug rückgängig)', () => {
+    const local = S([rec('a', 30)])
+    const remote = S([], [tomb('a', 20)])
+    const { records, tombstones } = mergeCalSlice(local, remote, NOW)
+    expect(records.map(r => r.id)).toEqual(['a'])
+    expect(tombstones).toEqual([])
+  })
+
+  it('Record ohne Tombstone verschwindet NIE (Gegenseite kennt ihn nur nicht)', () => {
+    const local = S([rec('a', 10), rec('b', 10)])
+    const remote = S([rec('a', 10)])
+    expect(mergeCalSlice(local, remote, NOW).records.map(r => r.id)).toEqual(['a', 'b'])
+  })
+
+  it('Idempotenz: nochmal mit demselben Remote mergen ändert nichts', () => {
+    const local = S([rec('a', 10, { text: 'x' })])
+    const remote = S([rec('a', 20, { text: 'y' }), rec('c', 5)], [tomb('d', NOW - DAY)])
+    const once = mergeCalSlice(local, remote, NOW)
+    const twice = mergeCalSlice(once, remote, NOW)
+    expect(twice.records).toEqual(once.records)
+    expect(twice.tombstones).toEqual(once.tombstones)
+    expect(twice.changedVsLocal).toBe(false)
+  })
+
+  it('GC: Tombstones älter als 90 Tage fallen deterministisch weg', () => {
+    const local = S([], [tomb('a', NOW - 91 * DAY), tomb('b', NOW - DAY)])
+    const remote = S()
+    const { tombstones } = mergeCalSlice(local, remote, NOW)
+    expect(tombstones.map(t => t.id)).toEqual(['b'])
+  })
+
+  it('dayRank bleibt lokal — Remote gewinnt den Inhalt, mein dayRank überlebt', () => {
+    const local = S([rec('a', 10, { dayRank: 5, text: 'meins' })])
+    const remote = S([rec('a', 20, { dayRank: 99, text: 'remote' })])
+    const { records } = mergeCalSlice(local, remote, NOW)
+    expect(records[0].text).toBe('remote')   // Remote-Inhalt gewinnt (neuer)
+    expect(records[0].dayRank).toBe(5)        // aber mein persönlicher dayRank bleibt
+  })
+
+  it('dayRank = null, wenn ich den Record noch gar nicht kenne', () => {
+    const { records } = mergeCalSlice(S(), S([rec('a', 20, { dayRank: 99 })]), NOW)
+    expect(records[0].dayRank).toBeNull()
+  })
+
+  it('changed-Flags: sagen, ob lokal angewendet bzw. gepusht werden muss', () => {
+    const local = S([rec('a', 10)])
+    const remote = S([rec('b', 20)])
+    const r = mergeCalSlice(local, remote, NOW)
+    expect(r.changedVsLocal).toBe(true)    // b kommt lokal dazu
+    expect(r.changedVsRemote).toBe(true)   // a muss zum Server
+  })
+
+  it('changed-Flags: reine dayRank-Differenz zählt NICHT als Änderung', () => {
+    const local = S([rec('a', 10, { dayRank: 3 })])
+    const remote = S([rec('a', 10, { dayRank: 8 })])   // gleicher Inhalt, nur dayRank
+    const r = mergeCalSlice(local, remote, NOW)
+    expect(r.changedVsRemote).toBe(false)
+    expect(r.changedVsLocal).toBe(false)
   })
 })
