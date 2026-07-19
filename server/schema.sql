@@ -50,3 +50,12 @@ CREATE TABLE IF NOT EXISTS cal_members (
   joined_at INTEGER NOT NULL,
   PRIMARY KEY (cal_id, user_id)
 );
+
+-- Buddy (Stufe 1): Nutzungszähler — Kostendeckel für die KI-Calls.
+-- period = 'YYYY-MM-DD' (pro Nutzer/Tag) bzw. 'm:YYYY-MM' (global, user_id 0).
+CREATE TABLE IF NOT EXISTS buddy_usage (
+  user_id INTEGER NOT NULL,
+  period  TEXT NOT NULL,
+  count   INTEGER NOT NULL,
+  PRIMARY KEY (user_id, period)
+);

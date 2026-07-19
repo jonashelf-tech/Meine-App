@@ -57,6 +57,30 @@ Die App zeigt dir einmalig den **Recovery-Code** — in den Passwortmanager dami
 2. Einstellungen → Cloud-Sicherung → „Mit Recovery-Code verbinden" → URL + Code
 3. „Aus Cloud wiederherstellen" → alles wieder da? → bestanden ✓
 
+## Buddy aktivieren (KI-Begleiter, optional)
+
+Der `/buddy`-Endpoint ruft die Anthropic-API auf — er ist **aus**, bis du ihn scharf schaltest:
+
+1. API-Key holen: [console.anthropic.com](https://console.anthropic.com) → API Keys (Budget-Limit im Anthropic-Dashboard setzen schadet nie).
+2. Key als Secret hinterlegen (wird nie im Code/Repo sichtbar):
+   ```
+   npx wrangler secret put ANTHROPIC_API_KEY
+   ```
+3. In `wrangler.toml` unter `[vars]` ergänzen und deployen:
+   ```
+   BUDDY_ENABLED = "1"
+   ```
+4. Neue Tabelle anlegen (einmalig, additiv — löscht nichts):
+   ```
+   npm run db:schema
+   ```
+5. `npm run deploy`
+
+Stellschrauben (optional, `[vars]`): `BUDDY_DAILY_LIMIT` (Calls pro Nutzer/Tag, Default 50),
+`BUDDY_MONTHLY_CAP` (Calls global/Monat, Default 3000 — der Kostendeckel),
+`BUDDY_MODEL_FAST` / `BUDDY_MODEL_SMART` (Defaults `claude-haiku-4-5` / `claude-sonnet-5`).
+Not-Aus: `BUDDY_ENABLED` auf `"0"` + deploy.
+
 ## Wenn etwas hakt
 
 - **CORS-Fehler in der Konsole:** deine App-Domain fehlt in `wrangler.toml` unter
