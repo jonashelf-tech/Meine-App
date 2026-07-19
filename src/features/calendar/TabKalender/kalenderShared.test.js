@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getToolDots, blocksOverlap } from './kalenderShared'
+import { getToolDots, blocksOverlap, getCalItemsForDate, isCalShown, isPrivatShown } from './kalenderShared'
 import { dateKey, getDurationKeys } from '../../../utils'
 
 describe('getToolDots — fitness', () => {
@@ -49,5 +49,48 @@ describe('getDurationKeys — Mindest-Slot', () => {
   it('0/negative Dauer belegt trotzdem den Start-Slot statt []', () => {
     expect(getDurationKeys('14', 0)).toEqual(['14'])
     expect(getDurationKeys('14', -60)).toEqual(['14'])
+  })
+})
+
+describe('calFilter-Helfer — Default sichtbar', () => {
+  it('isCalShown: sichtbar außer show===false', () => {
+    expect(isCalShown({}, 'c1')).toBe(true)
+    expect(isCalShown({ cals: { c1: { show: true } } }, 'c1')).toBe(true)
+    expect(isCalShown({ cals: { c1: { show: false } } }, 'c1')).toBe(false)
+    expect(isCalShown(undefined, 'c1')).toBe(true)
+  })
+  it('isPrivatShown: sichtbar außer privat===false', () => {
+    expect(isPrivatShown({})).toBe(true)
+    expect(isPrivatShown({ privat: false })).toBe(false)
+    expect(isPrivatShown(undefined)).toBe(true)
+  })
+})
+
+describe('getCalItemsForDate — geteilte Termine eines Tages', () => {
+  const calList = { fam: { emoji: '👥' }, tennis: { emoji: '🎾' } }
+  const todos = [
+    { id: 'a', cal: 'fam',    date: '2026-07-20', time: '14:00', text: 'Zahnarzt' },
+    { id: 'b', cal: 'tennis', date: '2026-07-20', time: '18:30', text: 'Tennis' },
+    { id: 'c', cal: 'fam',    date: '2026-07-20', time: null,    text: 'Urlaub' },
+    { id: 'd', cal: null,     date: '2026-07-20', time: '09:00', text: 'Privat-Sport' },
+    { id: 'e', cal: 'fam',    date: '2026-07-21', time: '10:00', text: 'Anderer Tag' },
+  ]
+
+  it('nur cal!=null am gefragten Tag, privat + andere Tage raus', () => {
+    const ids = getCalItemsForDate(todos, calList, { privat: true, cals: {} }, '2026-07-20').map(x => x.id)
+    expect(ids).toEqual(['c', 'a', 'b']) // allday (ohne Zeit) zuerst, dann nach time
+  })
+
+  it('löst das Kalender-Emoji auf (Default 👥 bei fehlendem Eintrag)', () => {
+    const items = getCalItemsForDate(todos, {}, { cals: {} }, '2026-07-20')
+    expect(items.find(x => x.id === 'b').emoji).toBe('👥') // calList leer → Default
+    const withList = getCalItemsForDate(todos, calList, { cals: {} }, '2026-07-20')
+    expect(withList.find(x => x.id === 'b').emoji).toBe('🎾')
+  })
+
+  it('respektiert show:false — ausgeblendeter Kalender fehlt', () => {
+    const filter = { privat: true, cals: { tennis: { show: false } } }
+    const ids = getCalItemsForDate(todos, calList, filter, '2026-07-20').map(x => x.id)
+    expect(ids).toEqual(['c', 'a']) // Tennis ausgeblendet
   })
 })

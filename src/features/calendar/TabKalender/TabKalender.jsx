@@ -11,6 +11,7 @@ import { usePageSwipe } from '../../../hooks/usePageSwipe'
 import { MONTH_NAMES, getMonday, addDays } from './kalenderShared'
 import WocheView from './WocheView'
 import MonatView from './MonatView'
+import CalFilterChips from '../CalFilterChips'
 import s from './TabKalender.module.css'
 
 // Orchestrator: Ansicht-Umschaltung, Navigation, Toggles.
@@ -139,6 +140,8 @@ export default function TabKalender() {
           Monat
         </button>
       </div>
+
+      <CalFilterChips />
 
       <div ref={kalenderSwipeRef}>
         {view === 'woche' && (

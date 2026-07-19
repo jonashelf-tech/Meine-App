@@ -1,0 +1,36 @@
+.row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px 6px 9px;
+  border-radius: var(--r-sm);
+  border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--dur-fast), border-color var(--dur-fast), background var(--dur-fast);
+}
+
+.em {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* aus = ausgeblendet (nicht gelöscht): gedimmt, Rahmen weg.
+   Compound-Selektor (.chip.off), damit die Regel unabhängig von der
+   Quell-Reihenfolge über der Basis-.chip-Regel liegt. */
+.chip.off {
+  opacity: 0.4;
+  border-color: transparent;
+  background: var(--border-dim);
+}

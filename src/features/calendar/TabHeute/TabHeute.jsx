@@ -32,6 +32,8 @@ import { useTagesplanerDrag } from './useTagesplanerDrag'
 import KognitivSection from '../../tools/kognitiv/KognitivSection'
 import { usePageSwipe } from '../../../hooks/usePageSwipe'
 import ProjekteView from '../../projekte/ProjekteView'
+import CalFilterChips from '../CalFilterChips'
+import SharedDayStrip from '../SharedDayStrip'
 import s from './TabHeute.module.css'
 
 export default function TabHeute() {
@@ -203,6 +205,7 @@ export default function TabHeute() {
           onChange={setViewDate}
           onCalendarOpen={() => { setCalendarDate(viewDate); setCurrentTab(1) }}
         />
+        <CalFilterChips />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {/* Nur die Tagesansicht swipt beim Tageswechsel — Pool + Dashboards sind
             datumsunabhängig und bleiben stehen (sonst wandert Unverändertes mit). */}
@@ -216,6 +219,7 @@ export default function TabHeute() {
           onShiftAll={handleShiftAll}
           onCreateBlocker={handleCreateBlocker}
         />
+        <SharedDayStrip viewDate={viewDate} slots={todaySlots} />
         {heuteModus === 'liste' ? (
           <Tagesliste
             viewDate={viewDate}

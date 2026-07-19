@@ -103,3 +103,30 @@ export function getCellBars(dk, days, todos, showTools) {
     })
     .filter(bar => showTools || !bar.isTool)
 }
+
+// ─── Geteilte Kalender: additiver Lesepfad (teilen-spec.md §8.2) ──────
+// Der globale calFilter ({ privat, cals: { [id]: { show, activity } } })
+// steuert ALLE Ansichten gleich. Default überall sichtbar.
+
+export function isCalShown(calFilter, calId) {
+  return calFilter?.cals?.[calId]?.show !== false
+}
+
+export function isPrivatShown(calFilter) {
+  return calFilter?.privat !== false
+}
+
+// Geteilte Termine eines Tages (Muster Geburtstags-Allday): rein, filtert
+// über calFilter, löst das Kalender-Emoji aus calList auf (Default 👥).
+// Slot-Platzierung/Dedup gegen eigene `days`-Slots bleibt Sache der View —
+// hier kommt der volle geteilte Bestand des Tages zurück.
+// Sortierung: ohne Uhrzeit zuerst, dann aufsteigend nach time.
+export function getCalItemsForDate(todos, calList, calFilter, dk) {
+  const out = []
+  for (const t of todos) {
+    if (!t.cal || t.date !== dk) continue
+    if (!isCalShown(calFilter, t.cal)) continue
+    out.push({ ...t, emoji: calList?.[t.cal]?.emoji ?? '👥' })
+  }
+  return out.sort((a, b) => (a.time ?? '').localeCompare(b.time ?? ''))
+}
