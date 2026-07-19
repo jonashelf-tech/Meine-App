@@ -169,6 +169,22 @@ export const useAppStore = create((set, get) => ({
     sv(SK.klaerenSettings, next)
   },
 
+  // ─── Buddy (KI-Begleiter) ──────────────────────────────
+  // calScopes: was der Buddy lesen darf — Shape wie calFilter ({ privat, cals }).
+  // buddyThread = flüchtiger Gesprächsfaden (überlebt Sheet-Schließen, nicht Reload).
+  buddySettings: lv(SK.buddySettings, { enabled: false, name: 'Nuki', userName: '', ton: 'herzlich', calScopes: { privat: true, cals: {} } }),
+  buddyMemory:   lv(SK.buddyMemory, []),
+  buddyThread:   [],
+  setBuddySettings: (s) => {
+    const next = typeof s === 'function' ? s(get().buddySettings) : s
+    set({ buddySettings: next }); sv(SK.buddySettings, next)
+  },
+  setBuddyMemory: (m) => {
+    const next = typeof m === 'function' ? m(get().buddyMemory) : m
+    set({ buddyMemory: next }); sv(SK.buddyMemory, next)
+  },
+  setBuddyThread: (t) => set({ buddyThread: typeof t === 'function' ? t(get().buddyThread) : t }),
+
   // ─── Geteilte Kalender (Teilen Stufe A) ────────────────
   // Reaktiv, damit Einstellungen-Karte + Kalender-Views auf Sync/Mutationen reagieren.
   calCreds:  lv(SK.calCreds, {}),   // { [calId]: { key, memberId, joinedAt } }

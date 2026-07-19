@@ -163,6 +163,10 @@ export const SK = {
   cloudMeta:       `${PREFIX}cloud_meta`,      // ephemer — letzter Cloud-Push/Fehler, gerätelokal
   syncMeta:        `${PREFIX}sync_meta`,       // ephemer — Sync-Zustand pro Key (Versionen, Stempel, Tombstones); frisches Gerät baut ihn neu auf
 
+  // Buddy (KI-Begleiter, Konzept: Dateien/output/ki-buddy-konzept.md)
+  buddySettings:   `${PREFIX}buddy_settings`,  // { enabled, name, ton, calScopes } — calScopes = was der Buddy lesen darf
+  buddyMemory:     `${PREFIX}buddy_memory`,    // [{ id, text, createdAt }] — NUR vom Nutzer bestätigte Merk-Notizen
+
   // Geteilte Kalender (Teilen Stufe A, teilen-spec.md §3.4)
   calCreds:        `${PREFIX}cal_creds`,       // { [calId]: { key, memberId, joinedAt } } — die Kalender-Geheimnisse
   calList:         `${PREFIX}cal_list`,        // { [calId]: { name, emoji, members, updatedAt } } — Cache der geteilten Meta
@@ -253,6 +257,10 @@ export const SYNC_POLICY = {
   [SK.erfolge]:           'lww',   // LEGACY
   [SK.erfolgeTracking]:   'lww',   // Tages-Einträge idempotent — lww-Verlust heilt sich selbst
 
+  // Buddy — synct über eigene Geräte (Name/Ton/Scopes bzw. bestätigte Notizen)
+  [SK.buddySettings]: 'lww',
+  [SK.buddyMemory]:   'byId',
+
   // Laufzeit-Zustand — nie Server, nie Backup
   [SK.lastAutoBackup]:      'ephemeral',
   [SK.lastOffDeviceBackup]: 'ephemeral',
@@ -322,6 +330,7 @@ export const BACKUP_CATS = {
     SK.kognitivIntroSeen, SK.rezepteIntroSeen,
     SK.accentColor, SK.toolColors, SK.activeTools, SK.toolUsage,
     SK.notizenMigrated, SK.cloudCreds, SK.calCreds,
+    SK.buddySettings, SK.buddyMemory,
   ],
 }
 

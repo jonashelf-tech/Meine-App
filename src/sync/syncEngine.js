@@ -105,6 +105,9 @@ const REHYDRATE = {
   // Geteilte Kalender (R1: nach Remote-Apply den Store rehydrieren)
   [SK.calList]:         v => setStore({ calList: v ?? {} }),
   [SK.calCreds]:        v => setStore({ calCreds: v ?? {} }),
+  // Buddy
+  [SK.buddySettings]:   v => setStore({ buddySettings: v ?? { enabled: false, name: 'Nuki', userName: '', ton: 'herzlich', calScopes: { privat: true, cals: {} } } }),
+  [SK.buddyMemory]:     v => setStore({ buddyMemory: v ?? [] }),
 }
 
 const applyValue = (key, value) => {
