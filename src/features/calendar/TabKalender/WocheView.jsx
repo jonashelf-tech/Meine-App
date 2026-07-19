@@ -579,26 +579,33 @@ export default function WocheView({
                       </div>
                     )
                   })}
-                  {/* Geteilte Termine ohne eigenen Slot: read-only Overlay,
-                      eingerückt, damit ein eigener Block darunter sichtbar bleibt. */}
+                  {/* Geteilte Termine, die (noch) keinen eigenen Slot haben: gleicher
+                      Block wie alles andere, Kennung ist allein das Emoji. Nur wenn
+                      der Termin mit einem eigenen Block kollidiert, wird er eingerückt
+                      und rot markiert — sonst wäre die Doppelbuchung unsichtbar. */}
                   {sharedByDay[dk].map(it => {
                     if (!it.time) return null
                     const [hh, mm] = it.time.split(':').map(Number)
                     const h = hh + (mm || 0) / 60
                     if (h < visibleStart || h >= visibleEnd) return null
                     const height = slotToHeight(it.duration)
+                    const clash  = rangeBlocked(days[dk], String(h), it.duration, null)
                     return (
                       <div
                         key={it.id}
-                        className={s.weekSharedBlock}
+                        className={[
+                          s.weekSlotBlock, s.weekSlotTodo, s.weekSlotNoDrag,
+                          clash ? s.weekSlotClash : '',
+                        ].join(' ')}
                         style={{
                           top: slotToTop(String(h), visibleStart),
                           height,
                           '--slot-color': it.color || 'var(--primary)',
                         }}
                       >
-                        <span className={s.weekSharedEmoji}>{it.emoji}</span>
-                        {height >= 14 && <span className={s.weekSharedName}>{it.text}</span>}
+                        <span className={s.weekSlotEmoji}>{it.emoji}</span>
+                        {height >= 14 && <span className={s.weekSlotName}>{it.text}</span>}
+                        {height >= 34 && <span className={s.weekSlotTime}>{it.time}</span>}
                       </div>
                     )
                   })}

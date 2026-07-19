@@ -519,40 +519,20 @@
   pointer-events: none;
 }
 
-/* Geteilter Termin ohne eigenen Slot: read-only Overlay. Links eingerückt,
-   damit ein eigener Block darunter lesbar bleibt; nicht anfassbar (A9). */
-.weekSharedBlock {
-  position: absolute;
-  left: 12px;
-  right: 2px;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 1px 4px;
-  min-height: 10px;
-  pointer-events: none;
+/* Termin ohne eigenen Slot (geteilter Kalender, noch nicht im Plan): sieht aus
+   wie jeder andere Block — nur (noch) nicht ziehbar. */
+.weekSlotBlock.weekSlotNoDrag {
+  cursor: default;
+  touch-action: auto;
+}
+
+/* Kollision: der Termin überlappt einen eigenen Block. Eingerückt, damit beide
+   sichtbar bleiben (Parallelplanung), rote Kante als Hinweis. */
+.weekSlotBlock.weekSlotClash {
+  left: 14px;
   z-index: 1;
-  background: color-mix(in srgb, var(--slot-color, var(--primary)) 18%, var(--bg2));
-  border: 1px dashed color-mix(in srgb, var(--slot-color, var(--primary)) 55%, transparent);
-}
-
-.weekSharedEmoji {
-  font-size: 0.58rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.weekSharedName {
-  font-family: var(--font);
-  font-size: 0.54rem;
-  font-weight: 700;
-  color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.2;
+  border: 1.5px solid var(--rose);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rose) 35%, transparent);
 }
 
 .weekNowLine {
@@ -918,14 +898,6 @@
   flex-shrink: 0;
 }
 
-/* geteilter Termin, der (noch) nicht im eigenen Plan steht: gestrichelt.
-   Compound-Selektor, damit die Regel unabhängig von der Quell-Reihenfolge
-   über der Basis-.dayPanelEntry-Regel liegt (s. CalFilterChips). */
-.dayPanelEntry.dayPanelEntryShared {
-  background: transparent;
-  border: 1px dashed var(--border);
-  border-left: 3px solid var(--primary);
-}
 
 .dayPanelBadge {
   font-family: var(--font);

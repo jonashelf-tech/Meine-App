@@ -48,9 +48,3 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.who {
-  font-size: 0.66rem;
-  color: var(--text-dim);
-  flex-shrink: 0;
-}

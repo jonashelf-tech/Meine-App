@@ -144,7 +144,7 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
             {sharedItems.map(it => (
               <div
                 key={it.id}
-                className={[s.dayPanelEntry, s.dayPanelEntryShared].join(' ')}
+                className={s.dayPanelEntry}
                 style={{ borderLeftColor: it.color || 'var(--primary)' }}
               >
                 <span className={s.dayPanelEntryTime} style={{ color: it.color || 'var(--primary)' }}>
