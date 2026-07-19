@@ -165,7 +165,7 @@ export const SK = {
 
   // Geteilte Kalender (Teilen Stufe A, teilen-spec.md §3.4)
   calCreds:        `${PREFIX}cal_creds`,       // { [calId]: { key, memberId, joinedAt } } — die Kalender-Geheimnisse
-  calList:         `${PREFIX}cal_list`,        // { [calId]: { name, color, members, updatedAt } } — Cache der geteilten Meta
+  calList:         `${PREFIX}cal_list`,        // { [calId]: { name, emoji, members, updatedAt } } — Cache der geteilten Meta
   calTombstones:   `${PREFIX}cal_tombstones`,  // { [calId]: [{ id, updatedAt, by }] } — Löschungen/Umzüge pro Kalender
   calFilter:       `${PREFIX}view_cal_filter`, // { privat, cals: { [calId]: { show, activity } } } — pro Gerät
   calSeen:         `${PREFIX}cal_seen`,         // { [calId]: ts } — letzter Aktivitäts-Blick, ephemer

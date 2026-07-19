@@ -172,7 +172,7 @@ export const useAppStore = create((set, get) => ({
   // ─── Geteilte Kalender (Teilen Stufe A) ────────────────
   // Reaktiv, damit Einstellungen-Karte + Kalender-Views auf Sync/Mutationen reagieren.
   calCreds:  lv(SK.calCreds, {}),   // { [calId]: { key, memberId, joinedAt } }
-  calList:   lv(SK.calList, {}),    // { [calId]: { name, color, members, updatedAt } }
+  calList:   lv(SK.calList, {}),    // { [calId]: { name, emoji, members, updatedAt } }
   calFilter: lv(SK.calFilter, { privat: true, cals: {} }),
   setCalCreds: (c) => {
     const next = typeof c === 'function' ? c(get().calCreds) : c

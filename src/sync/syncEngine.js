@@ -360,7 +360,7 @@ const localCalSlice = (calId) => ({
   tombstones: [...((lv(SK.calTombstones, {})[calId]) ?? [])].sort(byIdSort),
 })
 const localCalMeta = (calId) =>
-  lv(SK.calList, {})[calId] ?? { name: '', color: null, members: {}, updatedAt: 0 }
+  lv(SK.calList, {})[calId] ?? { name: '', emoji: null, members: {}, updatedAt: 0 }
 
 // Mich selbst in die Mitgliederliste zurückschreiben — Meta ist lww, ein
 // Server-Meta-Pull darf meinen Eintrag nicht verschlucken (§6.2 self-heal).

@@ -91,14 +91,14 @@ export const deleteShared = (recordId) => {
 // ─── Netz-Orchestratoren ──────────────────────────────────
 
 // Kalender anlegen: Server-Objekt + lokale Creds + Meta. Liefert Einladungs-Code.
-export const createCal = async ({ name, color, myName }) => {
+export const createCal = async ({ name, emoji, myName }) => {
   const { calId, joinSecret, calKey, memberId } = generateCalCreds()
   const r = await calRequest('/cal', { method: 'POST', body: { calId, joinSecretHash: await sha256Hex(joinSecret) } })
   if (!r.ok) throw new Error(`Kalender anlegen fehlgeschlagen (${r.status})`)
   const now = Date.now()
   resetCalSyncState(calId)   // frischer Kalender → Erst-Sync
   setCalCreds({ ...loadCalCreds(), [calId]: { key: calKey, memberId, joinedAt: now } })
-  setCalList({ ...loadCalList(), [calId]: { name, color, members: { [memberId]: myName }, updatedAt: now } })
+  setCalList({ ...loadCalList(), [calId]: { name, emoji: emoji || '👥', members: { [memberId]: myName }, updatedAt: now } })
   return { calId, invite: await buildCalInvite({ calId, joinSecret, calKey }) }
 }
 
@@ -129,7 +129,7 @@ export const joinCal = async ({ code, myName }) => {
   const prev = list[calId] ?? {}
   setCalList({
     ...list,
-    [calId]: { name: prev.name ?? '', color: prev.color ?? null, members: { ...(prev.members ?? {}), [memberId]: myName }, updatedAt: now },
+    [calId]: { name: prev.name ?? '', emoji: prev.emoji ?? null, members: { ...(prev.members ?? {}), [memberId]: myName }, updatedAt: now },
   })
   return { calId }
 }
@@ -151,5 +151,5 @@ const patchMeta = (calId, patch) => {
   if (!list[calId]) return
   setCalList({ ...list, [calId]: { ...list[calId], ...patch, updatedAt: Date.now() } })
 }
-export const renameCal  = (calId, name)  => patchMeta(calId, { name })
-export const recolorCal = (calId, color) => patchMeta(calId, { color })
+export const renameCal   = (calId, name)  => patchMeta(calId, { name })
+export const setCalEmoji = (calId, emoji) => patchMeta(calId, { emoji })

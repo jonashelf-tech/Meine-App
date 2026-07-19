@@ -118,11 +118,12 @@ describe('createCal / joinCal (Server-Vertrag)', () => {
 
   it('createCal legt Creds + Meta an und liefert einen parsebaren Einladungs-Code', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => okJson(201, { ok: true })))
-    const { calId, invite } = await createCal({ name: 'Familie', color: '#14B8A6', myName: 'Jonas' })
+    const { calId, invite } = await createCal({ name: 'Familie', emoji: '👨‍👩‍👧', myName: 'Jonas' })
     const parsed = await parseCalInvite(invite)
     expect(parsed.calId).toBe(calId)
     expect(lv(SK.calCreds, {})[calId].key).toBe(parsed.calKey)   // Schlüssel im Code == lokal gespeicherter
     expect(lv(SK.calList, {})[calId].name).toBe('Familie')
+    expect(lv(SK.calList, {})[calId].emoji).toBe('👨‍👩‍👧')   // Emoji = Kalender-Kennung (statt Farbe)
     expect(Object.values(lv(SK.calList, {})[calId].members)).toContain('Jonas')
   })
 
