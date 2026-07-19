@@ -8,6 +8,7 @@ import {
   pushCloudBackup, restoreCloudBackup, DEFAULT_SERVER_URL,
 } from '../../../sync/cloudBackup'
 import { getSyncStatus, setSyncEnabled, stopSync } from '../../../sync/syncEngine'
+import CollapsibleSection from './CollapsibleSection'
 import s from './TabSettings.module.css'
 
 const formatPushAge = (ts) => {
@@ -124,8 +125,7 @@ export default function CloudBackupSection() {
   }
 
   return (
-    <section className={s.card}>
-      <h3 className={s.cardTitle}>Cloud-Sicherung</h3>
+    <CollapsibleSection title="Cloud-Sicherung">
 
       {recoveryCode && (
         <div className={s.codeBox}>
@@ -293,6 +293,6 @@ export default function CloudBackupSection() {
           </div>
         </>
       )}
-    </section>
+    </CollapsibleSection>
   )
 }

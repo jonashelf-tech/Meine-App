@@ -1,18 +1,23 @@
 import { useState } from 'react'
 import { offDeviceBackupAgeDays, downloadFullBackup } from '../../storage'
 import { cloudBackupAgeDays } from '../../sync/cloudBackup'
+import { getSyncStatus } from '../../sync/syncEngine'
 import s from './BackupNudge.module.css'
 
 const STALE_DAYS = 7
+const DAY_MS = 24 * 60 * 60 * 1000
 
 // Dezenter Hinweis auf dem Tagesplaner, wenn die letzte echte Off-Device-
-// Sicherung zu lange her ist. Cloud-Backup zählt als Off-Device: ist es
-// frisch, bleibt der Nudge still. (Auto-Push-Trigger: App.jsx, bei saveAutoBackup.)
+// Sicherung zu lange her ist. Cloud zählt als Off-Device: ein frisches
+// Cloud-Backup ODER laufender Geräte-Sync (Daten liegen dann am Server) hält
+// den Nudge still. (Auto-Push-Trigger: App.jsx, bei saveAutoBackup.)
 export default function BackupNudge() {
   const [dismissed, setDismissed] = useState(false)
   const [done, setDone] = useState(false)
 
-  const age = Math.min(offDeviceBackupAgeDays(), cloudBackupAgeDays())
+  const sync = getSyncStatus()
+  const syncAge = sync.on && sync.lastSyncAt ? (Date.now() - sync.lastSyncAt) / DAY_MS : Infinity
+  const age = Math.min(offDeviceBackupAgeDays(), cloudBackupAgeDays(), syncAge)
 
   if (dismissed || done || age < STALE_DAYS) return null
 
