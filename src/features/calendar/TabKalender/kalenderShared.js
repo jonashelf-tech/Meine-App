@@ -92,16 +92,24 @@ export function getToolDots(dk, todos, activeTools, weightEntries, days, toolCol
   return dots
 }
 
-export function getCellBars(dk, days, todos, showTools) {
+// calList/calFilter sind optional: ohne calFilter bleibt alles sichtbar, ohne
+// calList fällt das Emoji geteilter Einträge auf 👥 zurück (wie getCalItemsForDate).
+export function getCellBars(dk, days, todos, showTools, calList, calFilter) {
   const slots = days[dk] ?? {}
   return Object.entries(slots)
     .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
     .map(([, slot]) => {
       const todo   = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
       const isTool = Boolean(todo?.toolId)
-      return { text: slot.text, color: slot.color || 'var(--primary)', isTodo: Boolean(slot.todoId), isTool }
+      const cal    = todo?.cal ?? null
+      return {
+        text: slot.text, color: slot.color || 'var(--primary)',
+        isTodo: Boolean(slot.todoId), isTool,
+        cal, emoji: calEmoji(calList, cal),
+      }
     })
     .filter(bar => showTools || !bar.isTool)
+    .filter(bar => isEntryShown(calFilter, bar.cal))
 }
 
 // ─── Geteilte Kalender: additiver Lesepfad (teilen-spec.md §8.2) ──────
@@ -114,6 +122,17 @@ export function isCalShown(calFilter, calId) {
 
 export function isPrivatShown(calFilter) {
   return calFilter?.privat !== false
+}
+
+// Jeder Eintrag folgt dem Chip seines Kalenders — privat (cal null) dem
+// Privat-Chip. Ein Slot ohne todoId (Woche-Termin) zählt als privat.
+export function isEntryShown(calFilter, calId) {
+  return calId ? isCalShown(calFilter, calId) : isPrivatShown(calFilter)
+}
+
+// Kalender-Kennung: Emoji des Kalenders (Default 👥), null bei privat.
+export function calEmoji(calList, calId) {
+  return calId ? (calList?.[calId]?.emoji ?? '👥') : null
 }
 
 // Geteilte Termine eines Tages (Muster Geburtstags-Allday): rein, filtert
@@ -129,4 +148,15 @@ export function getCalItemsForDate(todos, calList, calFilter, dk) {
     out.push({ ...t, emoji: calList?.[t.cal]?.emoji ?? '👥' })
   }
   return out.sort((a, b) => (a.time ?? '').localeCompare(b.time ?? ''))
+}
+
+// Die additive Hälfte des Lesepfads: geteilte Termine des Tages, die NICHT
+// schon als eigener Slot im Plan stehen (Dedup über todoId) und nicht erledigt
+// sind. Genau das, was eine Ansicht zusätzlich zu ihren `days`-Slots zeigt.
+export function getUnplacedCalItems(todos, calList, calFilter, dk, daySlots) {
+  const placed = new Set(
+    Object.values(daySlots || {}).map(sl => sl?.todoId).filter(Boolean)
+  )
+  return getCalItemsForDate(todos, calList, calFilter, dk)
+    .filter(it => !placed.has(it.id) && !it.done)
 }

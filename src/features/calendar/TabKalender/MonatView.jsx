@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { getDaysInMonth, getFirstDayOfMonth, getToolColor } from '../../../utils'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
-import { DAY_SHORT, getToolDots, getCellBars } from './kalenderShared'
+import { useAppStore } from '../../../store'
+import { DAY_SHORT, getToolDots, getCellBars, getUnplacedCalItems } from './kalenderShared'
 import { DayPanel } from './DayPanel'
 import s from './TabKalender.module.css'
 
@@ -21,6 +22,9 @@ export default function MonatView({
   setCurrentTab, setDayplanDate, setGrowthOpenDate,
   restoreTodo, setRestoreTodo, handleRestore,
 }) {
+  const calList   = useAppStore(st => st.calList)
+  const calFilter = useAppStore(st => st.calFilter)
+
   const monthCells = useMemo(() => {
     const { year, month } = monthRef
     const total = getDaysInMonth(year, month)
@@ -43,10 +47,15 @@ export default function MonatView({
           const dk         = `${monthRef.year}-${String(monthRef.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
           const isToday    = dk === todayKey
           const isSelected = selectedDay === dk
-          const bars       = getCellBars(dk, days, todos, showTools)
+          const bars       = getCellBars(dk, days, todos, showTools, calList, calFilter)
+          // Geteilte Termine, die (noch) nicht im eigenen Plan stehen, kommen
+          // additiv dazu — sie folgen allein den Kalender-Chips.
+          const sharedBars = getUnplacedCalItems(todos, calList, calFilter, dk, days[dk])
+            .map(it => ({ text: it.text, color: it.color || 'var(--primary)', emoji: it.emoji }))
           const filtered   = [
             ...(showTermine ? bars.filter(b => !b.isTodo) : []),
             ...(showTodos   ? bars.filter(b =>  b.isTodo) : []),
+            ...sharedBars,
           ]
           const visible  = filtered.slice(0, 3)
           const overflow = filtered.length - visible.length
@@ -79,6 +88,7 @@ export default function MonatView({
                   className={[s.cellBar, bar.isTodo ? s.cellBarTodo : ''].join(' ')}
                   style={{ '--bar-c': bar.color }}
                 >
+                  {bar.emoji && <span className={s.cellBarEmoji}>{bar.emoji}</span>}
                   <span className={s.cellBarText}>{firstWord(bar.text)}</span>
                 </div>
               ))}

@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store'
-import { getCalItemsForDate } from './TabKalender/kalenderShared'
+import { getUnplacedCalItems } from './TabKalender/kalenderShared'
 import s from './SharedDayStrip.module.css'
 
 // „Geteilt an diesem Tag" — read-only Streifen über dem Tagesplan (Muster
@@ -13,11 +13,7 @@ export default function SharedDayStrip({ viewDate, slots }) {
   const calCreds  = useAppStore(st => st.calCreds)
   const calFilter = useAppStore(st => st.calFilter)
 
-  const placed = new Set(
-    Object.values(slots || {}).map(sl => sl?.todoId).filter(Boolean)
-  )
-  const items = getCalItemsForDate(todos, calList, calFilter, viewDate)
-    .filter(it => !placed.has(it.id) && !it.done)
+  const items = getUnplacedCalItems(todos, calList, calFilter, viewDate, slots)
 
   if (items.length === 0) return null
 

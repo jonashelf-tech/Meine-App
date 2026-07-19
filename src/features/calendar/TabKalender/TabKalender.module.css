@@ -178,6 +178,14 @@
 
 .cellBarTodo { opacity: 0.72; }
 
+/* Kalender-Kennung am Balken (geteilter Kalender) */
+.cellBarEmoji {
+  font-size: 0.55rem;
+  line-height: 1;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
 .cellMore {
   font-family: var(--font);
   font-size: 0.58rem;
@@ -352,6 +360,13 @@
   text-overflow: ellipsis;
 }
 
+.weekAlldayEmoji {
+  font-size: 0.55rem;
+  line-height: 1;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
 /* Innen-Scroll: nur die Stunden scrollen, Kopf/Ganztägig bleiben fix.
    max-height tunt die Karte auf die Viewport-Höhe (per Screenshot justiert). */
 .weekScrollBody {
@@ -492,6 +507,52 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1;
+}
+
+/* Kalender-Kennung am eigenen Block: kleine Ecke oben rechts */
+.weekSlotEmoji {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: 0.55rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Geteilter Termin ohne eigenen Slot: read-only Overlay. Links eingerückt,
+   damit ein eigener Block darunter lesbar bleibt; nicht anfassbar (A9). */
+.weekSharedBlock {
+  position: absolute;
+  left: 12px;
+  right: 2px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 4px;
+  min-height: 10px;
+  pointer-events: none;
+  z-index: 1;
+  background: color-mix(in srgb, var(--slot-color, var(--primary)) 18%, var(--bg2));
+  border: 1px dashed color-mix(in srgb, var(--slot-color, var(--primary)) 55%, transparent);
+}
+
+.weekSharedEmoji {
+  font-size: 0.58rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.weekSharedName {
+  font-family: var(--font);
+  font-size: 0.54rem;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .weekNowLine {
@@ -848,6 +909,22 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Kalender-Kennung am Eintrag (geteilter Kalender) */
+.dayPanelEntryEmoji {
+  font-size: 0.85rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* geteilter Termin, der (noch) nicht im eigenen Plan steht: gestrichelt.
+   Compound-Selektor, damit die Regel unabhängig von der Quell-Reihenfolge
+   über der Basis-.dayPanelEntry-Regel liegt (s. CalFilterChips). */
+.dayPanelEntry.dayPanelEntryShared {
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-left: 3px solid var(--primary);
 }
 
 .dayPanelBadge {

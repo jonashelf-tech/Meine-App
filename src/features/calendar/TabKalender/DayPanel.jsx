@@ -7,6 +7,8 @@ import { getDaySummary as getGrowthDay } from '../../tools/growth/growthStore'
 import { loadSessions as loadFitnessSessions, getExerciseById, loadFitness as loadFitnessAll } from '../../tools/fitness/fitnessStore'
 import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { TOOL_TAB } from '../../tools/toolTabs'
+import { useAppStore } from '../../../store'
+import { isEntryShown, calEmoji, getUnplacedCalItems } from './kalenderShared'
 import s from './TabKalender.module.css'
 
 const WORKING_TYPES = ['normal', 'dropset', 'failure']
@@ -39,11 +41,21 @@ function fmtDelta(moduleId, delta) {
 export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays = [], weightEntry, activeTools = [], setCurrentTab, setDayplanDate, setGrowthOpenDate, restoreTodo, setRestoreTodo, handleRestore, initialOpen }) {
   const [open, setOpen] = useState(initialOpen ?? { zeitplan: true, done: false, kognitiv: false, gewicht: false, elvi: false, growth: false, fitness: false })
 
+  const calList   = useAppStore(st => st.calList)
+  const calFilter = useAppStore(st => st.calFilter)
+
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
 
   const slots = days[dateKey] ?? {}
+  // Eigene Slots: Kalender des zugehörigen Todos auflösen — steuert Emoji-
+  // Kennung und ob der globale Filter den Eintrag gerade zeigt.
   const sortedSlots = Object.entries(slots)
-    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+    .map(([key, slot]) => ({ key, slot, cal: (slot.todoId ? todos.find(t => t.id === slot.todoId) : null)?.cal ?? null }))
+    .filter(e => isEntryShown(calFilter, e.cal))
+    .sort((a, b) => parseFloat(a.key) - parseFloat(b.key))
+
+  // Geteilte Termine des Tages, die nicht als eigener Slot im Plan stehen.
+  const sharedItems = getUnplacedCalItems(todos, calList, calFilter, dateKey, slots)
 
   const doneTodos = todos.filter(t => t.doneAt?.startsWith(dateKey))
   const kognitivSessions = loadKognitivSessions().filter(sess => sess.date === dateKey)
@@ -70,7 +82,7 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
 
   const toggle = (key) => setOpen(prev => ({ ...prev, [key]: !prev[key] }))
 
-  const totalZeitplan = sortedSlots.length + birthdayEntries.length
+  const totalZeitplan = sortedSlots.length + birthdayEntries.length + sharedItems.length
 
   return (
     <div className={s.dayPanel}>
@@ -108,13 +120,14 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
                 <span className={s.dayPanelAlldayDate}>{formatBirthdayDate(b.date)}</span>
               </div>
             ))}
-            {sortedSlots.length === 0 && birthdayEntries.length === 0 ? (
+            {sortedSlots.length === 0 && birthdayEntries.length === 0 && sharedItems.length === 0 ? (
               <p className={s.dayPanelEmpty}>Keine Termine</p>
-            ) : sortedSlots.map(([key, slot]) => {
+            ) : sortedSlots.map(({ key, slot, cal }) => {
               const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
               const mm     = parseFloat(key) % 1 ? '30' : '00'
               const isTodo = Boolean(slot.todoId)
               const color  = slot.color || 'var(--primary)'
+              const emoji  = calEmoji(calList, cal)
               return (
                 <div
                   key={key}
@@ -122,11 +135,25 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
                   style={{ borderLeftColor: color }}
                 >
                   <span className={s.dayPanelEntryTime} style={{ color }}>{hh}:{mm}</span>
+                  {emoji && <span className={s.dayPanelEntryEmoji}>{emoji}</span>}
                   <span className={s.dayPanelEntryText}>{slot.text}</span>
                   {isTodo && <span className={s.dayPanelBadge}>Todo</span>}
                 </div>
               )
             })}
+            {sharedItems.map(it => (
+              <div
+                key={it.id}
+                className={[s.dayPanelEntry, s.dayPanelEntryShared].join(' ')}
+                style={{ borderLeftColor: it.color || 'var(--primary)' }}
+              >
+                <span className={s.dayPanelEntryTime} style={{ color: it.color || 'var(--primary)' }}>
+                  {it.time ?? '—'}
+                </span>
+                <span className={s.dayPanelEntryEmoji}>{it.emoji}</span>
+                <span className={s.dayPanelEntryText}>{it.text}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
