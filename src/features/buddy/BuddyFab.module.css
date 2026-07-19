@@ -1,0 +1,33 @@
+/* Buddy-FAB — Spiegelstück zum „+"-FAB (App.module.css), nur links.
+   Warme Kennung über var(--amber)-Mixe; keine neuen Hex-Werte. */
+.fab {
+  position: fixed;
+  bottom: 76px;
+  left: max(14px, calc(50vw - 230px + 14px));
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 12%, var(--bg2));
+  border: 1.5px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 200;
+  box-shadow:
+    0 3px 22px rgba(0, 0, 0, 0.45),
+    0 0 18px color-mix(in srgb, var(--amber) 22%, transparent);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.fab:active { transform: scale(0.94); }
+
+/* Sanftes Atmen — prefers-reduced-motion in vars.css schaltet alles ab */
+.bob {
+  display: block;
+  animation: buddyBob 5.5s var(--ease) infinite;
+}
+@keyframes buddyBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}

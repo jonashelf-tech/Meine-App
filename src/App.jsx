@@ -16,6 +16,7 @@ import TodoModal       from './components/TodoModal/TodoModal'
 import ErrorBoundary   from './components/ErrorBoundary/ErrorBoundary'
 import { useToast }    from './components/Toast/Toast'
 import BackupNudge     from './components/BackupNudge/BackupNudge'
+import BuddyFab        from './features/buddy/BuddyFab'
 import UpdatePrompt     from './components/UpdatePrompt/UpdatePrompt'
 
 // ─── Tab bar SVG icons ────────────────────────────────────
@@ -183,6 +184,9 @@ export default function App() {
           +
         </button>
       )}
+
+      {/* Buddy nur auf den Plan-Flächen (Tagesplaner + Kalender) — Konzept §7.2 */}
+      {(currentTab === 0 || currentTab === 1) && <BuddyFab />}
 
       {addOpen && (
         <TodoModal

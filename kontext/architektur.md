@@ -46,6 +46,13 @@ src/
         bandLogic.js            — rein+getestet: computeBands() — Sichtfenster + "frei"-Bänder außerhalb
         Zeitplan.jsx + .module.css
 
+    buddy/             — KI-Begleiter (Eichhörnchen; Konzept `Dateien/output/ki-buddy-konzept.md` — bindend)
+      contextPacket.js        — pur: baut das JSON Richtung KI-API. Datenschutz-Kern: nur explizite Inputs (kein Storage-Import), calScopes-Filter (geteilte Kalender default AUS), Schema-Lock. Guard: contextPacket.test.js — verbotene Quellen (Elvi/Growth/Gewicht/Kognitiv/Notizen/Creds) dürfen NIE ins Paket
+      buddyActions.js         — pur: strenge Validierung der Server-Actions (subtasks/create_todo/focus/schedule/remember) + Slot-Key-Mathe. Guard: buddyActions.test.js. KI-Antwort = Fremd-Input, wird NIE direkt ausgeführt
+      buddyApi.js             — fetch auf POST /buddy des eigenen Workers (Auth = Cloud-Token); Fehler als deutsche Sätze
+      BuddyAvatar.jsx         — Vektor-Eichhörnchen (Posen idle/denkt), Charakter-Farben als JS-Daten
+      BuddyFab.jsx            — Avatar-Button links unten, App.jsx mountet ihn NUR auf Tab 0+1, nur wenn buddySettings.enabled
+      BuddySheet.jsx          — Gesprächs-Sheet: Schnellaktionen (start/zerlegen/tagesplan/ueberfordert), Action-Karten mit „Übernehmen" → bestehende Store-Pfade (setTodos/setDays/timerAutoStart). Eiserne Regel: Buddy schlägt vor, Nutzer bestätigt — keine stillen Mutationen
     projekte/          — Projekte als Kernfunktion: Todos gruppieren sich über `projectId` statt freier Kategorie-Strings
       projektModel.js               — Datenmodell (createProject, PROJEKT_COLORS ohne Akzent-Violett) + nextFreeColor, recolorProject (Farb-Sweep → Todos+Slots), dissolveProject
       projektMigration.js           — Boot-Migration Kategorie→Projekt (marker-los/idempotent, Shape statt Versions-Flag), läuft in store/index.js vor Store-Init

@@ -189,6 +189,11 @@ birthdays,    setBirthdays
 
 // Projekte
 projects,     setProjects
+
+// Buddy (KI-Begleiter)
+buddySettings, setBuddySettings   // persistiert (SK.buddySettings)
+buddyMemory,   setBuddyMemory     // persistiert (SK.buddyMemory)
+buddyThread,   setBuddyThread     // flüchtig — Gesprächsfaden, stirbt beim Reload
 ```
 
 ---
@@ -335,6 +340,10 @@ SK.dailyState        → 'adhs_daily_state_v1'      // { "YYYY-MM-DD": { sleep, 
 SK.garten            → 'adhs_garten_v1'           // { xpFloor, seenMilestones } — Garten-Begleiter (Monotonie-Ratchet)
 SK.erfolgeTracking   → 'adhs_erfolge_tracking_v1' // Tagesplaner-Tage; schreibt TabHeute, liest Garten (historischer Name)
 SK.erfolge           → LEGACY (altes Erfolge-Tool, nur Backup-Kompat)
+
+// Buddy (KI-Begleiter, src/features/buddy/ — Konzept: Dateien/output/ki-buddy-konzept.md)
+SK.buddySettings     → 'adhs_buddy_settings'   // { enabled, name, userName, ton, calScopes:{privat,cals} } — calScopes = was der Buddy lesen darf (geteilte Kalender default AUS)
+SK.buddyMemory       → 'adhs_buddy_memory'     // [{ id, text, createdAt }] — NUR vom Nutzer bestätigte Merk-Notizen, Cap 30
 
 // Cloud-Backup + Geräte-Sync (src/sync/ — siehe Dateien/output/sync-architektur.md)
 SK.cloudCreds        → 'adhs_cloud_creds'       // { serverUrl, token, key, activatedAt, syncOn } — E2E-Schlüssel bleibt clientseitig (BACKUP_CATS.einstellungen)

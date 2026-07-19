@@ -34,6 +34,10 @@ const CARDS = [
     title: 'Projekte',
     body: 'Gehören mehrere Todos zusammen — Einkauf, Urlaub, Wohnung — bündelst du sie zu einem Projekt. Jedes Projekt hat eine eigene Farbe, die das Todo überall trägt: im Pool, im Zeitplan, im Kalender. Projekte verwaltest du über den Projekte-Knopf oben im Pool; dort siehst du auch den Fortschritt und kannst Todos „erst ab einem Datum" auftauchen lassen.',
   },
+  {
+    title: 'Buddy (optional)',
+    body: 'Ein kleiner Begleiter mit KI, der beim Anfangen hilft: „Womit fange ich an?", Aufgaben in machbare Schritte zerlegen, einen Fokus-Block vorschlagen. Er meldet sich nie von selbst — du öffnest ihn über den Knopf links unten, und alles, was er vorschlägt, bestätigst du erst. Einschalten (und festlegen, was er lesen darf) unter Einstellungen → Buddy; er braucht die Cloud-Sicherung als Zugang.',
+  },
 ]
 
 const TOOLS_INTRO =

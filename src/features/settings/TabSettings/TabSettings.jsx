@@ -10,6 +10,7 @@ import { useToast } from '../../../components/Toast/Toast'
 import { pauseSync } from '../../../sync/cloudBackup'
 import CloudBackupSection from './CloudBackupSection'
 import SharedCalendarsSection from './SharedCalendarsSection'
+import BuddySection from './BuddySection'
 import Hilfe from '../Hilfe/Hilfe'
 import CollapsibleSection from './CollapsibleSection'
 import s from './TabSettings.module.css'
@@ -270,6 +271,8 @@ export default function TabSettings() {
       <CloudBackupSection />
 
       <SharedCalendarsSection />
+
+      <BuddySection />
 
       <CollapsibleSection title="Wartung">
         <div className={s.btnGroup}>
