@@ -9,7 +9,7 @@ import { useAppStore } from '../../../store'
 import {
   DAY_SHORT, SLOT_H, addDays, slotToTop, slotToHeight,
   blocksOverlap, rangeBlocked, getToolDots,
-  isEntryShown, isPrivatShown, calEmoji, getUnplacedCalItems,
+  isEntryShown, isPrivatShown, calEmoji, getUnplacedCalItems, sharedEditBadge,
 } from './kalenderShared'
 import s from './TabKalender.module.css'
 
@@ -158,6 +158,7 @@ export default function WocheView({
 
   const calList   = useAppStore(st => st.calList)
   const calFilter = useAppStore(st => st.calFilter)
+  const calCreds  = useAppStore(st => st.calCreds)
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek = weekDays.some(d => toDateKey(d) === todayKey)
@@ -498,6 +499,7 @@ export default function WocheView({
                     const slotCal = slotTodo?.cal ?? null
                     if (!isEntryShown(calFilter, slotCal)) return null
                     const emoji = calEmoji(calList, slotCal)
+                    const badge = slotCal ? sharedEditBadge(slotTodo, calList, calCreds) : null
                     const isBlocking = dragging && dragTarget?.dk === dk
                       && !(dragging.dk === dk && dragging.key === key)
                       && blocksOverlap(parseFloat(dragTarget.key), dragging.slot.duration, parseFloat(key), slot.duration)
@@ -576,6 +578,7 @@ export default function WocheView({
                         {emoji && <span className={s.weekSlotEmoji}>{emoji}</span>}
                         {height >= 14 && <span className={s.weekSlotName}>{slot.text}</span>}
                         {height >= 34 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
+                        {height >= 48 && badge && <span className={s.weekSlotBadge}>✏️ {badge.label}</span>}
                       </div>
                     )
                   })}
@@ -606,6 +609,10 @@ export default function WocheView({
                         <span className={s.weekSlotEmoji}>{it.emoji}</span>
                         {height >= 14 && <span className={s.weekSlotName}>{it.text}</span>}
                         {height >= 34 && <span className={s.weekSlotTime}>{it.time}</span>}
+                        {height >= 48 && (() => {
+                          const badge = sharedEditBadge(it, calList, calCreds)
+                          return badge && <span className={s.weekSlotBadge}>✏️ {badge.label}</span>
+                        })()}
                       </div>
                     )
                   })}

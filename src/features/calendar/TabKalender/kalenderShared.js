@@ -160,3 +160,67 @@ export function getUnplacedCalItems(todos, calList, calFilter, dk, daySlots) {
   return getCalItemsForDate(todos, calList, calFilter, dk)
     .filter(it => !placed.has(it.id) && !it.done)
 }
+
+// Hält `days` mit `todos` synchron — „geteilte Termine sind echte Slots,
+// kein Unterschied" (Jonas 2026-07-19) heißt: sobald ein Zielslot frei ist,
+// wird ein geteilter Termin automatisch ein normaler Slot (ab da ganz normal
+// zieh-/abhak-/editierbar, ohne dass Woche/DayPanel Sonder-Interaktionscode
+// brauchen). Kollidiert er, bleibt er im additiven Lesepfad (rote Kante dort).
+// Räumt außerdem Slots weg, deren todoId keinen Todo mehr hat (Termin von
+// anderswo gelöscht, Kalender verlassen — gilt für jeden todoId-Slot, nicht
+// nur geteilte: ein Slot ohne zugehörigen Todo ist so oder so ein Ghost).
+// Reine Funktion, liefert dieselbe days-Referenz zurück wenn nichts zu tun ist.
+export function reconcileDaySlots(days, todos) {
+  const todoIds = new Set(todos.map(t => t.id))
+  let changed = false
+  const next = {}
+
+  for (const [dk, slots] of Object.entries(days)) {
+    let dayChanged = false
+    const kept = {}
+    for (const [key, slot] of Object.entries(slots)) {
+      if (slot?.todoId && !todoIds.has(slot.todoId)) { dayChanged = true; continue }
+      kept[key] = slot
+    }
+    next[dk] = dayChanged ? kept : slots
+    if (dayChanged) changed = true
+  }
+
+  const placedIds = new Set()
+  for (const slots of Object.values(next)) {
+    for (const slot of Object.values(slots)) if (slot?.todoId) placedIds.add(slot.todoId)
+  }
+
+  for (const t of todos) {
+    if (!t.cal || !t.date || !t.time || t.done || placedIds.has(t.id)) continue
+    const [hh, mm] = t.time.split(':').map(Number)
+    const key = String(hh + (mm || 0) / 60)
+    const daySlots = next[t.date] ?? {}
+    if (rangeBlocked(daySlots, key, t.duration, null)) continue
+    next[t.date] = {
+      ...daySlots,
+      [key]: { text: t.text, todoId: t.id, color: t.color ?? null, duration: t.duration || 30, locked: false, done: false },
+    }
+    placedIds.add(t.id)
+    changed = true
+  }
+
+  return changed ? next : days
+}
+
+const EDIT_BADGE_WINDOW_MS = 60 * 60 * 1000   // 60 Min — danach verstopft der Hinweis nur
+
+// „✏️ Paula · vor 4 Min" — nur bei geteilten, frisch geänderten Todos, und nur
+// wenn jemand ANDERES zuletzt dran war (der eigene Edit braucht keinen Hinweis
+// an einen selbst). null wenn nichts zu zeigen.
+export function sharedEditBadge(todo, calList, calCreds, now = Date.now()) {
+  if (!todo?.cal || !todo.by || !todo.updatedAt) return null
+  const myId = calCreds?.[todo.cal]?.memberId
+  if (todo.by === myId) return null
+  const age = now - todo.updatedAt
+  if (age < 0 || age > EDIT_BADGE_WINDOW_MS) return null
+  const name = calList?.[todo.cal]?.members?.[todo.by]
+  if (!name) return null
+  const mins = Math.max(1, Math.round(age / 60000))
+  return { name, label: `${name} · vor ${mins} Min` }
+}

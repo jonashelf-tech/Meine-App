@@ -509,6 +509,19 @@
   line-height: 1;
 }
 
+/* Hinweis „Paula · vor 4 Min" — rein informativ, blockiert nichts (A9 Variante B) */
+.weekSlotBadge {
+  font-family: var(--font);
+  font-size: 0.48rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 /* Kalender-Kennung am eigenen Block: kleine Ecke oben rechts */
 .weekSlotEmoji {
   position: absolute;
@@ -909,6 +922,15 @@
   border-radius: 8px;
   flex-shrink: 0;
   opacity: 0.7;
+}
+
+/* Hinweis „Paula · vor 4 Min" — rein informativ, blockiert nichts (A9 Variante B) */
+.dayPanelEditBadge {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .dayPanelTodoEntry {
