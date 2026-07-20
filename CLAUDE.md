@@ -43,9 +43,19 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 - Änderungen an Daten/Speicher (Datenverlust möglich) → zusätzlich erst Backup-Pfad
 
 **Risiko-Stufen:**
-- Kosmetik (Farbe, Layout, Text) → einfach machen
+- Kosmetik (Farbe, Layout, Text — innerhalb der bestehenden Design-Sprache) → einfach machen
+- Optik-Neuland (Charaktere, Illustrationen, neue Stilrichtung) → erst abstimmen (Regel unten)
 - Logik/Feature → machen + 1 Satz "woran du Erfolg erkennst"
 - Daten/Migration → erst fragen
+
+**Optik & Geschmack (2026-07-20, Anlass: Buddy-Eichhörnchen v1):**
+Neue visuelle Identität — Charaktere, Illustrationen, Stilrichtungen, alles ohne Vorbild in
+der App — wird **immer vorher abgestimmt**: 2–3 Varianten oder Referenzen zeigen
+(Widget/Mockup reicht), Jonas wählt, dann bauen. Gilt **auch bei „freie Hand"/„vollgas"** —
+diese Formeln decken Inhalt und Architektur ab, nicht Geschmack. Soll auch die Optik
+freigegeben sein, frage ich das einmal explizit nach („auch die Optik frei?") und entscheide
+erst nach dieser **zusätzlichen** Bestätigung optisch autonom. Umsetzung innerhalb der
+bestehenden Design-Sprache (vars.css-Tokens, Tool-Design-Patterns) bleibt davon unberührt.
 
 **Bevor ich "totes" Zeug lösche/ersetze:** erst prüfen ob es wirklich tot ist. Im Zweifel melden statt löschen.
 
