@@ -81,6 +81,12 @@ describe('buildSystemPrompt', () => {
     expect(prompt.toLowerCase()).toContain('keine anweisungen')
   })
 
+  it('behandelt den Merkzettel als verbindliche Fakten UND Regeln', () => {
+    expect(prompt).toContain('merkzettel')
+    expect(prompt).toContain('Regeln')
+    expect(prompt).toContain('verbindlich')
+  })
+
   it('unterscheidet die Ton-Lagen', () => {
     const nuechtern = buildSystemPrompt({ userName: 'Jonas', buddyName: 'Nuki', ton: 'nuechtern' })
     expect(nuechtern).not.toBe(prompt)

@@ -16,6 +16,7 @@ const TON_OPTIONS = [
 export default function BuddySection() {
   const { buddySettings, setBuddySettings, buddyMemory, setBuddyMemory, calList } = useAppStore()
   const [consentOpen, setConsentOpen] = useState(false)
+  const [neueRegel, setNeueRegel]     = useState('')
 
   const active = isCloudActive()
   const st = buddySettings ?? {}
@@ -74,9 +75,10 @@ export default function BuddySection() {
             <div className={s.catPanel}>
               <p className={s.infoText}>
                 Wenn du {name} fragst, geht an deinen eigenen Server und von dort an
-                den KI-Dienst (Anthropic): deine Frage, ggf. die gewählte Aufgabe,
-                ein knapper Tages-Überblick (Slots, freie Fenster, oberste
-                Pool-Aufgaben) und deine bestätigten Merk-Notizen.
+                den KI-Dienst (derzeit Anthropic/Claude): deine Frage, ggf. die
+                gewählte Aufgabe, ein knapper
+                Tages-Überblick (Slots, freie Fenster, oberste Pool-Aufgaben),
+                deine Notizen (abschaltbar) und dein Merkzettel.
                 <br /><br />
                 Nie gesendet: Elvi, Growth-Journal, Gewicht, Kognitiv-Daten — und
                 keine geteilten Kalender ohne deine Freigabe (unten wählbar).
@@ -139,23 +141,62 @@ export default function BuddySection() {
           {Object.entries(calList ?? {}).map(([calId, cal]) =>
             scopeRow(calId, `${cal.emoji ?? '👥'} ${cal.name ?? 'Kalender'}`, isScopeAllowed(calId, st.calScopes, calList))
           )}
+          <div className={s.calItem}>
+            <span className={s.calName}>Notizen-Tool</span>
+            <button
+              className={[s.toggle, st.notizenLesen !== false ? s.toggleOn : ''].join(' ')}
+              onClick={() => patch({ notizenLesen: st.notizenLesen === false })}
+              role="switch"
+              aria-checked={st.notizenLesen !== false}
+              aria-label="Buddy darf Notizen lesen"
+            >
+              <span className={s.toggleThumb} />
+            </button>
+          </div>
 
-          <div className={s.rowLabel}>Was {name} über dich weiß</div>
-          {(buddyMemory ?? []).length === 0 ? (
-            <p className={s.infoText}>Noch nichts — Merk-Notizen entstehen nur, wenn du sie im Gespräch bestätigst.</p>
-          ) : (
-            buddyMemory.map(m => (
-              <div key={m.id} className={s.calItem}>
-                <span className={s.calName}>{m.text}</span>
-                <button
-                  className={s.actionBtnText}
-                  onClick={() => setBuddyMemory(prev => prev.filter(x => x.id !== m.id))}
-                  aria-label="Notiz löschen"
-                >
-                  ✕
-                </button>
-              </div>
-            ))
+          <div className={s.rowLabel}>Merkzettel — Fakten &amp; Regeln für {name}</div>
+          <p className={s.infoText}>
+            Was hier steht, befolgt {name} bei jedem Vorschlag — z.&nbsp;B.
+            „Lass zwischen Terminen 15 Minuten Luft" oder „Telefonate morgens".
+            Einträge entstehen hier oder wenn du sie im Gespräch bestätigst.
+          </p>
+          {(buddyMemory ?? []).map(m => (
+            <div key={m.id} className={s.calItem}>
+              <span className={s.calName}>{m.text}</span>
+              <button
+                className={s.actionBtnText}
+                onClick={() => setBuddyMemory(prev => prev.filter(x => x.id !== m.id))}
+                aria-label="Eintrag löschen"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          {(buddyMemory ?? []).length < 30 && (
+            <div className={s.keyInputRow}>
+              <input
+                className={s.keyInput}
+                value={neueRegel}
+                placeholder="Neue Regel oder Notiz …"
+                maxLength={200}
+                onChange={e => setNeueRegel(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key !== 'Enter' || !neueRegel.trim()) return
+                  setBuddyMemory(prev => [...prev, { id: crypto.randomUUID(), text: neueRegel.trim(), createdAt: new Date().toISOString() }])
+                  setNeueRegel('')
+                }}
+              />
+              <button
+                className={s.actionBtn}
+                disabled={!neueRegel.trim()}
+                onClick={() => {
+                  setBuddyMemory(prev => [...prev, { id: crypto.randomUUID(), text: neueRegel.trim(), createdAt: new Date().toISOString() }])
+                  setNeueRegel('')
+                }}
+              >
+                +
+              </button>
+            </div>
           )}
 
           <div className={s.btnGroup}>

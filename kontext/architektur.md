@@ -47,7 +47,7 @@ src/
         Zeitplan.jsx + .module.css
 
     buddy/             — KI-Begleiter (Eichhörnchen; Konzept `Dateien/output/ki-buddy-konzept.md` — bindend)
-      contextPacket.js        — pur: baut das JSON Richtung KI-API. Datenschutz-Kern: nur explizite Inputs (kein Storage-Import), calScopes-Filter (geteilte Kalender default AUS), Schema-Lock. Guard: contextPacket.test.js — verbotene Quellen (Elvi/Growth/Gewicht/Kognitiv/Notizen/Creds) dürfen NIE ins Paket
+      contextPacket.js        — pur: baut das JSON Richtung KI-API. Datenschutz-Kern: nur explizite Inputs (kein Storage-Import), calScopes-Filter (geteilte Kalender default AUS), Schema-Lock. Guard: contextPacket.test.js — verbotene Quellen (Elvi/Growth/Gewicht/Kognitiv/Creds) dürfen NIE ins Paket. Notizen-Tool ist seit 2026-07-20 bewusst LESBAR (Jonas-Entscheid), default an, Toggle `buddySettings.notizenLesen`; Merkzettel (`buddyMemory`) = Fakten UND verbindliche Regeln (Persona befolgt sie)
       buddyActions.js         — pur: strenge Validierung der Server-Actions (subtasks/create_todo/focus/schedule/remember) + Slot-Key-Mathe. Guard: buddyActions.test.js. KI-Antwort = Fremd-Input, wird NIE direkt ausgeführt
       buddyApi.js             — fetch auf POST /buddy des eigenen Workers (Auth = Cloud-Token); Fehler als deutsche Sätze
       BuddyAvatar.jsx         — Vektor-Eichhörnchen (Posen idle/denkt), Charakter-Farben als JS-Daten

@@ -36,7 +36,7 @@ const SendIcon = () => (
 
 export default function BuddySheet({ onClose }) {
   const {
-    todos, setTodos, days, setDays, projects, calList,
+    todos, setTodos, days, setDays, projects, calList, notes,
     buddySettings, buddyMemory, setBuddyMemory,
     buddyThread, setBuddyThread,
     klaerenSettings, setTimerAutoStart, setCurrentTab,
@@ -58,7 +58,7 @@ export default function BuddySheet({ onClose }) {
   const buildPacket = (focusTodoId) => buildContextPacket({
     screen: 'tagesplaner',
     focusTodoId,
-    todos, days, projects, calList,
+    todos, days, projects, calList, notes,
     buddySettings, buddyMemory,
     klaerenThreshold: klaerenSettings?.threshold ?? 30,
     dailyState: loadDailyStates(),

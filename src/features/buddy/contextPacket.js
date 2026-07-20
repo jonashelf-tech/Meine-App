@@ -7,7 +7,7 @@
 import { dateKey, minsToHHMM, skLabel } from '../../utils'
 
 export const ALLOWED_PACKET_KEYS = [
-  'screen', 'heute', 'wochentag', 'uhrzeit', 'fokusTodo', 'tag', 'pool', 'energie', 'merkzettel',
+  'screen', 'heute', 'wochentag', 'uhrzeit', 'fokusTodo', 'tag', 'pool', 'energie', 'merkzettel', 'notizen',
 ]
 
 const WOCHENTAGE = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
@@ -51,7 +51,7 @@ const poolEntry = (t, now) => ({
 
 export function buildContextPacket({
   screen, focusTodoId, todos, days, projects, calList,
-  buddySettings, buddyMemory, klaerenThreshold = 30, dailyState, now,
+  buddySettings, buddyMemory, notes, klaerenThreshold = 30, dailyState, now,
 }) {
   const scopes = buddySettings?.calScopes ?? { privat: true, cals: {} }
   const visible = (todos ?? []).filter(t => !t.done && isScopeAllowed(t.cal ?? null, scopes, calList))
@@ -123,6 +123,16 @@ export function buildContextPacket({
   // ── Merk-Notizen: nur die vom Nutzer bestätigten Fakten ──
   const merkzettel = (buddyMemory ?? []).map(m => cut(m.text, 100)).filter(Boolean).slice(0, 20)
   if (merkzettel.length) packet.merkzettel = merkzettel
+
+  // ── Notizen-Tool: nur mit Freigabe (Jonas 2026-07-20: default an, abschaltbar) ──
+  if (buddySettings?.notizenLesen !== false) {
+    const notizen = [...(notes ?? [])]
+      .sort((a, b) => (!!b.pinned - !!a.pinned) || String(b.updatedAt ?? '').localeCompare(String(a.updatedAt ?? '')))
+      .map(n => cut(n.text, 300))
+      .filter(Boolean)
+      .slice(0, 12)
+    if (notizen.length) packet.notizen = notizen
+  }
 
   // ── Energie: nur die grobe Selbstauskunft von heute, nie Rohwerte ──
   const energy = dailyState?.[dk]?.energy

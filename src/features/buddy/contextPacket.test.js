@@ -184,14 +184,43 @@ describe('Pool + Signale + Energie', () => {
   })
 })
 
+describe('Notizen-Tool (Jonas 2026-07-20: Buddy darf mitlesen, abschaltbar)', () => {
+  const notes = [
+    { id: 'n1', text: 'Alte Notiz', pinned: false, updatedAt: '2026-06-01T10:00:00Z' },
+    { id: 'n2', text: 'Angepinnt: WLAN-Passwort Oma', pinned: true, updatedAt: '2026-05-01T10:00:00Z' },
+    { id: 'n3', text: 'N'.repeat(500), pinned: false, updatedAt: '2026-07-19T10:00:00Z' },
+  ]
+
+  it('legt Notizen bei — angepinnte zuerst, dann neueste, je 300 Zeichen gekappt', () => {
+    const p = buildContextPacket(baseInput({ notes }))
+    expect(p.notizen[0]).toContain('Angepinnt')
+    expect(p.notizen[1].length).toBe(300)
+    expect(p.notizen[2]).toBe('Alte Notiz')
+  })
+
+  it('kappt bei 12 Notizen', () => {
+    const viele = Array.from({ length: 20 }, (_, i) => ({ id: `x${i}`, text: `Notiz ${i}`, pinned: false, updatedAt: `2026-07-${String(i + 1).padStart(2, '0')}` }))
+    expect(buildContextPacket(baseInput({ notes: viele })).notizen.length).toBe(12)
+  })
+
+  it('notizenLesen=false oder keine Notizen → Feld fehlt', () => {
+    expect(buildContextPacket(baseInput({
+      notes,
+      buddySettings: { calScopes: { privat: true, cals: {} }, notizenLesen: false },
+    })).notizen).toBeUndefined()
+    expect(buildContextPacket(baseInput()).notizen).toBeUndefined()
+  })
+})
+
 describe('Statischer Quell-Guard', () => {
   const src = readFileSync(fileURLToPath(new URL('./contextPacket.js', import.meta.url)), 'utf8')
 
   it('importiert keinen Storage und keine verbotenen Datenquellen', () => {
     expect(src).not.toMatch(/from ['"].*storage/)
     expect(src).not.toMatch(/\blocalStorage\b/)
-    // Verbotene Quellen (Konzept §9.4) dürfen nicht mal namentlich auftauchen:
-    ;['elvi', 'growth', 'wachstum', 'weight', 'kognitiv', 'notes', 'cloudCreds', 'calCreds'].forEach(word =>
+    // Verbotene Quellen (Konzept §9.4) dürfen nicht mal namentlich auftauchen.
+    // 'notes' ist seit 2026-07-20 bewusst NICHT mehr verboten (Jonas: Buddy darf Notizen lesen).
+    ;['elvi', 'growth', 'wachstum', 'weight', 'kognitiv', 'cloudCreds', 'calCreds'].forEach(word =>
       expect(src.toLowerCase()).not.toContain(word.toLowerCase())
     )
   })
