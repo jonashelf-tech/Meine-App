@@ -8,7 +8,7 @@ import { loadSessions as loadFitnessSessions, getExerciseById, loadFitness as lo
 import { MODULE_CONFIG } from '../../tools/kognitiv/moduleConfig'
 import { TOOL_TAB } from '../../tools/toolTabs'
 import { useAppStore } from '../../../store'
-import { isEntryShown, calEmoji, getUnplacedCalItems } from './kalenderShared'
+import { isEntryShown, calEmoji, getUnplacedCalItems, sharedEditBadge } from './kalenderShared'
 import s from './TabKalender.module.css'
 
 const WORKING_TYPES = ['normal', 'dropset', 'failure']
@@ -43,6 +43,7 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
 
   const calList   = useAppStore(st => st.calList)
   const calFilter = useAppStore(st => st.calFilter)
+  const calCreds  = useAppStore(st => st.calCreds)
 
   const birthdayEntries = getBirthdaysForCalendarDate(birthdays, dateKey)
 
@@ -50,7 +51,10 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
   // Eigene Slots: Kalender des zugehörigen Todos auflösen — steuert Emoji-
   // Kennung und ob der globale Filter den Eintrag gerade zeigt.
   const sortedSlots = Object.entries(slots)
-    .map(([key, slot]) => ({ key, slot, cal: (slot.todoId ? todos.find(t => t.id === slot.todoId) : null)?.cal ?? null }))
+    .map(([key, slot]) => {
+      const todo = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
+      return { key, slot, cal: todo?.cal ?? null, badge: todo?.cal ? sharedEditBadge(todo, calList, calCreds) : null }
+    })
     .filter(e => isEntryShown(calFilter, e.cal))
     .sort((a, b) => parseFloat(a.key) - parseFloat(b.key))
 
@@ -122,7 +126,7 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
             ))}
             {sortedSlots.length === 0 && birthdayEntries.length === 0 && sharedItems.length === 0 ? (
               <p className={s.dayPanelEmpty}>Keine Termine</p>
-            ) : sortedSlots.map(({ key, slot, cal }) => {
+            ) : sortedSlots.map(({ key, slot, cal, badge }) => {
               const hh     = String(Math.floor(parseFloat(key))).padStart(2, '0')
               const mm     = parseFloat(key) % 1 ? '30' : '00'
               const isTodo = Boolean(slot.todoId)
@@ -137,6 +141,7 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
                   <span className={s.dayPanelEntryTime} style={{ color }}>{hh}:{mm}</span>
                   {emoji && <span className={s.dayPanelEntryEmoji}>{emoji}</span>}
                   <span className={s.dayPanelEntryText}>{slot.text}</span>
+                  {badge && <span className={s.dayPanelEditBadge}>✏️ {badge.label}</span>}
                   {isTodo && <span className={s.dayPanelBadge}>Todo</span>}
                 </div>
               )
@@ -152,6 +157,10 @@ export function DayPanel({ dateKey, todayKey, days, todos, toolColors, birthdays
                 </span>
                 <span className={s.dayPanelEntryEmoji}>{it.emoji}</span>
                 <span className={s.dayPanelEntryText}>{it.text}</span>
+                {(() => {
+                  const badge = sharedEditBadge(it, calList, calCreds)
+                  return badge && <span className={s.dayPanelEditBadge}>✏️ {badge.label}</span>
+                })()}
               </div>
             ))}
           </div>
