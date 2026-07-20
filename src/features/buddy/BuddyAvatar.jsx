@@ -46,17 +46,17 @@ export default function BuddyAvatar({ size = 40, pose = 'idle' }) {
       {/* Augen */}
       {pose === 'denkt' ? (
         <>
-          <path d="M15.6 21.8 q 3.2 -3.4 6.4 0" stroke={INK} strokeWidth="1.9" fill="none" strokeLinecap="round" />
-          <path d="M29 21.8 q 3.2 -3.4 6.4 0" stroke={INK} strokeWidth="1.9" fill="none" strokeLinecap="round" />
+          <path d="M16.4 21.8 q 2.4 -2.6 4.8 0" stroke={INK} strokeWidth="1.8" fill="none" strokeLinecap="round" />
+          <path d="M29.8 21.8 q 2.4 -2.6 4.8 0" stroke={INK} strokeWidth="1.8" fill="none" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <ellipse cx="18.8" cy="21.8" rx="3.2" ry="4" fill={INK} />
-          <ellipse cx="32.2" cy="21.8" rx="3.2" ry="4" fill={INK} />
-          <circle cx="17.7" cy="20.4" r="1.25" fill="#FFF" />
-          <circle cx="31.1" cy="20.4" r="1.25" fill="#FFF" />
-          <circle cx="20" cy="23.1" r="0.6" fill="#FFF" opacity="0.85" />
-          <circle cx="33.4" cy="23.1" r="0.6" fill="#FFF" opacity="0.85" />
+          <ellipse cx="18.8" cy="21.8" rx="2.4" ry="3" fill={INK} />
+          <ellipse cx="32.2" cy="21.8" rx="2.4" ry="3" fill={INK} />
+          <circle cx="18" cy="20.7" r="0.95" fill="#FFF" />
+          <circle cx="31.4" cy="20.7" r="0.95" fill="#FFF" />
+          <circle cx="19.7" cy="22.8" r="0.48" fill="#FFF" opacity="0.85" />
+          <circle cx="33.1" cy="22.8" r="0.48" fill="#FFF" opacity="0.85" />
         </>
       )}
 
