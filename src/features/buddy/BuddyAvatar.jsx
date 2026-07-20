@@ -1,85 +1,88 @@
-// ─── Buddy-Avatar: das Eichhörnchen (Konzept §7.1) ────────
-// Weicher Vektor-Stil statt Pixelart — passt in die Calm-Dark-Violet-Optik.
-// Warme Bernstein-Töne als bewusster Kontrast zum Violett; Glow-Akzente
-// kommen aus var(--primary). Farben sind Charakter-Daten und leben hier in JS.
-const FUR       = '#C9854F'
-const FUR_DARK  = '#A5673B'
-const FUR_LIGHT = '#DDA36B'
-const BELLY     = '#EFD3A8'
-const ACORN     = '#B98952'
-const ACORN_CAP = '#7C5433'
-const INK       = '#2A1B12'
+// ─── Buddy-Avatar: das Eichhörnchen (Konzept §7.1, Look v2) ───────────────
+// Richtung von Jonas' Referenzbildern (2026-07-20): Kindchenschema — großer
+// Kopf, große Glanz-Augen, offenes Lächeln, dicke Outlines (Sticker-Look),
+// helles warmes Fell. Farben sind Charakter-Daten und leben hier in JS;
+// nur der Gedanken-Glow kommt aus var(--primary).
+const FUR     = '#E9BE8C'
+const TAIL    = '#DFA76F'
+const CREAM   = '#F7E7CE'
+const EAR_IN  = '#F2C9A0'
+const OUTLINE = '#4A2E1C'
+const INK     = '#2A1B12'
+const ACORN   = '#C89A62'
+const CAP     = '#8A5B36'
+const BLUSH   = '#F2A08C'
+const ZUNGE   = '#E58B6B'
 
-// pose: 'idle' (sitzt, hält seine Eichel) · 'denkt' (leuchtende Eichel = Gedanke)
+// pose: 'idle' (große Augen, lächelt) · 'denkt' (Augen glücklich zu, leuchtende Gedanken-Eichel)
 export default function BuddyAvatar({ size = 40, pose = 'idle' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" style={{ display: 'block' }}>
-      {/* Schwanz: großer weicher Bogen hinter dem Körper */}
+      {/* Schwanz: großer S-Curl rechts, mit innerer Wirbel-Linie */}
       <path
-        d="M25 52 C 8 50, 3 34, 10 21 C 15 11, 28 8, 31 17 C 33 24, 26 26, 21 29 C 15 33, 15 42, 25 45 Z"
-        fill={FUR_DARK}
+        d="M40 51 C 54 51, 62 41, 60 29 C 58 17, 45 12, 42 20 C 40 25.5, 45.5 28, 48 31.5 C 50.5 35, 48.5 42, 40 44 Z"
+        fill={TAIL} stroke={OUTLINE} strokeWidth="1.5" strokeLinejoin="round"
       />
-      <path
-        d="M24 47 C 13 44, 11 33, 17 25 C 20 20, 27 19, 28 24 C 29 28, 24 30, 21 33 C 18 36, 19 43, 24 44 Z"
-        fill={FUR_LIGHT}
-        opacity="0.55"
-      />
+      <path d="M46 22 C 52.5 23.5, 55.5 30, 52.5 36.5" fill="none" stroke={OUTLINE} strokeWidth="1.3" strokeLinecap="round" opacity="0.65" />
 
-      {/* Körper + Bauch */}
-      <ellipse cx="37" cy="45" rx="14" ry="12.5" fill={FUR} />
-      <ellipse cx="39.5" cy="47.5" rx="8.5" ry="8" fill={BELLY} />
+      {/* Körper + Bauch + Füße */}
+      <ellipse cx="25.5" cy="48.5" rx="11.5" ry="9.3" fill={FUR} stroke={OUTLINE} strokeWidth="1.5" />
+      <ellipse cx="25.5" cy="50" rx="7" ry="5.8" fill={CREAM} />
+      <ellipse cx="18.5" cy="56.6" rx="4.3" ry="2.5" fill={FUR} stroke={OUTLINE} strokeWidth="1.3" />
+      <ellipse cx="32.5" cy="56.6" rx="4.3" ry="2.5" fill={FUR} stroke={OUTLINE} strokeWidth="1.3" />
 
-      {/* Ohren mit Pinseln */}
-      <ellipse cx="35" cy="13.5" rx="3.4" ry="5" fill={FUR} transform="rotate(-14 35 13.5)" />
-      <ellipse cx="46.5" cy="13.5" rx="3.4" ry="5" fill={FUR} transform="rotate(14 46.5 13.5)" />
-      <ellipse cx="35.4" cy="14.6" rx="1.7" ry="2.7" fill={FUR_DARK} transform="rotate(-14 35.4 14.6)" opacity="0.5" />
-      <ellipse cx="46.1" cy="14.6" rx="1.7" ry="2.7" fill={FUR_DARK} transform="rotate(14 46.1 14.6)" opacity="0.5" />
+      {/* Ohren mit Pinsel-Tufts (vor dem Kopf gezeichnet → Kopf überlappt den Ansatz) */}
+      <path d="M13.2 4.6 L 11.8 1.9 M15.8 4.1 L 15.5 1.3" stroke={OUTLINE} strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M38.3 4.6 L 39.7 1.9 M35.7 4.1 L 36 1.3" stroke={OUTLINE} strokeWidth="1.4" strokeLinecap="round" />
+      <ellipse cx="15.5" cy="9.8" rx="4.8" ry="6" fill={FUR} stroke={OUTLINE} strokeWidth="1.5" transform="rotate(-16 15.5 9.8)" />
+      <ellipse cx="36" cy="9.8" rx="4.8" ry="6" fill={FUR} stroke={OUTLINE} strokeWidth="1.5" transform="rotate(16 36 9.8)" />
+      <ellipse cx="15.9" cy="11" rx="2.4" ry="3.2" fill={EAR_IN} transform="rotate(-16 15.9 11)" />
+      <ellipse cx="35.6" cy="11" rx="2.4" ry="3.2" fill={EAR_IN} transform="rotate(16 35.6 11)" />
 
-      {/* Kopf */}
-      <circle cx="41" cy="25" r="11" fill={FUR} />
-      <ellipse cx="45" cy="28.5" rx="5.5" ry="4.6" fill={BELLY} opacity="0.85" />
+      {/* Kopf: groß (Kindchenschema) */}
+      <circle cx="25.5" cy="23" r="15.6" fill={FUR} stroke={OUTLINE} strokeWidth="1.6" />
+      <ellipse cx="25.5" cy="28.3" rx="8.8" ry="6.2" fill={CREAM} opacity="0.95" />
 
-      {/* Gesicht */}
+      {/* Augen */}
       {pose === 'denkt' ? (
-        /* nachdenklich: Augen als sanfte Bögen nach oben */
         <>
-          <path d="M35.4 23.4 q 1.8 -2.2 3.6 0" stroke={INK} strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          <path d="M44.4 23.4 q 1.8 -2.2 3.6 0" stroke={INK} strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          <path d="M15.6 21.8 q 3.2 -3.4 6.4 0" stroke={INK} strokeWidth="1.9" fill="none" strokeLinecap="round" />
+          <path d="M29 21.8 q 3.2 -3.4 6.4 0" stroke={INK} strokeWidth="1.9" fill="none" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <circle cx="37.4" cy="23.4" r="1.9" fill={INK} />
-          <circle cx="46.2" cy="23.4" r="1.9" fill={INK} />
-          <circle cx="38" cy="22.7" r="0.65" fill="#FFF" opacity="0.9" />
-          <circle cx="46.8" cy="22.7" r="0.65" fill="#FFF" opacity="0.9" />
+          <ellipse cx="18.8" cy="21.8" rx="3.2" ry="4" fill={INK} />
+          <ellipse cx="32.2" cy="21.8" rx="3.2" ry="4" fill={INK} />
+          <circle cx="17.7" cy="20.4" r="1.25" fill="#FFF" />
+          <circle cx="31.1" cy="20.4" r="1.25" fill="#FFF" />
+          <circle cx="20" cy="23.1" r="0.6" fill="#FFF" opacity="0.85" />
+          <circle cx="33.4" cy="23.1" r="0.6" fill="#FFF" opacity="0.85" />
         </>
       )}
-      <ellipse cx="41.8" cy="27.6" rx="1.5" ry="1.2" fill={INK} />
-      <path d="M41.8 28.8 q 0 1.6 -1.6 1.9 M41.8 28.8 q 0 1.6 1.6 1.9" stroke={INK} strokeWidth="1" fill="none" strokeLinecap="round" />
+
+      {/* Nase + offenes Lächeln mit Zunge */}
+      <ellipse cx="25.5" cy="27" rx="1.55" ry="1.25" fill={INK} />
+      <path d="M21.8 29.8 Q 25.5 35 29.2 29.8 Z" fill={INK} />
+      <ellipse cx="25.5" cy="31" rx="1.9" ry="1.15" fill={ZUNGE} />
+
       {/* Wangen */}
-      <circle cx="34.4" cy="27.4" r="2" fill="#E58B6B" opacity="0.35" />
-      <circle cx="48.6" cy="27.4" r="2" fill="#E58B6B" opacity="0.35" />
+      <ellipse cx="14.6" cy="27.2" rx="2.8" ry="1.8" fill={BLUSH} opacity="0.55" />
+      <ellipse cx="36.4" cy="27.2" rx="2.8" ry="1.8" fill={BLUSH} opacity="0.55" />
 
-      {/* Pfoten + Eichel vor der Brust */}
-      <ellipse cx="34" cy="40.5" rx="3.2" ry="2.6" fill={FUR_DARK} />
-      <ellipse cx="41" cy="40.5" rx="3.2" ry="2.6" fill={FUR_DARK} />
-      <g transform="translate(37.5 38.5)">
-        <ellipse cx="0" cy="1.6" rx="2.7" ry="3.1" fill={ACORN} />
-        <path d="M-3 -0.4 Q 0 -2.8 3 -0.4 L 2.4 0.8 Q 0 -0.6 -2.4 0.8 Z" fill={ACORN_CAP} />
-        <line x1="0" y1="-2" x2="0" y2="-3.4" stroke={ACORN_CAP} strokeWidth="1.1" strokeLinecap="round" />
-      </g>
+      {/* Eichel vor der Brust + Pfoten, die sie halten */}
+      <ellipse cx="25.5" cy="45.6" rx="3.8" ry="4.2" fill={ACORN} stroke={OUTLINE} strokeWidth="1.2" />
+      <path d="M20.9 43 Q 25.5 39.4 30.1 43 L 29.2 44.8 Q 25.5 42.9 21.8 44.8 Z" fill={CAP} stroke={OUTLINE} strokeWidth="1.1" strokeLinejoin="round" />
+      <path d="M25.5 40.4 L 25.5 38.6" stroke={OUTLINE} strokeWidth="1.3" strokeLinecap="round" />
+      <ellipse cx="21" cy="46.4" rx="2.7" ry="2.3" fill={FUR} stroke={OUTLINE} strokeWidth="1.2" />
+      <ellipse cx="30" cy="46.4" rx="2.7" ry="2.3" fill={FUR} stroke={OUTLINE} strokeWidth="1.2" />
 
-      {/* Füße */}
-      <ellipse cx="31" cy="56" rx="4.4" ry="2.2" fill={FUR_DARK} />
-      <ellipse cx="43" cy="56.5" rx="4.4" ry="2.2" fill={FUR_DARK} />
-
-      {/* Gedanken-Eichel: leuchtet in der Akzentfarbe (der „Gedanke") */}
+      {/* Gedanken-Eichel: leuchtet in der Akzentfarbe */}
       {pose === 'denkt' && (
-        <g transform="translate(55 10)">
-          <circle cx="0" cy="0" r="7" fill="var(--primary)" opacity="0.22" />
-          <circle cx="0" cy="0" r="4" fill="var(--primary)" opacity="0.18" />
+        <g transform="translate(54.5 7)">
+          <circle cx="0" cy="0" r="6.5" fill="var(--primary)" opacity="0.22" />
+          <circle cx="0" cy="0" r="3.8" fill="var(--primary)" opacity="0.18" />
           <ellipse cx="0" cy="0.9" rx="2.3" ry="2.7" fill={ACORN} />
-          <path d="M-2.6 -0.6 Q 0 -2.6 2.6 -0.6 L 2 0.5 Q 0 -0.7 -2 0.5 Z" fill={ACORN_CAP} />
+          <path d="M-2.6 -0.6 Q 0 -2.6 2.6 -0.6 L 2 0.5 Q 0 -0.7 -2 0.5 Z" fill={CAP} />
         </g>
       )}
     </svg>
