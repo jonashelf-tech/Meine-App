@@ -60,8 +60,15 @@ export function buildContextPacket({
   const nowMin = now.getHours() * 60 + now.getMinutes()
 
   // ── Tages-Skelett (nur Slot-Metadaten, keine kompletten Tage) ──
+  // Slot-Texte können zu Todos gesperrter Kalender gehören (eigene Einträge in
+  // geteilten Kalendern landen in days) — Text nur, wenn der Scope es erlaubt.
+  const todoById = new Map((todos ?? []).map(t => [t.id, t]))
+  const slotTextOk = (s) => {
+    const t = s.todoId ? todoById.get(s.todoId) : null
+    return isScopeAllowed(t ? (t.cal ?? null) : null, scopes, calList)
+  }
   const slots = Object.entries(days?.[dk] ?? {})
-    .map(([k, s]) => ({ start: parseFloat(k) * 60, dauer: s?.duration ?? 30, text: s?.text ?? '', done: !!s?.done, key: k }))
+    .map(([k, s]) => ({ start: parseFloat(k) * 60, dauer: s?.duration ?? 30, text: s?.text ?? '', done: !!s?.done, todoId: s?.todoId, key: k }))
     .sort((a, b) => a.start - b.start)
   const next = slots.find(s => !s.done && s.start >= nowMin) ?? null
 
@@ -96,7 +103,7 @@ export function buildContextPacket({
     tag: {
       slots: slots.length,
       erledigt: slots.filter(s => s.done).length,
-      naechster: next ? { zeit: skLabel(next.key), text: cut(next.text, 60) } : null,
+      naechster: next ? { zeit: skLabel(next.key), text: slotTextOk(next) ? cut(next.text, 60) : '(privat)' } : null,
       freieFenster: fenster.slice(0, 3).map(([a, b]) => `${minsToHHMM(a)}–${minsToHHMM(b)}`),
     },
     pool: {

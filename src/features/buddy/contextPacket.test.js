@@ -184,6 +184,39 @@ describe('Pool + Signale + Energie', () => {
   })
 })
 
+describe('Security-Pass: Tages-Skelett leakt keine gesperrten Texte (Fable 2026-07-20)', () => {
+  const slotTag = (text, todoId) => ({ [DK]: { '15': { text, duration: 30, done: false, ...(todoId ? { todoId } : {}) } } })
+
+  it('maskiert den nächsten Slot, wenn sein Todo in einem gesperrten Kalender liegt', () => {
+    const p = buildContextPacket(baseInput({
+      todos: [baseTodo({ id: 'geheim', text: 'GEHEIMER TERMIN', cal: 'calShared', date: DK, time: '15:00' })],
+      calList: { calShared: { name: 'Familie', members: [1, 2] } },
+      days: slotTag('GEHEIMER TERMIN', 'geheim'),
+    }))
+    expect(JSON.stringify(p)).not.toContain('GEHEIM')
+    expect(p.tag.naechster).toEqual({ zeit: '15:00', text: '(privat)' })
+  })
+
+  it('maskiert Text-Slots ohne todoId, wenn Privat gesperrt ist', () => {
+    const p = buildContextPacket(baseInput({
+      buddySettings: { calScopes: { privat: false, cals: {} } },
+      days: slotTag('PRIVATER TEXT'),
+    }))
+    expect(JSON.stringify(p)).not.toContain('PRIVATER')
+    expect(p.tag.naechster.text).toBe('(privat)')
+  })
+
+  it('zeigt den Text, wenn der Kalender explizit freigegeben ist', () => {
+    const p = buildContextPacket(baseInput({
+      todos: [baseTodo({ id: 'ok', text: 'Familienessen', cal: 'calShared', date: DK, time: '15:00' })],
+      calList: { calShared: { name: 'Familie', members: [1, 2] } },
+      buddySettings: { calScopes: { privat: true, cals: { calShared: true } } },
+      days: slotTag('Familienessen', 'ok'),
+    }))
+    expect(p.tag.naechster.text).toBe('Familienessen')
+  })
+})
+
 describe('Notizen-Tool (Jonas 2026-07-20: Buddy darf mitlesen, abschaltbar)', () => {
   const notes = [
     { id: 'n1', text: 'Alte Notiz', pinned: false, updatedAt: '2026-06-01T10:00:00Z' },
