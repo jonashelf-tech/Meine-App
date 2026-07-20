@@ -93,10 +93,10 @@ Not-Aus: `BUDDY_ENABLED` auf `"0"` + deploy.
 ## Lokale Feuerprobe (ohne Cloudflare-Account)
 
 Kompletter End-to-End-Test der Cloud-Kette gegen einen **lokalen** Worker —
-mit den echten Client-Krypto-Funktionen der App (46 Checks: Registrierung,
+mit den echten Client-Krypto-Funktionen der App (48 Checks: Registrierung,
 Backup-Roundtrip, /kv mit If-Match/409, Nutzer-Isolation, Retention, CORS +
 geteilte Kalender /cal: anlegen/beitreten, Einmal-joinSecret, TTL, Mitglieder-Cap,
-Namespace-Isolation für Nicht-Mitglieder):
+Namespace-Isolation für Nicht-Mitglieder + /buddy: Auth-Pflicht, Kill-Switch):
 
 ```
 echo SETUP_SECRET=feuerprobe-lokal-2026 > .dev.vars
@@ -112,6 +112,13 @@ läuft der Worker parallel, geht das i. d. R. durch; falls die lokale D1 gerade
 gesperrt ist, überspringt das Skript nur diesen einen Check (mit Hinweis). Bei
 Server-Änderungen hier neue Checks ergänzen — das Skript ist der Test-Harness,
 den Unit-Tests nicht ersetzen können (CORS/Preflight, echtes D1).
+
+Scharfer /buddy-Test (Validierung 400, Upstream-Pfad 502, Limits 429): in
+`.dev.vars` zusätzlich `BUDDY_ENABLED=1` + `ANTHROPIC_API_KEY=dummy` setzen,
+Worker neu starten — die Feuerprobe schaltet die Zusatz-Checks dann selbst
+scharf. (2026-07-20 lokal komplett durchgespielt, inkl. 429 via gesetztem
+Zähler. Achtung Windows: alte `workerd.exe`-Prozesse halten Port 8787 nach
+einem Abbruch manchmal fest → `taskkill //F //IM workerd.exe`.)
 
 ## Was hier liegt
 
