@@ -26,7 +26,7 @@ function formatSlotLabel(dateKey, slotKey) {
 }
 
 // ─── MissedReviewModal ────────────────────────────────────
-export default function MissedReviewModal({ items, variant, onDone, onIgnore, onMoveToPool }) {
+export default function MissedReviewModal({ items, variant, onDone, onIgnore, onMoveToPool, onClose }) {
   const [selected, setSelected] = useState(() => new Set(items.map(i => i.id)))
 
   const toggle = useCallback((id) => {
@@ -61,7 +61,7 @@ export default function MissedReviewModal({ items, variant, onDone, onIgnore, on
   if (!items.length) return null
 
   return (
-    <Overlay variant="center">
+    <Overlay variant="center" onClose={onClose} closeOnBackdrop={false}>
       <div className={s.modal}>
 
         {/* Header */}
@@ -76,6 +76,11 @@ export default function MissedReviewModal({ items, variant, onDone, onIgnore, on
             </p>
             <p className={s.reassure}>Nichts geht verloren — entscheide in Ruhe.</p>
           </div>
+          <button className={s.closeBtn} onClick={onClose} aria-label="Schließen">
+            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
         {/* Liste */}

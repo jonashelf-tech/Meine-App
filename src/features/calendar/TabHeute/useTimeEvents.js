@@ -13,6 +13,12 @@ import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '..
  * 'new-day'  — erster Start eines neuen Tages, alle offenen vergangenen Slots
  *   inkl. bisher ignorierter Items.
  *   Ignorieren → slot.reviewed = true (endgültig weg)
+ *
+ * Check läuft beim Mount UND bei jedem visibilitychange→visible — App-Resume aus
+ * dem Hintergrund mountet TabHeute nicht neu (bleibt gemountet), ohne den zweiten
+ * Trigger würde der Check dann nie wieder laufen. „✕" im Modal schließt nur die
+ * Ansicht ohne State-Änderung — derselbe Check zeigt die offenen Punkte beim
+ * nächsten Trigger erneut.
  */
 export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
   const [items,   setItems]   = useState([])
@@ -20,10 +26,11 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
   const [variant, setVariant] = useState(null) // 'same-day' | 'new-day'
   const ranRef     = useRef(false)
   const variantRef = useRef(null)
+  const isOpenRef  = useRef(false)
+  isOpenRef.current = isOpen
 
-  useEffect(() => {
-    if (ranRef.current) return
-    ranRef.current = true
+  const runCheck = useCallback(() => {
+    if (isOpenRef.current) return
 
     const today   = todayKey()
     const now     = new Date()
@@ -104,8 +111,24 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
       variantRef.current = 'same-day'
       setIsOpen(true)
     }
+  }, [days, todos])
+
+  useEffect(() => {
+    if (ranRef.current) return
+    ranRef.current = true
+    runCheck()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === 'visible') runCheck() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [runCheck])
+
+  // Schließt das Modal ohne Items zu verändern — der nächste Trigger (Tab-Wechsel
+  // oder App-Resume) zeigt dieselben (oder inzwischen neue) offenen Punkte erneut.
+  const handleClose = useCallback(() => setIsOpen(false), [])
 
   // Batch-Update für days-Store
   const applyDaysUpdates = useCallback((updates) => {
@@ -211,5 +234,5 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
     finish(items.filter(i => !selectedIds.has(i.id)))
   }, [items, setTodos, setDays, finish])
 
-  return { isOpen, variant, items, handleDone, handleIgnore, handleMoveToPool }
+  return { isOpen, variant, items, handleDone, handleIgnore, handleMoveToPool, handleClose }
 }

@@ -16,7 +16,7 @@ const CARDS = [
   },
   {
     title: 'Wenn Zeit abläuft',
-    body: 'Läuft die Zeit eines Eintrags ab, sammelt die App ihn in einer ruhigen Abfrage. Du entscheidest pro Eintrag: erledigt, später nochmal, oder zurück in den Pool. Nichts geht verloren.',
+    body: 'Läuft die Zeit eines Eintrags ab, sammelt die App ihn in einer ruhigen Abfrage. Du entscheidest pro Eintrag: erledigt, später nochmal, oder zurück in den Pool. Willst du gerade nicht entscheiden, schließt das ✕ oben rechts die Abfrage — sie kommt beim nächsten Reinschauen in den Tagesplaner wieder. Nichts geht verloren.',
   },
   {
     title: 'Pause',

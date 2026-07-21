@@ -63,7 +63,7 @@ export default function TabHeute() {
   const { startPoolDrag, startListDrag, startHaushaltDrag, startReminderDrag, startBirthdayDrag, startSlotDrag } =
     useTagesplanerDrag({ startDrag, todaySlots, setTodaySlots, handleSetSlot, handleRemoveSlot, todos, setTodos, viewDate, setBirthdays, heuteModus })
 
-  const { isOpen: teOpen, variant: teVariant, items: teItems, handleDone: teDone, handleIgnore: teIgnore, handleMoveToPool: teToPool } =
+  const { isOpen: teOpen, variant: teVariant, items: teItems, handleDone: teDone, handleIgnore: teIgnore, handleMoveToPool: teToPool, handleClose: teClose } =
     useTimeEvents({ days, setDays, todos, setTodos })
 
   const swipeRef = useRef(null)
@@ -341,6 +341,7 @@ export default function TabHeute() {
           onDone={teDone}
           onIgnore={teIgnore}
           onMoveToPool={teToPool}
+          onClose={teClose}
         />
       )}
 

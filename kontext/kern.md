@@ -483,8 +483,11 @@ Damit geht Swipe-Back innerhalb eines Tools eine Ebene zurück (statt das Tool z
 
 ## TimeEvents — Logik
 
-Läuft beim Mount von TabHeute (`useTimeEvents`-Hook in `TabHeute/useTimeEvents.js`).
-Variante 2 hat Priorität — nie beide gleichzeitig aktiv.
+Check läuft beim Mount von TabHeute **und** bei jedem `visibilitychange`→`visible`
+(`useTimeEvents`-Hook in `TabHeute/useTimeEvents.js`) — App-Resume aus dem Hintergrund
+mountet TabHeute nicht neu, ohne den zweiten Trigger würde der Check dann nie wieder
+laufen. Läuft nicht neu, solange das Modal schon offen ist (kein Reset der Auswahl
+mitten in der Prüfung). Variante 2 hat Priorität — nie beide gleichzeitig aktiv.
 
 **Variante 1 — selber Tag (abgelaufene Slots):**
 - Trigger: `viewDate === today` UND Slots heute mit `endzeit ≤ jetzt` + `!done && !ignored && !reviewed`
@@ -498,6 +501,10 @@ Variante 2 hat Priorität — nie beide gleichzeitig aktiv.
 - Zeigt: alle Slots aus `days[dk < heute]` mit `!done && !reviewed` — **inkl. `ignored: true`**
 - Aktionen identisch, aber **Ignorieren** → `slot.reviewed = true` *(endgültig weg)*
 - Abschluss: `sv(SK.lastPoolReturn, today)`
+
+**✕ Schließen:** bricht ohne State-Änderung ab (keine Items markiert, `lastPoolReturn`
+unangetastet) — der nächste Trigger (Tab-Wechsel oder App-Resume) zeigt dieselben
+(oder inzwischen neue) offenen Punkte erneut. Für „ich will gerade nur kurz was nachschauen".
 
 **Item-Typen:** `type: 'text'` (Slot ohne todoId) · `type: 'todo'` (Slot mit todoId)
 **Auto-close:** Modal schließt wenn Liste leer. Alle Items sind beim Öffnen vorausgewählt.
