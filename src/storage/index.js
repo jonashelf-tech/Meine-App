@@ -166,6 +166,7 @@ export const SK = {
   // Buddy (KI-Begleiter, Konzept: Dateien/output/ki-buddy-konzept.md)
   buddySettings:   `${PREFIX}buddy_settings`,  // { enabled, name, ton, calScopes } — calScopes = was der Buddy lesen darf
   buddyMemory:     `${PREFIX}buddy_memory`,    // [{ id, text, createdAt }] — NUR vom Nutzer bestätigte Merk-Notizen
+  buddyImpuls:     `${PREFIX}buddy_impuls`,    // liegender Gedanke + Backoff — ephemer, gerätelokaler Nudge
 
   // Geteilte Kalender (Teilen Stufe A, teilen-spec.md §3.4)
   calCreds:        `${PREFIX}cal_creds`,       // { [calId]: { key, memberId, joinedAt } } — die Kalender-Geheimnisse
@@ -260,6 +261,7 @@ export const SYNC_POLICY = {
   // Buddy — synct über eigene Geräte (Name/Ton/Scopes bzw. bestätigte Notizen)
   [SK.buddySettings]: 'lww',
   [SK.buddyMemory]:   'byId',
+  [SK.buddyImpuls]:   'ephemeral',   // liegender Gedanke ist ein gerätelokaler Nudge, kein Nutzdatum
 
   // Laufzeit-Zustand — nie Server, nie Backup
   [SK.lastAutoBackup]:      'ephemeral',

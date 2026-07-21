@@ -22,6 +22,19 @@
 }
 .fab:active { transform: scale(0.94); }
 
+/* Stiller Punkt — Stufe 2 (Briefkasten-Prinzip): zeigt nur, dass ein
+   Gedanke bereitliegt. Bewusst ohne Animation/Puls, kein Text-Push. */
+.dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--bg);
+}
+
 /* Sanftes Atmen — prefers-reduced-motion in vars.css schaltet alles ab */
 .bob {
   display: block;

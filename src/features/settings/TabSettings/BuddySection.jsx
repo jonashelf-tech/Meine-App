@@ -136,6 +136,23 @@ export default function BuddySection() {
             ))}
           </div>
 
+          <div className={s.calItem}>
+            <span className={s.calName}>Vorschläge von selbst</span>
+            <button
+              className={[s.toggle, st.gedanken === true ? s.toggleOn : ''].join(' ')}
+              onClick={() => patch({ gedanken: !st.gedanken })}
+              role="switch"
+              aria-checked={st.gedanken === true}
+              aria-label="Vorschläge von selbst erlauben"
+            >
+              <span className={s.toggleThumb} />
+            </button>
+          </div>
+          <p className={s.infoText}>
+            {name} legt sich damit gelegentlich einen stillen Gedanken als Punkt bereit —
+            erst wenn du ihn öffnest, wird die KI gefragt. Von selbst meldet er sich nie mit Text.
+          </p>
+
           <div className={s.rowLabel}>Was {name} lesen darf</div>
           {scopeRow('privat', 'Privat (ohne Kalender)', isScopeAllowed(null, st.calScopes, calList))}
           {Object.entries(calList ?? {}).map(([calId, cal]) =>

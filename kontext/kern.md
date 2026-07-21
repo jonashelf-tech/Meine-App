@@ -31,6 +31,9 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 - `isTermin(b)`      — `!!(b.date && b.time)` → Kalender-Termin
 - `isFaelligkeit(b)` — `!!(b.date && !b.time)` → nur Datum, kein Slot
 - `isTodo(b)`        — `!b.date && !b.time` → reines Pool-Todo
+- `bumpPostpone(b, now?)` — pur: zählt `postponeCount` hoch + stempelt `postponedAt`, **max. 1×/Tag** (Entprellung). Legacy-Blöcke ohne die Felder crashen nicht.
+
+**Verschoben-Signal (Stufe 2, für den Buddy):** `postponeCount` + `postponedAt` am Block zählen, wie oft ein Todo weggeschoben wurde — das ADHS-Signal. Hochgezählt an drei Stellen: Missed-Review „Ignorieren" **und** „In Pool" (`useTimeEvents`, nur Items mit `todoId`) sowie Datum-nach-hinten-Schieben im TodoModal-Edit. Fließt gekappt ins `contextPacket` (Feld `verschoben`, nur bei >0) und speist den Briefkasten-Trigger `verschoben` in `buddyImpuls.js`.
 
 **Tagesliste (Listenmodus):** Ein Todo mit `date` + ohne `time` ist weiterhin `isFaelligkeit` — es entsteht **kein** neuer Typ. `dayRank` ist nur die Reihenfolge obendrauf: `null` = ans Tagesende (Rang 24). Sortierlogik rein in `src/features/calendar/tagesListeLogic.js` (`rankOf`, `insertRank`, `buildDayEntries`; Guard `tagesListeLogic.test.js`).
 
@@ -505,6 +508,7 @@ Variante 2 hat Priorität — nie beide gleichzeitig aktiv.
   - **Erledigt** → `slot.done = true, slot.reviewed = true`; Todo: `done=true, doneAt=now`
   - **Ignorieren** → `slot.ignored = true` *(kommt bei Variante 2 wieder)*
   - **In Pool** → Slot löschen; text-only: neues Todo via `createBlock`; todo-type: bleibt im Pool
+  - **Verschoben-Bump (Stufe 2):** „Ignorieren" und „In Pool" zählen bei Items mit `todoId` zusätzlich `postponeCount` hoch (`bumpPostpone`, 1×/Tag) — Buddy-Signal, siehe Block-Modell oben
 
 **Variante 2 — neuer Tag:**
 - Trigger: `SK.lastPoolReturn !== todayKey()`

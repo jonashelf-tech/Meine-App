@@ -5,6 +5,8 @@ import ToolHeader from '../../../components/ToolHeader/ToolHeader'
 import Overlay from '../../../components/Overlay/Overlay'
 import PrioBadge from '../../../components/PrioBadge/PrioBadge'
 import SettingsIcon from '../../../components/SettingsIcon'
+import { buddyAvailable } from '../../buddy/buddyApi'
+import BuddySheet from '../../buddy/BuddySheet'
 import KlaerenModal from './KlaerenModal'
 import s from './TabKlaeren.module.css'
 
@@ -53,7 +55,7 @@ const AvgIcon = () => (
 )
 
 // ─── Hero: dringendstes altes Todo ────────────────────────
-function Hero({ todo, oldest, ageColor, onKlaeren }) {
+function Hero({ todo, oldest, ageColor, onKlaeren, buddyReady, buddyName, onBuddy }) {
   const days = getAgeDays(todo.createdAt)
   const steps = stepsInfo(todo)
 
@@ -81,6 +83,9 @@ function Hero({ todo, oldest, ageColor, onKlaeren }) {
         </div>
       </div>
       <button className={s.cta} onClick={onKlaeren}><SparkIcon /> Jetzt klären</button>
+      {buddyReady && (
+        <button className={s.ctaBuddy} onClick={() => onBuddy(todo)}>Mit {buddyName} klären</button>
+      )}
     </div>
   )
 }
@@ -148,13 +153,16 @@ function SettingsSheet({ settings, onPatch, onClose }) {
 
 // ─── TabKlaeren ───────────────────────────────────────────
 export default function TabKlaeren({ onBack }) {
-  const { todos, setTodos, days, toolColors, klaerenSettings, setKlaerenSettings } = useAppStore()
+  const { todos, setTodos, days, toolColors, klaerenSettings, setKlaerenSettings, buddySettings } = useAppStore()
   const [klaerenTodo,  setKlaerenTodo]  = useState(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [buddyTodo,    setBuddyTodo]    = useState(null)
 
   const threshold = klaerenSettings?.threshold ?? 7
   const ageColor  = klaerenSettings?.ageColor  ?? '#FB923C'
   const toolColor = getToolColor('klaeren', toolColors)
+  const buddyReady = buddySettings?.enabled && buddyAvailable()
+  const buddyName  = buddySettings?.name || 'Buddy'
 
   // IDs aller Todos die irgendwo im Zeitplan verplant sind
   const scheduledIds = useMemo(() => {
@@ -211,7 +219,15 @@ export default function TabKlaeren({ onBack }) {
         </div>
       ) : (
         <>
-          <Hero todo={hero} oldest={oldest} ageColor={ageColor} onKlaeren={() => setKlaerenTodo(hero)} />
+          <Hero
+            todo={hero}
+            oldest={oldest}
+            ageColor={ageColor}
+            onKlaeren={() => setKlaerenTodo(hero)}
+            buddyReady={buddyReady}
+            buddyName={buddyName}
+            onBuddy={(t) => setBuddyTodo(t)}
+          />
 
           <div className={s.tiles}>
             <div className={s.tile}>
@@ -272,6 +288,13 @@ export default function TabKlaeren({ onBack }) {
             setTodos(prev => prev.filter(t => t.id !== id))
             setKlaerenTodo(null)
           }}
+        />
+      )}
+
+      {buddyTodo && (
+        <BuddySheet
+          onClose={() => setBuddyTodo(null)}
+          initialSend={{ kind: 'klaeren', focusTodoId: buddyTodo.id, shown: `Klären: „${buddyTodo.text}"` }}
         />
       )}
     </div>

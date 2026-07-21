@@ -64,6 +64,47 @@
   font-size: 0.9rem;
   margin: 6px 0;
 }
+
+/* ── Impuls-Banner (Briefkasten-Prinzip, Stufe 2) — dezent, nicht alarmierend ── */
+.impulsBanner {
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg3));
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.impulsBannerText {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.impulsActions {
+  display: flex;
+  gap: 8px;
+}
+.impulsBtn {
+  background: color-mix(in srgb, var(--primary) 16%, var(--bg3));
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  color: var(--primary);
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.impulsBtnGhost {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.83rem;
+  padding: 7px 8px;
+  cursor: pointer;
+}
+
 .userMsg  { display: flex; flex-direction: column; align-items: flex-end; }
 .buddyMsg { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 

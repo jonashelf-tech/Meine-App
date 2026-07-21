@@ -184,6 +184,39 @@ describe('Pool + Signale + Energie', () => {
   })
 })
 
+describe('Verschoben-Signal (postponeCount, S2-T1)', () => {
+  it('top-Eintrag zeigt verschoben nur bei postponeCount > 0', () => {
+    const packet = buildContextPacket(baseInput({
+      todos: [baseTodo({ postponeCount: 3 }), baseTodo({ id: 't2', text: 'Ohne', postponeCount: 0 })],
+    }))
+    expect(packet.pool.top.find(t => t.id === 't1').verschoben).toBe(3)
+    expect(packet.pool.top.find(t => t.id === 't2').verschoben).toBeUndefined()
+  })
+
+  it('fokusTodo zeigt verschoben nur bei postponeCount > 0', () => {
+    const mitCount = buildContextPacket(baseInput({ focusTodoId: 't1', todos: [baseTodo({ postponeCount: 2 })] }))
+    expect(mitCount.fokusTodo.verschoben).toBe(2)
+    const ohneCount = buildContextPacket(baseInput({ focusTodoId: 't1' }))
+    expect(ohneCount.fokusTodo.verschoben).toBeUndefined()
+  })
+})
+
+describe('topMax-Option (S2-T1: Buddy-Frage "Pool aufräumen" braucht mehr als 5)', () => {
+  const manyTodos = (n) => Array.from({ length: n }, (_, i) => baseTodo({ id: `t${i}`, text: `Aufgabe ${i}` }))
+
+  it('Default bleibt 5', () => {
+    expect(buildContextPacket(baseInput({ todos: manyTodos(8) })).pool.top.length).toBe(5)
+  })
+
+  it('topMax: 10 liefert bis zu 10 Einträge', () => {
+    expect(buildContextPacket(baseInput({ todos: manyTodos(15), topMax: 10 })).pool.top.length).toBe(10)
+  })
+
+  it('Clamp greift bei topMax > 12', () => {
+    expect(buildContextPacket(baseInput({ todos: manyTodos(20), topMax: 999 })).pool.top.length).toBe(12)
+  })
+})
+
 describe('Security-Pass: Tages-Skelett leakt keine gesperrten Texte (Fable 2026-07-20)', () => {
   const slotTag = (text, todoId) => ({ [DK]: { '15': { text, duration: 30, done: false, ...(todoId ? { todoId } : {}) } } })
 

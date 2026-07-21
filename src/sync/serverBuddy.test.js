@@ -37,6 +37,11 @@ describe('validateBuddyRequest', () => {
     expect(validateBuddyRequest(okBody({ kind: 'frage', message: '' })).error).toBeTruthy()
   })
 
+  it('akzeptiert die Stufe-2-Kinds klaeren und aufraeumen ohne message (valider Pfad)', () => {
+    expect(validateBuddyRequest(okBody({ kind: 'klaeren', message: undefined })).error).toBeUndefined()
+    expect(validateBuddyRequest(okBody({ kind: 'aufraeumen', message: undefined })).error).toBeUndefined()
+  })
+
   it('kappt zu lange Nachrichten und zu großen Kontext', () => {
     expect(validateBuddyRequest(okBody({ message: 'x'.repeat(2001) })).error).toBeTruthy()
     const fett = { blob: 'x'.repeat(33000) }
@@ -115,12 +120,24 @@ describe('buildMessages', () => {
     expect(msgs.at(-1).role).toBe('user')
     expect(msgs.at(-1).content.length).toBeGreaterThan(10)
   })
+
+  it('kind klaeren nennt Loslassen als legitime Empfehlung', () => {
+    const msgs = buildMessages({ kind: 'klaeren', message: null, context: {}, history: [] })
+    expect(msgs.at(-1).content).toContain('Loslassen')
+  })
+
+  it('kind aufraeumen verlangt die todoId in den Action-Vorschlägen', () => {
+    const msgs = buildMessages({ kind: 'aufraeumen', message: null, context: {}, history: [] })
+    expect(msgs.at(-1).content).toContain('todoId')
+  })
 })
 
 describe('pickModel', () => {
-  it('routet zerlegen/tagesplan aufs smarte Modell, Rest aufs schnelle', () => {
+  it('routet zerlegen/tagesplan/klaeren/aufraeumen aufs smarte Modell, Rest aufs schnelle', () => {
     expect(pickModel('zerlegen', {})).toBe('claude-sonnet-5')
     expect(pickModel('tagesplan', {})).toBe('claude-sonnet-5')
+    expect(pickModel('klaeren', {})).toBe('claude-sonnet-5')
+    expect(pickModel('aufraeumen', {})).toBe('claude-sonnet-5')
     expect(pickModel('frage', {})).toBe('claude-haiku-4-5')
     expect(pickModel('start', { BUDDY_MODEL_FAST: 'x' })).toBe('x')
     expect(pickModel('zerlegen', { BUDDY_MODEL_SMART: 'y' })).toBe('y')
@@ -153,7 +170,7 @@ describe('Tools & Limits', () => {
     expect(BUDDY_TOOLS.map(t => t.name).sort())
       .toEqual(['create_todo', 'focus', 'remember', 'schedule', 'subtasks'])
     expect(BUDDY_TOOLS.every(t => t.input_schema?.type === 'object')).toBe(true)
-    expect(KINDS).toContain('frage')
+    expect(KINDS).toEqual(['frage', 'start', 'ueberfordert', 'zerlegen', 'tagesplan', 'klaeren', 'aufraeumen'])
   })
 
   it('limitScope meldet daily vor monthly, sonst null', () => {

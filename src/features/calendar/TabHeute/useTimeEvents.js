@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { todayKey } from '../../../utils'
 import { sv, lv, SK } from '../../../storage'
-import { createBlock, isFaelligkeit } from '../../todos/Block'
+import { createBlock, isFaelligkeit, bumpPostpone } from '../../todos/Block'
 import { loadHaushalt, saveHaushalt, markTaskDone as haushaltMarkDone } from '../../tools/haushalt/haushaltData'
 
 /**
@@ -171,8 +171,15 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
         dateKey: i.dateKey, slotKey: i.slotKey, patch: { ignored: true },
       })))
     }
+    // Ignoriert = verschoben-Signal für den Buddy (Todo bleibt offen liegen).
+    const bumpIds = new Set(
+      items.filter(i => selectedIds.has(i.id) && i.todoId && (i.type === 'todo' || i.type === 'faellig')).map(i => i.todoId)
+    )
+    if (bumpIds.size > 0) {
+      setTodos(prev => prev.map(t => bumpIds.has(t.id) ? { ...t, ...bumpPostpone(t) } : t))
+    }
     finish(items.filter(i => !selectedIds.has(i.id)))
-  }, [items, applyDaysUpdates, finish])
+  }, [items, applyDaysUpdates, finish, setTodos])
 
   // ── Zurück in Pool ───────────────────────────────────────
   const handleMoveToPool = useCallback((selectedIds) => {
@@ -187,11 +194,12 @@ export function useTimeEvents({ days, setDays, setTodos, todos = [] }) {
       setTodos(prev => [...prev, ...newTodos])
     }
 
-    // Fälligkeiten + verplante Todos: Datum/Zeit entfernen → bleiben als normales Pool-Todo
+    // Fälligkeiten + verplante Todos: Datum/Zeit entfernen → bleiben als normales Pool-Todo.
+    // Zusätzlich verschoben-Bump (Zurück-in-Pool = Verschieben-Signal für den Buddy).
     const clearIds = new Set([...faelligIds, ...todoIds])
     if (clearIds.size > 0) {
       setTodos(prev => prev.map(t =>
-        clearIds.has(t.id) ? { ...t, date: null, time: null, dayRank: null } : t
+        clearIds.has(t.id) ? { ...t, date: null, time: null, dayRank: null, ...bumpPostpone(t) } : t
       ))
     }
 

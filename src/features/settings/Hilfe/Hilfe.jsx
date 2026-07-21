@@ -36,7 +36,7 @@ const CARDS = [
   },
   {
     title: 'Buddy (optional)',
-    body: 'Ein kleiner Begleiter mit KI, der beim Anfangen hilft: „Womit fange ich an?", Aufgaben in machbare Schritte zerlegen, einen Fokus-Block vorschlagen. Er meldet sich nie von selbst — du öffnest ihn über den Knopf links unten, und alles, was er vorschlägt, bestätigst du erst. Einschalten (und festlegen, was er lesen darf) unter Einstellungen → Buddy; er braucht die Cloud-Sicherung als Zugang.',
+    body: 'Ein kleiner Begleiter mit KI, der beim Anfangen hilft: „Womit fange ich an?", Aufgaben in machbare Schritte zerlegen, einen Fokus-Block vorschlagen. Er meldet sich nie von selbst — du öffnest ihn über den Knopf links unten, und alles, was er vorschlägt, bestätigst du erst. Schaltest du „Vorschläge von selbst" ein, setzt er gelegentlich einen stillen Punkt als Hinweis auf einen bereitliegenden Gedanken — geöffnet wird er, wann du willst; ungefragt mit Text meldet er sich weiterhin nie. Einschalten (und festlegen, was er lesen darf) unter Einstellungen → Buddy; er braucht die Cloud-Sicherung als Zugang.',
   },
 ]
 

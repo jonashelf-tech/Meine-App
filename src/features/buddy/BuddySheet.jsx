@@ -8,6 +8,7 @@ import { loadDailyStates } from '../daily/dailyState'
 import { buildContextPacket, isScopeAllowed } from './contextPacket'
 import { scheduleTargetFree } from './buddyActions'
 import { askBuddy, buddyAvailable } from './buddyApi'
+import { KIND_BY_TRIGGER, impulsTeaser, consumeImpuls, dismissImpuls } from './buddyImpuls'
 import BuddyAvatar from './BuddyAvatar'
 import s from './BuddySheet.module.css'
 
@@ -34,11 +35,11 @@ const SendIcon = () => (
   </svg>
 )
 
-export default function BuddySheet({ onClose }) {
+export default function BuddySheet({ onClose, impuls = null, initialSend = null }) {
   const {
     todos, setTodos, days, setDays, projects, calList, notes,
     buddySettings, buddyMemory, setBuddyMemory,
-    buddyThread, setBuddyThread,
+    buddyThread, setBuddyThread, setBuddyImpuls,
     klaerenSettings, setTimerAutoStart, setCurrentTab,
   } = useAppStore()
 
@@ -46,14 +47,26 @@ export default function BuddySheet({ onClose }) {
   const [input, setInput]   = useState('')
   const [picker, setPicker] = useState(false)
   const threadRef = useRef(null)
+  const initialSendRef = useRef(false)
   const keyboardOffset = useKeyboardOffset()
 
   const name = buddySettings?.name || 'Buddy'
   const available = buddyAvailable()
 
+  // Banner nur ganz am Anfang eines Gesprächs — sobald sich der Thread füllt,
+  // tritt der Gedanke zurück (Regel 1: er bietet an, drängt sich nie auf).
+  const showImpuls = Boolean(impuls) && available && buddyThread.length === 0
+  const impulsTeaserText = showImpuls ? impulsTeaser(impuls, todos, new Date()) : null
+
   useEffect(() => {
     threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight })
   }, [buddyThread, busy])
+
+  // Referenziertes Todo inzwischen weg (erledigt/gelöscht) → kein toter
+  // Teaser, der Gedanke wird still konsumiert statt angezeigt.
+  useEffect(() => {
+    if (showImpuls && !impulsTeaserText) setBuddyImpuls(consumeImpuls)
+  }, [showImpuls, impulsTeaserText, setBuddyImpuls])
 
   const buildPacket = (focusTodoId) => buildContextPacket({
     screen: 'tagesplaner',
@@ -100,6 +113,26 @@ export default function BuddySheet({ onClose }) {
     if (!text) return
     setInput('')
     send({ kind: 'frage', message: text, shown: text })
+  }
+
+  // ── Direkter Einstieg (z.B. „Mit {Name} klären" aus einem Tool): der Tap dort
+  // war schon die Einwilligung — kein Zwischen-Banner wie beim Impuls, sofort
+  // senden. Genau einmal, ranRef schützt vor dem StrictMode-Doppellauf im Dev-Modus.
+  useEffect(() => {
+    if (initialSendRef.current) return
+    if (!initialSend || !available || buddyThread.length > 0) return
+    initialSendRef.current = true
+    send({ kind: initialSend.kind, shown: initialSend.shown, focusTodoId: initialSend.focusTodoId ?? null })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ── Impuls-Banner: „Zeig mir" übernimmt ins Gespräch, „Nicht jetzt" nur Backoff ──
+  const handleImpulsShow = () => {
+    setBuddyImpuls(consumeImpuls)
+    send({ kind: KIND_BY_TRIGGER[impuls.trigger], shown: impulsTeaserText, focusTodoId: impuls.todoId ?? null })
+  }
+  const handleImpulsDismiss = () => {
+    setBuddyImpuls(prev => dismissImpuls(prev, new Date()))
   }
 
   // ── Action-Ausführung: nur nach Tap, nur über bestehende Store-Pfade ──
@@ -249,6 +282,15 @@ export default function BuddySheet({ onClose }) {
         ) : (
           <>
             <div className={s.thread} ref={threadRef}>
+              {showImpuls && impulsTeaserText && (
+                <div className={s.impulsBanner}>
+                  <p className={s.impulsBannerText}>{impulsTeaserText}</p>
+                  <div className={s.impulsActions}>
+                    <button className={s.impulsBtn} onClick={handleImpulsShow}>Zeig mir</button>
+                    <button className={s.impulsBtnGhost} onClick={handleImpulsDismiss}>Nicht jetzt</button>
+                  </div>
+                </div>
+              )}
               {buddyThread.length === 0 && !busy && (
                 <p className={s.intro}>Womit kann ich helfen?</p>
               )}

@@ -129,6 +129,21 @@
 }
 .cta:active { transform: scale(.98); }
 
+.ctaBuddy {
+  margin-top: 8px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 11px;
+  font-family: var(--font);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  background: var(--surface);
+  cursor: pointer;
+}
+.ctaBuddy:active { transform: scale(.98); }
+
 /* ─── 3 Kacheln ────────────────────────────────────────── */
 .tiles {
   display: grid;

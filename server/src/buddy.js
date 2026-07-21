@@ -4,7 +4,7 @@
 // bleibt dünn. Der Persona-Prompt lebt bewusst serverseitig: konsistent für
 // alle Clients und nicht vom Client manipulierbar (Konzept §10.1).
 
-export const KINDS = ['frage', 'start', 'ueberfordert', 'zerlegen', 'tagesplan']
+export const KINDS = ['frage', 'start', 'ueberfordert', 'zerlegen', 'tagesplan', 'klaeren', 'aufraeumen']
 
 const MAX_MESSAGE_CHARS = 2000
 const MAX_CONTEXT_CHARS = 32000
@@ -64,6 +64,8 @@ const KIND_PROMPTS = {
   ueberfordert:'Ich bin gerade überfordert. Hilf mir, den Kopf zu sortieren: benenne in einem Satz, was laut DATEN gerade wirklich zählt, und schlag EINEN winzigen Schritt vor.',
   zerlegen:    'Zerlege die fokussierte Aufgabe aus den DATEN in die kleinsten machbaren Schritte und schlage sie über das subtasks-Tool vor. Fehlt dir Entscheidendes, stell vorher höchstens eine kurze Rückfrage.',
   tagesplan:   'Schlag mir einen groben, realistischen Plan für heute vor — nutze die DATEN (freie Fenster, offene Aufgaben) und die Tools schedule/focus für konkrete Vorschläge. Überfülle den Tag nicht.',
+  klaeren:     'Die fokussierte Aufgabe aus den DATEN (fokusTodo) liegt schon lange im Pool oder wurde mehrfach verschoben (Feld "verschoben", falls vorhanden). Kläre zuerst kurz, ob sie sich überhaupt noch lohnt — Loslassen oder Streichen ist eine völlig legitime Empfehlung, dann schlägst du KEINE Schritte vor. Lohnt es sich noch, finde mit höchstens einer kurzen Rückfrage heraus, woran es hakt, und schlag danach die kleinsten machbaren Schritte über das subtasks-Tool vor. Beobachte ohne zu bewerten, kein Schuld-Ton — auch kleine Erfolge feierst du klein.',
+  aufraeumen:  'Der Pool ist voll (DATEN: pool.top, bis zu 10 Einträge mit id/text/prio/dauerMin/alterTage, teils verschoben). Geh die wichtigsten kurz durch und biete pro Aufgabe konkret eines an: zerlegen (subtasks-Tool, immer mit der todoId aus den DATEN), einplanen (schedule-Tool, nur in freien Zeiten aus tag.freieFenster) oder bewusst liegen lassen. Höchstens 4 Action-Karten pro Antwort — lieber wenige anbieten und danach weitermachen als eine Kartenflut.',
 }
 
 export const buildMessages = ({ kind, message, context, history }) => {
@@ -85,7 +87,7 @@ export const buildMessages = ({ kind, message, context, history }) => {
 
 // ─── Modell-Routing ───────────────────────────────────────
 export const pickModel = (kind, env) =>
-  (kind === 'zerlegen' || kind === 'tagesplan')
+  (kind === 'zerlegen' || kind === 'tagesplan' || kind === 'klaeren' || kind === 'aufraeumen')
     ? (env.BUDDY_MODEL_SMART || 'claude-sonnet-5')
     : (env.BUDDY_MODEL_FAST  || 'claude-haiku-4-5')
 

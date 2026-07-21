@@ -47,12 +47,14 @@ const poolEntry = (t, now) => ({
   prio: t.priority ?? 3,
   dauerMin: t.duration ?? null,
   alterTage: ageDays(t.createdAt, now),
+  ...(t.postponeCount > 0 ? { verschoben: t.postponeCount } : {}),
 })
 
 export function buildContextPacket({
   screen, focusTodoId, todos, days, projects, calList,
-  buddySettings, buddyMemory, notes, klaerenThreshold = 30, dailyState, now,
+  buddySettings, buddyMemory, notes, klaerenThreshold = 30, dailyState, now, topMax = TOP_MAX,
 }) {
+  const effTopMax = Math.min(topMax, 12)
   const scopes = buddySettings?.calScopes ?? { privat: true, cals: {} }
   const visible = (todos ?? []).filter(t => !t.done && isScopeAllowed(t.cal ?? null, scopes, calList))
 
@@ -92,7 +94,7 @@ export function buildContextPacket({
       if (pa !== pb) return pa - pb
       return ageDays(b.createdAt, now) - ageDays(a.createdAt, now)
     })
-    .slice(0, TOP_MAX)
+    .slice(0, effTopMax)
     .map(t => poolEntry(t, now))
 
   const packet = {
