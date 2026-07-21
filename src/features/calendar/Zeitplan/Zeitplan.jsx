@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react'
 import { sk, getDurationKeys, ALL_SLOT_KEYS, todayKey } from '../../../utils'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import { computeBands } from './bandLogic'
+import { useAppStore } from '../../../store'
+import { isCalShown, calEmoji } from '../TabKalender/kalenderShared'
 import s from './Zeitplan.module.css'
 import SlotBlock from './SlotBlock'
 import BlockerCard from '../Blocker/BlockerCard'
@@ -66,6 +68,9 @@ export default function Zeitplan({
   birthdayPills = [],
   birthdayPillsDate = null,
 }) {
+  const calFilter = useAppStore(st => st.calFilter)
+  const calList   = useAppStore(st => st.calList)
+
   const isNow = dateLabel === todayKey()
 
   // Minutengenaue "Jetzt"-Linie: tickt jede Minute, nur am heutigen Tag
@@ -190,6 +195,21 @@ export default function Zeitplan({
     const topSpan = topSlot ? Math.ceil((topSlot.duration || 30) / 30) : 1
     const botSpan = botSlot ? Math.ceil((botSlot.duration || 30) / 30) : 1
 
+    // Geteilte Termine folgen dem globalen Kalender-Chip (nicht dem
+    // Privat-Chip — der Tagesplaner zeigt eigene Todos immer, unabhängig
+    // vom Deko-Filter der Kalenderübersicht). rangeBlocked/computeBands/
+    // consumedKeys bleiben unverändert auf den rohen slots — ausgeblendet
+    // heißt nur "kein Inhalt sichtbar", nicht "Zeit ist frei".
+    const topTodo   = topSlot ? (todos.find(t => t.id === topSlot.todoId) || null) : null
+    const topCal    = topTodo?.cal ?? null
+    const topHidden = topCal ? !isCalShown(calFilter, topCal) : false
+    const topEmoji  = topCal ? calEmoji(calList, topCal) : null
+
+    const botTodo   = botSlot ? (todos.find(t => t.id === botSlot.todoId) || null) : null
+    const botCal    = botTodo?.cal ?? null
+    const botHidden = botCal ? !isCalShown(calFilter, botCal) : false
+    const botEmoji  = botCal ? calEmoji(calList, botCal) : null
+
     return [
       <div
         key={`lbl-${h}`}
@@ -202,34 +222,41 @@ export default function Zeitplan({
       topConsumed
         ? <div key={`top-${h}`} className={s.sgConsumed} />
         : topSlot
-          ? <div
-              key={`top-${h}`}
-              className={s.sgHalf}
-              style={{ gridRow: topSpan > 1 ? `${rowBase} / span ${topSpan}` : String(rowBase) }}
-              ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : 'occupied')}
-            >
-              <SlotBlock
-                slotKey={topKey}
-                slot={topSlot}
-                todo={todos.find(t => t.id === topSlot.todoId) || null}
-                todos={todos}
-                setTodos={setTodos}
-                onToggleDone={() => onToggleSlotDone?.(topKey)}
-                onEdit={() => {
-                  const lt = todos.find(t => t.id === topSlot.todoId)
-                  lt ? onEditTodo?.(lt.id) : onEditTodo?.(topKey)
-                }}
-                onDragStart={startSlotDrag && !topSlot.locked
-                  ? (e) => startSlotDrag(topKey, e)
-                  : undefined
-                }
-                onToggleLock={() => onToggleLock?.(topKey)}
-                onSaveSlot={onSetSlot}
-                onPlay={onPlaySlot && !topSlot.done ? () => onPlaySlot(topKey, topSlot) : undefined}
-                onToPool={() => onToPool?.({ slotKey: topKey })}
-                nowMin={nowMin}
-              />
-            </div>
+          ? topHidden
+            ? <div
+                key={`top-${h}`}
+                className={s.sgHidden}
+                style={{ gridRow: topSpan > 1 ? `${rowBase} / span ${topSpan}` : String(rowBase) }}
+                ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : 'occupied')}
+              >
+                <span className={s.sgHiddenLabel}>ausgeblendet</span>
+              </div>
+            : <div
+                key={`top-${h}`}
+                className={s.sgHalf}
+                style={{ gridRow: topSpan > 1 ? `${rowBase} / span ${topSpan}` : String(rowBase) }}
+                ref={el => registerHalf?.(topKey, el, topSlot.locked ? 'locked' : 'occupied')}
+              >
+                {topEmoji && <span className={s.slotEmoji}>{topEmoji}</span>}
+                <SlotBlock
+                  slotKey={topKey}
+                  slot={topSlot}
+                  todo={topTodo}
+                  todos={todos}
+                  setTodos={setTodos}
+                  onToggleDone={() => onToggleSlotDone?.(topKey)}
+                  onEdit={() => topTodo ? onEditTodo?.(topTodo.id) : onEditTodo?.(topKey)}
+                  onDragStart={startSlotDrag && !topSlot.locked
+                    ? (e) => startSlotDrag(topKey, e)
+                    : undefined
+                  }
+                  onToggleLock={() => onToggleLock?.(topKey)}
+                  onSaveSlot={onSetSlot}
+                  onPlay={onPlaySlot && !topSlot.done ? () => onPlaySlot(topKey, topSlot) : undefined}
+                  onToPool={() => onToPool?.({ slotKey: topKey })}
+                  nowMin={nowMin}
+                />
+              </div>
           : <div
               key={`top-${h}`}
               className={[s.sgHalf, s.sgEmpty, isNowHour ? s.sgNow : '', topPast ? s.sgPast : ''].join(' ')}
@@ -241,34 +268,41 @@ export default function Zeitplan({
       botConsumed
         ? <div key={`bot-${h}`} className={s.sgConsumed} />
         : botSlot
-          ? <div
-              key={`bot-${h}`}
-              className={[s.sgHalf, s.sgHalfBot].join(' ')}
-              style={{ gridRow: botSpan > 1 ? `${rowBase + 1} / span ${botSpan}` : String(rowBase + 1) }}
-              ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : 'occupied')}
-            >
-              <SlotBlock
-                slotKey={botKey}
-                slot={botSlot}
-                todo={todos.find(t => t.id === botSlot.todoId) || null}
-                todos={todos}
-                setTodos={setTodos}
-                onToggleDone={() => onToggleSlotDone?.(botKey)}
-                onEdit={() => {
-                  const lt = todos.find(t => t.id === botSlot.todoId)
-                  lt ? onEditTodo?.(lt.id) : onEditTodo?.(botKey)
-                }}
-                onDragStart={startSlotDrag && !botSlot.locked
-                  ? (e) => startSlotDrag(botKey, e)
-                  : undefined
-                }
-                onToggleLock={() => onToggleLock?.(botKey)}
-                onSaveSlot={onSetSlot}
-                onPlay={onPlaySlot && !botSlot.done ? () => onPlaySlot(botKey, botSlot) : undefined}
-                onToPool={() => onToPool?.({ slotKey: botKey })}
-                nowMin={nowMin}
-              />
-            </div>
+          ? botHidden
+            ? <div
+                key={`bot-${h}`}
+                className={[s.sgHidden, s.sgHalfBot].join(' ')}
+                style={{ gridRow: botSpan > 1 ? `${rowBase + 1} / span ${botSpan}` : String(rowBase + 1) }}
+                ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : 'occupied')}
+              >
+                <span className={s.sgHiddenLabel}>ausgeblendet</span>
+              </div>
+            : <div
+                key={`bot-${h}`}
+                className={[s.sgHalf, s.sgHalfBot].join(' ')}
+                style={{ gridRow: botSpan > 1 ? `${rowBase + 1} / span ${botSpan}` : String(rowBase + 1) }}
+                ref={el => registerHalf?.(botKey, el, botSlot.locked ? 'locked' : 'occupied')}
+              >
+                {botEmoji && <span className={s.slotEmoji}>{botEmoji}</span>}
+                <SlotBlock
+                  slotKey={botKey}
+                  slot={botSlot}
+                  todo={botTodo}
+                  todos={todos}
+                  setTodos={setTodos}
+                  onToggleDone={() => onToggleSlotDone?.(botKey)}
+                  onEdit={() => botTodo ? onEditTodo?.(botTodo.id) : onEditTodo?.(botKey)}
+                  onDragStart={startSlotDrag && !botSlot.locked
+                    ? (e) => startSlotDrag(botKey, e)
+                    : undefined
+                  }
+                  onToggleLock={() => onToggleLock?.(botKey)}
+                  onSaveSlot={onSetSlot}
+                  onPlay={onPlaySlot && !botSlot.done ? () => onPlaySlot(botKey, botSlot) : undefined}
+                  onToPool={() => onToPool?.({ slotKey: botKey })}
+                  nowMin={nowMin}
+                />
+              </div>
           : <div
               key={`bot-${h}`}
               className={[s.sgHalf, s.sgHalfBot, s.sgEmpty, botPast ? s.sgPast : ''].join(' ')}

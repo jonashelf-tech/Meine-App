@@ -3,6 +3,8 @@ import TodoChip from '../../../components/TodoChip/TodoChip'
 import { buildDayEntries } from '../tagesListeLogic'
 import { minsToHHMM } from '../../../utils'
 import { formatHour } from '../Blocker/blockerUtils'
+import { useAppStore } from '../../../store'
+import { isCalShown, calEmoji } from '../TabKalender/kalenderShared'
 import s from './Tagesliste.module.css'
 
 const DragIcon = (
@@ -28,8 +30,27 @@ const AnchorIcon = (
 // Ein Slot in der Liste: derselbe TodoChip wie überall, feste Höhe. Dauer wird
 // hier NICHT zur Höhe — die Liste hat kein Raster, in dem eine Höhe etwas
 // bedeuten könnte; sie würde nur lügen. Die Dauer steht als Text.
-function SlotRow({ slotKey, slot, todos, setTodos, onToggleDone, onEdit, onPlay, onSaveSlot, onToPool }) {
+// Geteilter Termin, dessen Kalender-Chip aus ist: Zeile bleibt (Rang/Lücken-
+// Rechnung in tagesListeLogic.js unverändert), Inhalt wird nicht gezeigt —
+// sonst würde das Emoji genau das verraten, was der Chip gerade ausblendet.
+function HiddenSlotRow({ slotKey, slot }) {
+  const startMin = Math.round(parseFloat(slotKey) * 60)
+  const dur      = slot.duration || 30
+  return (
+    <div className={s.hiddenSlot}>
+      <span className={s.hiddenSlotTime}>{minsToHHMM(startMin)}–{minsToHHMM(startMin + dur)}</span>
+      <span className={s.hiddenSlotLabel}>ausgeblendet</span>
+    </div>
+  )
+}
+
+function SlotRow({ slotKey, slot, todos, setTodos, onToggleDone, onEdit, onPlay, onSaveSlot, onToPool, calFilter, calList }) {
   const todo = todos.find(t => t.id === slot.todoId) || null
+  const cal    = todo?.cal ?? null
+  const hidden = cal ? !isCalShown(calFilter, cal) : false
+  if (hidden) return <HiddenSlotRow slotKey={slotKey} slot={slot} />
+
+  const emoji    = calEmoji(calList, cal)
   const startMin = Math.round(parseFloat(slotKey) * 60)
   const dur      = slot.duration || 30
   const displayTodo = {
@@ -43,24 +64,27 @@ function SlotRow({ slotKey, slot, todos, setTodos, onToggleDone, onEdit, onPlay,
   }
 
   return (
-    <TodoChip
-      todo={displayTodo}
-      todos={todos}
-      saveTodos={setTodos}
-      saveItem={!todo ? (upd) => onSaveSlot?.(slotKey, { ...slot, subItems: upd.subItems }) : undefined}
-      floatExpand
-      onToggleDone={onToggleDone}
-      onEdit={onEdit}
-      onPlay={displayTodo.paused ? undefined : onPlay}
-      onToPool={onToPool}
-      pausable={!!todo}
-      timeSpan={`${minsToHHMM(startMin)}–${minsToHHMM(startMin + dur)} · ${dur}m`}
-      dragHandle={
-        <span className={s.anchor} aria-label="Fester Termin — Uhrzeit änderst du im Raster">
-          {AnchorIcon}
-        </span>
-      }
-    />
+    <div className={s.slotWrap}>
+      {emoji && <span className={s.slotEmoji}>{emoji}</span>}
+      <TodoChip
+        todo={displayTodo}
+        todos={todos}
+        saveTodos={setTodos}
+        saveItem={!todo ? (upd) => onSaveSlot?.(slotKey, { ...slot, subItems: upd.subItems }) : undefined}
+        floatExpand
+        onToggleDone={onToggleDone}
+        onEdit={onEdit}
+        onPlay={displayTodo.paused ? undefined : onPlay}
+        onToPool={onToPool}
+        pausable={!!todo}
+        timeSpan={`${minsToHHMM(startMin)}–${minsToHHMM(startMin + dur)} · ${dur}m`}
+        dragHandle={
+          <span className={s.anchor} aria-label="Fester Termin — Uhrzeit änderst du im Raster">
+            {AnchorIcon}
+          </span>
+        }
+      />
+    </div>
   )
 }
 
@@ -91,6 +115,9 @@ export default function Tagesliste({
   onToggleSlotDone, onToggleTodoDone, onEditTodo, onPlaySlot, onSaveSlot, onToPool,
   onEditBlocker, onToggleBlockerLocked, registerHalf, startDrag,
 }) {
+  const calFilter = useAppStore(st => st.calFilter)
+  const calList   = useAppStore(st => st.calList)
+
   const { rows } = useMemo(
     () => buildDayEntries({ slots, todos, blockers, viewDate }),
     [slots, todos, blockers, viewDate]
@@ -122,6 +149,8 @@ export default function Tagesliste({
           onPlay={() => onPlaySlot?.(row.slotKey, row.slot)}
           onSaveSlot={onSaveSlot}
           onToPool={() => onToPool?.({ slotKey: row.slotKey })}
+          calFilter={calFilter}
+          calList={calList}
         />
       )
     }

@@ -183,6 +183,35 @@
   display: none;
 }
 
+/* Geteilter Termin, dessen Kalender-Chip gerade aus ist: Zeile bleibt belegt
+   (Kollision/Band-Rechnung unverändert), Inhalt wird bewusst nicht gezeigt. */
+.sgHidden {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-low);
+  opacity: 0.55;
+}
+
+.sgHiddenLabel {
+  font-family: var(--font);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  user-select: none;
+}
+
+/* Kalender-Kennung am eigenen Block: kleine Ecke oben rechts (wie Wochenansicht) */
+.slotEmoji {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.6rem;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 2;
+}
+
 
 /* ── frei-Band ────────────────────────────────────────────── */
 .freeBand {
