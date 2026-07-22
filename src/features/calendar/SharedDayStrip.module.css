@@ -1,0 +1,50 @@
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 6px 0 2px;
+}
+
+.head {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding-left: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border-radius: 0 6px 6px 0;
+  border-left: 3px solid var(--primary);
+  background: var(--border-dim);
+}
+
+.em {
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.time {
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 34px;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.text {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

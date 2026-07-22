@@ -11,10 +11,22 @@ import { useAppStore, migrateAccent } from '../store'
 import { loadCloudCreds } from './cloudBackup'
 import { encryptPayload, decryptPayload, hmacKeyId } from './crypto'
 import { updateChangeMap } from './diff'
-import { mergePayloads } from './merge'
+import { mergePayloads, mergeCalSlice, stripDayRank } from './merge'
 
 const MERGEABLE = new Set(['byId', 'byId:date', 'bySubkey', 'bySubkey2'])
 const isSyncable = (key) => SYNC_POLICY[key] === 'lww' || MERGEABLE.has(SYNC_POLICY[key])
+
+// ─── G6: geteilte Records reisen NUR im Kalender-Namespace ────────
+// Der persönliche Sync sieht todos/projects immer nur als „private Records".
+// Geteilte (cal != null) werden ausgefiltert (Push/Diff/Hash) und beim Anwenden
+// eines persönlichen Merges wieder angehängt (sie leben in derselben Liste).
+const CAL_RECORD_KEYS = new Set([SK.todos, SK.projects])
+const privateOnly = (key, value) =>
+  CAL_RECORD_KEYS.has(key) && Array.isArray(value) ? value.filter(r => r?.cal == null) : value
+const sharedLocal = (key) => {
+  const cur = lv(key, [])
+  return CAL_RECORD_KEYS.has(key) && Array.isArray(cur) ? cur.filter(r => r?.cal != null) : []
+}
 
 const PUSH_DELAY_MS = 8000
 const RELOAD_MIN_GAP_MS = 60_000
@@ -62,7 +74,7 @@ const request = (path, { method = 'GET', body, ifMatch } = {}) => {
 }
 
 const buildPayload = (key, entry) => {
-  const value = lv(key, null)
+  const value = privateOnly(key, lv(key, null))   // G6: geteilte Records nie im persönlichen ns
   const payload = SYNC_POLICY[key] === 'lww'
     ? { value, changedAt: entry.changedAt ?? 0 }
     : { value, sub: entry.sub ?? {}, del: entry.del ?? {}, changedAt: entry.changedAt ?? 0 }
@@ -90,13 +102,21 @@ const REHYDRATE = {
   [SK.activeTools]:     v => setStore({ activeTools: v ?? [] }),
   [SK.birthdays]:       v => setStore({ birthdays: v ?? [] }),
   [SK.klaerenSettings]: v => setStore({ klaerenSettings: v ?? { threshold: 30, ageColor: '#FB923C', kiZerlegen: true } }),
+  // Geteilte Kalender (R1: nach Remote-Apply den Store rehydrieren)
+  [SK.calList]:         v => setStore({ calList: v ?? {} }),
+  [SK.calCreds]:        v => setStore({ calCreds: v ?? {} }),
 }
 
 const applyValue = (key, value) => {
   applying = true
   try {
-    sv(key, value)
-    REHYDRATE[key]?.(value)
+    // Persönlicher Merge betrifft nur private Records — geteilte (leben in
+    // derselben Liste) bleiben unangetastet und werden wieder angehängt (G6).
+    const full = CAL_RECORD_KEYS.has(key) && Array.isArray(value)
+      ? [...value, ...sharedLocal(key)]
+      : value
+    sv(key, full)
+    REHYDRATE[key]?.(full)
   } finally { applying = false }
 }
 
@@ -119,26 +139,34 @@ const maybeReload = () => {
 
 // ─── Write-Hook ───────────────────────────────────────────
 
+const CAL_RELEVANT = new Set([SK.todos, SK.projects, SK.calList, SK.calTombstones])
+
 const handleWrite = (key, oldRaw, newValue) => {
-  if (applying || !isSyncOn() || !isSyncable(key)) return
-  const now = Date.now()
-  const meta = loadMeta()
-  const entry = meta.keys[key] ?? {}
-  if (SYNC_POLICY[key] === 'lww') {
-    entry.changedAt = now
-  } else {
-    let oldValue
-    try { oldValue = oldRaw == null ? null : JSON.parse(oldRaw) } catch { oldValue = null }
-    const { sub, del } = updateChangeMap(SYNC_POLICY[key], oldValue, newValue, entry.sub ?? {}, entry.del ?? {}, now)
-    entry.sub = sub
-    entry.del = del
-    entry.changedAt = now
+  if (applying) return
+  if (isSyncOn() && isSyncable(key)) {
+    const now = Date.now()
+    const meta = loadMeta()
+    const entry = meta.keys[key] ?? {}
+    if (SYNC_POLICY[key] === 'lww') {
+      entry.changedAt = now
+    } else {
+      let oldValue
+      try { oldValue = oldRaw == null ? null : JSON.parse(oldRaw) } catch { oldValue = null }
+      // G6: nur die private Projektion diffen — geteilte Records tauchen im
+      // persönlichen Änderungsprotokoll nie auf (Umzug privat→cal = private Löschung).
+      const { sub, del } = updateChangeMap(SYNC_POLICY[key], privateOnly(key, oldValue), privateOnly(key, newValue), entry.sub ?? {}, entry.del ?? {}, now)
+      entry.sub = sub
+      entry.del = del
+      entry.changedAt = now
+    }
+    entry.h = hashValue(privateOnly(key, newValue))
+    entry.dirty = true
+    meta.keys[key] = entry
+    saveMeta(meta)
+    scheduleFlush()
   }
-  entry.h = hashValue(newValue)
-  entry.dirty = true
-  meta.keys[key] = entry
-  saveMeta(meta)
-  schedulePush()
+  // Kalender-Sync ist scan-basiert: jede Kalender-relevante Änderung stößt einen Flush an.
+  if (isCalSyncOn() && CAL_RELEVANT.has(key)) scheduleFlush()
 }
 
 // Mutex nur an den ÄUSSEREN Einstiegen (Timer, syncTick) — pushDirtyNow ruft
@@ -149,11 +177,14 @@ const runExclusive = async (fn) => {
   try { await fn() } finally { busy = false }
 }
 
-const schedulePush = () => {
+const scheduleFlush = () => {
   if (pushTimer || typeof setTimeout === 'undefined') return
   pushTimer = setTimeout(() => {
     pushTimer = null
-    runExclusive(() => pushDirtyNow()).catch(noteError)
+    runExclusive(async () => {
+      if (isSyncOn()) await pushDirtyNow()
+      if (isCalSyncOn()) await calTickInner()
+    }).catch(noteError)
   }, PUSH_DELAY_MS)
   pushTimer.unref?.()
 }
@@ -168,7 +199,7 @@ export const scanOnce = () => {
   let changed = false
   for (const key of Object.values(SK)) {
     if (!isSyncable(key)) continue
-    const value = present.has(key) ? lv(key, null) : null
+    const value = privateOnly(key, present.has(key) ? lv(key, null) : null)   // G6
     const h = hashValue(value)
     const entry = meta.keys[key]
     if (entry?.h === h) continue
@@ -192,7 +223,7 @@ export const scanOnce = () => {
   }
   if (changed) {
     saveMeta(meta)
-    schedulePush()
+    scheduleFlush()
   }
 }
 
@@ -254,7 +285,7 @@ export const pullOnce = async () => {
   // Reload nur noch für Keys OHNE Rehydrator (Tool-Stores lesen bei Mount frisch;
   // offene Tool-Screens sollen nicht auf altem Stand weiterarbeiten)
   if (applied.some(k => !(k in REHYDRATE))) maybeReload()
-  if (Object.values(loadMeta().keys).some(e => e.dirty)) schedulePush()
+  if (Object.values(loadMeta().keys).some(e => e.dirty)) scheduleFlush()
 }
 
 // ─── Push ─────────────────────────────────────────────────
@@ -295,23 +326,187 @@ export const pushDirtyNow = async () => {
   }
 }
 
+// ─── Kalender-Sync (Teilen Stufe A, teilen-spec.md §6) ────
+// Unabhängig vom persönlichen Toggle: läuft, sobald Cloud + Kalender-Creds da
+// sind. Pro Kalender zwei KV-Keys im Namespace c:<calId> — meta (lww) und todos
+// (Slice + Tombstones via mergeCalSlice). Scan-basiert: Slice-Hash vergleichen.
+
+export const isCalSyncOn = () => {
+  const c = loadCloudCreds()
+  return !!(c?.serverUrl && c?.token) && Object.keys(lv(SK.calCreds, {})).length > 0
+}
+
+const calState = (calId) => loadMeta().cal?.[calId] ?? { cursor: 0, keys: {} }
+const calSaveState = (calId, updater) => {
+  const meta = loadMeta()
+  meta.cal = meta.cal ?? {}
+  meta.cal[calId] = updater(meta.cal[calId] ?? { cursor: 0, keys: {} })
+  saveMeta(meta)
+}
+
+const calKeyIds = async (calKey) => ({
+  meta:  await hmacKeyId(calKey, 'meta'),
+  todos: await hmacKeyId(calKey, 'todos'),
+})
+
+const byIdSort = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+
+// Kanonischer (sortierter, dayRank-freier) lokaler Slice eines Kalenders.
+const localCalSlice = (calId) => ({
+  records: lv(SK.todos, [])
+    .filter(r => r?.cal === calId)
+    .map(stripDayRank)                                // dayRank ist persönlich (§3.3)
+    .sort(byIdSort),
+  tombstones: [...((lv(SK.calTombstones, {})[calId]) ?? [])].sort(byIdSort),
+})
+// Was TATSÄCHLICH an die Mitglieder geht: wie localCalSlice, aber ohne
+// 🕶-Geheim-Einträge (secret === true). Die bleiben gerätelokal + im Backup und
+// reisen NIE im c:<calId>-Push (A9, teilen-spec.md §… Geheim-Flag). localCalSlice
+// bleibt die volle Merge-Basis — so hält die Merge-Engine (G5: ohne Tombstone
+// verschwindet nie etwas) den Geheim-Eintrag beim Pull ganz ohne Sonderpfad.
+const calPushSlice = (calId) => {
+  const full = localCalSlice(calId)
+  return { records: full.records.filter(r => !r?.secret), tombstones: full.tombstones }
+}
+const localCalMeta = (calId) =>
+  lv(SK.calList, {})[calId] ?? { name: '', emoji: null, members: {}, updatedAt: 0 }
+
+// Mich selbst in die Mitgliederliste zurückschreiben — Meta ist lww, ein
+// Server-Meta-Pull darf meinen Eintrag nicht verschlucken (§6.2 self-heal).
+const selfHealMeta = (calId, meta) => {
+  const memberId = lv(SK.calCreds, {})[calId]?.memberId
+  if (!memberId || meta.members?.[memberId]) return meta
+  const myName = localCalMeta(calId).members?.[memberId] ?? ''
+  return { ...meta, members: { ...(meta.members ?? {}), [memberId]: myName } }
+}
+
+// Kalender-Write: direkt (voller Wert) + Rehydrate, ohne die private/shared-
+// Wiederanhäng-Logik von applyValue (die todos hier bereits vollständig gebaut).
+const applyCalWrite = (key, value) => {
+  applying = true
+  try { sv(key, value); REHYDRATE[key]?.(value) } finally { applying = false }
+}
+
+const applyCalMetaPull = (calId, remote, version) => {
+  const known = calState(calId).keys?.meta?.v != null
+  const local = localCalMeta(calId)
+  // Erst-Beitritt: Server gewinnt 1:1; danach LWW über updatedAt (Gleichstand → Remote)
+  if (!known || (remote.updatedAt ?? 0) >= (local.updatedAt ?? 0)) {
+    applyCalWrite(SK.calList, { ...lv(SK.calList, {}), [calId]: selfHealMeta(calId, remote) })
+  }
+  // h = Server-Stand → mein self-geheilter/neuerer Stand pusht sich anschließend selbst
+  calSaveState(calId, s => ({ ...s, keys: { ...s.keys, meta: { v: version, h: hashValue(remote) } } }))
+}
+
+const applyCalTodosPull = (calId, remote, version) => {
+  const merged = mergeCalSlice(localCalSlice(calId), remote)
+  if (merged.changedVsLocal) {
+    const others = lv(SK.todos, []).filter(r => r?.cal !== calId)   // privat + andere Kalender
+    applyCalWrite(SK.todos, [...others, ...merged.records])         // dayRank steckt in merged.records
+    applyCalWrite(SK.calTombstones, { ...lv(SK.calTombstones, {}), [calId]: merged.tombstones })
+  }
+  calSaveState(calId, s => ({ ...s, keys: { ...s.keys, todos: { v: version, h: hashValue(remote) } } }))
+}
+
+const calPull = async (calId, calKey, ids) => {
+  const nameFor = { [ids.meta]: 'meta', [ids.todos]: 'todos' }
+  const r = await request(`/kv?ns=c:${calId}&since=${calState(calId).cursor ?? 0}`)
+  if (!r.ok) throw new Error(`Kalender-Pull fehlgeschlagen (${r.status})`)
+  const { rows, cursor } = await r.json()
+  for (const row of rows ?? []) {
+    const name = nameFor[row.keyId]
+    if (!name) continue
+    let remote
+    try { remote = await decryptPayload(calKey, JSON.parse(row.ciphertext)) } catch { continue }
+    if (name === 'meta') applyCalMetaPull(calId, remote, row.version)
+    else applyCalTodosPull(calId, remote, row.version)
+  }
+  calSaveState(calId, s => ({ ...s, cursor: cursor ?? s.cursor ?? 0 }))
+}
+
+const calPush = async (calId, calKey, ids) => {
+  const jobs = [
+    ['meta',  ids.meta,  () => selfHealMeta(calId, localCalMeta(calId))],
+    ['todos', ids.todos, () => calPushSlice(calId)],   // 🕶-Geheim bleibt lokal (A9)
+  ]
+  for (const [name, keyId, build] of jobs) {
+    const value = build()
+    const h = hashValue(value)
+    const stored = calState(calId).keys?.[name]
+    if (stored && stored.h === h) continue           // nichts geändert
+    const env = await encryptPayload(calKey, value)
+    const r = await request(`/kv/${keyId}?ns=c:${calId}`, { method: 'PUT', body: JSON.stringify(env), ifMatch: stored?.v ?? 0 })
+    if (r.status === 409) return true
+    if (!r.ok) throw new Error(`Kalender-Push fehlgeschlagen (${r.status})`)
+    const { version } = await r.json()
+    calSaveState(calId, s => ({ ...s, keys: { ...s.keys, [name]: { v: version, h } } }))
+  }
+  return false
+}
+
+const calSyncOne = async (calId) => {
+  const calKey = lv(SK.calCreds, {})[calId]?.key
+  if (!calKey) return
+  const ids = await calKeyIds(calKey)
+  for (let round = 0; round < 2; round++) {
+    await calPull(calId, calKey, ids)
+    if (!(await calPush(calId, calKey, ids))) return   // kein 409 → fertig
+  }
+}
+
+const calTickInner = async () => {
+  const creds = lv(SK.calCreds, {})
+  // Sync-Zustand verlassener Kalender wegräumen (join/leave setzt zusätzlich zurück)
+  const meta = loadMeta()
+  if (meta.cal) {
+    let pruned = false
+    for (const id of Object.keys(meta.cal)) if (!creds[id]) { delete meta.cal[id]; pruned = true }
+    if (pruned) saveMeta(meta)
+  }
+  for (const calId of Object.keys(creds)) {
+    try { await calSyncOne(calId) } catch (e) { noteError(e) }
+  }
+  const m = loadMeta(); m.lastSyncAt = Date.now(); saveMeta(m)
+}
+
+// Direkter Einstieg (App-Anlass/Test) — eigener Mutex-Durchlauf.
+export const calTick = async () => {
+  if (!isCalSyncOn()) return
+  await runExclusive(calTickInner)
+}
+
+// Kalender-Sync-Zustand zurücksetzen (join/leave) → erzwingt Erst-Beitritt.
+export const resetCalSyncState = (calId) => {
+  const meta = loadMeta()
+  if (meta.cal?.[calId]) { delete meta.cal[calId]; saveMeta(meta) }
+}
+
 // ─── Lebenszyklus ─────────────────────────────────────────
 
-export const initSync = async () => {
-  if (!isSyncOn()) return false
-  if (!listenerOn) {
+// Write-Listener anschalten, sobald irgendein Sync aktiv ist (persönlich ODER Kalender).
+const ensureListener = () => {
+  if (!listenerOn && (isSyncOn() || isCalSyncOn())) {
     setWriteListener(handleWrite)
     listenerOn = true
   }
-  await buildKeyIds()
-  try {
-    await pullOnce()     // VOR dem Scan — Erst-Kopplung: Server gewinnt
-  } catch (e) { noteError(e) }
-  scanOnce()
-  try {
-    await pushDirtyNow()
-  } catch (e) { noteError(e) }
-  return true
+}
+
+export const initSync = async () => {
+  ensureListener()
+  if (isSyncOn()) {
+    await buildKeyIds()
+    try {
+      await pullOnce()     // VOR dem Scan — Erst-Kopplung: Server gewinnt
+    } catch (e) { noteError(e) }
+    scanOnce()
+    try {
+      await pushDirtyNow()
+    } catch (e) { noteError(e) }
+  }
+  if (isCalSyncOn()) {
+    try { await calTickInner() } catch (e) { noteError(e) }
+  }
+  return isSyncOn() || isCalSyncOn()
 }
 
 export const stopSync = () => {
@@ -331,17 +526,19 @@ export const setSyncEnabled = async (on) => {
   sv(SK.cloudCreds, { ...creds, syncOn: !!on })
   if (on) return initSync()
   stopSync()
+  // Kalender-Sync läuft unabhängig weiter, falls Creds vorhanden
+  if (isCalSyncOn()) ensureListener()
   return false
 }
 
 // App-Anlass (Start / sichtbar werden): holen, scannen, liefern — still bei Fehlern.
 export const syncTick = async () => {
-  if (!isSyncOn()) return
+  ensureListener()
+  if (!isSyncOn() && !isCalSyncOn()) return
   await runExclusive(async () => {
     try {
-      scanOnce()
-      await pullOnce()
-      await pushDirtyNow()
+      if (isSyncOn()) { scanOnce(); await pullOnce(); await pushDirtyNow() }
+      if (isCalSyncOn()) await calTickInner()
     } catch (e) { noteError(e) }
   })
 }

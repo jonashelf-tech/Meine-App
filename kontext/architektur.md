@@ -339,9 +339,9 @@ Aus dem Fitness-Look abgeleitet — gilt für „hochwertige" Tool-Screens (Kogn
 
 ## Langfrist-Leitplanke: Cloud-Sync (Zukunft)
 
-**Architektur entschieden (Fable-Review 2026-07-03):** `Dateien/output/sync-architektur.md` — Sync-Policy pro Storage-Key (lww/by-id/by-subkey/device-local/ephemeral), Merge auf dem Client, Server = dummer versionierter Blob-Store (Cloudflare Workers + D1), E2E-verschlüsselt, geteilter Kalender als eigener Store `SK.sharedEvents`. Bau = Roadmap-Projekt 2.
+**Architektur entschieden (Fable-Review 2026-07-03):** `Dateien/output/sync-architektur.md` — Sync-Policy pro Storage-Key (lww/by-id/by-subkey/device-local/ephemeral), Merge auf dem Client, Server = dummer versionierter Blob-Store (Cloudflare Workers + D1), E2E-verschlüsselt. Persönlicher Geräte-Sync (Etappe 3) ist gebaut (`src/sync/syncEngine.js`). **Geteilter Kalender ist KEIN `SK.sharedEvents`-Store mehr** (frühe Idee, verworfen) — umgesetzt als „Teilen Stufe A" (A1–A9 fertig, Branch `teilen-stufe-a`): eigene Kalender-Objekte (`calList`, Emoji-Kennung) + `cal`-Feld an Block/Projekt, eigener calTick-Sync-Zyklus (Pull/Push/409, Namespace `c:<calId>`, strikt getrennt vom persönlichen Sync — Guard G6). Details/aktueller Stand: `kern.md` Abschnitt „Geteilte Kalender im Lesepfad" + Assign-Picker/Geheim-Flag. Offen: A10 (Aktivität/Notifications) · A11 (Hilfe-Karte) · A12 (2-Geräte-Abnahme).
 
-Geplant ist irgendwann ein optionaler Sync (z. B. geteilter Kalender für 2 Personen) + App-Store-Build.
+App-Store-Build bleibt offen (kein Datum).
 Der Umbau soll **eine Schicht hinter `storage/index.js`** werden — kein App-Umbau. Damit das so bleibt:
 - Nutzdaten nie an `sv/lv` vorbei schreiben (gilt schon, bleibt kritisch)
 - IDs immer `genId()`/`createBlock()` (UUIDs sind sync-fähig, Zähler/Timestamps nicht)

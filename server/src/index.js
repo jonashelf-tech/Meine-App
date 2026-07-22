@@ -23,7 +23,7 @@ const corsHeaders = (request, env) => {
   if (!origin || !allowed.includes(origin)) return {}
   return {
     'Access-Control-Allow-Origin': origin,
-    'Access-Control-Allow-Methods': 'GET,PUT,POST,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'authorization,content-type,x-setup-secret,if-match',
     'Access-Control-Max-Age': '86400',
   }
@@ -34,6 +34,22 @@ const authUser = async (request, env) => {
   if (!auth.startsWith('Bearer ')) return null
   const hash = await sha256Hex(auth.slice(7))
   return env.DB.prepare('SELECT id FROM users WHERE token_hash = ?').bind(hash).first()
+}
+
+const CAL_ID_RE = /^[A-Za-z0-9_-]{16}$/
+
+// /kv-Namespace auflösen: ohne ?ns= der persönliche 'u:<id>'; mit ?ns=c:<calId>
+// nur, wenn der Nutzer Mitglied dieses Kalenders ist (sonst 403). Trennt die
+// geteilten Slices sauber vom persönlichen Store (teilen-spec.md §5).
+const resolveKvNs = async (request, user, env, cors) => {
+  const nsParam = new URL(request.url).searchParams.get('ns')
+  if (!nsParam) return { ns: `u:${user.id}` }
+  const m = nsParam.match(/^c:([A-Za-z0-9_-]{16})$/)
+  if (!m) return { resp: json({ error: 'ns ungültig' }, 400, cors) }
+  const member = await env.DB.prepare('SELECT 1 FROM cal_members WHERE cal_id = ? AND user_id = ?')
+    .bind(m[1], user.id).first()
+  if (!member) return { resp: json({ error: 'Kein Mitglied dieses Kalenders' }, 403, cors) }
+  return { ns: nsParam }
 }
 
 export default {
@@ -61,6 +77,64 @@ export default {
       // Ab hier: alles braucht Auth
       const user = await authUser(request, env)
       if (!user) return json({ error: 'Nicht autorisiert' }, 401, cors)
+
+      // ─── /cal — Teilen Stufe A: Kalender anlegen / beitreten / verlassen ───
+      const CAL_INVITE_TTL_MS = 48 * 60 * 60 * 1000
+
+      if (path === '/cal' && request.method === 'POST') {
+        const { calId, joinSecretHash } = await request.json()
+        if (!CAL_ID_RE.test(calId ?? '')) return json({ error: 'calId ungültig' }, 400, cors)
+        if (!/^[0-9a-f]{64}$/.test(joinSecretHash ?? ''))
+          return json({ error: 'joinSecretHash ungültig' }, 400, cors)
+        const now = Date.now()
+        const expires = now + CAL_INVITE_TTL_MS
+        const existing = await env.DB.prepare('SELECT creator_user FROM cals WHERE cal_id = ?').bind(calId).first()
+        if (existing) {
+          // Re-Invite: nur der Ersteller darf ein neues joinSecret + frische TTL setzen.
+          if (existing.creator_user !== user.id) return json({ error: 'Kein Zugriff' }, 403, cors)
+          await env.DB.prepare('UPDATE cals SET join_secret_hash = ?, join_expires = ? WHERE cal_id = ?')
+            .bind(joinSecretHash, expires, calId).run()
+          return json({ ok: true, calId }, 200, cors)
+        }
+        const { c: total } = await env.DB.prepare('SELECT COUNT(*) AS c FROM cals').first()
+        if (total >= 16) return json({ error: 'Kalender-Limit erreicht' }, 403, cors)
+        const { c: mine } = await env.DB.prepare('SELECT COUNT(*) AS c FROM cals WHERE creator_user = ?').bind(user.id).first()
+        if (mine >= 8) return json({ error: 'Kalender-Limit pro Ersteller erreicht' }, 403, cors)
+        await env.DB.prepare('INSERT INTO cals (cal_id, creator_user, join_secret_hash, join_expires, created_at) VALUES (?, ?, ?, ?, ?)')
+          .bind(calId, user.id, joinSecretHash, expires, now).run()
+        await env.DB.prepare('INSERT OR IGNORE INTO cal_members (cal_id, user_id, joined_at) VALUES (?, ?, ?)')
+          .bind(calId, user.id, now).run()
+        return json({ ok: true, calId }, 201, cors)
+      }
+
+      if (path === '/cal/join' && request.method === 'POST') {
+        const { calId, joinSecret } = await request.json()
+        if (!CAL_ID_RE.test(calId ?? '')) return json({ error: 'calId ungültig' }, 400, cors)
+        const cal = await env.DB.prepare('SELECT join_secret_hash, join_expires FROM cals WHERE cal_id = ?').bind(calId).first()
+        if (!cal) return json({ error: 'Kalender nicht gefunden' }, 404, cors)
+        if (!cal.join_secret_hash) return json({ error: 'Keine offene Einladung' }, 409, cors)
+        if ((cal.join_expires ?? 0) < Date.now()) return json({ error: 'Einladung abgelaufen' }, 410, cors)
+        if (await sha256Hex(String(joinSecret ?? '')) !== cal.join_secret_hash)
+          return json({ error: 'Einladung ungültig' }, 403, cors)
+        const already = await env.DB.prepare('SELECT 1 FROM cal_members WHERE cal_id = ? AND user_id = ?')
+          .bind(calId, user.id).first()
+        if (already) return json({ ok: true, calId }, 200, cors)
+        const { c: members } = await env.DB.prepare('SELECT COUNT(*) AS c FROM cal_members WHERE cal_id = ?').bind(calId).first()
+        if (members >= 6) return json({ error: 'Mitglieder-Limit erreicht' }, 403, cors)
+        await env.DB.prepare('INSERT INTO cal_members (cal_id, user_id, joined_at) VALUES (?, ?, ?)')
+          .bind(calId, user.id, Date.now()).run()
+        // Einladung ist einmal gültig — nach dem Beitritt verbraucht.
+        await env.DB.prepare('UPDATE cals SET join_secret_hash = NULL WHERE cal_id = ?').bind(calId).run()
+        return json({ ok: true, calId }, 200, cors)
+      }
+
+      const calLeave = path.match(/^\/cal\/([A-Za-z0-9_-]{16})\/me$/)
+      if (calLeave && request.method === 'DELETE') {
+        // Mitgliedschaft entfernen = Server-Zugriff weg (keine Key-Rotation in v1).
+        await env.DB.prepare('DELETE FROM cal_members WHERE cal_id = ? AND user_id = ?')
+          .bind(calLeave[1], user.id).run()
+        return json({ ok: true }, 200, cors)
+      }
 
       if (path === '/backup' && request.method === 'PUT') {
         const envelope = await request.text()
@@ -92,7 +166,8 @@ export default {
       const kvPut = path.match(/^\/kv\/([A-Za-z0-9_-]{8,64})$/)
       if (kvPut && request.method === 'PUT') {
         const keyId = kvPut[1]
-        const ns = `u:${user.id}`
+        const { ns, resp } = await resolveKvNs(request, user, env, cors)
+        if (resp) return resp
         const ifMatch = Number(request.headers.get('If-Match') ?? '0')
         const envelope = await request.text()
         if (envelope.length > MAX_ENVELOPE_BYTES) return json({ error: 'Payload zu groß' }, 413, cors)
@@ -122,7 +197,8 @@ export default {
       }
 
       if (path === '/kv' && request.method === 'GET') {
-        const ns = `u:${user.id}`
+        const { ns, resp } = await resolveKvNs(request, user, env, cors)
+        if (resp) return resp
         const since = Number(new URL(request.url).searchParams.get('since') ?? '0')
         const { results } = await env.DB.prepare(
           'SELECT key_id AS keyId, version, ciphertext FROM kv WHERE user_ns = ? AND version > ? ORDER BY version'

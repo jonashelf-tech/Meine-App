@@ -12,7 +12,9 @@
 import {
   generateCreds, buildRecoveryCode, parseRecoveryCode,
   encryptPayload, decryptPayload, hmacKeyId, sha256Hex,
+  generateCalCreds,
 } from '../src/sync/crypto.js'
+import { execSync } from 'node:child_process'
 
 const BASE = 'http://127.0.0.1:8787'
 const SETUP_SECRET = process.env.SETUP_SECRET ?? 'feuerprobe-lokal-2026'
@@ -216,6 +218,116 @@ console.log('\n■ CORS')
   const allowHeaders = (r.headers.get('access-control-allow-headers') ?? '').toLowerCase()
   ok(r.status === 204, 'Preflight → 204')
   ok(allowHeaders.includes('if-match'), `Preflight erlaubt If-Match-Header (allow-headers: "${allowHeaders}")`)
+}
+
+// ─── 9. Geteilte Kalender (Teilen Stufe A, teilen-spec.md §5) ───
+console.log('\n■ Geteilte Kalender (/cal)')
+const registerNew = async () => {
+  const c = generateCreds()
+  await req('/register', { method: 'POST', secret: SETUP_SECRET, body: JSON.stringify({ tokenHash: await sha256Hex(c.token) }) })
+  return c
+}
+// Ersteller ist creds (user1); frische Nutzer als Beitretende.
+const [J1, J2, J3, J4, J5, J6] = await Promise.all([
+  registerNew(), registerNew(), registerNew(), registerNew(), registerNew(), registerNew(),
+])
+const cal = generateCalCreds()
+const calCreate = (token, joinSecretHash) =>
+  req('/cal', { method: 'POST', token, body: JSON.stringify({ calId: cal.calId, joinSecretHash }) })
+const calJoin = (token, joinSecret) =>
+  req('/cal/join', { method: 'POST', token, body: JSON.stringify({ calId: cal.calId, joinSecret }) })
+// Frische Einladung setzen (Re-Invite) + beitreten — jeder Beitritt verbraucht das Secret.
+const inviteAndJoin = async (joinerToken) => {
+  const secret = generateCalCreds().joinSecret
+  await calCreate(creds.token, await sha256Hex(secret))
+  return calJoin(joinerToken, secret)
+}
+
+{
+  const r = await calCreate(creds.token, await sha256Hex(cal.joinSecret))
+  ok(r.status === 201, 'POST /cal (anlegen) → 201', `(war ${r.status})`)
+}
+{
+  const r = await calJoin(J1.token, cal.joinSecret)
+  ok(r.status === 200, 'POST /cal/join (gültiges Secret) → 200', `(war ${r.status})`)
+}
+{
+  // Dasselbe Secret ein zweites Mal (nach dem Beitritt verbraucht) → 409
+  const r = await calJoin(J2.token, cal.joinSecret)
+  ok(r.status === 409, 'joinSecret zweimal → 409', `(war ${r.status})`)
+}
+{
+  // Falscher Ersteller darf kein Re-Invite setzen
+  const r = await calCreate(J1.token, await sha256Hex('egal'))
+  ok(r.status === 403, 'Re-Invite durch Nicht-Ersteller → 403', `(war ${r.status})`)
+}
+
+// KV im Kalender-Namespace: Mitglied schreibt, anderes Mitglied liest
+const kCal = await hmacKeyId(cal.calKey, 'todos')
+const calEnv = await encryptPayload(cal.calKey, { value: [{ id: 'shared1', text: 'Zahnarzt', cal: cal.calId }], sub: {}, del: {}, changedAt: 111 })
+{
+  const r = await req(`/kv/${kCal}?ns=c:${cal.calId}`, { method: 'PUT', token: J1.token, body: JSON.stringify(calEnv), headers: { 'If-Match': '0' } })
+  ok(r.status === 200, 'Mitglied schreibt in c:<calId> → 200', `(war ${r.status})`)
+}
+{
+  const r = await req(`/kv?ns=c:${cal.calId}&since=0`, { token: creds.token })
+  const { rows } = await r.json()
+  const back = rows?.length ? await decryptPayload(cal.calKey, JSON.parse(rows[0].ciphertext)) : null
+  ok(r.status === 200 && back?.value?.[0]?.id === 'shared1', 'anderes Mitglied liest denselben Slice', `(war ${r.status})`)
+}
+{
+  // Der persönliche Store des Erstellers sieht die Kalender-Rows NICHT (getrennte ns)
+  const r = await req('/kv?since=0', { token: J1.token })
+  const { rows } = await r.json()
+  ok(!rows.some(x => x.keyId === kCal), 'Kalender-Slice taucht nicht im persönlichen u:-Namespace auf')
+}
+
+// Isolation: J6 ist kein Mitglied → weder lesen noch schreiben
+{
+  const r = await req(`/kv/${kCal}?ns=c:${cal.calId}`, { method: 'PUT', token: J6.token, body: JSON.stringify(calEnv), headers: { 'If-Match': '0' } })
+  ok(r.status === 403, 'Nicht-Mitglied schreibt c:<calId> → 403', `(war ${r.status})`)
+}
+{
+  const r = await req(`/kv?ns=c:${cal.calId}&since=0`, { token: J6.token })
+  ok(r.status === 403, 'Nicht-Mitglied liest c:<calId> → 403', `(war ${r.status})`)
+}
+{
+  const r = await req('/kv?ns=x:kaputt&since=0', { token: creds.token })
+  ok(r.status === 400, 'ns ungültig → 400', `(war ${r.status})`)
+}
+
+// Mitglieder-Cap: creator + J1 (=2) → J2..J5 auffüllen (=6), J6 wird abgewiesen
+{
+  const rs = []
+  for (const j of [J2, J3, J4, J5]) rs.push((await inviteAndJoin(j.token)).status)
+  ok(rs.every(s => s === 200), `J2–J5 treten bei → 6 Mitglieder (${rs.join(',')})`)
+  const r = await inviteAndJoin(J6.token)
+  ok(r.status === 403, '7. Mitglied (Cap 6) → 403', `(war ${r.status})`)
+}
+
+// Verlassen: eigene Mitgliedschaft entfernen → danach 403 im Namespace
+{
+  const r = await req(`/cal/${cal.calId}/me`, { method: 'DELETE', token: J1.token })
+  ok(r.status === 200, 'DELETE /cal/:calId/me → 200', `(war ${r.status})`)
+  const r2 = await req(`/kv?ns=c:${cal.calId}&since=0`, { token: J1.token })
+  ok(r2.status === 403, 'nach Verlassen kein Zugriff mehr → 403', `(war ${r2.status})`)
+}
+
+// TTL: abgelaufene Einladung → 410 (Ablauf lokal in der D1 erzwingen)
+{
+  const ttl = generateCalCreds()
+  await req('/cal', { method: 'POST', token: creds.token, body: JSON.stringify({ calId: ttl.calId, joinSecretHash: await sha256Hex(ttl.joinSecret) }) })
+  let forced = false
+  try {
+    execSync(`npx wrangler d1 execute adhs-sync --local --command "UPDATE cals SET join_expires = 0 WHERE cal_id = '${ttl.calId}'"`, { stdio: 'pipe' })
+    forced = true
+  } catch (e) {
+    console.log(`  ⚠ TTL-Check übersprungen — lokale D1 nicht direkt erreichbar (${String(e.message).split('\n')[0]})`)
+  }
+  if (forced) {
+    const r = await req('/cal/join', { method: 'POST', token: J6.token, body: JSON.stringify({ calId: ttl.calId, joinSecret: ttl.joinSecret }) })
+    ok(r.status === 410, 'abgelaufene Einladung → 410', `(war ${r.status})`)
+  }
 }
 
 // ─── Ergebnis ───

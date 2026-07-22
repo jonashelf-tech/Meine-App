@@ -33,5 +33,8 @@ export const createBlock = (partial = {}) => ({
   toolId:                null,
   haushaltTaskIds:       [],
   haushaltRoomId:        null,
+  cal:                   null,   // null = privat · '<calId>' = geteilter Kalender (teilen-spec.md §3.1)
+  updatedAt:             null,   // ms-Epoch — nur für cal!=null gepflegt (LWW-Quelle zwischen Personen)
+  by:                    null,   // memberId des letzten Bearbeiters — nur für cal!=null
   ...partial,
 })

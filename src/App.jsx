@@ -7,6 +7,7 @@ import { PENDING_TAB_KEY } from './features/tools/toolReset'
 import { saveAutoBackup } from './storage'
 import { maybeAutoPush } from './sync/cloudBackup'
 import { initSync, syncTick } from './sync/syncEngine'
+import { reconcileDaySlots } from './features/calendar/TabKalender/kalenderShared'
 import styles from './App.module.css'
 import TabHeute        from './features/calendar/TabHeute/TabHeute'
 import TabKalender     from './features/calendar/TabKalender/TabKalender'
@@ -68,7 +69,7 @@ const TABS = [
 const TOOL_IDS = new Set(Object.values(TOOL_TAB))
 
 export default function App() {
-  const { currentTab, previousTab, setCurrentTab, accentColor, theme } = useAppStore()
+  const { currentTab, previousTab, setCurrentTab, accentColor, theme, todos } = useAppStore()
   const { showToast } = useToast()
   const [addOpen, setAddOpen] = useState(false)
   const [sharePrefill, setSharePrefill] = useState(null)
@@ -87,6 +88,17 @@ export default function App() {
   }, [])
 
   useEffect(() => { saveAutoBackup(); maybeAutoPush(); initSync() }, [])
+
+  // Geteilte Termine sind echte Slots, kein Unterschied zu eigenen (A9): sobald
+  // ein Zielslot frei ist, platziert reconcileDaySlots automatisch — läuft hier
+  // zentral bei jeder todos-Änderung (eigener Edit, Pull von Paula, Löschen),
+  // unabhängig davon welcher Tab gerade offen ist. `days` bleibt lokal (nie
+  // Teil des Syncs) — reine Client-Reaktion, kein Store-Feld dafür nötig.
+  useEffect(() => {
+    const { days, setDays } = useAppStore.getState()
+    const next = reconcileDaySlots(days, todos)
+    if (next !== days) setDays(next)
+  }, [todos])
 
   // Storage-Schreibfehler (Quota voll, Private-Mode) sichtbar machen — sonst
   // arbeitet man im RAM weiter und verliert beim Reload alles. Max. 1 Toast/Minute.

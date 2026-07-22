@@ -40,6 +40,47 @@
   color: var(--text-faint);
 }
 
+/* Kalender-Kennung am eigenen Chip: kleine Ecke oben rechts (wie Wochenansicht/Raster) */
+.slotWrap {
+  position: relative;
+}
+
+.slotEmoji {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.6rem;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Geteilter Termin, dessen Kalender-Chip aus ist: Zeile bleibt (Rang/Lücken
+   in tagesListeLogic.js unverändert), Inhalt wird nicht gezeigt. */
+.hiddenSlot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin: 2px 0;
+  border-radius: var(--r-sm);
+  background: var(--surface-low);
+  opacity: 0.55;
+}
+
+.hiddenSlotTime {
+  font-family: var(--font-num);
+  font-size: 0.66rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.hiddenSlotLabel {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+}
+
 .band {
   border-radius: var(--r);
   border-left-width: 3px;

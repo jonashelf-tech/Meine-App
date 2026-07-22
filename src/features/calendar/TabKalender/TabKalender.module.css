@@ -178,6 +178,14 @@
 
 .cellBarTodo { opacity: 0.72; }
 
+/* Kalender-Kennung am Balken (geteilter Kalender) */
+.cellBarEmoji {
+  font-size: 0.55rem;
+  line-height: 1;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
 .cellMore {
   font-family: var(--font);
   font-size: 0.58rem;
@@ -352,6 +360,13 @@
   text-overflow: ellipsis;
 }
 
+.weekAlldayEmoji {
+  font-size: 0.55rem;
+  line-height: 1;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
 /* Innen-Scroll: nur die Stunden scrollen, Kopf/Ganztägig bleiben fix.
    max-height tunt die Karte auf die Viewport-Höhe (per Screenshot justiert). */
 .weekScrollBody {
@@ -492,6 +507,45 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1;
+}
+
+/* Hinweis „Paula · vor 4 Min" — rein informativ, blockiert nichts (A9 Variante B) */
+.weekSlotBadge {
+  font-family: var(--font);
+  font-size: 0.48rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Kalender-Kennung am eigenen Block: kleine Ecke oben rechts */
+.weekSlotEmoji {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: 0.55rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Termin ohne eigenen Slot (geteilter Kalender, noch nicht im Plan): sieht aus
+   wie jeder andere Block — nur (noch) nicht ziehbar. */
+.weekSlotBlock.weekSlotNoDrag {
+  cursor: default;
+  touch-action: auto;
+}
+
+/* Kollision: der Termin überlappt einen eigenen Block. Eingerückt, damit beide
+   sichtbar bleiben (Parallelplanung), rote Kante als Hinweis. */
+.weekSlotBlock.weekSlotClash {
+  left: 14px;
+  z-index: 1;
+  border: 1.5px solid var(--rose);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rose) 35%, transparent);
 }
 
 .weekNowLine {
@@ -850,6 +904,14 @@
   white-space: nowrap;
 }
 
+/* Kalender-Kennung am Eintrag (geteilter Kalender) */
+.dayPanelEntryEmoji {
+  font-size: 0.85rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+
 .dayPanelBadge {
   font-family: var(--font);
   font-size: 0.52rem;
@@ -860,6 +922,15 @@
   border-radius: 8px;
   flex-shrink: 0;
   opacity: 0.7;
+}
+
+/* Hinweis „Paula · vor 4 Min" — rein informativ, blockiert nichts (A9 Variante B) */
+.dayPanelEditBadge {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .dayPanelTodoEntry {

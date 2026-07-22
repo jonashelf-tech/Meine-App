@@ -9,7 +9,9 @@ import {
 import { useToast } from '../../../components/Toast/Toast'
 import { pauseSync } from '../../../sync/cloudBackup'
 import CloudBackupSection from './CloudBackupSection'
+import SharedCalendarsSection from './SharedCalendarsSection'
 import Hilfe from '../Hilfe/Hilfe'
+import CollapsibleSection from './CollapsibleSection'
 import s from './TabSettings.module.css'
 
 const THEMES = [
@@ -165,8 +167,7 @@ export default function TabSettings() {
     <div className={s.page}>
       <h2 className={s.title}>Einstellungen</h2>
 
-      <section className={s.card}>
-        <h3 className={s.cardTitle}>Erscheinungsbild</h3>
+      <CollapsibleSection title="Erscheinungsbild">
         <div className={s.rowLabel}>Theme</div>
         <div className={s.segmented}>
           {THEMES.map(t => (
@@ -206,10 +207,10 @@ export default function TabSettings() {
             className={s.hidden}
           />
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className={s.card}>
-        <h3 className={s.cardTitle}>Daten &amp; Backup</h3>
+      <div className={s.groupLabel}>Sicherung</div>
+      <CollapsibleSection title="Daten & Backup">
 
         <div className={s.autoBackupRow}>
           <span className={s.autoBackupLabel}>Auto-Backup</span>
@@ -264,12 +265,13 @@ export default function TabSettings() {
             ✦ Für KI exportieren
           </button>
         </div>
-      </section>
+      </CollapsibleSection>
 
       <CloudBackupSection />
 
-      <section className={s.card}>
-        <h3 className={s.cardTitle}>Wartung</h3>
+      <SharedCalendarsSection />
+
+      <CollapsibleSection title="Wartung">
         <div className={s.btnGroup}>
           <button className={[s.actionBtn, s.actionBtnSecondary].join(' ')} onClick={handleCacheReset}>
             ↺ Update suchen
@@ -281,14 +283,13 @@ export default function TabSettings() {
             {confirmReset ? '⚠ Wirklich löschen? (nochmal tippen)' : '✕ Alles zurücksetzen'}
           </button>
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className={s.card}>
-        <h3 className={s.cardTitle}>Hilfe</h3>
+      <CollapsibleSection title="Hilfe">
         <button className={s.actionBtn} onClick={() => setHelpOpen(true)}>
           Wie funktioniert die App?
         </button>
-      </section>
+      </CollapsibleSection>
     </div>
   )
 }

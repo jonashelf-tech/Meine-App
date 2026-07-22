@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import {
   generateCreds, buildRecoveryCode, parseRecoveryCode,
   encryptPayload, decryptPayload, sha256Hex, hmacKeyId,
+  generateCalCreds, newMemberId, buildCalInvite, parseCalInvite,
 } from './crypto'
 
 describe('generateCreds', () => {
@@ -131,5 +132,69 @@ describe('sha256Hex', () => {
   it('liefert den bekannten Testvektor für "abc"', async () => {
     expect(await sha256Hex('abc'))
       .toBe('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')
+  })
+})
+
+// ─── Geteilte Kalender (teilen-spec.md §4) ───────────────
+describe('generateCalCreds', () => {
+  it('liefert calId (16 Zeichen, passt zur Server-Regex), joinSecret, calKey, memberId', () => {
+    const { calId, joinSecret, calKey, memberId } = generateCalCreds()
+    expect(calId).toMatch(/^[A-Za-z0-9_-]{16}$/)      // 12 Byte → 16 Zeichen — Server: [A-Za-z0-9_-]{16}
+    expect(joinSecret).toMatch(/^[A-Za-z0-9_-]{22}$/)  // 16 Byte — Einmal-Geheimnis
+    expect(calKey).toMatch(/^[A-Za-z0-9_-]{43}$/)      // 32 Byte — AES-256, bleibt clientseitig
+    expect(memberId).toMatch(/^[A-Za-z0-9_-]{8}$/)     // 6 Byte
+  })
+
+  it('erzeugt bei jedem Aufruf andere Werte', () => {
+    const a = generateCalCreds()
+    const b = generateCalCreds()
+    expect(a.calId).not.toBe(b.calId)
+    expect(a.joinSecret).not.toBe(b.joinSecret)
+    expect(a.calKey).not.toBe(b.calKey)
+    expect(a.memberId).not.toBe(b.memberId)
+  })
+})
+
+describe('newMemberId', () => {
+  it('liefert 8 Zeichen base64url, bei jedem Aufruf anders', () => {
+    const a = newMemberId()
+    const b = newMemberId()
+    expect(a).toMatch(/^[A-Za-z0-9_-]{8}$/)
+    expect(a).not.toBe(b)
+  })
+})
+
+describe('Cal-Invite', () => {
+  it('Round-trip: buildCalInvite → parseCalInvite ergibt calId/joinSecret/calKey', async () => {
+    const { calId, joinSecret, calKey } = generateCalCreds()
+    const code = await buildCalInvite({ calId, joinSecret, calKey })
+    expect(await parseCalInvite(code)).toEqual({ calId, joinSecret, calKey })
+  })
+
+  it('formatiert als 5er-Gruppen in Base32 (tippbar, keine Sonderzeichen)', async () => {
+    const code = await buildCalInvite(generateCalCreds())
+    expect(code).toMatch(/^([A-Z2-7]{5}-)+[A-Z2-7]{5}$/)
+  })
+
+  it('parst calId zurück, das zur Server-Regex [A-Za-z0-9_-]{16} passt', async () => {
+    const parsed = await parseCalInvite(await buildCalInvite(generateCalCreds()))
+    expect(parsed.calId).toMatch(/^[A-Za-z0-9_-]{16}$/)
+  })
+
+  it('toleriert Kleinschreibung, Leerzeichen und fehlende Bindestriche', async () => {
+    const { calId, joinSecret, calKey } = generateCalCreds()
+    const code = await buildCalInvite({ calId, joinSecret, calKey })
+    const sloppy = code.toLowerCase().replaceAll('-', ' ')
+    expect(await parseCalInvite(sloppy)).toEqual({ calId, joinSecret, calKey })
+  })
+
+  it('wirft bei einem Tippfehler (Prüfsumme)', async () => {
+    const code = await buildCalInvite(generateCalCreds())
+    const flipped = (code[0] === 'A' ? 'B' : 'A') + code.slice(1)
+    await expect(parseCalInvite(flipped)).rejects.toThrow()
+  })
+
+  it('wirft bei zu kurzem Code', async () => {
+    await expect(parseCalInvite('ABCDE-FGH23')).rejects.toThrow()
   })
 })

@@ -5,9 +5,11 @@ import { lv, sv, SK } from '../../../storage'
 import { getBirthdaysForCalendarDate } from '../../tools/geburtstage/birthdayUtils'
 import TodoModal from '../../../components/TodoModal/TodoModal'
 import SlotSheet from '../Zeitplan/SlotSheet'
+import { useAppStore } from '../../../store'
 import {
   DAY_SHORT, SLOT_H, addDays, slotToTop, slotToHeight,
   blocksOverlap, rangeBlocked, getToolDots,
+  isEntryShown, isPrivatShown, calEmoji, getUnplacedCalItems, sharedEditBadge,
 } from './kalenderShared'
 import s from './TabKalender.module.css'
 
@@ -154,12 +156,29 @@ export default function WocheView({
   const dragJustEnded = useRef(false)
   const scrollBodyRef = useRef(null)
 
+  const calList   = useAppStore(st => st.calList)
+  const calFilter = useAppStore(st => st.calFilter)
+  const calCreds  = useAppStore(st => st.calCreds)
+
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek = weekDays.some(d => toDateKey(d) === todayKey)
+
+  // Geteilte Termine je Wochentag, die nicht schon als eigener Slot im Gitter
+  // stehen — additiver Lesepfad, folgt allein den Kalender-Chips.
+  const sharedByDay = {}
+  for (const date of weekDays) {
+    const dk = toDateKey(date)
+    sharedByDay[dk] = getUnplacedCalItems(todos, calList, calFilter, dk, days[dk])
+  }
+  const alldayOwn = (dk) => (showTodos && isPrivatShown(calFilter))
+    ? todos.filter(t => t.date === dk && !t.time && !t.cal)
+    : []
+
   const hasAllday = weekDays.some(date => {
     const dk = toDateKey(date)
     return getBirthdaysForCalendarDate(birthdays, dk).length > 0 ||
-      (showTodos && todos.some(t => t.date === dk && !t.time))
+      alldayOwn(dk).length > 0 ||
+      sharedByDay[dk].some(it => !it.time)
   })
 
   const nowTop = useMemo(() => {
@@ -357,9 +376,10 @@ export default function WocheView({
           <div className={s.weekAlldayRow}>
             <div className={s.weekAlldayLabel} />
             {weekDays.map(date => {
-              const dk          = toDateKey(date)
-              const bdays       = getBirthdaysForCalendarDate(birthdays, dk)
-              const alldayTodos = showTodos ? todos.filter(t => t.date === dk && !t.time) : []
+              const dk           = toDateKey(date)
+              const bdays        = getBirthdaysForCalendarDate(birthdays, dk)
+              const alldayTodos  = alldayOwn(dk)
+              const alldayShared = sharedByDay[dk].filter(it => !it.time)
               return (
                 <div key={dk} className={s.weekAlldayCol}>
                   {bdays.map(b => (
@@ -378,6 +398,16 @@ export default function WocheView({
                       style={{ '--bar-color': t.color || 'var(--primary)' }}
                     >
                       <span className={s.weekAlldayBarText}>{t.text}</span>
+                    </div>
+                  ))}
+                  {alldayShared.map(it => (
+                    <div
+                      key={it.id}
+                      className={s.weekAlldayBar}
+                      style={{ '--bar-color': it.color || 'var(--primary)' }}
+                    >
+                      <span className={s.weekAlldayEmoji}>{it.emoji}</span>
+                      <span className={s.weekAlldayBarText}>{it.text}</span>
                     </div>
                   ))}
                 </div>
@@ -466,6 +496,10 @@ export default function WocheView({
                     if (!showTodos   &&  isTodo) return null
                     const slotTodo = slot.todoId ? todos.find(t => t.id === slot.todoId) : null
                     if (!showTools && slotTodo?.toolId) return null
+                    const slotCal = slotTodo?.cal ?? null
+                    if (!isEntryShown(calFilter, slotCal)) return null
+                    const emoji = calEmoji(calList, slotCal)
+                    const badge = slotCal ? sharedEditBadge(slotTodo, calList, calCreds) : null
                     const isBlocking = dragging && dragTarget?.dk === dk
                       && !(dragging.dk === dk && dragging.key === key)
                       && blocksOverlap(parseFloat(dragTarget.key), dragging.slot.duration, parseFloat(key), slot.duration)
@@ -541,8 +575,44 @@ export default function WocheView({
                           document.addEventListener('pointercancel', onCancel)
                         }}
                       >
+                        {emoji && <span className={s.weekSlotEmoji}>{emoji}</span>}
                         {height >= 14 && <span className={s.weekSlotName}>{slot.text}</span>}
                         {height >= 34 && <span className={s.weekSlotTime}>{hh}:{mm}</span>}
+                        {height >= 48 && badge && <span className={s.weekSlotBadge}>✏️ {badge.label}</span>}
+                      </div>
+                    )
+                  })}
+                  {/* Geteilte Termine, die (noch) keinen eigenen Slot haben: gleicher
+                      Block wie alles andere, Kennung ist allein das Emoji. Nur wenn
+                      der Termin mit einem eigenen Block kollidiert, wird er eingerückt
+                      und rot markiert — sonst wäre die Doppelbuchung unsichtbar. */}
+                  {sharedByDay[dk].map(it => {
+                    if (!it.time) return null
+                    const [hh, mm] = it.time.split(':').map(Number)
+                    const h = hh + (mm || 0) / 60
+                    if (h < visibleStart || h >= visibleEnd) return null
+                    const height = slotToHeight(it.duration)
+                    const clash  = rangeBlocked(days[dk], String(h), it.duration, null)
+                    return (
+                      <div
+                        key={it.id}
+                        className={[
+                          s.weekSlotBlock, s.weekSlotTodo, s.weekSlotNoDrag,
+                          clash ? s.weekSlotClash : '',
+                        ].join(' ')}
+                        style={{
+                          top: slotToTop(String(h), visibleStart),
+                          height,
+                          '--slot-color': it.color || 'var(--primary)',
+                        }}
+                      >
+                        <span className={s.weekSlotEmoji}>{it.emoji}</span>
+                        {height >= 14 && <span className={s.weekSlotName}>{it.text}</span>}
+                        {height >= 34 && <span className={s.weekSlotTime}>{it.time}</span>}
+                        {height >= 48 && (() => {
+                          const badge = sharedEditBadge(it, calList, calCreds)
+                          return badge && <span className={s.weekSlotBadge}>✏️ {badge.label}</span>
+                        })()}
                       </div>
                     )
                   })}
