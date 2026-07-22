@@ -27,6 +27,10 @@ const CARDS = [
     body: 'In der Wochenansicht ziehst du Blöcke frei über Tage und Uhrzeiten. Die Monatsansicht gibt dir den ruhigen Überblick über den Monat.',
   },
   {
+    title: 'Geteilte Kalender',
+    body: 'Unter Einstellungen → Geteilte Kalender legt ihr einen gemeinsamen Kalender an — einladen geht per Code. Jeder Kalender trägt ein Emoji als Kennung; über die Chips oben im Tagesplaner und Kalender blendest du ihn ein und aus. Trägt jemand anderes etwas ein, glimmt das kleine Feld rechts neben den Chips. Ein Tipp darauf zeigt, was seit deinem letzten Blick passiert ist — auch Überschneidungen mit deinem eigenen Plan. Öffnen zählt als gesehen, danach ist das Glimmen aus.',
+  },
+  {
     title: 'Der +-Knopf',
     body: 'Über + legst du Aufgaben an. Schreib einfach drauflos — aus „Einkaufen 30min wichtig" erkennt die App Dauer und Priorität von selbst. Über den Umschalter oben wird aus dem + auch eine schnelle Notiz.',
   },

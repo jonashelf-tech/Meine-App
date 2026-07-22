@@ -1,0 +1,108 @@
+/* Werte aus mockup-a10.html (Digest-Sheet-Sektion) übernommen. */
+
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 82vh;
+  margin: 0 auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 10px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+}
+
+.grab {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--text-ghost);
+  margin: 0 auto 12px;
+  flex-shrink: 0;
+}
+
+.shTitle {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.shSub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.shList {
+  overflow-y: auto;
+  flex: 1;
+  margin-top: 6px;
+}
+
+.grpHead {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-faint);
+  margin: 12px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.grpHead:first-child { margin-top: 4px; }
+.grpHead .em { font-size: 0.9rem; }
+
+.nRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 9px 10px;
+  border-radius: var(--r-sm);
+  background: var(--surface-low);
+  border: 1px solid var(--border-dim);
+  margin-bottom: 6px;
+}
+.nRow .em { font-size: 1rem; line-height: 1.3; flex-shrink: 0; }
+.nRow.clash { border-left: 3px solid var(--rose); padding-left: 8px; }
+
+.tx { font-size: 0.8rem; line-height: 1.4; }
+.tx b { font-weight: 600; }
+.done { color: var(--emerald); }
+
+.meta { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }
+.clashText { color: var(--rose); font-weight: 600; }
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  text-align: center;
+  padding: 28px 12px;
+}
+
+.shFoot {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.shHint {
+  font-size: 0.66rem;
+  color: var(--text-faint);
+  flex: 1;
+  line-height: 1.4;
+}
+.shBtn {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+}
