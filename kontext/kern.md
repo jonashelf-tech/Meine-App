@@ -31,6 +31,9 @@ Immer `createBlock()` statt manuell `{ id: ..., text: ... }` — sichert created
 - `isTermin(b)`      — `!!(b.date && b.time)` → Kalender-Termin
 - `isFaelligkeit(b)` — `!!(b.date && !b.time)` → nur Datum, kein Slot
 - `isTodo(b)`        — `!b.date && !b.time` → reines Pool-Todo
+- `bumpPostpone(b, now?)` — pur: zählt `postponeCount` hoch + stempelt `postponedAt`, **max. 1×/Tag** (Entprellung). Legacy-Blöcke ohne die Felder crashen nicht.
+
+**Verschoben-Signal (Stufe 2, für den Buddy):** `postponeCount` + `postponedAt` am Block zählen, wie oft ein Todo weggeschoben wurde — das ADHS-Signal. Hochgezählt an drei Stellen: Missed-Review „Ignorieren" **und** „In Pool" (`useTimeEvents`, nur Items mit `todoId`) sowie Datum-nach-hinten-Schieben im TodoModal-Edit. Fließt gekappt ins `contextPacket` (Feld `verschoben`, nur bei >0) und speist den Briefkasten-Trigger `verschoben` in `buddyImpuls.js`.
 
 **Tagesliste (Listenmodus):** Ein Todo mit `date` + ohne `time` ist weiterhin `isFaelligkeit` — es entsteht **kein** neuer Typ. `dayRank` ist nur die Reihenfolge obendrauf: `null` = ans Tagesende (Rang 24). Sortierlogik rein in `src/features/calendar/tagesListeLogic.js` (`rankOf`, `insertRank`, `buildDayEntries`; Guard `tagesListeLogic.test.js`).
 
@@ -189,6 +192,11 @@ birthdays,    setBirthdays
 
 // Projekte
 projects,     setProjects
+
+// Buddy (KI-Begleiter)
+buddySettings, setBuddySettings   // persistiert (SK.buddySettings)
+buddyMemory,   setBuddyMemory     // persistiert (SK.buddyMemory)
+buddyThread,   setBuddyThread     // flüchtig — Gesprächsfaden, stirbt beim Reload
 ```
 
 ---
@@ -335,6 +343,10 @@ SK.dailyState        → 'adhs_daily_state_v1'      // { "YYYY-MM-DD": { sleep, 
 SK.garten            → 'adhs_garten_v1'           // { xpFloor, seenMilestones } — Garten-Begleiter (Monotonie-Ratchet)
 SK.erfolgeTracking   → 'adhs_erfolge_tracking_v1' // Tagesplaner-Tage; schreibt TabHeute, liest Garten (historischer Name)
 SK.erfolge           → LEGACY (altes Erfolge-Tool, nur Backup-Kompat)
+
+// Buddy (KI-Begleiter, src/features/buddy/ — Konzept: Dateien/output/ki-buddy-konzept.md)
+SK.buddySettings     → 'adhs_buddy_settings'   // { enabled, name, userName, ton, calScopes:{privat,cals} } — calScopes = was der Buddy lesen darf (geteilte Kalender default AUS)
+SK.buddyMemory       → 'adhs_buddy_memory'     // [{ id, text, createdAt }] — NUR vom Nutzer bestätigte Merk-Notizen, Cap 30
 
 // Cloud-Backup + Geräte-Sync (src/sync/ — siehe Dateien/output/sync-architektur.md)
 SK.cloudCreds        → 'adhs_cloud_creds'       // { serverUrl, token, key, activatedAt, syncOn } — E2E-Schlüssel bleibt clientseitig (BACKUP_CATS.einstellungen)
@@ -500,6 +512,7 @@ mitten in der Prüfung). Variante 2 hat Priorität — nie beide gleichzeitig ak
   - **Erledigt** → `slot.done = true, slot.reviewed = true`; Todo: `done=true, doneAt=now`
   - **Ignorieren** → `slot.ignored = true` *(kommt bei Variante 2 wieder)*
   - **In Pool** → Slot löschen; text-only: neues Todo via `createBlock`; todo-type: bleibt im Pool
+  - **Verschoben-Bump (Stufe 2):** „Ignorieren" und „In Pool" zählen bei Items mit `todoId` zusätzlich `postponeCount` hoch (`bumpPostpone`, 1×/Tag) — Buddy-Signal, siehe Block-Modell oben
 
 **Variante 2 — neuer Tag:**
 - Trigger: `SK.lastPoolReturn !== todayKey()`

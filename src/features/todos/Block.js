@@ -1,3 +1,5 @@
+import { dateKey } from '../../utils'
+
 export const PRIO = {
   1: { label: 'Wichtig', color: '#FF2D78', bg: 'rgba(255,45,120,0.12)' },
   2: { label: 'Sollte',  color: '#00CFFF', bg: 'rgba(0,207,255,0.08)' },
@@ -29,6 +31,8 @@ export const createBlock = (partial = {}) => ({
   paused:                false,  // pausiert = raus aus dem präsenten Vordergrund, ans Pool-Ende
   pauseReason:           null,   // optionaler Grund („woran hängt's"), als Marker am Chip
   showFromDate:          null,   // "2026-06-15" — Todo erst ab diesem Datum im Pool sichtbar
+  postponeCount:         0,      // wie oft verschoben — ADHS-Signal für den Buddy
+  postponedAt:           null,   // ISO-Timestamp des letzten Bumps (Entprellung: max. 1×/Tag)
   createdAt:             new Date().toISOString(),
   toolId:                null,
   haushaltTaskIds:       [],
@@ -38,3 +42,10 @@ export const createBlock = (partial = {}) => ({
   by:                    null,   // memberId des letzten Bearbeiters — nur für cal!=null
   ...partial,
 })
+
+// Bump beim Verschieben — pur, max. 1×/Tag (Entprellung). Legacy-Todos ohne
+// die Felder crashen nicht (?? 0, postponedAt undefined = nie gebumpt).
+export const bumpPostpone = (todo, now = new Date()) => {
+  if (todo.postponedAt && dateKey(new Date(todo.postponedAt)) === dateKey(now)) return {}
+  return { postponeCount: (todo.postponeCount ?? 0) + 1, postponedAt: now.toISOString() }
+}

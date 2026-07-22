@@ -330,6 +330,33 @@ const calEnv = await encryptPayload(cal.calKey, { value: [{ id: 'shared1', text:
   }
 }
 
+// ─── Buddy: /buddy-Route (Auth, Kill-Switch, Validierung) ───
+// Ohne BUDDY_ENABLED=1 in .dev.vars prüft der Block den Auslieferzustand
+// (503 hinter Auth); mit BUDDY_ENABLED=1 + Dummy-Key zusätzlich Validierung
+// (400) und den Upstream-Pfad (502 bei Dummy-Key bzw. 200 bei echtem Key).
+console.log('\n■ Buddy /buddy')
+const buddyBody = (over = {}) => JSON.stringify({
+  kind: 'frage', message: 'Feuerprobe?', context: { screen: 'test' },
+  profile: { userName: 'F', buddyName: 'Probe', ton: 'herzlich' }, history: [],
+  ...over,
+})
+{
+  const r = await req('/buddy', { method: 'POST', body: buddyBody() })
+  ok(r.status === 401, 'POST /buddy ohne Token → 401 (Auth vor Kill-Switch)', `(war ${r.status})`)
+}
+{
+  const r = await req('/buddy', { method: 'POST', token: creds.token, body: buddyBody() })
+  if (r.status === 503) {
+    ok(true, 'Buddy deaktiviert (Default) → 503 — scharfe Checks übersprungen (BUDDY_ENABLED=1 + Key in .dev.vars zum Testen)')
+  } else {
+    ok([200, 502].includes(r.status), 'Buddy aktiv: gültiger Request → 200 (echter Key) bzw. 502 (Dummy-Key)', `(war ${r.status})`)
+    const bad = await req('/buddy', { method: 'POST', token: creds.token, body: buddyBody({ kind: 'hack' }) })
+    ok(bad.status === 400, 'Buddy aktiv: unbekanntes kind → 400', `(war ${bad.status})`)
+    const kaputt = await req('/buddy', { method: 'POST', token: creds.token, body: '{{{' })
+    ok(kaputt.status === 400, 'Buddy aktiv: kaputtes JSON → 400', `(war ${kaputt.status})`)
+  }
+}
+
 // ─── Ergebnis ───
 console.log(`\n${'─'.repeat(50)}\n${failed === 0 ? '✅' : '❌'} ${passed} bestanden, ${failed} fehlgeschlagen`)
 process.exit(failed === 0 ? 0 : 1)

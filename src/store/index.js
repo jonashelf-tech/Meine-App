@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { sv, lv, SK } from '../storage'
 import { migrateProjekte } from '../features/projekte/projektMigration'
 import { stampCal } from '../features/cal/calStamp'
+import { EMPTY_IMPULS } from '../features/buddy/buddyImpuls'
 
 // Kategorie→Projekt-Migration MUSS vor den lv()-Reads der Store-Initialisierung laufen.
 migrateProjekte()
@@ -168,6 +169,27 @@ export const useAppStore = create((set, get) => ({
     set({ klaerenSettings: next })
     sv(SK.klaerenSettings, next)
   },
+
+  // ─── Buddy (KI-Begleiter) ──────────────────────────────
+  // calScopes: was der Buddy lesen darf — Shape wie calFilter ({ privat, cals }).
+  // buddyThread = flüchtiger Gesprächsfaden (überlebt Sheet-Schließen, nicht Reload).
+  buddySettings: lv(SK.buddySettings, { enabled: false, name: 'Nuki', userName: '', ton: 'herzlich', calScopes: { privat: true, cals: {} } }),
+  buddyMemory:   lv(SK.buddyMemory, []),
+  buddyImpuls:   lv(SK.buddyImpuls, EMPTY_IMPULS),
+  buddyThread:   [],
+  setBuddySettings: (s) => {
+    const next = typeof s === 'function' ? s(get().buddySettings) : s
+    set({ buddySettings: next }); sv(SK.buddySettings, next)
+  },
+  setBuddyMemory: (m) => {
+    const next = typeof m === 'function' ? m(get().buddyMemory) : m
+    set({ buddyMemory: next }); sv(SK.buddyMemory, next)
+  },
+  setBuddyImpuls: (v) => {
+    const next = typeof v === 'function' ? v(get().buddyImpuls) : v
+    set({ buddyImpuls: next }); sv(SK.buddyImpuls, next)
+  },
+  setBuddyThread: (t) => set({ buddyThread: typeof t === 'function' ? t(get().buddyThread) : t }),
 
   // ─── Geteilte Kalender (Teilen Stufe A) ────────────────
   // Reaktiv, damit Einstellungen-Karte + Kalender-Views auf Sync/Mutationen reagieren.

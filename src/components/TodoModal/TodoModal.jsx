@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { useAppStore } from '../../store'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
-import { createBlock } from '../../features/todos/Block'
+import { createBlock, bumpPostpone } from '../../features/todos/Block'
 import { moveToCal } from '../../features/cal/calStore'
 import { createNote, noteTitle, formatNoteTime } from '../../features/notes/Note'
 import { parseTodoText } from '../../features/todos/parseTodoText'
@@ -245,6 +245,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
     if (isEdit) {
       const wasTermin = !!(existingTodo.date && existingTodo.time)
       const nowTermin = isTermin
+      // Datum nach hinten verschoben (nicht neu gesetzt, sondern später) = Verschieben-Signal für den Buddy.
+      const postponed = existingTodo.date && (eff.date || null) && eff.date > existingTodo.date
 
       const updated = {
         ...existingTodo,
@@ -258,6 +260,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         date:      eff.date || null,
         time:      eff.time || null,
         dayRank:   eff.time ? null : existingTodo.dayRank ?? null,
+        ...(postponed ? bumpPostpone(existingTodo) : {}),
       }
       if (cal && secret) updated.secret = true; else delete updated.secret   // 🕶 sparse (A9)
 

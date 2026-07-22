@@ -27,6 +27,7 @@ const ALLOWED = [
   'features/calendar/TabHeute/useTimeEvents.js',
   'components/TodoModal/TodoModal.jsx',
   'features/cal/calStamp.js',   // CAL_PERSONAL_FIELDS: dayRank wird beim Teilen bewusst NICHT gestempelt (§3.3)
+  'features/buddy/BuddySheet.jsx', // schedule-Action platziert wie SlotSheet-Place: setzt Zeit → dayRank zurück auf null
   'sync/merge.js',              // mergeCalSlice: dayRank bleibt lokal, aus der Inhalts-Signatur gestrippt (§3.3)
   'sync/syncEngine.js',         // dayRank wird aus dem Kalender-Slice gestrippt — persönlich, reist nie mit (§3.3)
 ]

@@ -27,6 +27,8 @@ Grep-bare Regeln werden als Guard-Test abgesichert statt nur dokumentiert (Vorbi
 
 ## Tooling
 Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder Bash.
+Screenshots (App oder HTML) über `node tools/shot.mjs <url|datei> [ziel.png] [breite] [hoehe]` —
+Headless-Chrome, hängt nicht. Das Preview-Screenshot-Tool des In-App-Browsers meiden (Timeouts).
 
 ## Arbeitsweise
 
@@ -43,9 +45,28 @@ Dateien lesen/suchen immer mit **Read, Glob, Grep** — nie mit PowerShell oder 
 - Änderungen an Daten/Speicher (Datenverlust möglich) → zusätzlich erst Backup-Pfad
 
 **Risiko-Stufen:**
-- Kosmetik (Farbe, Layout, Text) → einfach machen
+- Kosmetik (Farbe, Layout, Text — innerhalb der bestehenden Design-Sprache) → einfach machen
+- Optik-Neuland (Charaktere, Illustrationen, neue Stilrichtung) → erst abstimmen (Regel unten)
 - Logik/Feature → machen + 1 Satz "woran du Erfolg erkennst"
 - Daten/Migration → erst fragen
+
+**Optik & Geschmack (2026-07-20, Anlass: Buddy-Eichhörnchen v1):**
+Neue visuelle Identität — Charaktere, Illustrationen, Stilrichtungen, alles ohne Vorbild in
+der App — wird **immer vorher abgestimmt**: 2–3 Varianten oder Referenzen zeigen
+(Widget/Mockup reicht), Jonas wählt, dann bauen. Gilt **auch bei „freie Hand"/„vollgas"** —
+diese Formeln decken Inhalt und Architektur ab, nicht Geschmack. Soll auch die Optik
+freigegeben sein, frage ich das einmal explizit nach („auch die Optik frei?") und entscheide
+erst nach dieser **zusätzlichen** Bestätigung optisch autonom. Umsetzung innerhalb der
+bestehenden Design-Sprache (vars.css-Tokens, Tool-Design-Patterns) bleibt davon unberührt.
+
+**Visuelles Iterieren — Token-Disziplin (2026-07-20, Anlass: Buddy-Avatar, 8 Einzelrunden verbrannt):**
+Optik NIE Runde-für-Runde in einem großen Modell durchklicken (render → anschauen → minimal
+tweaken → render). Das ist die teuerste Falle. Stattdessen: **Varianten gebündelt in EINEM Bild**
+zeigen (mehrere Größen/Posen/Alternativen nebeneinander), Jonas wählt, **max. 1–2 Feinschliff-Runden**,
+dann Schluss. Screenshots **immer** über `node tools/shot.mjs <url|datei> <ziel.png>` (Headless-Chrome,
+zuverlässig) — **nicht** das Preview-Screenshot-Tool des Browsers (hängt auf diesem Rechner mit
+30–300s-Timeouts, war die halbe Token-Verschwendung). Iteratives Pixel-/Optik-Fummeln gehört ohnehin
+zu **Sonnet**, nicht Opus/Fable — das große Modell legt Stil/Richtung fest, Sonnet setzt die Runden um.
 
 **Bevor ich "totes" Zeug lösche/ersetze:** erst prüfen ob es wirklich tot ist. Im Zweifel melden statt löschen.
 

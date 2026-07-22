@@ -3,6 +3,10 @@
 // nur verschlüsselte Envelopes, Auth per Geheim-Token (gespeichert als Hash).
 // Etappe 2: /register + /backup*. Die kv-Tabelle für Etappe 3 liegt schon im Schema.
 import { keepBackupIds } from './retention.js'
+import {
+  validateBuddyRequest, limitScope, dayKey, monthKey,
+  resolveProvider, providerKey, buildProviderRequest, parseProviderResponse,
+} from './buddy.js'
 
 const MAX_ENVELOPE_BYTES = 3_000_000   // weit über realer Backup-Größe, weit unter D1-Grenzen
 
@@ -77,6 +81,50 @@ export default {
       // Ab hier: alles braucht Auth
       const user = await authUser(request, env)
       if (!user) return json({ error: 'Nicht autorisiert' }, 401, cors)
+
+      // ─── /buddy — KI-Begleiter (Konzept: Dateien/output/ki-buddy-konzept.md §10) ───
+      // Einziger Endpoint, der Klartext sieht (das clientseitig gefilterte
+      // Kontextpaket) — Kill-Switch, Tages-/Monats-Limits, Persona serverseitig.
+      if (path === '/buddy' && request.method === 'POST') {
+        const provider = resolveProvider(env)
+        if (env.BUDDY_ENABLED !== '1' || !providerKey(provider, env))
+          return json({ error: 'Buddy ist auf diesem Server nicht aktiviert' }, 503, cors)
+
+        let body
+        try { body = await request.json() } catch { body = null }
+        const { ok, error } = validateBuddyRequest(body)
+        if (error) return json({ error }, 400, cors)
+
+        const now = Date.now()
+        const dk = dayKey(now), mk = monthKey(now)
+        const daily   = await env.DB.prepare('SELECT count FROM buddy_usage WHERE user_id = ? AND period = ?')
+          .bind(user.id, dk).first()
+        const monthly = await env.DB.prepare('SELECT count FROM buddy_usage WHERE user_id = 0 AND period = ?')
+          .bind(mk).first()
+        const scope = limitScope({
+          dailyCount:   daily?.count ?? 0,
+          monthlyCount: monthly?.count ?? 0,
+          dailyLimit:   Number(env.BUDDY_DAILY_LIMIT ?? 50),
+          monthlyCap:   Number(env.BUDDY_MONTHLY_CAP ?? 3000),
+        })
+        if (scope) return json({ error: 'Limit erreicht', scope }, 429, cors)
+
+        // Zählen VOR dem Upstream-Call — parallele Bursts können das Limit
+        // so nicht umgehen; ein verlorener Zähler bei Upstream-Fehlern ist egal.
+        const bump = 'INSERT INTO buddy_usage (user_id, period, count) VALUES (?, ?, 1) ' +
+                     'ON CONFLICT (user_id, period) DO UPDATE SET count = count + 1'
+        await env.DB.prepare(bump).bind(user.id, dk).run()
+        await env.DB.prepare(bump).bind(0, mk).run()
+
+        const req = buildProviderRequest(provider, env, ok)
+        const upstream = await fetch(req.url, { method: 'POST', headers: req.headers, body: JSON.stringify(req.body) })
+        if (!upstream.ok) {
+          console.warn('[buddy] Upstream', provider, upstream.status, (await upstream.text()).slice(0, 300))
+          return json({ error: 'KI-Dienst gerade nicht erreichbar' }, 502, cors)
+        }
+        const { text, actions } = parseProviderResponse(provider, await upstream.json())
+        return json({ ok: true, text, actions }, 200, cors)
+      }
 
       // ─── /cal — Teilen Stufe A: Kalender anlegen / beitreten / verlassen ───
       const CAL_INVITE_TTL_MS = 48 * 60 * 60 * 1000

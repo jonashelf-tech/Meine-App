@@ -57,6 +57,55 @@ Die App zeigt dir einmalig den **Recovery-Code** — in den Passwortmanager dami
 2. Einstellungen → Cloud-Sicherung → „Mit Recovery-Code verbinden" → URL + Code
 3. „Aus Cloud wiederherstellen" → alles wieder da? → bestanden ✓
 
+## Buddy aktivieren (KI-Begleiter, optional)
+
+Der `/buddy`-Endpoint ruft eine KI-API auf — er ist **aus**, bis du ihn scharf schaltest.
+Zwei Provider stehen zur Wahl, per Env umschaltbar (Default: Anthropic).
+
+### Weg A: Anthropic (Claude)
+
+1. API-Key holen: [console.anthropic.com](https://console.anthropic.com) → API Keys (Budget-Limit im Anthropic-Dashboard setzen schadet nie).
+2. Key als Secret hinterlegen (wird nie im Code/Repo sichtbar):
+   ```
+   npx wrangler secret put ANTHROPIC_API_KEY
+   ```
+3. In `wrangler.toml` unter `[vars]` ergänzen und deployen:
+   ```
+   BUDDY_ENABLED = "1"
+   ```
+4. Neue Tabelle anlegen (einmalig, additiv — löscht nichts):
+   ```
+   npm run db:schema
+   ```
+5. `npm run deploy`
+
+### Weg B: Google Gemini (kostenloser Key)
+
+1. Gratis-Key holen: [aistudio.google.com](https://aistudio.google.com) → „Get API key" (Google-Account, keine Kreditkarte).
+2. Key als Secret hinterlegen:
+   ```
+   npx wrangler secret put GEMINI_API_KEY
+   ```
+3. In `wrangler.toml` unter `[vars]` ergänzen und deployen:
+   ```
+   BUDDY_ENABLED = "1"
+   BUDDY_PROVIDER = "gemini"
+   ```
+4. Neue Tabelle anlegen (einmalig, additiv — löscht nichts):
+   ```
+   npm run db:schema
+   ```
+5. `npm run deploy`
+
+Zurück zu Anthropic: `BUDDY_PROVIDER = "anthropic"` setzen (bzw. die Zeile entfernen — das ist
+der Default) und `ANTHROPIC_API_KEY` muss noch als Secret hinterlegt sein, dann `npm run deploy`.
+
+Stellschrauben (optional, `[vars]`): `BUDDY_DAILY_LIMIT` (Calls pro Nutzer/Tag, Default 50),
+`BUDDY_MONTHLY_CAP` (Calls global/Monat, Default 3000 — der Kostendeckel),
+`BUDDY_MODEL_FAST` / `BUDDY_MODEL_SMART` (Anthropic, Defaults `claude-haiku-4-5` / `claude-sonnet-5`),
+`BUDDY_GEMINI_FAST` / `BUDDY_GEMINI_SMART` (Gemini, Default beide `gemini-2.5-flash`).
+Not-Aus: `BUDDY_ENABLED` auf `"0"` + deploy.
+
 ## Wenn etwas hakt
 
 - **CORS-Fehler in der Konsole:** deine App-Domain fehlt in `wrangler.toml` unter
@@ -69,10 +118,10 @@ Die App zeigt dir einmalig den **Recovery-Code** — in den Passwortmanager dami
 ## Lokale Feuerprobe (ohne Cloudflare-Account)
 
 Kompletter End-to-End-Test der Cloud-Kette gegen einen **lokalen** Worker —
-mit den echten Client-Krypto-Funktionen der App (46 Checks: Registrierung,
+mit den echten Client-Krypto-Funktionen der App (48 Checks: Registrierung,
 Backup-Roundtrip, /kv mit If-Match/409, Nutzer-Isolation, Retention, CORS +
 geteilte Kalender /cal: anlegen/beitreten, Einmal-joinSecret, TTL, Mitglieder-Cap,
-Namespace-Isolation für Nicht-Mitglieder):
+Namespace-Isolation für Nicht-Mitglieder + /buddy: Auth-Pflicht, Kill-Switch):
 
 ```
 echo SETUP_SECRET=feuerprobe-lokal-2026 > .dev.vars
@@ -88,6 +137,13 @@ läuft der Worker parallel, geht das i. d. R. durch; falls die lokale D1 gerade
 gesperrt ist, überspringt das Skript nur diesen einen Check (mit Hinweis). Bei
 Server-Änderungen hier neue Checks ergänzen — das Skript ist der Test-Harness,
 den Unit-Tests nicht ersetzen können (CORS/Preflight, echtes D1).
+
+Scharfer /buddy-Test (Validierung 400, Upstream-Pfad 502, Limits 429): in
+`.dev.vars` zusätzlich `BUDDY_ENABLED=1` + `ANTHROPIC_API_KEY=dummy` setzen,
+Worker neu starten — die Feuerprobe schaltet die Zusatz-Checks dann selbst
+scharf. (2026-07-20 lokal komplett durchgespielt, inkl. 429 via gesetztem
+Zähler. Achtung Windows: alte `workerd.exe`-Prozesse halten Port 8787 nach
+einem Abbruch manchmal fest → `taskkill //F //IM workerd.exe`.)
 
 ## Was hier liegt
 
