@@ -34,3 +34,75 @@
   border-color: transparent;
   background: var(--border-dim);
 }
+
+/* ─── Signal-Feld (A10, Variante A) — öffnet den Neuigkeiten-Digest ────
+   Ruhezustand = gedimmt (Werte + sigBreath-Keyframe aus mockup-a10.html,
+   dezente Intensität). KEIN prefers-reduced-motion nötig — vars.css
+   schaltet Animationen global ab. */
+.sig {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--border-dim);
+  color: var(--text-faint);
+  opacity: 0.5;
+  cursor: pointer;
+  position: relative;
+  transition: color var(--dur-fast), border-color var(--dur-fast), background var(--dur-fast), opacity var(--dur-fast);
+}
+.sig svg { display: block; }
+
+.sigNew {
+  opacity: 1;
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 42%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  animation: sigBreath 3.4s var(--ease) infinite;
+}
+
+@keyframes sigBreath {
+  0%, 100% { box-shadow: 0 0 5px  color-mix(in srgb, var(--primary) 16%, transparent), 0 0 14px color-mix(in srgb, var(--primary) 7%, transparent); }
+  50%      { box-shadow: 0 0 11px color-mix(in srgb, var(--primary) 38%, transparent), 0 0 26px color-mix(in srgb, var(--primary) 14%, transparent); }
+}
+
+.sigCount {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 15px;
+  height: 15px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.56rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--bg);
+}
+
+/* ─── Verlassener Kalender (§8.3) — dezenter Read-only-Hinweis ────
+   Einträge bleiben lokal sichtbar, aber die Kopplung ist getrennt. */
+.orphan {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 7px;
+}
+.orphanItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-faint);
+}

@@ -196,6 +196,7 @@ export const useAppStore = create((set, get) => ({
   calCreds:  lv(SK.calCreds, {}),   // { [calId]: { key, memberId, joinedAt } }
   calList:   lv(SK.calList, {}),    // { [calId]: { name, emoji, members, updatedAt } }
   calFilter: lv(SK.calFilter, { privat: true, cals: {} }),
+  calSeen:   lv(SK.calSeen, {}),    // { [calId]: ts } — letzter Aktivitäts-Blick (A10-Digest)
   setCalCreds: (c) => {
     const next = typeof c === 'function' ? c(get().calCreds) : c
     set({ calCreds: next }); sv(SK.calCreds, next)
@@ -207,5 +208,9 @@ export const useAppStore = create((set, get) => ({
   setCalFilter: (c) => {
     const next = typeof c === 'function' ? c(get().calFilter) : c
     set({ calFilter: next }); sv(SK.calFilter, next)
+  },
+  setCalSeen: (c) => {
+    const next = typeof c === 'function' ? c(get().calSeen) : c
+    set({ calSeen: next }); sv(SK.calSeen, next)
   },
 }))
