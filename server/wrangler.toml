@@ -11,3 +11,8 @@ database_id = "5d003988-aeb3-4078-a70f-ec3722d0e47a"
 [vars]
 # Wer darf aus dem Browser zugreifen (kommagetrennt). Bei neuer App-Domain erweitern.
 ALLOWED_ORIGINS = "https://meine-app-pi.vercel.app,http://localhost:5173,http://localhost:4173"
+
+# Buddy (KI-Begleiter) scharf: an + Provider. Der API-Key kommt als Secret
+# (npx wrangler secret put GEMINI_API_KEY) — NIE hier im Klartext.
+BUDDY_ENABLED  = "1"
+BUDDY_PROVIDER = "gemini"   # "anthropic" zum Zurueckwechseln (+ ANTHROPIC_API_KEY als Secret)
