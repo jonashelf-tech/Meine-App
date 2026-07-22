@@ -4,8 +4,8 @@
 // Etappe 2: /register + /backup*. Die kv-Tabelle für Etappe 3 liegt schon im Schema.
 import { keepBackupIds } from './retention.js'
 import {
-  validateBuddyRequest, buildSystemPrompt, buildMessages,
-  pickModel, normalizeResponse, limitScope, dayKey, monthKey, BUDDY_TOOLS,
+  validateBuddyRequest, limitScope, dayKey, monthKey,
+  resolveProvider, providerKey, buildProviderRequest, parseProviderResponse,
 } from './buddy.js'
 
 const MAX_ENVELOPE_BYTES = 3_000_000   // weit über realer Backup-Größe, weit unter D1-Grenzen
@@ -86,7 +86,8 @@ export default {
       // Einziger Endpoint, der Klartext sieht (das clientseitig gefilterte
       // Kontextpaket) — Kill-Switch, Tages-/Monats-Limits, Persona serverseitig.
       if (path === '/buddy' && request.method === 'POST') {
-        if (env.BUDDY_ENABLED !== '1' || !env.ANTHROPIC_API_KEY)
+        const provider = resolveProvider(env)
+        if (env.BUDDY_ENABLED !== '1' || !providerKey(provider, env))
           return json({ error: 'Buddy ist auf diesem Server nicht aktiviert' }, 503, cors)
 
         let body
@@ -115,26 +116,13 @@ export default {
         await env.DB.prepare(bump).bind(user.id, dk).run()
         await env.DB.prepare(bump).bind(0, mk).run()
 
-        const upstream = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'x-api-key': env.ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: pickModel(ok.kind, env),
-            max_tokens: 1024,
-            system: buildSystemPrompt(ok.profile),
-            messages: buildMessages(ok),
-            tools: BUDDY_TOOLS,
-          }),
-        })
+        const req = buildProviderRequest(provider, env, ok)
+        const upstream = await fetch(req.url, { method: 'POST', headers: req.headers, body: JSON.stringify(req.body) })
         if (!upstream.ok) {
-          console.warn('[buddy] Upstream', upstream.status, (await upstream.text()).slice(0, 300))
+          console.warn('[buddy] Upstream', provider, upstream.status, (await upstream.text()).slice(0, 300))
           return json({ error: 'KI-Dienst gerade nicht erreichbar' }, 502, cors)
         }
-        const { text, actions } = normalizeResponse(await upstream.json())
+        const { text, actions } = parseProviderResponse(provider, await upstream.json())
         return json({ ok: true, text, actions }, 200, cors)
       }
 

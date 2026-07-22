@@ -7,6 +7,8 @@ import {
   validateBuddyRequest, buildSystemPrompt, buildMessages,
   pickModel, normalizeResponse, limitScope, dayKey, monthKey,
   BUDDY_TOOLS, KINDS,
+  resolveProvider, providerKey, toGeminiContents, toGeminiSchema,
+  buildProviderRequest, parseProviderResponse,
 } from '../../server/src/buddy.js'
 
 const okBody = (over = {}) => ({
@@ -141,6 +143,173 @@ describe('pickModel', () => {
     expect(pickModel('frage', {})).toBe('claude-haiku-4-5')
     expect(pickModel('start', { BUDDY_MODEL_FAST: 'x' })).toBe('x')
     expect(pickModel('zerlegen', { BUDDY_MODEL_SMART: 'y' })).toBe('y')
+  })
+
+  it('3. Arg (provider) default "anthropic" verhält sich exakt wie der 2-Arg-Aufruf', () => {
+    expect(pickModel('zerlegen', {}, 'anthropic')).toBe('claude-sonnet-5')
+    expect(pickModel('frage', {}, 'anthropic')).toBe('claude-haiku-4-5')
+    expect(pickModel('start', { BUDDY_MODEL_FAST: 'x' }, 'anthropic')).toBe('x')
+    expect(pickModel('zerlegen', { BUDDY_MODEL_SMART: 'y' }, 'anthropic')).toBe('y')
+  })
+
+  it('provider "gemini" routet auf gemini-2.5-flash (fast + smart) mit eigenen Overrides', () => {
+    expect(pickModel('zerlegen', {}, 'gemini')).toBe('gemini-2.5-flash')
+    expect(pickModel('tagesplan', {}, 'gemini')).toBe('gemini-2.5-flash')
+    expect(pickModel('klaeren', {}, 'gemini')).toBe('gemini-2.5-flash')
+    expect(pickModel('aufraeumen', {}, 'gemini')).toBe('gemini-2.5-flash')
+    expect(pickModel('frage', {}, 'gemini')).toBe('gemini-2.5-flash')
+    expect(pickModel('start', { BUDDY_GEMINI_FAST: 'g-fast' }, 'gemini')).toBe('g-fast')
+    expect(pickModel('zerlegen', { BUDDY_GEMINI_SMART: 'g-smart' }, 'gemini')).toBe('g-smart')
+  })
+})
+
+describe('resolveProvider', () => {
+  it('liefert "gemini" nur bei BUDDY_PROVIDER === "gemini", sonst "anthropic"', () => {
+    expect(resolveProvider({ BUDDY_PROVIDER: 'gemini' })).toBe('gemini')
+    expect(resolveProvider({ BUDDY_PROVIDER: 'anthropic' })).toBe('anthropic')
+    expect(resolveProvider({})).toBe('anthropic')
+    expect(resolveProvider({ BUDDY_PROVIDER: undefined })).toBe('anthropic')
+    expect(resolveProvider({ BUDDY_PROVIDER: 'quatsch' })).toBe('anthropic')
+  })
+})
+
+describe('providerKey', () => {
+  it('liest den passenden Env-Key je Provider', () => {
+    expect(providerKey('anthropic', { ANTHROPIC_API_KEY: 'a-key', GEMINI_API_KEY: 'g-key' })).toBe('a-key')
+    expect(providerKey('gemini', { ANTHROPIC_API_KEY: 'a-key', GEMINI_API_KEY: 'g-key' })).toBe('g-key')
+  })
+})
+
+describe('toGeminiContents', () => {
+  it('mappt assistant→model und content→parts[0].text', () => {
+    const msgs = [
+      { role: 'user', content: 'Hallo' },
+      { role: 'assistant', content: 'Verstanden' },
+    ]
+    expect(toGeminiContents(msgs)).toEqual([
+      { role: 'user', parts: [{ text: 'Hallo' }] },
+      { role: 'model', parts: [{ text: 'Verstanden' }] },
+    ])
+  })
+})
+
+describe('toGeminiSchema', () => {
+  it('schreibt type groß und behält description/required/enum', () => {
+    const schema = {
+      type: 'object',
+      description: 'Ein Objekt',
+      properties: { text: { type: 'string' } },
+      required: ['text'],
+    }
+    expect(toGeminiSchema(schema)).toEqual({
+      type: 'OBJECT',
+      description: 'Ein Objekt',
+      properties: { text: { type: 'STRING' } },
+      required: ['text'],
+    })
+  })
+
+  it('rekursiert über verschachtelte properties und array items', () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        items: { type: 'array', items: { type: 'string' }, description: 'Liste' },
+        prio: { type: 'integer' },
+        aktiv: { type: 'boolean' },
+        anzahl: { type: 'number', enum: [1, 2, 3] },
+      },
+    }
+    expect(toGeminiSchema(schema)).toEqual({
+      type: 'OBJECT',
+      properties: {
+        items: { type: 'ARRAY', items: { type: 'STRING' }, description: 'Liste' },
+        prio: { type: 'INTEGER' },
+        aktiv: { type: 'BOOLEAN' },
+        anzahl: { type: 'NUMBER', enum: [1, 2, 3] },
+      },
+    })
+  })
+
+  it('wandelt alle BUDDY_TOOLS input_schemas verlustfrei um (Smoke-Test)', () => {
+    BUDDY_TOOLS.forEach(t => {
+      const g = toGeminiSchema(t.input_schema)
+      expect(g.type).toBe('OBJECT')
+      expect(Object.keys(g.properties).length).toBe(Object.keys(t.input_schema.properties).length)
+    })
+  })
+})
+
+describe('buildProviderRequest', () => {
+  const ok = {
+    kind: 'frage', message: 'Wie fange ich an?', context: { screen: 'x' },
+    profile: { userName: 'Jonas', buddyName: 'Nuki', ton: 'herzlich' }, history: [],
+  }
+
+  it('anthropic: URL/Header/Body wie bisher', () => {
+    const env = { ANTHROPIC_API_KEY: 'a-key' }
+    const req = buildProviderRequest('anthropic', env, ok)
+    expect(req.url).toBe('https://api.anthropic.com/v1/messages')
+    expect(req.headers).toEqual({
+      'x-api-key': 'a-key',
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    })
+    expect(req.body.model).toBe(pickModel('frage', env, 'anthropic'))
+    expect(req.body.max_tokens).toBe(1024)
+    expect(req.body.system).toBe(buildSystemPrompt(ok.profile))
+    expect(req.body.messages).toEqual(buildMessages(ok))
+    expect(req.body.tools).toBe(BUDDY_TOOLS)
+  })
+
+  it('gemini: URL mit Modell im Pfad, x-goog-api-key, systemInstruction/contents/tools/generationConfig', () => {
+    const env = { GEMINI_API_KEY: 'g-key' }
+    const req = buildProviderRequest('gemini', env, ok)
+    expect(req.url).toBe(`https://generativelanguage.googleapis.com/v1beta/models/${pickModel('frage', env, 'gemini')}:generateContent`)
+    expect(req.headers).toEqual({ 'x-goog-api-key': 'g-key', 'content-type': 'application/json' })
+    expect(req.body.systemInstruction).toEqual({ parts: [{ text: buildSystemPrompt(ok.profile) }] })
+    expect(req.body.contents).toEqual(toGeminiContents(buildMessages(ok)))
+    expect(req.body.tools[0].functionDeclarations.length).toBe(BUDDY_TOOLS.length)
+    expect(req.body.toolConfig).toEqual({ functionCallingConfig: { mode: 'AUTO' } })
+    expect(req.body.generationConfig.maxOutputTokens).toBe(1024)
+  })
+})
+
+describe('parseProviderResponse', () => {
+  it('anthropic entspricht normalizeResponse', () => {
+    const api = {
+      content: [
+        { type: 'text', text: 'Fangen wir klein an.' },
+        { type: 'tool_use', name: 'subtasks', input: { todoId: 'abc', items: ['x'] } },
+      ],
+    }
+    expect(parseProviderResponse('anthropic', api)).toEqual(normalizeResponse(api))
+  })
+
+  it('gemini: fügt Text-Parts zusammen und mappt functionCall auf Actions', () => {
+    const api = {
+      candidates: [{ content: { parts: [
+        { text: 'Fangen wir klein an. ' },
+        { functionCall: { name: 'subtasks', args: { todoId: 'abc', items: ['Umschlag suchen'] } } },
+        { text: 'Schaffst du.' },
+      ] } }],
+    }
+    const { text, actions } = parseProviderResponse('gemini', api)
+    expect(text).toBe('Fangen wir klein an. Schaffst du.')
+    expect(actions).toEqual([{ type: 'subtasks', todoId: 'abc', items: ['Umschlag suchen'] }])
+  })
+
+  it('gemini: verwirft unbekannte functionCall-Namen', () => {
+    const api = { candidates: [{ content: { parts: [
+      { functionCall: { name: 'rm_rf', args: {} } },
+    ] } }] }
+    expect(parseProviderResponse('gemini', api).actions).toEqual([])
+  })
+
+  it('gemini: kaputte/leere Antworten crashen nicht', () => {
+    expect(parseProviderResponse('gemini', null)).toEqual({ text: '', actions: [] })
+    expect(parseProviderResponse('gemini', {})).toEqual({ text: '', actions: [] })
+    expect(parseProviderResponse('gemini', { candidates: [] })).toEqual({ text: '', actions: [] })
+    expect(parseProviderResponse('gemini', { candidates: [{ content: {} }] })).toEqual({ text: '', actions: [] })
   })
 })
 

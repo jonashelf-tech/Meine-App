@@ -85,11 +85,18 @@ export const buildMessages = ({ kind, message, context, history }) => {
   return msgs
 }
 
+// ─── Provider (Anthropic bleibt Default; Gemini per Env dazuschaltbar) ────
+export const resolveProvider = (env) => (env.BUDDY_PROVIDER === 'gemini' ? 'gemini' : 'anthropic')
+
+export const providerKey = (provider, env) => (provider === 'gemini' ? env.GEMINI_API_KEY : env.ANTHROPIC_API_KEY)
+
 // ─── Modell-Routing ───────────────────────────────────────
-export const pickModel = (kind, env) =>
-  (kind === 'zerlegen' || kind === 'tagesplan' || kind === 'klaeren' || kind === 'aufraeumen')
-    ? (env.BUDDY_MODEL_SMART || 'claude-sonnet-5')
-    : (env.BUDDY_MODEL_FAST  || 'claude-haiku-4-5')
+export const pickModel = (kind, env, provider = 'anthropic') => {
+  const smart = kind === 'zerlegen' || kind === 'tagesplan' || kind === 'klaeren' || kind === 'aufraeumen'
+  if (provider === 'gemini')
+    return smart ? (env.BUDDY_GEMINI_SMART || 'gemini-2.5-flash') : (env.BUDDY_GEMINI_FAST || 'gemini-2.5-flash')
+  return smart ? (env.BUDDY_MODEL_SMART || 'claude-sonnet-5') : (env.BUDDY_MODEL_FAST || 'claude-haiku-4-5')
+}
 
 // ─── Tools (Anthropic tool use → Action-Karten im Client) ─
 export const BUDDY_TOOLS = [
@@ -165,6 +172,80 @@ export const normalizeResponse = (api) => {
   const actions = content
     .filter(b => b?.type === 'tool_use' && TOOL_NAMES.has(b.name) && b.input && typeof b.input === 'object')
     .map(b => ({ type: b.name, ...b.input }))
+  return { text, actions }
+}
+
+// ─── Gemini-Übersetzung (Anthropic-Format bleibt die interne Lingua Franca) ─
+const GEMINI_TYPE = {
+  object: 'OBJECT', string: 'STRING', array: 'ARRAY',
+  integer: 'INTEGER', number: 'NUMBER', boolean: 'BOOLEAN',
+}
+
+export const toGeminiContents = (messages) =>
+  messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }))
+
+export const toGeminiSchema = (schema) => {
+  const out = {}
+  if (schema.type) out.type = GEMINI_TYPE[schema.type] ?? schema.type
+  if (schema.description) out.description = schema.description
+  if (schema.properties)
+    out.properties = Object.fromEntries(Object.entries(schema.properties).map(([k, v]) => [k, toGeminiSchema(v)]))
+  if (schema.items) out.items = toGeminiSchema(schema.items)
+  if (schema.required) out.required = schema.required
+  if (schema.enum) out.enum = schema.enum
+  return out
+}
+
+export const geminiTools = () => [{
+  functionDeclarations: BUDDY_TOOLS.map(t => ({
+    name: t.name,
+    description: t.description,
+    parameters: toGeminiSchema(t.input_schema),
+  })),
+}]
+
+// ─── Provider-Request/-Response (einzige Stelle mit Provider-Spezifika) ───
+export const buildProviderRequest = (provider, env, ok) => {
+  if (provider === 'gemini') {
+    const model = pickModel(ok.kind, env, 'gemini')
+    return {
+      url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      headers: { 'x-goog-api-key': env.GEMINI_API_KEY, 'content-type': 'application/json' },
+      body: {
+        systemInstruction: { parts: [{ text: buildSystemPrompt(ok.profile) }] },
+        contents: toGeminiContents(buildMessages(ok)),
+        tools: geminiTools(),
+        toolConfig: { functionCallingConfig: { mode: 'AUTO' } },
+        generationConfig: { maxOutputTokens: 1024 },
+      },
+    }
+  }
+  return {
+    url: 'https://api.anthropic.com/v1/messages',
+    headers: {
+      'x-api-key': env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: {
+      model: pickModel(ok.kind, env, 'anthropic'),
+      max_tokens: 1024,
+      system: buildSystemPrompt(ok.profile),
+      messages: buildMessages(ok),
+      tools: BUDDY_TOOLS,
+    },
+  }
+}
+
+export const parseProviderResponse = (provider, apiJson) => {
+  if (provider !== 'gemini') return normalizeResponse(apiJson)
+  const partsRaw = apiJson?.candidates?.[0]?.content?.parts
+  const parts = Array.isArray(partsRaw) ? partsRaw : []
+  const text = parts.filter(p => p && typeof p.text === 'string').map(p => p.text).join('')
+  const actions = parts
+    .filter(p => p?.functionCall?.name && TOOL_NAMES.has(p.functionCall.name) &&
+      p.functionCall.args && typeof p.functionCall.args === 'object')
+    .map(p => ({ type: p.functionCall.name, ...p.functionCall.args }))
   return { text, actions }
 }
 
