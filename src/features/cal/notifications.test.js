@@ -107,6 +107,22 @@ describe('getNotifications — Schalter (A8-Toggle)', () => {
   })
 })
 
+describe('getNotifications — verlassener Kalender (Teilen §8.3)', () => {
+  // Nach leaveCal ist calCreds[cal] weg. Ohne eigene Mitgliedschaft gibt es
+  // keinen Live-Feed mehr — sonst tauchten sogar EIGENE Alt-Aktionen als „neu"
+  // auf, weil „by === myMemberId" mit memberId=null nicht mehr greift.
+  it('kein calCreds → keine Record-Notifs (auch nicht die eigenen)', () => {
+    const meins  = fremd({ by: 'm_me',    text: 'mein Kino' })
+    const fremds = fremd({ by: 'm_paula', text: 'Paulas Termin' })
+    expect(getNotifications(input({ todos: [meins, fremds], calCreds: {} }))).toEqual([])
+  })
+
+  it('kein calCreds → keine deleted-Notif aus Tombstones', () => {
+    const tomb = { [CAL]: [{ id: 'weg1', updatedAt: 5000, by: 'm_paula' }] }
+    expect(getNotifications(input({ calTombstones: tomb, calCreds: {} }))).toEqual([])
+  })
+})
+
 describe('getNotifications — Kollision (Konzept §2.2) + Ordnung', () => {
   const dk = '2026-07-23'
   const eigenerSlot = { '9': { text: 'Fokus-Block', duration: 120 } }

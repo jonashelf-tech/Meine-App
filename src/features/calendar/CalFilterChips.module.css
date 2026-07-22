@@ -88,3 +88,21 @@
   padding: 0 4px;
   border: 2px solid var(--bg);
 }
+
+/* ─── Verlassener Kalender (§8.3) — dezenter Read-only-Hinweis ────
+   Einträge bleiben lokal sichtbar, aber die Kopplung ist getrennt. */
+.orphan {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 7px;
+}
+.orphanItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-faint);
+}

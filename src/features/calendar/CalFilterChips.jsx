@@ -38,6 +38,10 @@ export default function CalFilterChips() {
 
   const privatOn = calFilter?.privat !== false
   const isOn = (id) => calFilter?.cals?.[id]?.show !== false
+  // Verlassene, aber lokal noch sichtbare Kalender: in calList, aber ohne Creds
+  // (leaveCal entfernt nur die Creds). Ihre Einträge bleiben read-only (§8.3) —
+  // ein dezenter „Kopplung getrennt"-Hinweis erklärt, warum sie noch da sind.
+  const orphanIds = calIds.filter(id => !calCreds[id])
 
   const togglePrivat = () =>
     setCalFilter(f => ({ ...f, privat: !(f?.privat !== false) }))
@@ -94,6 +98,16 @@ export default function CalFilterChips() {
           {entries.length > 0 && <span className={s.sigCount}>{entries.length}</span>}
         </button>
       </div>
+      {orphanIds.length > 0 && (
+        <div className={s.orphan} role="note">
+          {orphanIds.map(id => (
+            <span key={id} className={s.orphanItem}>
+              <span className={s.em}>{calList[id]?.emoji ?? '👥'}</span>
+              {calList[id]?.name || 'Kalender'} · Kopplung getrennt — nur lesbar
+            </span>
+          ))}
+        </div>
+      )}
       {digestEntries && <DigestSheet entries={digestEntries} onClose={() => setDigestEntries(null)} />}
     </>
   )

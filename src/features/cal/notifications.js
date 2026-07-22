@@ -43,6 +43,7 @@ export function getNotifications(input) {
 
   for (const t of todos) {
     if (!t?.cal || t.updatedAt == null || !t.by) continue
+    if (!calCreds[t.cal]) continue           // verlassen → kein Mitglied mehr → kein Feed (§8.3)
     if (!isActive(calFilter, t.cal)) continue
     if (t.by === (calCreds[t.cal]?.memberId ?? null)) continue
     const seen = calSeen[t.cal] ?? 0
@@ -57,6 +58,7 @@ export function getNotifications(input) {
   }
 
   for (const [calId, tombs] of Object.entries(calTombstones)) {
+    if (!calCreds[calId]) continue           // verlassener Kalender → keine deleted-Notif (§8.3)
     if (!isActive(calFilter, calId)) continue
     const myId = calCreds[calId]?.memberId ?? null
     const seen = calSeen[calId] ?? 0
