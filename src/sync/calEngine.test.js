@@ -162,3 +162,43 @@ describe('calTick — Push (§6.2/§6.3)', () => {
     expect(ids).toEqual(['fremd', 'mine'])   // Union nach Merge
   })
 })
+
+describe('🕶 Geheim-Flag (secret) — A9: gesichert, aber nie an Mitglieder', () => {
+  it('Geheim-Eintrag reist NIE im Kalender-Push-Slice', async () => {
+    const { cal } = await enableCal()
+    sv(SK.todos, [
+      createBlock({ id: 'offen',  cal: cal.calId, text: 'sichtbar', updatedAt: 111, by: cal.memberId }),
+      createBlock({ id: 'geheim', cal: cal.calId, secret: true, text: 'nur ich', updatedAt: 222, by: cal.memberId }),
+    ])
+    fetchMock.mockResolvedValue(res(200, { version: 1 }))
+
+    await calTick()
+
+    const todosKey = await hmacKeyId(cal.calKey, 'todos')
+    const put = findPut(new RegExp(`/kv/${todosKey}\\?ns=c:${cal.calId}`))
+    expect(put).toBeTruthy()
+    const slice = await decryptPayload(cal.calKey, JSON.parse(put[1].body))
+    expect(slice.records.map(r => r.id)).toEqual(['offen'])   // 'geheim' ist raus
+  })
+
+  // Regressions-Guard (grün unter G5 „ohne Tombstone verschwindet nie etwas"):
+  // schützt davor, dass ein späterer Push-Filter den lokalen Geheim-Eintrag aus
+  // der Merge-Basis strippt, ohne ihn wieder anzuhängen (= Datenverlust).
+  it('Kalender-Pull löscht lokale Geheim-Einträge nicht', async () => {
+    const { cal } = await enableCal()
+    sv(SK.todos, [createBlock({ id: 'geheim', cal: cal.calId, secret: true, text: 'nur ich', updatedAt: 50, by: cal.memberId })])
+    const todosKey = await hmacKeyId(cal.calKey, 'todos')
+    const remoteSlice = await encryptPayload(cal.calKey, {
+      records: [{ id: 'fremd', cal: cal.calId, text: 'von Paula', updatedAt: 999, by: 'paula' }],
+      tombstones: [],
+    })
+    fetchMock.mockResolvedValueOnce(res(200, { rows: [{ keyId: todosKey, version: 1, ciphertext: JSON.stringify(remoteSlice) }], cursor: 1 }))
+    fetchMock.mockResolvedValue(res(200, { version: 2 }))
+
+    await calTick()
+
+    const ids = lv(SK.todos, []).map(r => r.id).sort()
+    expect(ids).toContain('geheim')   // bleibt lokal erhalten
+    expect(ids).toContain('fremd')    // Fremd-Record aus dem Merge übernommen
+  })
+})

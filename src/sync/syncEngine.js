@@ -359,6 +359,15 @@ const localCalSlice = (calId) => ({
     .sort(byIdSort),
   tombstones: [...((lv(SK.calTombstones, {})[calId]) ?? [])].sort(byIdSort),
 })
+// Was TATSÄCHLICH an die Mitglieder geht: wie localCalSlice, aber ohne
+// 🕶-Geheim-Einträge (secret === true). Die bleiben gerätelokal + im Backup und
+// reisen NIE im c:<calId>-Push (A9, teilen-spec.md §… Geheim-Flag). localCalSlice
+// bleibt die volle Merge-Basis — so hält die Merge-Engine (G5: ohne Tombstone
+// verschwindet nie etwas) den Geheim-Eintrag beim Pull ganz ohne Sonderpfad.
+const calPushSlice = (calId) => {
+  const full = localCalSlice(calId)
+  return { records: full.records.filter(r => !r?.secret), tombstones: full.tombstones }
+}
 const localCalMeta = (calId) =>
   lv(SK.calList, {})[calId] ?? { name: '', emoji: null, members: {}, updatedAt: 0 }
 
@@ -418,7 +427,7 @@ const calPull = async (calId, calKey, ids) => {
 const calPush = async (calId, calKey, ids) => {
   const jobs = [
     ['meta',  ids.meta,  () => selfHealMeta(calId, localCalMeta(calId))],
-    ['todos', ids.todos, () => localCalSlice(calId)],
+    ['todos', ids.todos, () => calPushSlice(calId)],   // 🕶-Geheim bleibt lokal (A9)
   ]
   for (const [name, keyId, build] of jobs) {
     const value = build()

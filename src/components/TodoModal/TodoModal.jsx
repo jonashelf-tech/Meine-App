@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useAppStore } from '../../store'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 import { createBlock } from '../../features/todos/Block'
+import { moveToCal } from '../../features/cal/calStore'
 import { createNote, noteTitle, formatNoteTime } from '../../features/notes/Note'
 import { parseTodoText } from '../../features/todos/parseTodoText'
 import { resolveProject } from '../../features/projekte/projektModel'
@@ -57,7 +58,7 @@ function formatSummaryDate(dateStr) {
 
 export default function TodoModal({ onClose, existingTodo = null, prefill = null }) {
   const keyboardOffset = useKeyboardOffset()
-  const { setTodos, setDays, setNotes, notes, projects, setProjects, accentColor, setCurrentTab, setNotizenOpenId } = useAppStore()
+  const { setTodos, setDays, setNotes, notes, projects, setProjects, accentColor, setCurrentTab, setNotizenOpenId, calList } = useAppStore()
 
   const isEdit = existingTodo !== null
   // Notiz-Modus + gemeinsamer Entwurf: nur beim reinen Erfassen (globaler „+"),
@@ -78,6 +79,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   // Akzentfarbe mit — deshalb hier bewusst KEIN accentColor-Hex einbrennen.
   const [color,    setColor]    = useState(existingTodo?.color    ?? null)
   const [projectId, setProjectId] = useState(existingTodo?.projectId ?? null)
+  const [cal,      setCal]      = useState(existingTodo?.cal    ?? null)   // null = Privat (A9)
+  const [secret,   setSecret]   = useState(existingTodo?.secret ?? false)  // 🕶: nur bei geteiltem Kalender
   const [date,     setDate]     = useState(existingTodo?.date ?? prefill?.date ?? '')
   const [time,     setTime]     = useState(existingTodo?.time ?? prefill?.time ?? '')
   const [repeat,   setRepeat]   = useState(existingTodo?.repeat   ?? null)
@@ -93,7 +96,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
   const [projNewMode, setProjNewMode] = useState(false)
   const [projNewInput, setProjNewInput] = useState('')
   const [detailsOpen, setDetailsOpen] = useState(() =>
-    isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.projectId)
+    isEdit && !!(existingTodo.date || existingTodo.time || existingTodo.projectId || existingTodo.cal)
   )
   const [confirmDelete, setConfirmDelete] = useState(false)
 
@@ -256,6 +259,7 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
         time:      eff.time || null,
         dayRank:   eff.time ? null : existingTodo.dayRank ?? null,
       }
+      if (cal && secret) updated.secret = true; else delete updated.secret   // 🕶 sparse (A9)
 
       setDays(prev => {
         const result = { ...prev }
@@ -297,6 +301,9 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
       })
 
       setTodos(prev => prev.map(t => t.id === existingTodo.id ? updated : t))
+      // Kalender-Zuordnung geändert → über calStore (Tombstone im alten Kalender +
+      // Stempel/projectId-Abgleich); nie das cal-Feld naiv setzen (A9).
+      if ((existingTodo.cal ?? null) !== cal) moveToCal(existingTodo.id, cal)
 
     } else {
       if (isTermin) {
@@ -307,6 +314,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           projectId: effProjectId,
           repeat: repeat || null,
           subItems,
+          ...(cal ? { cal } : {}),
+          ...(cal && secret ? { secret: true } : {}),
         })
         const mins    = parseHHMM(eff.time)
         const slotKey = minutesToSk(mins)
@@ -329,6 +338,8 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
           projectId: effProjectId,
           repeat: repeat || null,
           subItems,
+          ...(cal ? { cal } : {}),
+          ...(cal && secret ? { secret: true } : {}),
         })])
       }
     }
@@ -676,6 +687,44 @@ export default function TodoModal({ onClose, existingTodo = null, prefill = null
                 )}
               </div>
             </div>
+
+            {/* Kalender (Teilen · A9) — Default Privat, Einzelwahl */}
+            {Object.keys(calList).length > 0 && (
+              <div className={s.row} style={{ alignItems: 'flex-start' }}>
+                <span className={s.rowLabel} style={{ marginTop: 6 }}>Kalender</span>
+                <div className={s.catWrap}>
+                  <div className={s.catChips}>
+                    <button
+                      type="button"
+                      className={[s.catChip, cal === null ? s.calChipActive : ''].join(' ')}
+                      onClick={() => { setCal(null); setSecret(false) }}
+                      aria-pressed={cal === null}
+                    >🔒 Privat</button>
+                    {Object.keys(calList).map(id => (
+                      <button
+                        key={id}
+                        type="button"
+                        className={[s.catChip, cal === id ? s.calChipActive : ''].join(' ')}
+                        onClick={() => setCal(id)}
+                        aria-pressed={cal === id}
+                      >
+                        <span>{calList[id]?.emoji ?? '👥'}</span>
+                        {calList[id]?.name || 'Kalender'}
+                      </button>
+                    ))}
+                  </div>
+                  {cal !== null && (
+                    <button
+                      type="button"
+                      className={[s.catChip, secret ? s.calChipActive : ''].join(' ')}
+                      onClick={() => setSecret(v => !v)}
+                      aria-pressed={secret}
+                      title="Wird gesichert (Backup), aber nicht an die anderen im Kalender geteilt"
+                    >🕶 Nur für mich</button>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Wiederholung */}
             <div className={s.row} style={{ alignItems: 'flex-start' }}>
