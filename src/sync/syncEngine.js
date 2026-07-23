@@ -94,7 +94,6 @@ const REHYDRATE = {
   [SK.notes]:           v => setStore({ notes: v ?? [] }),
   [SK.blockers]:        v => setStore({ blockers: v ?? [] }),
   [SK.days]:            v => setStore({ days: v ?? {} }),
-  [SK.doneCounters]:    v => setStore({ doneCounters: v ?? {} }),
   [SK.settings]:        v => setStore({ settings: v ?? { lastBackup: null } }),
   [SK.theme]:           v => setStore({ theme: v }),
   [SK.accentColor]:     v => setStore({ accentColor: migrateAccent(v) }),

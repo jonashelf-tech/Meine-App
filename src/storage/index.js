@@ -91,7 +91,6 @@ export const SK = {
   todoOrder:      `${PREFIX}todos_order`,
   cats:           `${PREFIX}todos_cats`,
   days:           `${PREFIX}calendar_days`,
-  doneCounters:   `${PREFIX}calendar_done`,
   settings:       `${PREFIX}app_settings`,
   theme:          `${PREFIX}app_theme`,
   appBriefingSeen:`${PREFIX}app_briefing_seen`,   // LEGACY — nur Backup-Kompat, wird nicht mehr gelesen
@@ -189,7 +188,6 @@ export const SYNC_POLICY = {
   // Kalender-Kern
   [SK.todos]:        'byId',
   [SK.days]:         'bySubkey2',
-  [SK.doneCounters]: 'bySubkey',
   [SK.blockers]:     'byId',
   [SK.projects]:     'byId',
   [SK.notes]:        'byId',
@@ -309,7 +307,7 @@ export const importData = (data) => {
 export const BACKUP_CATS = {
   kalender: [
     SK.todos, SK.routines, SK.todoOrder, SK.cats, SK.projects,
-    SK.days, SK.doneCounters, SK.templates, SK.blockers,
+    SK.days, SK.templates, SK.blockers,
     SK.lastPoolReturn, SK.poolSort, SK.autoParse, SK.visStart, SK.visEnd,
     SK.weekVisStart, SK.weekVisEnd, SK.calView, SK.heuteModus, SK.addMode,
     SK.calList, SK.calTombstones, SK.calFilter,

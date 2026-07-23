@@ -48,7 +48,7 @@ describe('Sync-Policy-Registry — Anti-Drift (G1)', () => {
     expect(SYNC_POLICY[SK.days]).toBe('bySubkey2')        // datum/slotKey — der Kern-Fall
     expect(SYNC_POLICY[SK.todos]).toBe('byId')
     expect(SYNC_POLICY[SK.weight]).toBe('byId:date')      // Einträge haben kein id-Feld
-    expect(SYNC_POLICY[SK.doneCounters]).toBe('bySubkey')
+    expect(SYNC_POLICY[SK.dailyState]).toBe('bySubkey')
     expect(SYNC_POLICY[SK.cloudCreds]).toBe('device-local') // Zugang synct sich nicht selbst
     expect(SYNC_POLICY[SK.cloudMeta]).toBe('ephemeral')
     expect(SYNC_POLICY[SK.heuteModus]).toBe('device-local') // View-State bleibt pro Gerät

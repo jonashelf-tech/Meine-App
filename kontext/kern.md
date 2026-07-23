@@ -162,7 +162,6 @@ notes,        setNotes
 
 // Kalender
 days,         setDays       // { "2024-01-15": { "8": SlotEntry, "8.5": SlotEntry } }
-doneCounters, setDoneCounters
 blockers,     setBlockers   // Blocker[] — persistiert via SK.blockers
 
 // App
@@ -280,7 +279,6 @@ SK.addMode        → 'adhs_view_add_mode'      // 'aufgabe'|'notiz' — letzter
 
 // Kalender
 SK.days           → 'adhs_calendar_days'
-SK.doneCounters   → 'adhs_calendar_done'
 SK.templates      → 'adhs_calendar_templates'
 SK.blockers       → 'adhs_blockers'
 

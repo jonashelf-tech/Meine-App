@@ -72,17 +72,11 @@ export const useAppStore = create((set, get) => ({
 
   // ─── Calendar ──────────────────────────────────────────
   days:         lv(SK.days, {}),
-  doneCounters: lv(SK.doneCounters, {}),
 
   setDays: (days) => {
     const next = typeof days === 'function' ? days(get().days) : days
     set({ days: next })
     sv(SK.days, next)
-  },
-  setDoneCounters: (dc) => {
-    const next = typeof dc === 'function' ? dc(get().doneCounters) : dc
-    set({ doneCounters: next })
-    sv(SK.doneCounters, next)
   },
 
   // ─── App ───────────────────────────────────────────────

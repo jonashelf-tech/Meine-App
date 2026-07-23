@@ -63,7 +63,7 @@ describe('updateChangeMap — byId:date (weight)', () => {
   })
 })
 
-describe('updateChangeMap — bySubkey (doneCounters, dailyState)', () => {
+describe('updateChangeMap — bySubkey (dailyState)', () => {
   it('stempelt nur betroffene Unterschlüssel', () => {
     const { sub } = updateChangeMap('bySubkey',
       { '2026-07-01': 3, '2026-07-02': 1 },
