@@ -6,7 +6,6 @@ import Naehrwert from './Naehrwert'
 import { IconArrowLeft, IconArrowRight, IconPlus, IconMinus, IconSnow, IconClose } from './icons'
 import s from './PortionenStep.module.css'
 
-const BLOCK_G = 250
 const STEPS = ['Gerichte', 'Portionen', 'Einkauf', 'Kochen']
 
 function Stepper({ value, onDec, onInc }) {
@@ -31,8 +30,9 @@ export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, 
     [korb.eintraege, rById] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
-  const totalPortionen = items.reduce((a, it) => a + it.split.total, 0)
-  const totalBloecke   = items.reduce((a, it) => a + it.split.bloecke, 0)
+  const totalPortionen  = items.reduce((a, it) => a + it.split.total, 0)
+  const totalBloecke    = items.reduce((a, it) => a + it.split.bloecke, 0)
+  const totalBlockGramm = items.reduce((a, it) => a + it.split.bloecke * (it.r.blockGramm ?? 250), 0)
 
   // Ketten-Basen: wie oft muss z. B. die Tomatensoße gekocht werden?
   const vorkochen = useMemo(
@@ -102,7 +102,7 @@ export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, 
                     onInc={() => setSplit(idx, split.frisch + 1, split.bloecke)} />
                 </div>
                 <div className={s.stepperRow}>
-                  <span className={s.lbl}><span className={s.snow}><IconSnow size={13} /></span> TK-Blöcke</span>
+                  <span className={s.lbl}><span className={s.snow}><IconSnow size={13} /></span> TK-Blöcke · {r.blockGramm ?? 250} g</span>
                   <Stepper value={split.bloecke}
                     onDec={() => setSplit(idx, split.frisch, split.bloecke - 1)}
                     onInc={() => setSplit(idx, split.frisch, split.bloecke + 1)} />
@@ -131,7 +131,7 @@ export default function PortionenStep({ korb, setKorb, zById, rById, toolColor, 
       <div className={s.summary}>
         <div className={s.sumLeft}>
           <div className={s.sumNum}>{totalPortionen} {totalPortionen === 1 ? 'Portion' : 'Portionen'}</div>
-          <div className={s.sumSub}>{totalBloecke} × {BLOCK_G} g Block</div>
+          <div className={s.sumSub}>{totalBloecke} {totalBloecke === 1 ? 'Block' : 'Blöcke'} · {totalBlockGramm} g</div>
         </div>
         {!hideChrome && (
           <button className={s.weiter} onClick={onWeiter} disabled={totalPortionen === 0}>
