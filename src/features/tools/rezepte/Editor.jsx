@@ -318,6 +318,14 @@ export default function Editor({
                 ))}
               </div>
 
+              <div className={s.field}>
+                <label className={s.label}>Block-Größe (g)</label>
+                <input className={s.input} type="number" min={50} max={1000} step={50}
+                  value={draft.blockGramm ?? ''}
+                  onChange={e => set('blockGramm', parseFloat(e.target.value) || null)}
+                  placeholder="250"/>
+              </div>
+
               {/* Als Basis */}
               <div className={s.row2}>
                 <div className={s.field}>
